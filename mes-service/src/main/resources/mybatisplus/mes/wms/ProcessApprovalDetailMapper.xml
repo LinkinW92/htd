@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wms.ProcessApprovalDetailDao">
+
+	<resultMap type="com.skeqi.mes.pojo.wms.ProcessApprovalDetail" id="detailMap">
+		<result column="ID" property="id"/>
+		<result column="USER_ID" property="userId"/>
+		<result column="PRIORITY_LEVEL" property="priorityLevel"/>
+		<result column="DT" property="dt"/>
+		<result column="PROCESS_ID" property="processId"/>
+		<result column="DIS" property="dis"/>
+		<association  property="user" javaType="com.skeqi.mes.pojo.CMesUserT">
+			<result column="user_id" property="id" />
+			<result column="USER_NAME" property="userName" />
+		</association>
+		<association  property="department" javaType="com.skeqi.mes.pojo.wms.CWmsDepartmentT">
+			<result column="dm_id" property="id" />
+			<result column="DM_NAME" property="dmName" />
+		</association>
+		<association  property="role" javaType="com.skeqi.mes.pojo.CMesRoleT">
+			<result column="role_id" property="rid" />
+			<result column="ROLE_NAME" property="roleName" />
+		</association>
+		<association  property="processType" javaType="com.skeqi.mes.pojo.wms.ProcessType">
+			<result column="PROCESS_type_id" property="id" />
+			<result column="PROCESS_TYPE_NAME" property="processType" />
+		</association>
+	</resultMap>
+
+	<select id="findProcessApprovalDetailList" resultMap="detailMap">
+		SELECT xq.*,us.USER_NAME,bm.ID as dm_id,bm.DM_NAME,ro.id as role_id,ro.ROLE_NAME,lx.id as PROCESS_type_id,lx.PROCESS_TYPE as PROCESS_TYPE_NAME
+		FROM C_WMS_PROCESS_APPROVAL_DETAIL xq
+		JOIN c_mes_user_t us ON xq.USER_ID = us.id
+		JOIN c_wms_department_t bm ON us.DEPARTMENT = bm.ID
+		JOIN c_qh_role ro ON us.ROLE_ID = ro.ID
+		JOIN C_WMS_PROCESS_APPROVAL_T lc ON xq.PROCESS_ID = lc.ID
+		JOIN C_WMS_PROCESS_TYPE_T lx ON lc.TYPE_ID = lx.ID
+		WHERE 1 =1
+		<if test="roleId != null and roleId != ''">
+			AND ro.ID = #{roleId}
+		</if>
+		<if test="deptId != null and deptId != ''">
+			AND bm.ID = #{deptId}
+		</if>
+		<if test="typeId != null and typeId != ''">
+			AND lx.ID = #{typeId}
+		</if>
+		<if test="id != null and id != ''">
+			AND xq.ID = #{id}
+		</if>
+		<if test="userId != null and userId != ''">
+			AND xq.USER_ID = #{userId}
+		</if>
+		<if test="priorityLevel != null and priorityLevel != ''">
+			AND xq.PRIORITY_LEVEL = #{priorityLevel}
+		</if>
+		<if test="dt != null and dt != ''">
+			AND xq.DT = #{dt}
+		</if>
+		<if test="processId != null and processId != ''">
+			AND xq.PROCESS_ID = #{processId}
+		</if>
+		<if test="dis != null and dis != ''">
+			AND xq.DIS = #{dis}
+		</if>
+		ORDER BY xq.PRIORITY_LEVEL
+	</select>
+
+	<insert id="addProcessApprovalDetail">
+		insert into c_wms_process_approval_detail(
+		USER_ID,PRIORITY_LEVEL,DT,PROCESS_ID,
+		DIS)
+		values(#{userId},#{priorityLevel},now(),#{processId},
+		#{dis})
+	</insert>
+
+	<delete id="deleteProcessApprovalDetail">
+		delete from c_wms_process_approval_detail
+		where id = #{processApprovalDetailId}
+	</delete>
+
+	<update id="updateProcessApprovalDetail">
+		update c_wms_process_approval_detail
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="userId != null">USER_ID = #{userId},</if>
+			<if test="priorityLevel != null">PRIORITY_LEVEL = #{priorityLevel},</if>
+			<if test="processId != null">PROCESS_ID = #{processId},</if>
+			<if test="dis != null">DIS = #{dis},</if>
+		</trim>
+		where ID = #{id}
+	</update>
+
+	<select id="findMaxPriorityLevel" resultType="java.lang.Integer">
+		select ifnull(max(xq.PRIORITY_LEVEL),0) from C_WMS_PROCESS_APPROVAL_DETAIL xq
+		join C_WMS_PROCESS_APPROVAL_T lc on xq.PROCESS_ID = lc.ID
+		join c_mes_user_t user on xq.USER_ID =  user.ID
+		where lc.DEPT_ID = #{dmId}
+		and lc.ROLE_ID = #{roleId}
+		and lc.TYPE_ID = #{typeId}
+	</select>
+
+	<update id="updateApprovaDetailsPriorityLevel">
+		UPDATE C_WMS_PROCESS_APPROVAL_DETAIL
+		set
+		<if test="str==1">
+		PRIORITY_LEVEL = PRIORITY_LEVEL+1
+		</if>
+		<if test="str==2">
+		PRIORITY_LEVEL = PRIORITY_LEVEL-1
+		</if>
+		where PRIORITY_LEVEL >= #{priorityLevel}
+		and PROCESS_ID = #{processId}
+	</update>
+
+	<update id="updateUpdateApprovaDetailsPriorityLevel">
+		UPDATE C_WMS_PROCESS_APPROVAL_DETAIL
+		set
+		<if test="str==1">
+			PRIORITY_LEVEL = PRIORITY_LEVEL + 1
+			where PRIORITY_LEVEL >=  #{priorityLevel}
+			and PRIORITY_LEVEL &lt; #{qpriorityLevel}
+		</if>
+		<if test="str==2">
+			PRIORITY_LEVEL = PRIORITY_LEVEL - 1
+			WHERE PRIORITY_LEVEL &lt;= #{priorityLevel}
+			and PRIORITY_LEVEL > #{qpriorityLevel}
+		</if>
+
+		and PROCESS_ID = #{processId}
+	</update>
+
+</mapper>

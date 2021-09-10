@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.adjustmentperiod.TGlAdjustperiodMapper">
+    <select id="queryPageList" resultType="com.skeqi.finance.pojo.vo.adjustmentperiod.TGlAdjustperiodVo">
+        select ga.*,ab.f_book_name,ab.f_number f_book_number
+        from t_gl_adjustperiod ga
+        left join t_bd_account_book ab on ga.f_book_id = ab.f_book_id
+        ${ew.customSqlSegment}
+    </select>
+
+    <select id="queryByBookIdAndYear"
+            resultType="java.lang.Integer">
+        select sum(ga.f_year)
+        from t_gl_adjustperiod ga
+        where f_book_id = #{bo.fBookId,jdbcType=INTEGER}
+        and f_year = #{bo.fYear,jdbcType=INTEGER}
+    </select>
+</mapper>

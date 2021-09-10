@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.skeqi.mes.mapper.dzb.report.RetrospectiveDao">
+    <select id="listParam" resultType="java.util.Map">
+        select dcr.sn SN,dcr.equipment 设备号,dcr.process 工序,dcrd.params_name 参数,dcrd.`value` 参数值,dcr.staff 操作人,dcr.cdt
+        操作时间,dcrd.upper_limit 上限,dcrd.lower_limit 下限
+        from
+        c_mes_data_collection_record_detail_t dcrd,
+        c_mes_data_collection_record_t dcr
+        left join c_lsl_product_offline_detailed_detail_t lslpodd
+        on lslpodd.material_sn = dcr.sn
+        left join c_lsl_product_offline_detailed_t lslpod
+        on lslpod.number = lslpodd.detailed_number
+        left join c_lsl_product_offline_t lslpo
+        on lslpo.number = lslpod.offline_number
+        where dcr.number = dcrd.record_number
+        <foreach collection="whereList" item="value" index="key">
+            <if test="key == '出货包装批次'">
+                and lslpo.batch in
+            </if>
+            <if test="key == 'SN'">
+                and dcr.sn in
+            </if>
+            <if test="key == '物料编码'">
+                and lslpod.material_sn in
+            </if>
+            <foreach collection="value" item="v" open="(" separator="," close=")">
+                (#{v})
+            </foreach>
+        </foreach>
+    </select>
+    <select id="listParent" resultType="java.util.Map">
+        select sn
+        from c_mes_retrospect_t
+        where locationId = #{sn}
+    </select>
+    <select id="listChildren" resultType="java.util.Map">
+        select locationId sn
+        from c_mes_retrospect_t
+        where sn = #{sn}
+    </select>
+    <select id="listMaterial" resultType="java.util.Map">
+        select p.sn SN,
+        p.materialNo 物料编码,
+        p.locationId 子件SN,
+        c.materialNo 子件物料编码,
+        c.consumeNum 子件用量,
+        p.operationTime 装配时间,
+        p.operator 操作人
+        from c_mes_retrospect_t p,
+        c_mes_retrospect_t c
+        where p.locationId = c.sn
+        <foreach collection="whereList" item="value" index="key">
+            <if test="key == '出货包装批次'">
+                and lslpo.batch in
+            </if>
+            <if test="key == 'SN'">
+                and p.sn in
+            </if>
+            <if test="key == '物料编码'">
+                and p.material_sn in
+            </if>
+            <foreach collection="value" item="v" open="(" separator="," close=")">
+                (#{v})
+            </foreach>
+        </foreach>
+    </select>
+
+</mapper>

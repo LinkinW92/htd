@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.yp.wms.WmsSalesReturnReceiptDao">
+
+	<!-- 查询 -->
+	<select id="list" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			a.listNo,
+			a.receivingFactoryId,
+			a.receivingLocationId,
+			a.salesReturnListNo,
+			a.customerId,
+			a.establishUserId,
+			DATE_FORMAT( a.establishDt, '%Y-%m-%d %H:%i:%s' ) AS establishDt,
+			a.receivingUserId,
+			DATE_FORMAT( a.receivingDt, '%Y-%m-%d %H:%i:%s' ) AS receivingDt,
+			a.`status`,
+			a.dis,
+			b.factoryName,
+			c.LOCATION_NAME AS locationName,
+			d.USER_NAME AS establishUserName,
+			d.`name` AS establishUserFullName,
+			e.USER_NAME AS receivingUserName,
+			e.`name` AS receivingUserFullName
+		FROM
+			c_qh_wms_sales_return_receipt_h_t a
+			LEFT JOIN c_mes_factory_t b ON a.receivingFactoryId = b.id
+			LEFT JOIN c_wms_location_t c ON a.receivingLocationId = c.id
+			LEFT JOIN c_mes_user_t d ON a.establishUserId = d.id
+			LEFT JOIN c_mes_user_t e ON a.receivingUserId = e.id
+		where a.viewMode = 1
+		<if test="listNo != null and listNo !=''">
+		 and a.listNo like '%${listNo}%'
+		</if>
+		<if test="status != null and status !=''">
+		 and a.status = #{status}
+		</if>
+		<if test="creator != null and creator !=''">
+		 and d.USER_NAME like '%${creator}%' or d.`name` like '%${creator}%'
+		</if>
+		<if test="checkUser != null and checkUser !=''">
+		 and e.USER_NAME like '%${checkUser}%' or e.`name` like '%${checkUser}%'
+		</if>
+		<if test="startReceivingDt != null and startReceivingDt !='' and endReceivingDt != null and endReceivingDt !=''">
+		and DATE_FORMAT(a.receivingDt,'%Y-%m-%d') between #{startReceivingDt} and #{endReceivingDt}
+		</if>
+		ORDER BY
+			a.establishDt DESC
+	</select>
+
+	<!-- 新增 -->
+	<insert id="add">
+		insert into c_qh_wms_sales_return_receipt_h_t(listNo,receivingFactoryId,receivingLocationId,salesReturnListNo,customerId,establishUserId,establishDt,`status`,dis,viewMode)
+		value(#{listNo},#{receivingFactoryId},#{receivingLocationId},#{salesReturnListNo},#{customerId},#{establishUserId},now(),#{status},#{dis},#{viewMode})
+	</insert>
+
+	<!-- 更新 -->
+	<update id="update">
+		update c_qh_wms_sales_return_receipt_h_t
+		<trim prefix="set" suffixOverrides=",">
+			receivingFactoryId = #{receivingFactoryId},
+			receivingLocationId = #{receivingLocationId},
+			dis = #{dis},
+			<if test="receivingUserId != null and receivingUserId != ''">
+				receivingUserId = #{receivingUserId},
+			</if>
+			<if test="receivingDt != null and receivingDt != ''">
+				receivingDt = now(),
+			</if>
+			<if test="status != null and status != ''">
+				`status` = #{status},
+			</if>
+			<if test="viewMode != null and viewMode != ''">
+				viewMode = #{viewMode},
+			</if>
+		</trim>
+		where listNo = #{listNo}
+	</update>
+	
+	<!-- 更新状态 -->
+	<update id="updateStatus">
+		update c_qh_wms_sales_return_receipt_h_t
+		set 
+		receivingUserId = #{receivingUserId},
+		receivingDt = now(),
+		status = #{status}
+		where listNo = #{listNo}
+	</update>
+
+	<!-- 查询R -->
+	<select id="listR" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.*,
+			b.MATERIAL_NAME AS materialName,
+			b.id AS materialId
+		FROM
+			c_qh_wms_sales_return_receipt_r_t a
+			LEFT JOIN c_mes_jl_material_t b ON a.materialNo = b.BOM_ID
+		WHERE
+			1 = 1
+		<if test="id != null and id != ''">
+			and a.id = #{id}
+		</if>
+		<if test="listNo != null and listNo != ''">
+			and a.listNo = #{listNo}
+		</if>
+		<if test="materialNo != null and materialNo != ''">
+			and a.materialNo = #{materialNo}
+		</if>
+	</select>
+
+	<!-- 新增R -->
+	<insert id="addR" useGeneratedKeys="true" keyProperty="id"  keyColumn="id">
+		insert into c_qh_wms_sales_return_receipt_r_t(materialNo,number,unit,listNo)
+		value(#{materialNo},#{number},#{unit},#{listNo})
+	</insert>
+
+	<!-- 更新R -->
+	<update id="updateR">
+		update c_qh_wms_sales_return_receipt_r_t
+		<trim prefix="set" suffixOverrides=",">
+			<if test="materialNo != null and materialNo != ''">
+				materialNo = #{materialNo},
+			</if>
+			<if test="number != null">
+				number = #{number},
+			</if>
+			<if test="unit != null and unit != ''">
+				unit = #{unit},
+			</if>
+			<if test="listNo != null and listNo != ''">
+				listNo = #{listNo},
+			</if>
+		</trim>
+		where id = #{id}
+	</update>
+
+	<!-- 删除R -->
+	<delete id="deleteR">
+		delete from c_qh_wms_sales_return_receipt_r_t
+		where id = #{id}
+	</delete>
+
+	<!-- 查询D -->
+	<select id="listD" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.*
+		FROM
+			c_qh_wms_sales_return_receipt_d_t a
+			join c_qh_wms_sales_return_receipt_r_t b on a.rId = b.id
+		where 1 = 1
+		<if test="id != null and id != null">
+		and a.id = #{id}
+		</if>
+		<if test="rId != null and rId != null">
+		and a.rId = #{rId}
+		</if>
+		<if test="listNo != null and listNo != null">
+		and b.listNo = #{listNo}
+		</if>
+		<if test="packingId != null and packingId != null">
+		and a.packingId = #{packingId}
+		</if>
+		<if test="code != null and code != null">
+		and a.code = #{code}
+		</if>
+	</select>
+
+	<!-- 新增D -->
+	<insert id="addD">
+		insert into c_qh_wms_sales_return_receipt_d_t(packingId,code,packingNumber,number,rId)
+		value(#{packingId},#{code},#{packingNumber},#{number},#{rId})
+	</insert>
+
+	<!-- 更新D -->
+	<update id="updateD">
+		update c_qh_wms_sales_return_receipt_d_t
+		<trim prefix="set" suffixOverrides=",">
+			<if test="packingId != null and packingId != ''">
+				packingId = #{packingId},
+			</if>
+			<if test="code != null and code != ''">
+				code = #{code},
+			</if>
+			<if test="packingNumber != null and packingNumber != ''">
+				packingNumber = #{packingNumber},
+			</if>
+			<if test="number != null and number != ''">
+				number = #{number},
+			</if>
+		</trim>
+		where id = #{id}
+	</update>
+
+	<!-- 删除D -->
+	<delete id="deleteD">
+		delete from c_qh_wms_sales_return_receipt_d_t
+		where id = #{id}
+	</delete>
+
+	<!-- 通过行id删除D -->
+	<delete id="deleteDByRId">
+		delete from c_qh_wms_sales_return_receipt_d_t
+		where rId = #{rId}
+	</delete>
+
+	<!-- 查询销售退货单 -->
+	<select id="findSalesReturn" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			id,
+			orderNumber,
+			orderType,
+			contractNo,
+			customerNumber,
+			deliveryParty,
+			payer,
+			founder,
+			creationTime,
+			`status`,
+			customerPONumber,
+			reviser,
+			revisionTime,
+			salesOrganization,
+			companyCode
+		FROM
+			c_sd_sales_order_h
+		where 1 = 1
+		<if test="orderNumber != null and orderNumber !=''">
+		and orderNumber like '%${orderNumber}%'
+		</if>
+		<if test="contractNo != null and contractNo !=''">
+		and contractNo like '%${contractNo}%'
+		</if>
+		<if test="customerNumber != null and customerNumber !=''">
+		and customerNumber like '%${customerNumber}%'
+		</if>
+		<if test="founder != null and founder !=''">
+		and founder like '%${founder}%'
+		</if>
+	</select>
+
+	<!-- 通过单件码或者包装id查询最进一次库存交易记录 -->
+	<select id="queryInventoryTransactions" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.*,
+			b.MATERIAL_NAME as materialName,
+			b.BOM_ID as materialNo,
+			b.STOCK_UNIT as unit
+		FROM
+			c_qh_wms_inventory_transaction_t a
+			JOIN c_mes_jl_material_t b ON a.itemNo = b.BOM_ID
+		where a.transactionType = '031'
+		<if test="packageId != null and packageId !=''">
+			and a.packageId = #{packageId}
+		</if>
+		<if test="unitCode != null and unitCode !=''">
+			and a.unitCode = #{unitCode}
+		</if>
+		ORDER BY a.dt desc limit 0,1
+	</select>
+
+	<!-- 通过订单号查询销售订单 -->
+	<select id="findSalesOrderByOrderNumber" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.*,
+			b.BOM_ID AS materialNo 
+		FROM
+			c_sd_sales_order_r a
+			JOIN c_mes_jl_material_t b ON a.materialCode = b.BOM_ID
+		where a.orderNumber = #{orderNumber}
+	</select>
+
+	<!-- 查询过账数量 -->
+	<select id="queryPostingQuantity" resultType="int">
+		SELECT
+			ifnull( sum( number ), 0 ) AS number
+		FROM
+			c_qh_wms_sales_return_receipt_r_t a
+			JOIN c_qh_wms_sales_return_receipt_h_t b ON a.listNo = b.listNo
+		WHERE
+			b.`status` = '过账'
+			AND b.salesReturnListNo = #{salesReturnListNo}
+			AND a.materialNo = #{materialNo}
+	</select>
+
+	<!-- 查询需要过账的详细信息 -->
+	<select id="queryTheDetailsToBePosted" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.*,
+			d.id AS materialId,
+			b.unit,
+			c.receivingFactoryId,
+			c.receivingLocationId,
+			c.salesReturnListNo,
+			c.customerId,
+			c.establishUserId,
+			c.establishDt,
+			c.receivingUserId,
+			c.receivingDt,
+			c.`status`,
+			c.dis,
+			d.MATERIAL_NAME AS materialName,
+			d.BOM_ID AS materialNo 
+		FROM
+			c_qh_wms_sales_return_receipt_d_t a
+			JOIN c_qh_wms_sales_return_receipt_r_t b ON a.rId = b.id
+			JOIN c_qh_wms_sales_return_receipt_h_t c ON b.listNo = c.listNo
+			JOIN c_mes_jl_material_t d ON b.materialNo = d.BOM_ID 
+		WHERE
+			c.viewMode = 1
+			AND c.listNo = #{listNo}
+	</select>
+
+	<!-- type：实体类 id：在resultMap引用-->
+	<resultMap type="com.alibaba.fastjson.JSONObject" id="rdMap">
+		<!-- column：数据库查询出来的列  property：实体类属性的值 -->
+		<result column="id" property="id"/>
+		<result column="listNo" property="listNo"/>
+		<result column="materialId" property="materialId"/>
+		<result column="number" property="number"/>
+		<result column="unit" property="unit"/>
+		<result column="materialName" property="materialName"/>
+		<result column="materialNo" property="materialNo"/>
+		<!-- collection：一对多  property：实体类里的 ofType：实体类 -->
+		<collection property="d" javaType="list" ofType="com.alibaba.fastjson.JSONObject">
+			<result column="dId" property="id"/>
+			<result column="packingId" property="packingId"/>
+			<result column="code" property="code"/>
+			<result column="packingNumber" property="packingNumber"/>
+			<result column="num" property="number"/>
+		</collection>
+	</resultMap>
+	<!-- 查询R跟D表数据 -->
+	<select id="findRAndD" resultMap="rdMap">
+		SELECT
+			a.id,
+			a.listNo,
+			c.id AS materialId,
+			a.number,
+			a.unit,
+			b.id AS dId,
+			b.packingId,
+			b.`code`,
+			b.packingNumber,
+			b.number AS num,
+			b.rId,
+			c.MATERIAL_NAME AS materialName,
+			c.BOM_ID AS materialNo 
+		FROM
+			c_qh_wms_sales_return_receipt_r_t a
+			LEFT JOIN c_qh_wms_sales_return_receipt_d_t b ON a.id = b.rId
+			JOIN c_mes_jl_material_t c ON a.materialNo = c.BOM_ID
+		WHERE
+			a.listNo = #{listNo}
+	</select>
+
+</mapper>

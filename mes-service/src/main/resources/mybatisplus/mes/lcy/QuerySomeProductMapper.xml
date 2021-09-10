@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.lcy.QuerySomeProductMapper">
+
+<!-- 查询显示数据列名 -->
+	<select id="queryAllReportList" resultType="CMesTableColumnsReportT">
+	 select tt.id,tt.table_columns_name,tt.show_columns_name,
+    tt.table_report_id,tt.show_flag
+    from C_MES_TABLE_COLUMNS_REPORT_T tt
+    where tt.table_report_id=#{id}
+	</select>
+
+	<!-- 查询显示数据表名 -->
+	<select id="queryAllReport" resultType="CMesTableReportT">
+		select tt.id,tt.table_name,tt.show_name from C_MES_TABLE_REPORT_T tt
+	</select>
+
+
+
+	<!-- 查询表名 -->
+	<select id="queryTableName" resultType="CMesTableReportT">
+	select tt.id,tt.table_name,tt.show_name from C_MES_TABLE_REPORT_T tt
+	where tt.id =#{id}
+	</select>
+
+
+
+
+	<select id="getQueryProductList" resultType="QueryProduct">
+		${string}
+		 <if test="queryStartDate!= null and queryStartDate!=''">
+          and dt>=#{queryStartDate}
+      	</if>
+      	<if test="queryEndDate != null and queryEndDate!=''">
+       		<![CDATA[and dt <= #{queryEndDate}]]>
+      	</if>
+      	 order by st
+	</select>
+
+
+
+
+
+</mapper>

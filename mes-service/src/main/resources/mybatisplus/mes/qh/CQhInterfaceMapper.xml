@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.qh.CQhInterfaceDao">
+
+	<!-- 新增接口 -->
+	<insert id="addInterface">
+		INSERT INTO c_qh_interface(authority_interface_id,InterfaceAddress,`describe`)
+		value(#{authorityInterfaceId},#{InterfaceAddress},#{describe})
+	</insert>
+
+	<!-- 删除接口 -->
+	<delete id="deleteInterface">
+		DELETE from c_qh_interface
+		where id = #{id}
+	</delete>
+
+	<!-- 更新接口 -->
+	<update id="updateInterface">
+		update c_qh_interface
+		set
+		InterfaceAddress = #{InterfaceAddress},
+		`describe` = #{describe}
+		where id = #{id}
+	</update>
+
+</mapper>

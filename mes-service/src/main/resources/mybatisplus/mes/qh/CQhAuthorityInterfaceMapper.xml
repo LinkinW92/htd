@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.qh.CQhAuthorityInterfaceDao">
+
+	<!-- 手动映射 -->
+	<resultMap type="com.alibaba.fastjson.JSONObject" id="authorityInterfaceMap">
+		<id column="id" property="id" />
+		<result column="path" property="path" />
+		<result column="menu_id" property="menuId" />
+		<result column="operation_type" property="operationType" />
+		<result column="operation_type_code" property="operationTypeCode" />
+		<result column="describe" property="describe" />
+		<association property="menuT" javaType="com.skeqi.mes.pojo.qh.CQhMenuT">
+			<result column="menu_id" property="id"/>
+			<result column="menu_name" property="menuName"/>
+		</association>
+		<collection property="children" javaType="list" ofType="com.alibaba.fastjson.JSONObject">
+			<result column="interfaceId" property="id" />
+			<result column="InterfaceAddress" property="path" />
+			<result column="InterfaceDescribe" property="describe" />
+		</collection>
+	</resultMap>
+
+	<!-- 查询模块接口集合 -->
+	<select id="queryAuthorityInterfaceList" resultMap="authorityInterfaceMap">
+		SELECT
+			a.id,
+			a.path,
+			a.menu_id,
+			a.operation_type,
+			a.operation_type_code,
+			a.`describe`,
+			b.menu_name,
+			c.InterfaceAddress,
+			c.`describe` as InterfaceDescribe,
+			c.id as interfaceId
+		FROM
+			c_qh_authority_interface a
+			JOIN c_qh_menu b ON a.menu_id = b.id
+			left join c_qh_interface c on a.id = c.authority_interface_id
+			<where>
+				<if test="menuId != null and menuId != ''">
+					a.menu_id = #{menuId}
+				</if>
+				<if test="operationType != null and operationType != ''">
+					a.operation_type = #{operationType}
+				</if>
+				<if test="path != null and path != ''">
+					a.path = #{path}
+				</if>
+				<if test="describe != null and describe != ''">
+					a.describe like '%${describe}%'
+				</if>
+			</where>
+		ORDER BY a.id
+	</select>
+
+	<!-- 通过上级id查询菜单 -->
+	<select id="findMenuBySuperiorMenuIdList" resultType="com.skeqi.mes.pojo.qh.CQhMenuT">
+		SELECT
+			id,
+			menu_grade,
+			superior_menu_id,
+			menu_name
+		FROM
+			c_qh_menu
+		where
+			superior_menu_id = #{superiorMenuId}
+	</select>
+
+	<!-- 新增模块接口 -->
+	<insert id="addAuthorityInterface">
+		INSERT into c_qh_authority_interface(path,menu_id,operation_type,operation_type_code,`describe`)
+		value(#{path},#{menuId},#{operationType},#{operationTypeCode},#{describe})
+	</insert>
+
+	<!-- 更新模块接口 -->
+	<update id="updateAuthorityInterface">
+		update c_qh_authority_interface
+		set
+		path = #{path},
+		operation_type = #{operationType},
+		operation_type_code = #{operationTypeCode},
+		`describe` = #{describe}
+		where id = #{id}
+	</update>
+
+	<!-- 删除模块接口 -->
+	<delete id="deleteAuthorityInterface">
+		delete from c_qh_authority_interface
+		where id = #{id}
+	</delete>
+
+	<!-- 查询所有菜单 -->
+	<select id="findMenuAll" resultType="com.skeqi.mes.pojo.qh.CQhMenuT">
+		select b.id,b.menu_name from c_qh_authority_interface a
+		join c_qh_menu b on a.menu_id = b.id
+		GROUP BY b.id
+	</select>
+
+</mapper>

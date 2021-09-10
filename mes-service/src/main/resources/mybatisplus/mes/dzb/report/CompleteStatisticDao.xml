@@ -1,0 +1,46 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.dzb.report.CompleteStatisticDao">
+
+    <!-- 查询全部产线 EquipmentUseDao-->
+    <select id="listLine" resultType="java.util.Map">
+    select id,name from c_mes_line_t
+    </select>
+
+   <select id="listStationPass" resultType="java.lang.Integer">
+       select (select count(sn)
+        from p_mes_station_pass_t msp
+        where msp.st = ms.STATION_NAME
+        and PASS_FLAG=2
+        and TO_DAYS(DT) =  TO_DAYS(#{date}) ) count
+        from c_mes_station_t ms
+        where ms.line_Id = #{lineId}
+   </select>
+
+    <select id="listStation" resultType="java.lang.String">
+       select ms.STATION_NAME
+        from c_mes_station_t ms
+        where ms.line_Id = #{lineId}
+   </select>
+    <select id="list1" resultType="java.util.Map">
+        <![CDATA[
+        select to_days(msp.dt) days,  ms.STATION_NAME st,count(sn) count
+        FROM c_mes_station_t ms left join (select * from p_mes_station_pass_t where  TO_DAYS(DT) > TO_DAYS(#{date})-${dayNum} and
+        TO_DAYS(DT) <= TO_DAYS(#{date}) and PASS_FLAG=2) msp on
+        msp.st = ms.STATION_NAME
+        WHERE ms.line_Id = #{lineId}     group by  to_days(msp.dt),ms.STATION_NAME;
+        ]]>
+    </select>
+    <select id="listStationPass2" resultType="java.util.Map">
+        <![CDATA[
+        select to_days(t2.dt) days, t2.st,count(sn) count from
+        (select * FROM p_mes_station_pass_t WHERE DT >= #{start} and DT <= #{end} and PASS_FLAG=2) t2 INNER JOIN
+        (select STATION_NAME from c_mes_station_t where line_id = #{lineId}) t1
+        on t1.STATION_NAME = t2.st
+        group by days, t2.st
+        ]]>
+    </select>
+</mapper>
+
+
+

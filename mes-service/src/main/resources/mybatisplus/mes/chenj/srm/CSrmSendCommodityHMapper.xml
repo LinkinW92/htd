@@ -1,0 +1,668 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.chenj.srm.CSrmSendCommodityHMapper">
+    <resultMap id="BaseResultMap" type="com.skeqi.mes.pojo.chenj.srm.CSrmSendCommodityH">
+        <!--@mbg.generated-->
+        <!--@Table c_srm_send_commodity_h-->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="delivery_number" jdbcType="VARCHAR" property="deliveryNumber"/>
+        <result column="type_of_delivery_note" jdbcType="VARCHAR" property="typeOfDeliveryNote"/>
+        <result column="delivery_date" jdbcType="TIMESTAMP" property="deliveryDate"/>
+        <result column="expected_date_of_arrival" jdbcType="TIMESTAMP" property="expectedDateOfArrival"/>
+        <result column="place_of_receipt" jdbcType="VARCHAR" property="placeOfReceipt"/>
+        <result column="point_of_departure" jdbcType="VARCHAR" property="pointOfDeparture"/>
+        <result column="receiving_organization" jdbcType="VARCHAR" property="receivingOrganization"/>
+        <result column="client" jdbcType="VARCHAR" property="client"/>
+        <result column="consignee" jdbcType="VARCHAR" property="consignee"/>
+        <result column="supplier_code" jdbcType="VARCHAR" property="supplierCode"/>
+        <result column="creator" jdbcType="VARCHAR" property="creator"/>
+        <result column="status" jdbcType="VARCHAR" property="status"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="tracking_number" jdbcType="VARCHAR" property="trackingNumber"/>
+        <result column="logistics_company_information" jdbcType="VARCHAR" property="logisticsCompanyInformation"/>
+        <result column="contact_way" jdbcType="VARCHAR" property="contactWay"/>
+        <result column="shipping_method" jdbcType="INTEGER" property="shippingMethod"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        id, delivery_number, type_of_delivery_note, delivery_date, expected_date_of_arrival,
+        place_of_receipt, point_of_departure, receiving_organization, client, consignee,
+        supplier_code, creator, `status`, create_time,
+        update_time,tracking_number,logistics_company_information,contact_way,shipping_method
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmSendCommodityH"
+            resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        select
+        <include refid="Base_Column_List"/>
+        from c_srm_send_commodity_h
+        <where>
+            <if test="deliveryNumber != null and deliveryNumber != ''">
+                delivery_number=#{deliveryNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="id != null">
+                and id=#{id,jdbcType=INTEGER}
+            </if>
+
+        </where>
+    </select>
+
+    <select id="selectByPrimaryList" resultType="com.skeqi.mes.pojo.chenj.srm.req.CSrmSendCommodityHRsp">
+        SELECT
+        h.delivery_number, h.type_of_delivery_note, h.delivery_date, h.expected_date_of_arrival,
+        h.place_of_receipt, h.point_of_departure, h.receiving_organization, t.factoryName receivingOrganizationName
+        ,h.client,
+        h.supplier_code, s.name supplierName,h.creator,
+        h.`status`,h.create_time,h.update_time,h.tracking_number,h.logistics_company_information,h.contact_way,h.shipping_method
+        FROM c_srm_send_commodity_h h
+        LEFT JOIN c_srm_supplier s ON s.supplier_code=h.supplier_code
+        LEFT JOIN c_mes_factory_t t ON t.factoryCode=h.receiving_organization
+        <where>
+            <if test="deliveryNumber != null and deliveryNumber != ''">
+                h.delivery_number like concat('%',#{deliveryNumber,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="supplierCode != null and supplierCode != ''">
+                and h.supplier_code like concat('%',#{supplierCode,jdbcType=VARCHAR},'%')
+            </if>
+            and h.is_delete=0
+        </where>
+        group by h.delivery_number
+        order by h.create_time desc
+    </select>
+    <insert id="insertSelective"
+            parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmSendCommodityH"
+    >
+        <!--@mbg.generated-->
+        insert into c_srm_send_commodity_h
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deliveryNumber != null">
+                delivery_number,
+            </if>
+            <if test="typeOfDeliveryNote != null">
+                type_of_delivery_note,
+            </if>
+            <if test="deliveryDate != null">
+                delivery_date,
+            </if>
+            <if test="expectedDateOfArrival != null">
+                expected_date_of_arrival,
+            </if>
+            <if test="placeOfReceipt != null">
+                place_of_receipt,
+            </if>
+            <if test="pointOfDeparture != null">
+                point_of_departure,
+            </if>
+            <if test="receivingOrganization != null">
+                receiving_organization,
+            </if>
+            <if test="client != null">
+                client,
+            </if>
+            <if test="consignee != null">
+                consignee,
+            </if>
+            <if test="supplierCode != null">
+                supplier_code,
+            </if>
+            <if test="creator != null">
+                creator,
+            </if>
+            <if test="status != null">
+                `status`,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="trackingNumber != null">
+                tracking_number,
+            </if>
+            <if test="logisticsCompanyInformation != null">
+                logistics_company_information,
+            </if>
+            <if test="contactWay != null">
+                contact_way,
+            </if>
+            <if test="shippingMethod != null">
+                shipping_method,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="deliveryNumber != null">
+                #{deliveryNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="typeOfDeliveryNote != null">
+                #{typeOfDeliveryNote,jdbcType=VARCHAR},
+            </if>
+            <if test="deliveryDate != null">
+                #{deliveryDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="expectedDateOfArrival != null">
+                #{expectedDateOfArrival,jdbcType=TIMESTAMP},
+            </if>
+            <if test="placeOfReceipt != null">
+                #{placeOfReceipt,jdbcType=VARCHAR},
+            </if>
+            <if test="pointOfDeparture != null">
+                #{pointOfDeparture,jdbcType=VARCHAR},
+            </if>
+            <if test="receivingOrganization != null">
+                #{receivingOrganization,jdbcType=VARCHAR},
+            </if>
+            <if test="client != null">
+                #{client,jdbcType=VARCHAR},
+            </if>
+            <if test="consignee != null">
+                #{consignee,jdbcType=VARCHAR},
+            </if>
+            <if test="supplierCode != null">
+                #{supplierCode,jdbcType=VARCHAR},
+            </if>
+            <if test="creator != null">
+                #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="trackingNumber != null">
+                #{trackingNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="logisticsCompanyInformation != null">
+                #{logisticsCompanyInformation,jdbcType=VARCHAR},
+            </if>
+            <if test="contactWay != null">
+                #{contactWay,jdbcType=VARCHAR},
+            </if>
+            <if test="shippingMethod != null">
+                #{shippingMethod,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmSendCommodityH">
+        <!--@mbg.generated-->
+        update c_srm_send_commodity_h
+        <set>
+            <if test="typeOfDeliveryNote != null">
+                type_of_delivery_note = #{typeOfDeliveryNote,jdbcType=VARCHAR},
+            </if>
+            <if test="deliveryDate != null">
+                delivery_date = #{deliveryDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="expectedDateOfArrival != null">
+                expected_date_of_arrival = #{expectedDateOfArrival,jdbcType=TIMESTAMP},
+            </if>
+            <if test="placeOfReceipt != null">
+                place_of_receipt = #{placeOfReceipt,jdbcType=VARCHAR},
+            </if>
+            <if test="pointOfDeparture != null">
+                point_of_departure = #{pointOfDeparture,jdbcType=VARCHAR},
+            </if>
+            <if test="receivingOrganization != null">
+                receiving_organization = #{receivingOrganization,jdbcType=VARCHAR},
+            </if>
+            <if test="client != null">
+                client = #{client,jdbcType=VARCHAR},
+            </if>
+            <if test="consignee != null">
+                consignee = #{consignee,jdbcType=VARCHAR},
+            </if>
+            <if test="consigneeName != null">
+                consignee_name = #{consigneeName,jdbcType=VARCHAR},
+            </if>
+            <if test="supplierCode != null">
+                supplier_code = #{supplierCode,jdbcType=VARCHAR},
+            </if>
+            <if test="creator != null">
+                creator = #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                `status` = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="isOpenTicket != null">
+                `is_open_ticket` = #{isOpenTicket,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="receivingGoodsDt != null">
+                receivingGoodsDt = #{receivingGoodsDt,jdbcType=TIMESTAMP},
+            </if>
+            <if test="trackingNumber != null">
+                tracking_number= #{trackingNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="logisticsCompanyInformation != null">
+                logistics_company_information= #{logisticsCompanyInformation,jdbcType=VARCHAR},
+            </if>
+            <if test="contactWay != null">
+                contact_way= #{contactWay,jdbcType=VARCHAR},
+            </if>
+            <if test="shippingMethod != null">
+                shipping_method= #{shippingMethod,jdbcType=INTEGER},
+            </if>
+            <if test="isDelete != null">
+                is_delete=#{isDelete,jdbcType=BOOLEAN},
+            </if>
+        </set>
+        <where>
+            <if test="deliveryNumber != null">
+                delivery_number = #{deliveryNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="id != null">
+                and id=#{id,jdbcType=INTEGER}
+            </if>
+        </where>
+    </update>
+    <update id="updateBatchSelective" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update c_srm_send_commodity_h
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="delivery_number = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.deliveryNumber != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.deliveryNumber,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="type_of_delivery_note = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.typeOfDeliveryNote != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.typeOfDeliveryNote,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delivery_date = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.deliveryDate != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.deliveryDate,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="expected_date_of_arrival = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.expectedDateOfArrival != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.expectedDateOfArrival,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="place_of_receipt = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.placeOfReceipt != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.placeOfReceipt,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="point_of_departure = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.pointOfDeparture != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.pointOfDeparture,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="receiving_organization = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.receivingOrganization != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.receivingOrganization,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="client = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.client != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.client,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="consignee = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.consignee != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.consignee,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="supplier = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.supplierCode != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.supplierCode,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="creator = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.creator != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.creator,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="`status` = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.status != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.status,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.createTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.createTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.updateTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.updateTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    <insert id="insertOrUpdate" keyColumn="id" keyProperty="id"
+            parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmSendCommodityH"
+            useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_send_commodity_h
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            delivery_number,
+            type_of_delivery_note,
+            delivery_date,
+            expected_date_of_arrival,
+            place_of_receipt,
+            point_of_departure,
+            receiving_organization,
+            client,
+            consignee,
+            supplier_code,
+            creator,
+            `status`,
+            create_time,
+            update_time,
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            #{deliveryNumber,jdbcType=VARCHAR},
+            #{typeOfDeliveryNote,jdbcType=VARCHAR},
+            #{deliveryDate,jdbcType=TIMESTAMP},
+            #{expectedDateOfArrival,jdbcType=TIMESTAMP},
+            #{placeOfReceipt,jdbcType=VARCHAR},
+            #{pointOfDeparture,jdbcType=VARCHAR},
+            #{receivingOrganization,jdbcType=VARCHAR},
+            #{client,jdbcType=VARCHAR},
+            #{consignee,jdbcType=VARCHAR},
+            #{supplierCode,jdbcType=VARCHAR},
+            #{creator,jdbcType=VARCHAR},
+            #{status,jdbcType=VARCHAR},
+            #{createTime,jdbcType=TIMESTAMP},
+            #{updateTime,jdbcType=TIMESTAMP},
+        </trim>
+        on duplicate key update
+        <trim suffixOverrides=",">
+            <if test="id != null">
+                id = #{id,jdbcType=INTEGER},
+            </if>
+            delivery_number = #{deliveryNumber,jdbcType=VARCHAR},
+            type_of_delivery_note = #{typeOfDeliveryNote,jdbcType=VARCHAR},
+            delivery_date = #{deliveryDate,jdbcType=TIMESTAMP},
+            expected_date_of_arrival = #{expectedDateOfArrival,jdbcType=TIMESTAMP},
+            place_of_receipt = #{placeOfReceipt,jdbcType=VARCHAR},
+            point_of_departure = #{pointOfDeparture,jdbcType=VARCHAR},
+            receiving_organization = #{receivingOrganization,jdbcType=VARCHAR},
+            client = #{client,jdbcType=VARCHAR},
+            consignee = #{consignee,jdbcType=VARCHAR},
+            supplier_code = #{supplierCode,jdbcType=VARCHAR},
+            creator = #{creator,jdbcType=VARCHAR},
+            `status` = #{status,jdbcType=VARCHAR},
+            create_time = #{createTime,jdbcType=TIMESTAMP},
+            update_time = #{updateTime,jdbcType=TIMESTAMP},
+        </trim>
+    </insert>
+    <insert id="insertOrUpdateSelective" keyColumn="id" keyProperty="id"
+            parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmSendCommodityH" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_send_commodity_h
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="deliveryNumber != null">
+                delivery_number,
+            </if>
+            <if test="typeOfDeliveryNote != null">
+                type_of_delivery_note,
+            </if>
+            <if test="deliveryDate != null">
+                delivery_date,
+            </if>
+            <if test="expectedDateOfArrival != null">
+                expected_date_of_arrival,
+            </if>
+            <if test="placeOfReceipt != null">
+                place_of_receipt,
+            </if>
+            <if test="pointOfDeparture != null">
+                point_of_departure,
+            </if>
+            <if test="receivingOrganization != null">
+                receiving_organization,
+            </if>
+            <if test="client != null">
+                client,
+            </if>
+            <if test="consignee != null">
+                consignee,
+            </if>
+            <if test="supplierCode != null">
+                supplier_code,
+            </if>
+            <if test="creator != null">
+                creator,
+            </if>
+            <if test="status != null">
+                `status`,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="deliveryNumber != null">
+                #{deliveryNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="typeOfDeliveryNote != null">
+                #{typeOfDeliveryNote,jdbcType=VARCHAR},
+            </if>
+            <if test="deliveryDate != null">
+                #{deliveryDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="expectedDateOfArrival != null">
+                #{expectedDateOfArrival,jdbcType=TIMESTAMP},
+            </if>
+            <if test="placeOfReceipt != null">
+                #{placeOfReceipt,jdbcType=VARCHAR},
+            </if>
+            <if test="pointOfDeparture != null">
+                #{pointOfDeparture,jdbcType=VARCHAR},
+            </if>
+            <if test="receivingOrganization != null">
+                #{receivingOrganization,jdbcType=VARCHAR},
+            </if>
+            <if test="client != null">
+                #{client,jdbcType=VARCHAR},
+            </if>
+            <if test="consignee != null">
+                #{consignee,jdbcType=VARCHAR},
+            </if>
+            <if test="supplierCode != null">
+                #{supplierCode,jdbcType=VARCHAR},
+            </if>
+            <if test="creator != null">
+                #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+        on duplicate key update
+        <trim suffixOverrides=",">
+            <if test="id != null">
+                id = #{id,jdbcType=INTEGER},
+            </if>
+            <if test="deliveryNumber != null">
+                delivery_number = #{deliveryNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="typeOfDeliveryNote != null">
+                type_of_delivery_note = #{typeOfDeliveryNote,jdbcType=VARCHAR},
+            </if>
+            <if test="deliveryDate != null">
+                delivery_date = #{deliveryDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="expectedDateOfArrival != null">
+                expected_date_of_arrival = #{expectedDateOfArrival,jdbcType=TIMESTAMP},
+            </if>
+            <if test="placeOfReceipt != null">
+                place_of_receipt = #{placeOfReceipt,jdbcType=VARCHAR},
+            </if>
+            <if test="pointOfDeparture != null">
+                point_of_departure = #{pointOfDeparture,jdbcType=VARCHAR},
+            </if>
+            <if test="receivingOrganization != null">
+                receiving_organization = #{receivingOrganization,jdbcType=VARCHAR},
+            </if>
+            <if test="client != null">
+                client = #{client,jdbcType=VARCHAR},
+            </if>
+            <if test="consignee != null">
+                consignee = #{consignee,jdbcType=VARCHAR},
+            </if>
+            <if test="supplierCode != null">
+                supplier_code = #{supplierCode,jdbcType=VARCHAR},
+            </if>
+            <if test="creator != null">
+                creator = #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                `status` = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <!--获取最后一条数据-->
+    <select id="selectFinallyData" resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        SELECT
+        delivery_number
+        FROM
+        c_srm_send_commodity_h
+        where delivery_number like concat('ASN2','%')
+        ORDER BY
+        id DESC
+        LIMIT 1
+    </select>
+    <select id="selectByPrimaryListData" resultType="com.skeqi.mes.pojo.chenj.srm.CSrmSendCommodityH">
+
+        select
+        delivery_number, type_of_delivery_note, delivery_date, expected_date_of_arrival,
+        place_of_receipt, point_of_departure, receiving_organization, client,
+        supplier_code, creator, `status`, create_time, update_time
+        from c_srm_send_commodity_h
+        <where>
+            <if test="deliveryNumber != null and deliveryNumber != ''">
+                delivery_number=#{deliveryNumber,jdbcType=VARCHAR}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+    <select id="selectByPrimaryListDataS" resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CSrmSendCommodityHRspD">
+        select
+        h.delivery_number, h.type_of_delivery_note, h.delivery_date, h.expected_date_of_arrival,
+        h.place_of_receipt, h.point_of_departure, h.receiving_organization,t.factoryName receivingOrganizationName,
+        h.client,
+        h.supplier_code,s.name supplierName, h.creator, h.`status`, h.create_time,
+        h.update_time,h.tracking_number,h.logistics_company_information,h.contact_way,h.shipping_method
+        from c_srm_send_commodity_h h
+        LEFT JOIN c_srm_supplier s ON s.supplier_code=h.supplier_code
+        LEFT JOIN c_mes_factory_t t ON t.factoryCode=h.receiving_organization
+        <where>
+            <if test="deliveryNumber != null and deliveryNumber != ''">
+                h.delivery_number like concat('%',#{deliveryNumber,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="supplierCode != null and supplierCode != ''">
+                and h.supplier_code like concat('%',#{supplierCode,jdbcType=VARCHAR},'%')
+            </if>
+            and h.is_delete=0
+        </where>
+        group by h.delivery_number
+        order by h.create_time desc
+    </select>
+    <select id="selectByPrimaryDevStatus" resultType="com.skeqi.mes.pojo.chenj.srm.CSrmSendCommodityH">
+        SELECT
+        h.delivery_number,r.purchase_order_no,h.`status` status
+        FROM c_srm_send_commodity_h h
+        LEFT JOIN c_srm_send_commodity_r r ON h.delivery_number = r.delivery_number
+        <where>
+            <if test="deliveryNumber != null and deliveryNumber != ''">
+                h.delivery_number=#{deliveryNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="orderNumber != null and orderNumber != ''">
+                and r.purchase_order_no=#{orderNumber,jdbcType=VARCHAR}
+            </if>
+        </where>
+        GROUP BY r.purchase_order_no and h.delivery_number
+        order by h.create_time desc
+    </select>
+
+
+    <update id="updateBatchSelectiveSuccessStatus" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update c_srm_send_commodity_h
+        set `status`='5'
+        where delivery_number in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.deliveryNumber,jdbcType=VARCHAR}
+        </foreach>
+        and is_delete=0
+    </update>
+
+
+</mapper>

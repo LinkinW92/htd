@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.basicinformation.voucher.TGlVoucherMapper">
+
+    <resultMap type="com.skeqi.finance.domain.voucher.TGlVoucher" id="TGlVoucherResult">
+        <result property="fVoucherId" column="f_voucher_id"/>
+        <result property="fAccountBookId" column="f_account_book_id"/>
+        <result property="fAcctOrgid" column="f_acct_orgid"/>
+        <result property="fDate" column="f_date"/>
+        <result property="fBusDate" column="f_bus_date"/>
+        <result property="fYear" column="f_year"/>
+        <result property="fPeriod" column="f_period"/>
+        <result property="fBillNo" column="f_bill_no"/>
+        <result property="fVoucherGroupId" column="f_voucher_group_id"/>
+        <result property="fVoucherGroupNo" column="f_voucher_group_no"/>
+        <result property="fAttachments" column="f_attachments"/>
+        <result property="fInternalind" column="f_internalind"/>
+        <result property="fReference" column="f_reference"/>
+        <result property="fSettleTypeId" column="f_settle_type_id"/>
+        <result property="fSettleNo" column="f_settle_no"/>
+        <result property="fBaseCurrencyId" column="f_base_currency_id"/>
+        <result property="fDebitTotal" column="f_debit_total"/>
+        <result property="fCreditTotal" column="f_credit_total"/>
+        <result property="fCashierId" column="f_cashier_id"/>
+        <result property="fCreatorid" column="f_creatorid"/>
+        <result property="fCreateDate" column="f_create_date"/>
+        <result property="fModifierid" column="f_modifierid"/>
+        <result property="fModifyDate" column="f_modify_date"/>
+        <result property="fDocumentStatus" column="f_document_status"/>
+        <result property="fChecked" column="f_checked"/>
+        <result property="fCheckerId" column="f_checker_id"/>
+        <result property="fAuditDate" column="f_audit_date"/>
+        <result property="fPosted" column="f_posted"/>
+        <result property="fPosterId" column="f_poster_id"/>
+        <result property="fPostDate" column="f_post_date"/>
+        <result property="fAdjustPeriod" column="f_adjust_period"/>
+        <result property="fInvalid" column="f_invalid"/>
+        <result property="fInvaliderId" column="f_invalider_id"/>
+        <result property="fMapvchId" column="f_mapvch_id"/>
+        <result property="fSourceBillKey" column="f_source_bill_key"/>
+        <result property="fIsadjustVoucher" column="f_isadjust_voucher"/>
+        <result property="fSystemId" column="f_system_id"/>
+        <result property="fIscashFlow" column="f_iscash_flow"/>
+        <result property="fIssplit" column="f_issplit"/>
+        <result property="fIsvirPost" column="f_isvir_post"/>
+        <result property="fPrintTimes" column="f_print_times"/>
+    </resultMap>
+
+    <select id="getInfoById" resultType="com.skeqi.finance.pojo.vo.voucher.VoucherVo">
+        SELECT
+            v.*,
+            b.f_book_name,
+             b.f_accttable_id as f_accttable_id,
+             b.f_number as f_book_number,
+            o.`name` as org_name,
+            vg.f_voucher_words,
+             u1.user_name as f_creator_name,
+            u2.user_name as f_checker_name,
+            u3.user_name as f_poster_name
+        FROM
+            (
+            SELECT
+                v.f_voucher_id,
+                v.f_account_book_id,
+                v.f_base_currency_id,
+                v.f_acct_orgid,
+                v.f_date,
+                v.f_bus_date,
+                v.f_period,
+                v.f_year,
+                v.f_voucher_group_id,
+                v.f_voucher_group_no,
+                v.f_creatorid,
+                v.f_checker_id,
+                v.f_poster_id,
+                v.f_checked,
+                v.f_posted,
+                v.f_cashier_id,
+                v.f_attachments
+            FROM
+                t_gl_voucher v
+            WHERE
+                v.f_voucher_id = #{id}
+            ) v
+            LEFT JOIN t_bd_account_book b ON b.f_book_id = v.f_account_book_id
+            LEFT JOIN sys_organization o ON o.id = v.f_acct_orgid
+            LEFT JOIN t_bd_voucher_group vg ON vg.f_vchgroup_id = v.f_voucher_group_id
+             LEFT JOIN sys_user u1 on u1.user_id= v.f_creatorid
+            LEFT JOIN sys_user u2 on u2.user_id= v.f_checker_id
+            LEFT JOIN sys_user u3 on u3.user_id= v.f_poster_id
+    </select>
+
+    <select id="getVoucherPage" parameterType="com.skeqi.finance.pojo.bo.voucher.TGlVoucherQueryBo" resultType="com.skeqi.finance.pojo.vo.voucher.VoucherPageVo">
+        SELECT
+            v.f_voucher_id,
+            v.f_date,
+            v.f_year,
+            v.f_period,
+            vg.f_voucher_words,
+            v.f_voucher_group_no,
+            ve.f_explanation,
+            v.f_credit_total,
+            v.f_debit_total,
+            v.f_creatorid,
+            u1.user_name as f_creator_name,
+            u2.user_name as f_checker_name,
+            u3.user_name as f_poster_name,
+            v.f_checker_id,
+            v.f_poster_id,
+            v.f_cashier_id,
+            v.f_attachments,
+            v.f_internalind,
+            v.f_document_status,
+            v.f_invalid,
+            v.f_posted,
+            v.f_iscash_flow
+        FROM
+            t_gl_voucher v
+            LEFT JOIN t_gl_voucher_entry ve ON ve.f_voucher_id=v.f_voucher_id
+            LEFT JOIN t_bd_voucher_group vg ON vg.f_vchgroup_id = v.f_voucher_group_id
+            LEFT JOIN sys_user u1 on u1.user_id= v.f_creatorid
+            LEFT JOIN sys_user u2 on u2.user_id= v.f_checker_id
+            LEFT JOIN sys_user u3 on u3.user_id= v.f_poster_id
+       <where>
+           <if test="bo.fDate!=null">
+               v.f_date =#{bo.fDate}
+           </if>
+           <if test="bo.fYear!=null">
+               and v.f_year =#{bo.fYear}
+           </if>
+           <if test="bo.fPeriod!=null">
+               and v.f_period =#{bo.fPeriod}
+           </if>
+           <if test="bo.fDocumentStatus!=null and bo.fDocumentStatus!=''">
+               and v.f_document_status =#{bo.fDocumentStatus}
+           </if>
+           <if test="bo.fVoucherGroupNo!=null">
+               and v.f_voucher_group_no =#{bo.fVoucherGroupNo}
+           </if>
+           <if test="bo.fPosted!=null">
+               and v.f_posted =#{bo.fPosted}
+           </if>
+           <if test="bo.fAccountId!=null">
+               and ve.f_account_id =#{bo.fAccountId}
+           </if>
+           <if test="bo.fInvalid!=null">
+               and v.f_invalid =#{bo.fInvalid}
+           </if>
+           <if test="bo.fAccountBookId!=null">
+               and v.f_account_book_id =#{bo.fAccountBookId}
+           </if>
+           <if test="bo.fCreatorName!=null and bo.fCreatorName!=''">
+               and u1.user_name like concat('%', #{bo.fCreatorName}, '%')
+           </if>
+           <if test="bo.fIsadjustVoucher !=null and bo.fIsadjustVoucher !=''">
+               and v.f_isadjust_voucher <![CDATA[ > ]]> 0
+           </if>
+       </where>
+        GROUP BY v.f_voucher_id
+        order by v.f_create_date desc
+    </select>
+
+    <select id="queryIncomeLossVch" parameterType="com.skeqi.finance.pojo.bo.voucher.TGlVoucherQueryBo" resultMap="TGlVoucherResult">
+        select * from t_gl_voucher v
+        <where>
+            <if test="bo.fAccountBookId!=null">
+                and v.f_account_book_id =#{bo.fAccountBookId}
+            </if>
+            <if test="bo.fYear!=null">
+                and v.f_year =#{bo.fYear}
+            </if>
+            <if test="bo.fPeriod!=null">
+                and v.f_period =#{bo.fPeriod}
+            </if>
+            <if test="bo.fSourceBillKey!=null and bo.fSourceBillKey!=''">
+                and v.f_source_bill_key =#{bo.fSourceBillKey}
+            </if>
+        </where>
+        and f_invalid=0
+    </select>
+
+    <select id="getVoucherPageCount" resultType="java.lang.Integer">
+        SELECT
+        count(DISTINCT  v.f_voucher_id)
+        FROM
+            t_gl_voucher v
+            LEFT JOIN t_gl_voucher_entry ve ON ve.f_voucher_id=v.f_voucher_id
+            LEFT JOIN t_bd_voucher_group vg ON vg.f_vchgroup_id = v.f_voucher_group_id
+            LEFT JOIN t_bd_account a ON a.f_acct_id = ve.f_account_id
+            LEFT JOIN t_bd_currency c ON c.f_currency_id= ve.f_currency_id
+        <where>
+            <if test="bo.fDate!=null">
+                v.f_date =#{bo.fDate}
+            </if>
+            <if test="bo.fYear!=null">
+                and v.f_year =#{bo.fYear}
+            </if>
+            <if test="bo.fPeriod!=null">
+                and v.f_period =#{bo.fPeriod}
+            </if>
+            <if test="bo.fDocumentStatus!=null and bo.fDocumentStatus!=''">
+                and v.f_document_status =#{bo.fDocumentStatus}
+            </if>
+            <if test="bo.fVoucherGroupNo!=null">
+                and v.f_voucher_group_no =#{bo.fVoucherGroupNo}
+            </if>
+            <if test="bo.accountNumber!=null and bo.accountNumber!=''">
+                and a.f_number =#{bo.accountNumber}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryVoucherBalance" parameterType="com.skeqi.finance.pojo.bo.voucher.VoucherBalanceBo" resultType="com.skeqi.finance.pojo.vo.voucher.VoucherBalanceVo">
+        SELECT
+        case when sum(m.f_amountfor) is null then 0 else sum(m.f_amountfor) end as f_amountfor,
+        case when sum(m.f_amount) is null then 0 else sum(m.f_amount) end as f_amount,
+        case when sum(m.f_debit) is null then 0 else sum(m.f_debit) end as f_debit,
+        case when sum(m.f_credit) is null then 0 else sum(m.f_credit) end as f_credit
+        FROM
+            (
+            SELECT
+                v.f_account_book_id,
+                v.f_year,
+                v.f_period,
+                ve.*
+            FROM
+                t_gl_voucher v
+                LEFT JOIN t_gl_voucher_entry ve ON ve.f_voucher_id = v.f_voucher_id
+               <where>
+                   <if test="bo.fVoucherId!=null">
+                       and v.f_voucher_id =#{bo.fVoucherId}
+                   </if>
+                   <if test="bo.fAccountBookId!=null">
+                      and v.f_account_book_id =#{bo.fAccountBookId}
+                   </if>
+                   <if test="bo.fYear!=null">
+                       and v.f_year =#{bo.fYear}
+                   </if>
+                   <if test="bo.fPeriod!=null">
+                       and v.f_period =#{bo.fPeriod}
+                   </if>
+                   <if test="bo.fPosted!=null and bo.fPosted!=''">
+                       and v.f_posted=#{bo.fPosted}
+                   </if>
+                   <if test="bo.fCurrencyId!=null">
+                       and ve.f_currency_id =#{bo.fCurrencyId}
+                   </if>
+                   <if test="bo.fDetailCode!=null and bo.fDetailCode!=''">
+                       and ve.f_detail_code =#{bo.fDetailCode}
+                   </if>
+                   <if test="bo.dimensionCode!=null and bo.dimensionCode!=''">
+                       and ve.dimension_code =#{bo.dimensionCode}
+                   </if>
+                   <if test="bo.fAccountId!=null">
+                       and ve.f_account_id =#{bo.fAccountId}
+                   </if>
+               </where>
+            ) m
+        GROUP BY
+            m.f_account_book_id,
+            m.f_year,
+            m.f_period,
+            m.f_currency_id,
+            m.f_detail_code,
+            m.f_account_id
+    </select>
+
+    <!--查询明细账-->
+    <select id="queryVchDetail" resultType="com.skeqi.finance.pojo.vo.voucher.BalanceDetailVo">
+        SELECT
+          v.f_voucher_id,
+            v.f_date,
+            g.f_voucher_words as f_voucher_words,
+            v.f_voucher_group_no,
+            e.f_explanation,
+            v.f_credit_total as f_credit ,
+            v.f_debit_total as f_debit
+        FROM
+            t_gl_voucher v
+        LEFT JOIN t_gl_voucher_entry e ON e.f_voucher_id = v.f_voucher_id
+            LEFT JOIN t_bd_voucher_group g ON g.f_vchgroup_id = v.f_voucher_group_id
+        <where>
+            <if test="bo.fPeriod!=null">
+                and  <![CDATA[
+                   v.f_period >= #{bo.fPeriod}
+                ]]>
+            </if>
+            <if test="bo.efPeriod!=null">
+                and  <![CDATA[
+                    v.f_period<= #{bo.efPeriod}
+                ]]>
+            </if>
+            <if test="bo.fYear!=null">
+                and  <![CDATA[
+                 v.f_year >= #{bo.fYear}
+                ]]>
+            </if>
+            <if test="bo.efYear!=null">
+                and  <![CDATA[
+                    v.f_year<= #{bo.efYear}
+                ]]>
+            </if>
+            <if test="bo.fAccountBookId!=null">
+                and  v.f_account_book_id=#{bo.fAccountBookId}
+            </if>
+            <if test="bo.fAccountId!=null">
+                and  e.f_account_id=#{bo.fAccountId}
+            </if>
+            <if test="bo.fCurrencyId!=null">
+                and  e.f_currency_id=#{bo.fCurrencyId}
+            </if>
+            <if test="bo.fDetailCode!=null and bo.fDetailCode!=''">
+                and  e.f_detail_code=#{bo.fDetailCode}
+            </if>
+            <if test="bo.fDetailCode==null and bo.fDetailCode==''">
+                and  ISNULL(e.f_detail_code)
+            </if>
+        </where>
+        GROUP BY v.f_voucher_id
+    </select>
+
+    <select id="countVchNo" resultType="java.lang.Integer">
+        select  count(*) from t_gl_voucher v where
+         v.f_account_book_id=#{bookId}  and v.f_year=#{fYear}
+         and v.f_period=#{fPeriod} and v.f_voucher_group_id=#{fVoucherGroupId} and f_voucher_group_no=#{fVoucherGroupNo}
+    </select>
+    <delete id="delVchNo">
+          delete from t_gl_voucher_group_no  where
+         f_book_id=#{bookId}  and f_year=#{fYear}
+         and f_period=#{fPeriod} and f_voucher_group_id=#{fVoucherGroupId} and f_voucher_group_no=#{fVoucherGroupNo}
+    </delete>
+
+    <!--查询调汇科目信息-->
+    <select id="queryExchangeINfo" resultType="com.skeqi.finance.pojo.vo.voucher.TGlVoucherEntryVo">
+        SELECT
+        e.*,v.f_posted as fPosted
+        FROM
+        t_gl_voucher_entry e
+        LEFT JOIN t_gl_voucher v ON v.f_voucher_id = e.f_voucher_id
+        WHERE
+        v.f_account_book_id = #{bo.fAccountBookId}
+        AND v.f_year = #{bo.fYear}
+        AND v.f_period = #{bo.fPeriod}
+        <if test="bo.fPosted!=null">
+            AND v.f_posted = #{bo.fPosted}
+        </if>
+        <if test="bo.acctList!=null">
+            AND e.f_account_id IN
+            <foreach item="item" index="index" collection="bo.acctList" open="("  close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bo.fCurrencyId!=null">
+            AND e.f_currency_id <![CDATA[ <> ]]> #{bo.fCurrencyId}
+        </if>
+
+    </select>
+
+    <select id="queryListByBook" resultType="com.skeqi.finance.domain.voucher.TGlVoucher">
+         select * from t_gl_voucher
+         where  f_account_book_id=#{bookId}  and f_year=#{year} and f_period=#{period}
+    </select>
+</mapper>

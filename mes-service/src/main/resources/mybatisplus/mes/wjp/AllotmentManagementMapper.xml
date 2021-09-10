@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.wjp.AllotmentManagementDao">
+
+	<!-- 配发查询 -->
+	<select id="findAll" resultType="CMesRecipeT">
+		SELECT ID,RECIPE_NAME,RECIPE_DISCRIPTION FROM C_MES_RECIPE_T ORDER BY ID
+	</select>
+
+	<!-- 配方清单列表 -->
+	<select id="findAllAllotment" resultType="CMesProductionRecipeT">
+		SELECT T.ID,P.PRODUCTION_NAME,R.RECIPE_NAME,S.STATION_NAME,P.PRODUCTION_DISCRIPTION
+    	FROM C_MES_PRODUCTION_T P,C_MES_RECIPE_T R,C_MES_PRODUCTION_RECIPE_T T,
+    	C_MES_STATION_T S
+    	WHERE R.ID=T.RECIPE_ID AND P.ID=T.PRODUCTION_ID AND S.ID=T.STATION_ID
+	</select>
+
+	<!-- 产品信息 -->
+	<select id="findProduction" resultType="CMesProductionT">
+		SELECT ID,PRODUCTION_NAME FROM C_MES_PRODUCTION_T
+	</select>
+
+	<!-- 产品名称不可重复 -->
+	<select id="NotRepeatable" resultType="int" parameterType="String">
+		SELECT COUNT(1) FROM C_MES_RECIPE_T WHERE RECIPE_NAME=#{recipeName}
+	</select>
+
+	<!-- 工位信息 -->
+	<select id="findStation" resultType="CMesStationT">
+		SELECT ID,STATION_NAME FROM C_MES_STATION_T
+	</select>
+
+	<!-- 根据id查詢 -->
+	<select id="findById" parameterType="int" resultType="CMesRecipeT">
+		SELECT ID,TOTAL_ID totald,RECIPE_NAME,RECIPE_DISCRIPTION FROM C_MES_RECIPE_T WHERE ID=#{id}
+	</select>
+
+	<!-- 根据id查询总配方id和配方名称 -->
+	<select id="findByIdToAndR" parameterType="CMesRecipeT" resultType="CMesRecipeT">
+		SELECT r.ID id,t.TOTAL_RECIPE_NAME totalRecipeName,r.RECIPE_NAME recipeName FROM C_MES_RECIPE_T r,c_mes_total_recipe_t  t
+		where r.TOTAL_ID=t.ID
+		and 1=1
+		<if test="id!=null and id!=0">
+		and	r.ID=#{id}
+		</if>
+		<if test="totalRecipeName!=null and totalRecipeName!=''">
+			and	t.TOTAL_RECIPE_NAME=#{totalRecipeName}
+		</if>
+		<if test="recipeName!=null and recipeName!=''">
+			and	r.RECIPE_NAME=#{recipeName}
+		</if>
+	</select>
+
+	<!-- 配方删除前判断是否解绑 -->
+	<select id="deleteAllotmentAs" resultType="int" parameterType="int">
+		SELECT COUNT(1) FROM C_MES_RECIPE_T R,C_MES_PRODUCTION_RECIPE_T P WHERE R.ID=P.RECIPE_ID AND R.ID=#{id}
+	</select>
+
+	<!-- 配方刪除 -->
+	<delete id="deleteAllotment" parameterType="int">
+		DELETE FROM C_MES_RECIPE_T WHERE ID = #{id}
+	</delete>
+
+	<!-- 配方名称和配方描述的修改 -->
+	<update id="updateAllotment" parameterType="Map">
+		UPDATE C_MES_RECIPE_T SET recipe_Name=#{recipeName},recipe_Discription=#{recipeDiscription} WHERE ID=#{id}
+	</update>
+
+	<!--工位修改  -->
+	<!-- <update id="updateStation" parameterType="CMesStationT">
+		UPDATE C_MES_STATION_T SET STATION_NAME=#{stationName,jdbcType=VARCHAR} WHERE ID=#{id,jdbcType=NUMERIC}
+	</update> -->
+
+	<!-- 产品修改 -->
+	<!-- <update id="updateProduction" parameterType="CMesProductionT">
+		UPDATE C_MES_PRODUCTION_T SET production_Name=#{productionName,jdbcType=VARCHAR} WHERE ID=#{id,jdbcType=NUMERIC}
+	</update> -->
+
+	<update id="updateproductionRecipe" parameterType="Map">
+		UPDATE C_MES_PRODUCTION_RECIPE_T SET production_ID=#{productionId},station_id=#{stationId}  WHERE recipe_id=#{recipeId}
+	</update>
+
+	<!-- 解绑信息 -->
+	<delete id="deleteUntie" parameterType="int">
+		DELETE FROM C_MES_PRODUCTION_RECIPE_T WHERE ID=#{id}
+	</delete>
+
+	<!-- 配方新增 -->
+	<insert id="addRectipe" parameterType="CMesRecipeT" keyProperty="id" useGeneratedKeys="false">
+       	 	INSERT INTO C_MES_RECIPE_T(RECIPE_NAME,RECIPE_DISCRIPTION) VALUES(#{recipeName},#{recipeDiscription})
+    </insert>
+
+
+    <select id="getMaxNumber" resultType="int">
+		SELECT MAX(ID) FROM C_MES_RECIPE_T
+	</select>
+
+    <insert id="addProRec" parameterType="CMesProductionRecipeT" keyProperty="id" useGeneratedKeys="false">
+    	 	INSERT INTO C_MES_PRODUCTION_RECIPE_T(PRODUCTION_ID,RECIPE_ID,STATION_ID)
+			VALUES(#{productionId},#{recipeId},#{stationId})
+    </insert>
+
+    <select id="productionRecipe" resultType="int">
+    	select id from C_MES_PRODUCTION_RECIPE_T where 1=1
+    	<if test="recipeId!=null">
+    		and recipe_id = #{recipeId}
+    	</if>
+    </select>
+
+    <select id="findAllAllotmentByrId" resultType="CMesProductionRecipeT">
+    	select id,production_id,recipe_id,station_id from C_MES_PRODUCTION_RECIPE_T where recipe_id = #{recipeId}
+    </select>
+</mapper>
+
+

@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.chenj.srm.CSrmFinanceMapper">
+    <resultMap id="BaseResultMap" type="com.skeqi.mes.pojo.chenj.srm.CSrmFinance">
+        <!--@mbg.generated-->
+        <!--@Table c_srm_finance-->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="year" jdbcType="VARCHAR" property="year"/>
+        <result column="total_assets" jdbcType="VARCHAR" property="totalAssets"/>
+        <result column="gross_liability" jdbcType="VARCHAR" property="grossLiability"/>
+        <result column="current_assets" jdbcType="VARCHAR" property="currentAssets"/>
+        <result column="current_liabilities" jdbcType="VARCHAR" property="currentLiabilities"/>
+        <result column="operating_receipt" jdbcType="VARCHAR" property="operatingReceipt"/>
+        <result column="retained_profits" jdbcType="VARCHAR" property="retainedProfits"/>
+        <result column="is_delete" jdbcType="BIT" property="isDelete"/>
+        <result column="supplier_code" jdbcType="VARCHAR" property="supplierCode"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        id, `year`, total_assets, gross_liability, current_assets, current_liabilities, operating_receipt,
+        retained_profits, is_delete, supplier_code, create_time, update_time, company_code
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        select
+        <include refid="Base_Column_List"/>
+        from c_srm_finance
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmFinance"
+            useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_finance
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="year != null">
+                `year`,
+            </if>
+            <if test="totalAssets != null">
+                total_assets,
+            </if>
+            <if test="grossLiability != null">
+                gross_liability,
+            </if>
+            <if test="currentAssets != null">
+                current_assets,
+            </if>
+            <if test="currentLiabilities != null">
+                current_liabilities,
+            </if>
+            <if test="operatingReceipt != null">
+                operating_receipt,
+            </if>
+            <if test="retainedProfits != null">
+                retained_profits,
+            </if>
+            <if test="isDelete != null">
+                is_delete,
+            </if>
+            <if test="supplierCode != null">
+                supplier_code,
+            </if>
+            <if test="companyCode != null">
+                company_code,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="year != null">
+                #{year,jdbcType=VARCHAR},
+            </if>
+            <if test="totalAssets != null">
+                #{totalAssets,jdbcType=VARCHAR},
+            </if>
+            <if test="grossLiability != null">
+                #{grossLiability,jdbcType=VARCHAR},
+            </if>
+            <if test="currentAssets != null">
+                #{currentAssets,jdbcType=VARCHAR},
+            </if>
+            <if test="currentLiabilities != null">
+                #{currentLiabilities,jdbcType=VARCHAR},
+            </if>
+            <if test="operatingReceipt != null">
+                #{operatingReceipt,jdbcType=VARCHAR},
+            </if>
+            <if test="retainedProfits != null">
+                #{retainedProfits,jdbcType=VARCHAR},
+            </if>
+            <if test="isDelete != null">
+                #{isDelete,jdbcType=BIT},
+            </if>
+            <if test="supplierCode != null">
+                #{supplierCode,jdbcType=VARCHAR},
+            </if>
+            <if test="companyCode != null">
+                #{companyCode,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmFinance">
+        <!--@mbg.generated-->
+        update c_srm_finance
+        <set>
+            <if test="year != null">
+                `year` = #{year,jdbcType=VARCHAR},
+            </if>
+            <if test="totalAssets != null">
+                total_assets = #{totalAssets,jdbcType=VARCHAR},
+            </if>
+            <if test="grossLiability != null">
+                gross_liability = #{grossLiability,jdbcType=VARCHAR},
+            </if>
+            <if test="currentAssets != null">
+                current_assets = #{currentAssets,jdbcType=VARCHAR},
+            </if>
+            <if test="currentLiabilities != null">
+                current_liabilities = #{currentLiabilities,jdbcType=VARCHAR},
+            </if>
+            <if test="operatingReceipt != null">
+                operating_receipt = #{operatingReceipt,jdbcType=VARCHAR},
+            </if>
+            <if test="retainedProfits != null">
+                retained_profits = #{retainedProfits,jdbcType=VARCHAR},
+            </if>
+            <if test="isDelete != null">
+                is_delete = #{isDelete,jdbcType=BIT},
+            </if>
+            <if test="supplierCode != null">
+                supplier_code = #{supplierCode,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateBatchSelective" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update c_srm_finance
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="`year` = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.year != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.year,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="total_assets = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.totalAssets != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.totalAssets,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="gross_liability = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.grossLiability != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.grossLiability,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="current_assets = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.currentAssets != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.currentAssets,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="current_liabilities = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.currentLiabilities != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.currentLiabilities,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="operating_receipt = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.operatingReceipt != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.operatingReceipt,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="retained_profits = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.retainedProfits != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.retainedProfits,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="is_delete = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.isDelete != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.isDelete,jdbcType=BIT}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="supplier_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.supplierCode != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.supplierCode,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.createTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.createTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.updateTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.updateTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_finance
+        (`year`, total_assets, gross_liability, current_assets, current_liabilities, operating_receipt,
+        retained_profits, is_delete, supplier_code, create_time, update_time)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.year,jdbcType=VARCHAR}, #{item.totalAssets,jdbcType=VARCHAR},
+            #{item.grossLiability,jdbcType=VARCHAR},
+            #{item.currentAssets,jdbcType=VARCHAR}, #{item.currentLiabilities,jdbcType=VARCHAR},
+            #{item.operatingReceipt,jdbcType=VARCHAR}, #{item.retainedProfits,jdbcType=VARCHAR},
+            #{item.isDelete,jdbcType=BIT}, #{item.supplierCode,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP},
+            #{item.updateTime,jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
+
+    <insert id="batchInsertData">
+        <!--@mbg.generated-->
+        insert into c_srm_finance
+        (`year`, total_assets, gross_liability, current_assets, current_liabilities, operating_receipt,
+        retained_profits, is_delete, supplier_code, create_time, update_time,company_code)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.year,jdbcType=VARCHAR}, #{item.totalAssets,jdbcType=VARCHAR},
+            #{item.grossLiability,jdbcType=VARCHAR},
+            #{item.currentAssets,jdbcType=VARCHAR}, #{item.currentLiabilities,jdbcType=VARCHAR},
+            #{item.operatingReceipt,jdbcType=VARCHAR}, #{item.retainedProfits,jdbcType=VARCHAR},
+            0, #{item.supplierCode,jdbcType=VARCHAR}, now(),
+            #{item.updateTime,jdbcType=TIMESTAMP},#{item.companyCode,jdbcType=VARCHAR})
+        </foreach>
+    </insert>
+
+    <!--查询供应商代码是否存在-->
+    <select id="selectSupplierCode" parameterType="java.lang.String" resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        c_srm_finance
+        where supplier_code=#{supplierCode,jdbcType=VARCHAR} and is_delete=0
+    </select>
+    <select id="selectByPrimaryKeyList" resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CSrmFinanceChangeRecordRsp">
+        select
+        <include refid="Base_Column_List"/>
+        from c_srm_finance
+        <where>
+            <if test="supplierCode != null and supplierCode != ''">
+                supplier_code=#{supplierCode,jdbcType=VARCHAR}
+            </if>
+            <if test="companyCode != null and companyCode != ''">
+                and company_code=#{companyCode,jdbcType=VARCHAR}
+            </if>
+            and is_delete=0
+        </where>
+
+    </select>
+    <update id="delData">
+        update c_srm_finance set is_delete=1,update_time=now() where
+        supplier_code=#{supplierCode,jdbcType=VARCHAR} and is_delete=0
+    </update>
+    <update id="updateBatchSelectiveData">
+        update c_srm_finance
+        set is_delete=1
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+
+    </update>
+</mapper>

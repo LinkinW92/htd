@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wf.linesidelibrary.CLslMaterialInventoryTMapper">
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    ID, cdt, udt, productId, lineId, stationId, rockId, batchCode, materialCode,
+    materialNo, materialName, `type`, quantity, `status`
+  </sql>
+  <update id="postingAccountByList">
+    <foreach collection="list" item="item">
+      update c_lsl_material_inventory_t
+      set  `quantity` =#{item.quantity,jdbcType=INTEGER}
+      <where>
+        materialCode = #{item.materialSn,jdbcType=VARCHAR}
+      </where>;
+    </foreach>
+  </update>
+  <update id="frozenInventoryByList">
+    <foreach collection="list" item="item">
+      update c_lsl_material_inventory_t
+      <set>
+        `quantity` =#{item.quantity,jdbcType=INTEGER},
+        frozenQuantity = #{item.frozenQuantity,jdbcType=INTEGER}
+      </set>
+      <where>
+        materialCode = #{item.materialSn,jdbcType=VARCHAR}
+      </where>;
+    </foreach>
+  </update>
+
+  <select id="findAll" resultType="java.util.Map">
+    select * from c_lsl_material_inventory_t
+    <where>
+      <foreach collection="list" open="materialCode in(" separator="," close=")" item="item">
+        #{item.materialSn,jdbcType=INTEGER}
+      </foreach>
+    </where>
+  </select>
+    <select id="selectByMaterialCode" resultType="com.skeqi.mes.pojo.wf.linesidelibrary.LslMaterialInventoryT">
+      select * from c_lsl_material_inventory_t
+      where
+      quantity &gt; 0
+      and materialCode = #{sn,jdbcType=VARCHAR}
+    </select>
+</mapper>

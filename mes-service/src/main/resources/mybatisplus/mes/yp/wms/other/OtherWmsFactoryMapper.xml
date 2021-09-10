@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.yp.wms.other.OtherWmsFactoryDao">
+
+	<!-- 查询所有工厂 -->
+	<select id="findAll" resultType="com.alibaba.fastjson.JSONObject">
+		select id,factoryName from c_mes_factory_t
+		ORDER BY id
+	</select>
+
+</mapper>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.skeqi.mes.mapper.dzb.report.WorkOrderMonitoringDao">
+
+    <select id="data" resultType="java.util.Map">
+        select plan.planNo,
+        plan.quantity,
+        planStartDate,
+        planEndDate,
+        wo.WORKORDER_ID workOrderId,
+        wo.COMPLETE_NUMBER completeNumber,
+        wo.DEFFECT_NUMBER deffectNumber,
+        wo.`STATUS` statu,
+        wo.ACTUAL_START_TIME actualStartTime,
+        wo.ACTUAL_END_TIME actualEndTime
+        from (select ORDER_ID,
+        WORKORDER_ID,
+        COMPLETE_NUMBER,
+        DEFFECT_NUMBER,
+        `STATUS`,
+        ACTUAL_START_TIME,
+        ACTUAL_END_TIME
+        FROM r_mes_workorder_detail_t
+        UNION
+        select ORDER_ID,
+        WORKORDER_ID,
+        COMPLETE_NUMBER,
+        DEFFECT_NUMBER,
+        `STATUS`,
+        ACTUAL_START_TIME,
+        ACTUAL_END_TIME
+        FROM p_mes_workorder_detail_t) wo
+        left join c_mes_plan_t plan
+        on wo.ORDER_ID = plan.orderNo
+        <where>
+            <if test="start != null and start != ''">
+                and wo.ACTUAL_START_TIME >= #{start}
+            </if>
+            <if test="end != null and end != ''">
+                <![CDATA[
+            and wo.ACTUAL_START_TIME <= #{end}
+            ]]>
+            </if>
+            <foreach collection="whereList" item="value" index="key">
+                and ${key} in
+                <foreach collection="value" item="v" open="(" separator="," close=")">
+                    (#{v})
+                </foreach>
+            </foreach>
+        </where>
+    </select>
+</mapper>

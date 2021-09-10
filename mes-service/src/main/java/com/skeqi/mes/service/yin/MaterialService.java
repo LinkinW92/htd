@@ -1,0 +1,75 @@
+package com.skeqi.mes.service.yin;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.skeqi.mes.pojo.CMesAssemblyType;
+import com.skeqi.mes.pojo.CMesManufactureParametersT;
+import com.skeqi.mes.pojo.CMesMaterialListDetailT;
+import com.skeqi.mes.pojo.CMesMaterialListT;
+import com.skeqi.mes.pojo.CMesMaterialT;
+import com.skeqi.mes.pojo.CMesMaterialTypeT;
+import com.skeqi.mes.pojo.CMesMfParametersDetailT;
+import com.skeqi.mes.pojo.CMesProductionProcessT;
+import com.skeqi.mes.pojo.CMesStationT;
+
+public interface MaterialService {
+	 String findNo(String name);
+	Double findMaxmanu();
+	List<CMesStationT> findStation();
+	void editstatus(String id);
+	Double findMaxVersion();
+	List<CMesAssemblyType> assemblyTypeList(Map<String, Object> map);
+	Integer countAssemblyTypeByAddAssemblyTypeNo(Map<String, Object> map);
+	void addAssemblyType(Map<String, Object> map);
+	void delAssemblyType(Map<String, Object> map);
+	void editAssemblyType(Map<String, Object> map);
+	Integer del();
+	List<CMesMaterialT> materialList(Map<String, Object> map);
+	Integer addMaterial(Map<String, Object> map);
+	void editMaterial(Map<String, Object> map);
+	void delMaterial(Map<String, Object> map);
+	List<CMesMaterialTypeT> materialTypeList(Map<String, Object> map);
+	void addMaterialType(Map<String, Object> map);
+	Integer countMaterialTypeByName(Map<String, Object> map);
+	void delMaterialType(Map<String, Object> map);
+	void editMaterialType(Map<String, Object> map);
+	Integer countMaterialByName(Map<String, Object> map);
+	Integer countMaterialByNo(Map<String, Object> map);
+	List<CMesMaterialListT> materialLists(Map<String, Object> map);
+	List<CMesMaterialListDetailT> materialListDetails(Map<String, Object> map);
+	void addMaterialList(HashMap<String, Object> map);
+	Integer countMaterialListByNo(HashMap<String, Object> map);
+	void editMaterialList(HashMap<String, Object> map);
+	void delMaterialList(HashMap<String, Object> map);
+	void addMaterialDetail(HashMap<String, Object> map);
+	void editMaterialDetail(HashMap<String, Object> map);
+	void delMaterialDetail(HashMap<String, Object> map);
+	List<CMesManufactureParametersT> manuParameterLists(Map<String, Object> map);
+	void addManuParameterList(HashMap<String, Object> map);
+	Integer countaddManuParameterListByNo(HashMap<String, Object> map);
+	void editManuParameterList(HashMap<String, Object> map);
+	void delManuParameterList(HashMap<String, Object> map);
+	List<CMesMfParametersDetailT> mfParametersDetailList(Map<String, Object> map);
+	void addManuParameterListDetail(HashMap<String, Object> map);
+	void editManuParameterListDetail(HashMap<String, Object> map);
+	void delManuParameterListDetail(HashMap<String, Object> map);
+	List<CMesProductionProcessT> productionProcess(Map<String, Object> map);
+	void addProcessConfig(HashMap<String, Object> map);
+	int countProcessConfigByAll(HashMap<String, Object> map);
+	void delProcessConfig(HashMap<String, Object> map);
+	void editProcessConfig(HashMap<String, Object> map);
+	int countMaterialListDetailByMaterilaListId(HashMap<String, Object> map);
+	int countMaterialMsgByMaterialType(HashMap<String, Object> map);
+	int countMaterialListByMaterialListId(HashMap<String, Object> map);
+	int countProductionProcessByParameterListId(HashMap<String, Object> map);
+	int countMaterialByAssemblyTypeId(HashMap<String, Object> map);
+	Integer countMaterialListByName(HashMap<String, Object> map);
+	Integer countaddManuParameterListByName(HashMap<String, Object> map);
+	Integer countAssemblyTypeByAddAssemblyTypeName(HashMap<String, Object> map);
+
+	List<Map<String, Object>> findMaterialTypeStatistics();
+	List<Map<String, Object>> findMaterialNumStatistics();
+	List<Map<String, Object>> findMaterialList(Map<String, Object> map);
+}

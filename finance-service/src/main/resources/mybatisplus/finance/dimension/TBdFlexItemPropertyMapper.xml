@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.dimension.TBdFlexItemPropertyMapper">
+
+    <resultMap type="com.skeqi.finance.domain.TBdFlexItemProperty" id="TBdFlexItemPropertyResult">
+        <result property="fId" column="f_id"/>
+        <result property="fDimensionSourceId" column="f_dimension_source_id"/>
+        <result property="fName" column="f_name"/>
+        <result property="fType" column="f_type"/>
+        <result property="fDescription" column="f_description"/>
+        <result property="fCreateOrgid" column="f_create_orgid"/>
+        <result property="fCreatorid" column="f_creatorid"/>
+        <result property="fCreateDate" column="f_create_date"/>
+        <result property="fUseOrgid" column="f_use_orgid"/>
+        <result property="fModifierid" column="f_modifierid"/>
+        <result property="fModifyDate" column="f_modify_date"/>
+        <result property="fDocumentStatus" column="f_document_status"/>
+        <result property="fAuditorid" column="f_auditorid"/>
+        <result property="fAuditDate" column="f_audit_date"/>
+        <result property="fForbidStatus" column="f_forbid_status"/>
+        <result property="fForbidderid" column="f_forbidderid"/>
+        <result property="fForbidDate" column="f_forbid_date"/>
+        <result property="fIssysPreset" column="f_issys_preset"/>
+        <result property="fMasterId" column="f_master_id"/>
+    </resultMap>
+
+    <resultMap type="com.skeqi.finance.pojo.vo.dimension.TBdFlexItemPropertyVo" id="TBdFlexItemPropertyVo">
+        <result property="fId" column="f_id"/>
+        <result property="fDimensionSourceId" column="f_dimension_source_id"/>
+        <result property="fName" column="f_name"/>
+        <result property="fType" column="f_type"/>
+        <result property="fDescription" column="f_description"/>
+        <result property="fCreateOrgid" column="f_create_orgid"/>
+        <result property="fCreatorid" column="f_creatorid"/>
+        <result property="fCreateDate" column="f_create_date"/>
+        <result property="fUseOrgid" column="f_use_orgid"/>
+        <result property="fModifierid" column="f_modifierid"/>
+        <result property="fModifyDate" column="f_modify_date"/>
+        <result property="fDocumentStatus" column="f_document_status"/>
+        <result property="fAuditorid" column="f_auditorid"/>
+        <result property="fAuditDate" column="f_audit_date"/>
+        <result property="fForbidStatus" column="f_forbid_status"/>
+        <result property="fForbidderid" column="f_forbidderid"/>
+        <result property="fForbidDate" column="f_forbid_date"/>
+        <result property="fIssysPreset" column="f_issys_preset"/>
+        <result property="fMasterId" column="f_master_id"/>
+        <result property="fDimensionSourceName" column="fDimensionSourceName"/>
+        <result property="fType" column="fType"/>
+        <result property="fDimensionSourceNumber" column="fDimensionSourceNumber"/>
+    </resultMap>
+    <select id="queryOne2" resultMap="TBdFlexItemPropertyVo">
+        select *
+        from (
+                 select t1.*, t2.f_type_name fDimensionSourceName, t2.f_number fDimensionSourceNumber
+                 FROM t_bd_flex_item_property t1,
+                      t_bd_base_type t2
+                 WHERE t1.f_type = '1'
+                   and t1.f_dimension_source_id = t2.f_id
+                 UNION all
+                 select t1.*, t2.f_type_name fDimensionSourceName, t2.f_number fDimensionSourceNumber
+                 FROM t_bd_flex_item_property t1,
+                      t_bd_help_type t2
+                 WHERE t1.f_type = '2'
+                   and t1.f_dimension_source_id = t2.f_id) d
+        where d.f_id = #{fId}
+    </select>
+    <select id="queryList2" resultMap="TBdFlexItemPropertyVo">
+
+        <if test="bo.fType != 2">
+            select t1.*, t2.f_type_name fDimensionSourceName,t2.f_number fDimensionSourceNumber
+            from t_bd_flex_item_property t1,
+            t_bd_base_type t2
+            where
+            t1.f_type = '1'
+            and t1.f_dimension_source_id = t2.f_id
+            <if test="bo.fNumber != null">
+                and t1.f_number like #{bo.fNumber}+'%'
+            </if>
+            <if test="bo.fDocumentStatus != null">
+                and t1.f_document_status = #{bo.fDocumentStatus}
+            </if>
+        </if>
+        <if test="bo.fType !=1 and bo.fType!=2">
+            UNION all
+        </if>
+        <if test="bo.fType != 1">
+            select t1.*, t2.f_type_name fDimensionSourceName,t2.f_number fDimensionSourceNumber
+            from t_bd_flex_item_property t1,
+            t_bd_help_type t2
+            where
+            t1.f_type = '2'
+            and t1.f_dimension_source_id = t2.f_id
+            <if test="bo.fNumber != null">
+                and t1.f_number like #{bo.fNumber}+'%'
+            </if>
+            <if test="bo.fDocumentStatus != null">
+                and t1.f_document_status = #{bo.fDocumentStatus}
+            </if>
+        </if>
+    </select>
+
+
+</mapper>

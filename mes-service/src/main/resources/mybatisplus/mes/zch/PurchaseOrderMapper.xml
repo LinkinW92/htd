@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.zch.PurchaseOrderDao">
+
+	<!-- 获取采购单列表 -->
+	<select id="findPurchaseList" resultType="java.util.Map">
+		select * from c_mes_purchase_order_t
+		where 1=1
+		<if test="STATUS!=null and STATUS!=''">
+			and STATUS=#{STATUS}
+		</if>
+		<if test="ORDER_TIME!=null and ORDER_TIME!=''">
+			and DATE_FORMAT(ORDER_TIME,'%Y-%m-%d') = DATE_FORMAT(#{ORDER_TIME},'%Y-%m-%d')
+		</if>
+		<if test="PURCHASE_NO!=null and PURCHASE_NO!=''">
+			and PURCHASE_NO like concat('%', #{PURCHASE_NO}, '%')
+		</if>
+		<if test="PURCHASER!=null and PURCHASER!=''">
+			and PURCHASER like concat('%', #{PURCHASER}, '%')
+		</if>
+		<if test="SUPPLIER!=null and SUPPLIER!=''">
+			and SUPPLIER like concat('%', #{SUPPLIER}, '%')
+		</if>
+		order by ORDER_TIME
+	</select>
+
+	<!-- 新增采购单 -->
+	<insert id="addPurchase" keyProperty="id"
+		useGeneratedKeys="false">
+		INSERT INTO c_mes_purchase_order_t
+		(`DT`, `PURCHASE_NO`, `PURCHASER`, `SUPPLIER`, `ORDER_TIME`)
+		VALUES
+		(NOW(),#{PURCHASE_NO},#{PURCHASER},#{SUPPLIER},#{ORDER_TIME})
+	</insert>
+
+	<!-- 新增采购详情 -->
+	<insert id="addPurchaseDetails" keyProperty="id"
+		useGeneratedKeys="false">
+		INSERT INTO c_mes_purchase_order_details_t
+		(`DT`, `PURCHASE_ORDER_ID`, `MATERIAL_NO`, `MATERIAL_MODEL`, `MATERIAL_NAME`, `MATERIAL_NUM`, `REMARKS`)
+		VALUES
+		(NOW(),#{PURCHASE_ORDER_ID},#{MATERIAL_NO},#{MATERIAL_MODEL},#{MATERIAL_NAME},#{MATERIAL_NUM},#{REMARKS})
+	</insert>
+
+	<!-- 根据id查询采购 -->
+	<select id="getByID" resultType="java.util.Map">
+		select * from c_mes_purchase_order_t s where ID=#{ID}
+	</select>
+
+	<!-- 修改采购单 -->
+	<update id="updatePurchase">
+		UPDATE c_mes_purchase_order_t SET
+			DT=DT
+		<if test="PURCHASE_NO!=null and PURCHASE_NO!=''">
+			,PURCHASE_NO=#{PURCHASE_NO}
+		</if>
+		<if test="PURCHASER!=null and PURCHASER!=''">
+			,PURCHASER=#{PURCHASER}
+		</if>
+		<if test="SUPPLIER!=null and SUPPLIER!=''">
+			,SUPPLIER=#{SUPPLIER}
+		</if>
+		<if test="ORDER_TIME!=null and ORDER_TIME!=''">
+			,ORDER_TIME=#{ORDER_TIME}
+		</if>
+		<if test="STATUS!=null and STATUS!=''">
+			,STATUS=#{STATUS}
+		</if>
+		<if test="ARRIVAL_TIME!=null and ARRIVAL_TIME!=''">
+			,ARRIVAL_TIME=#{ARRIVAL_TIME}
+		</if>
+		WHERE ID=#{ID}
+	</update>
+
+	<!-- 修改采购详情 -->
+	<update id="updatePurchaseDetails">
+		UPDATE c_mes_purchase_order_details_t SET
+			DT=DT
+		<if test="PURCHASE_ORDER_ID!=null and PURCHASE_ORDER_ID!=''">
+			,PURCHASE_ORDER_ID=#{PURCHASE_ORDER_ID}
+		</if>
+		<if test="MATERIAL_NO!=null and MATERIAL_NO!=''">
+			,MATERIAL_NO=#{MATERIAL_NO}
+		</if>
+		<if test="MATERIAL_MODEL!=null and MATERIAL_MODEL!=''">
+			,MATERIAL_MODEL=#{MATERIAL_MODEL}
+		</if>
+		<if test="MATERIAL_NAME!=null and MATERIAL_NAME!=''">
+			,MATERIAL_NAME=#{MATERIAL_NAME}
+		</if>
+		<if test="MATERIAL_NUM!=null and MATERIAL_NUM!=''">
+			,MATERIAL_NUM=#{MATERIAL_NUM}
+		</if>
+		<if test="REMARKS!=null and REMARKS!=''">
+			,REMARKS=#{REMARKS}
+		</if>
+		WHERE ID=#{ID}
+	</update>
+
+	<!-- 根据id查询采购详情 -->
+	<select id="getDetailsByID" resultType="java.util.Map">
+		select o.*
+		,(select PURCHASE_NO from c_mes_purchase_order_t s where s.ID=o.PURCHASE_ORDER_ID) as PURCHASE_NO
+		 from c_mes_purchase_order_details_t o where o.ID=#{ID}
+	</select>
+
+	<!-- 获取采购详情列表 -->
+	<select id="findPurchaseDetailsList" resultType="java.util.Map">
+		select o.*
+		from c_mes_purchase_order_details_t o
+		where o.PURCHASE_ORDER_ID=#{PURCHASE_ORDER_ID}
+		order by o.DT desc
+	</select>
+
+	<!-- 删除采购单 -->
+	<delete id="deletePurchase">
+		delete from c_mes_purchase_order_t where ID=#{ID}
+	</delete>
+
+	<!-- 删除采购详情 -->
+	<delete id="deletePurchaseDetails">
+		delete from c_mes_purchase_order_details_t where ID=#{ID}
+	</delete>
+
+</mapper>

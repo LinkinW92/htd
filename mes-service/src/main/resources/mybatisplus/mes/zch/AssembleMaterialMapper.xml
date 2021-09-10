@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.zch.AssembleMaterialDao">
+
+	<!-- 查询条码是否被装配-->
+    <select id="findRKeypart" resultType="java.lang.Integer">
+        select count(id) from r_mes_keypart_t where KEYPART_NUM=#{nums} and KEYPART_REWORK_FG=0
+    </select>
+    <select id="findPKeypart" resultType="java.lang.Integer">
+        select count(id) from p_mes_keypart_t where KEYPART_NUM=#{nums} and KEYPART_REWORK_FG=0
+    </select>
+
+    <select id="getKerpartRByMaterialName" resultType="java.util.Map">
+        SELECT * FROM R_MES_KEYPART_T WHERE SN = #{SN} AND ST = #{stationName} AND KEYPART_NAME = #{materialName} order by ID desc limit 1
+    </select>
+
+    <update id="updateAssembleKeypartPT">
+    	UPDATE R_MES_KEYPART_T SET KEYPART_NUM = #{barcode}, WID = #{emp} WHERE ID = #{ID}
+    </update>
+
+    <select id="getKerpartRByMaterialPN" resultType="java.util.Map">
+        SELECT * FROM r_mes_keypart_t WHERE SN = #{SN} AND ST = #{stationName} AND KEYPART_PN = #{materialPn} order by ID desc limit 1
+    </select>
+</mapper>

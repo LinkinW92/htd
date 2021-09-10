@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.all.CMesRecipeDAO">
+
+	<!-- 查询总配方 -->
+	<select id="findAllTotalRecipe" resultType="CMesTotalRecipeT">
+		SELECT
+			recipe.*,
+			pro.PRODUCTION_NAME AS productionName,
+			line.NAME AS lineName
+		FROM
+			c_mes_total_recipe_t recipe,
+			c_mes_production_t pro,
+			c_mes_line_t line
+		WHERE
+			recipe.LINE_ID = line.ID
+			AND recipe.PRODUCTION_ID = pro.ID
+		<if test="totalRecipeName!=null and totalRecipeName!='' ">
+			and recipe.TOTAL_RECIPE_NAME  like '%${totalRecipeName}%'
+		</if>
+		<if test="productionId!=null and productionId!='' and productionId!=0 ">
+			and recipe.PRODUCTION_ID=#{productionId}
+		</if>
+		<if test="lineId != null and lineId != '' and lineId != 0 ">
+			and recipe.LINE_ID=#{lineId}
+		</if>
+	</select>
+
+	<!-- 根据id或名称查询总配方 -->
+	<select id="findTotalRecipeByParam" resultType="CMesTotalRecipeT">
+		select * from c_mes_total_recipe_t where 1=1
+		<if test="name!=null and name!='' ">
+			and TOTAL_RECIPE_NAME=#{name}
+		</if>
+		<if test="id!=null and id!='' ">
+			and ID=#{id}
+		</if>
+	</select>
+
+
+	<!-- 添加总配方 -->
+	<insert id="addTotalRecipe">
+		insert into c_mes_total_recipe_t(TOTAL_RECIPE_NAME,TOTAL_RECIPE_DESCRIBE,LINE_ID,PRODUCTION_ID,STATUS)
+		values(#{totalRecipeName},#{totalRecipeDescribe},#{lineId},#{productionId},#{status})
+	</insert>
+
+	<!-- 修改配方 -->
+	<update id="updateTotalRecipe">
+		update c_mes_total_recipe_t set TOTAL_RECIPE_NAME=#{totalRecipeName},
+									    TOTAL_RECIPE_DESCRIBE=#{totalRecipeDescribe},
+									    LINE_ID=#{lineId},
+									    PRODUCTION_ID=#{productionId},
+									    STATUS=#{status}
+						 	     where  id=#{id}
+	</update>
+
+	<!-- 删除配方 -->
+	<delete id="delTotalRecipe">
+		delete from c_mes_total_recipe_t where id=#{id}
+	</delete>
+
+	<!-- 查询配方 -->
+	<select id="findAllRecipe" resultType="CMesRecipe">
+		SELECT
+			recipe.*,
+			station.STATION_NAME AS stationName,
+			total.TOTAL_RECIPE_NAME AS totalRecipeName
+		FROM
+			c_mes_recipe_t recipe,
+			c_mes_station_t station,
+			c_mes_total_recipe_t total
+		WHERE
+			recipe.TOTAL_ID = total.ID
+			AND recipe.STATION_ID = station.ID
+		<if test="recipeName!=null  and recipeName!='' ">
+			and recipe.RECIPE_NAME like '%${recipeName}%'
+		</if>
+		<if test="totalId!=null and totalId!='' ">
+			and total.ID=#{totalId}
+		</if>
+		<if test="stationId!=null and stationId!=0 ">
+			and station.ID = #{stationId}
+		</if>
+	</select>
+
+	<!-- 根据id或名称查询配方 -->
+	<select id="findRecipeByParam" resultType="CMesRecipe">
+		select * from c_mes_recipe_t where 1=1
+		<if test="name!=null and name!='' ">
+			and binary RECIPE_NAME=#{name}
+		</if>
+		<if test="id!=null and id!='' ">
+			and ID=#{id}
+		</if>
+		<if test="totalId!=null and totalId!='' ">
+			and TOTAL_ID=#{totalId}
+		</if>
+	</select>
+
+
+
+	<!-- 添加配方 -->
+	<insert id="addRecipe">
+		insert into c_mes_recipe_t(TOTAL_ID,RECIPE_NAME,RECIPE_DISCRIPTION,STATION_ID)
+		values(#{totalId},#{recipeName},#{recipeDiscription},#{stationId})
+	</insert>
+
+	<!-- 修改配方 -->
+	<update id="updateRecipe">
+		update c_mes_recipe_t set TOTAL_ID=#{totalId},
+								  RECIPE_NAME=#{recipeName},
+								  RECIPE_DISCRIPTION=#{recipeDiscription},
+								  STATION_ID=#{stationId}
+							where id=#{id}
+	</update>
+
+	<!-- 删除 -->
+	<delete id="delRecipe">
+		delete from c_mes_recipe_t where id=#{id}
+	</delete>
+
+	<!-- 根据配方id查询配方详情 -->
+	<select id="findAllRecipeDatil" resultType="CMesRecipeDatilT">
+		select * from c_mes_recipe_datil_t where recipe_id=#{id}
+	</select>
+
+	<!-- 查询所有工位 -->
+	<select id="findStation" resultType="CMesStationT">
+		select * from C_MES_STATION_T
+	</select>
+
+	<!--查询该产品是否存在默认值-->
+	<select id="findDefaultStatus" resultType="java.lang.Integer">
+		select ifnull(max(id),0) from c_mes_total_recipe_t where PRODUCTION_ID=#{id} and status=1 and LINE_ID=#{lineId}
+	</select>
+
+	<!-- 将配方设为默认配方 -->
+	<update id="editStatus">
+		update c_mes_total_recipe_t set status=#{status} where id=#{id}
+	</update>
+
+	<!-- 根据产品ID设置默认 -->
+	<update id="editStatusPro">
+		update c_mes_total_recipe_t set status=0 where PRODUCTION_ID=#{id}
+	</update>
+
+	<!--根据工位id获取配方数量-->
+	<select id="findRecipeCountByStationId" resultType="java.lang.Integer">
+		select count(*) from c_mes_recipe_t where STATION_ID=#{stationId} and TOTAL_ID=#{totalId}
+	</select>
+</mapper>

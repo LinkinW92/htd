@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.alarm.CAlarmEmailConfigDao">
+
+	<!-- 通过用户名查询用户 -->
+	<select id="findUserByName" resultType="com.skeqi.mes.pojo.CMesUserT">
+		select id,USER_NAME,`STATUS`,DEPARTMENT,`SECURITY`,USER_POWER,ROLE_ID,USER_NUMBER,LOGINSTATUS,Token from c_mes_user_t
+		where viewMode = 1
+		and USER_NAME = #{userName}
+	</select>
+
+	<!-- 查询邮箱服务配置集合 -->
+	<select id="findEmailConfigList" resultType="com.skeqi.mes.pojo.alarm.CAlarmEmailConfig">
+		select a.id,user_id,a.sender_Email,a.the_server,a.authorization_code,a.dt from c_alarm_Email_config a
+		join c_mes_user_t b on a.user_id = b.id
+<!-- 		where b.user_name = #{userName} -->
+		ORDER BY a.id
+	</select>
+
+	<!-- 新增邮箱服务配置 -->
+	<insert id="addEmailConfig">
+		insert into c_alarm_Email_config(user_id,sender_Email,the_server,authorization_code,dt)
+		value(#{userId},#{senderEmail},#{theServer},#{authorizationCode},now())
+	</insert>
+
+	<!-- 更新邮箱服务配置 -->
+	<update id="updateEmailConfig">
+		update c_alarm_Email_config
+		set
+		user_id = #{userId},
+		sender_Email = #{senderEmail},
+		the_server = #{theServer},
+		authorization_code = #{authorizationCode},
+		dt = now()
+		where
+<!-- 		user_id = #{userId} -->
+<!-- 		and  -->
+		id = #{id}
+	</update>
+
+	<!-- 删除邮箱服务配置 -->
+	<delete id="deleteEmailConfig">
+		delete from c_alarm_Email_config
+		where id = #{id}
+	</delete>
+
+</mapper>
+
+

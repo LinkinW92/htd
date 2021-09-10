@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.skeqi.mes.mapper.dzb.OrgStructureDao">
+    <select id="listCompany" resultType="java.util.Map">
+        select id, companyName name
+        from c_mes_company_t;
+    </select>
+    <select id="listDepartment" resultType="java.util.Map">
+        select id, DM_NAME name
+        from c_wms_department_t
+        where superiorId = 0
+        and companyId = ${companyId}
+    </select>
+    <select id="listDepartment2" resultType="java.util.Map">
+        select id, DM_NAME name
+        from c_wms_department_t
+        where superiorId = #{superiorId}
+    </select>
+    <select id="getLeader" resultType="java.util.Map">
+        select u.user_name `name`, p.`name` positionName
+        from c_mes_user_t u,
+        c_mes_positionid_t p
+        where u.viewMode = 1
+        and DEPARTMENT = #{departmentId}
+        and rankId = 10
+        and u.positionId = p.id limit 0,1
+    </select>
+    <select id="listUser" resultType="java.util.Map">
+        select u.id, u.user_name `name`,position positionName
+        from c_mes_user_t u
+        where u.viewMode = 1
+        and DEPARTMENT = #{departmentId}
+    </select>
+    <select id="listLeader" resultType="java.util.Map">
+        select u.user_name `name`, p.`name` positionName
+        from c_mes_user_t u,
+        c_mes_positionid_t p
+        where u.viewMode = 1
+        and DEPARTMENT = #{departmentId}
+        and rankId in (10, 20)
+        and u.positionId = p.id
+    </select>
+
+
+</mapper>

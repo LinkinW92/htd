@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.report.TGlBalanceMapper">
+
+    <resultMap type="com.skeqi.finance.domain.TGlBalance" id="TGlBalanceResult">
+        <result property="fAccountBookId" column="f_account_book_id"/>
+        <result property="fAccountId" column="f_account_id"/>
+        <result property="fDetailCode" column="f_detail_code"/>
+        <result property="dimensionCode" column="dimension_code"/>
+        <result property="fCurrencyId" column="f_currency_id"/>
+        <result property="fPeriod" column="f_period"/>
+        <result property="fYear" column="f_year"/>
+        <result property="fBeginBalancefor" column="f_begin_balancefor"/>
+        <result property="fBeginBalance" column="f_begin_balance"/>
+        <result property="fDebitFor" column="f_debit_for"/>
+        <result property="fDebit" column="f_debit"/>
+        <result property="fCreditFor" column="f_credit_for"/>
+        <result property="fCredit" column="f_credit"/>
+        <result property="fYtdDebitfor" column="f_ytd_debitfor"/>
+        <result property="fYtdDebit" column="f_ytd_debit"/>
+        <result property="fYtdCreditfor" column="f_ytd_creditfor"/>
+        <result property="fYtdCredit" column="f_ytd_credit"/>
+        <result property="fEndBalancefor" column="f_end_balancefor"/>
+        <result property="fEndBalance" column="f_end_balance"/>
+        <result property="fAdjustPeriod" column="f_adjust_period"/>
+        <result property="fYearPeriod" column="f_year_period"/>
+    </resultMap>
+
+    <select id="queryList2" resultType="java.util.Map">
+        select gb.f_account_book_id fAccountBookId,
+        gb.f_account_id fAccountId,
+        ba.f_name fName,
+        ba.f_dc fDC,
+        gb.f_currency_id fCurrencyId,
+        sum(f_debit) fDebit,
+        sum(f_debit_for) fDebitFor,
+        sum(f_credit) fCredit,
+        sum(f_credit_for) fCreditFor,
+        sum(f_ytd_debit) fYtdDebit,
+        sum(f_ytd_debitfor) fYtdDebitfor,
+        sum(f_ytd_creditfor) fYtdCreditfor,
+        sum(f_ytd_credit) fYtdCredit,
+        sum(f_end_balancefor) fEndBalancefor,
+        sum(f_end_balance) fEndBalance
+        <if test="bo.fDetailCodeShow != '0'">
+            ,gb.f_detail_code fDetailCode
+        </if>
+        from t_gl_balance gb
+        left join
+        t_bd_account ba on gb.f_account_id = ba.f_acct_id
+        where
+        yearPeriodIsBetween(gb.f_year,gb.f_period,#{bo.fYear},#{bo.efYear},#{bo.fPeriod},#{bo.efPeriod})
+        and gb.f_currency_id = #{bo.fCurrencyId}
+        and gb.f_account_book_id = #{bo.fAccountBookId}
+        group by fAccountBookId,gb.f_account_id, fName,fDC,fCurrencyId
+        <if test="bo.fDetailCodeShow != '0'">
+            ,fDetailCode
+        </if>
+        order by gb.f_account_id
+    </select>
+    <select id="queryList3" resultType="java.util.Map">
+        select gb.f_account_book_id fAccountBookId,
+        gb.f_account_id fAccountId,
+        ba.f_name fName,
+        ba.f_dc fDC,
+        gb.f_currency_id fCurrencyId,
+        sum(f_begin_balancefor) fBeginBalancefor,
+        sum(f_begin_balance) fBeginBalance,
+        sum(f_debit) fDebit,
+        sum(f_debit_for) fDebitFor,
+        sum(f_credit) fCredit,
+        sum(f_credit_for) fCreditFor,
+        sum(f_ytd_debit) fYtdDebit,
+        sum(f_ytd_debitfor) fYtdDebitfor,
+        sum(f_ytd_creditfor) fYtdCreditfor,
+        sum(f_ytd_credit) fYtdCredit,
+        sum(f_end_balancefor) fEndBalancefor,
+        sum(f_end_balance) fEndBalance
+        <if test="bo.fDetailCodeShow != '0'">
+            ,gb.f_detail_code fDetailCode
+        </if>
+        from t_gl_balance gb
+        left join
+        t_bd_account ba on gb.f_account_id = ba.f_acct_id
+        where
+        yearPeriodIsBetween(gb.f_year,gb.f_period,#{bo.fYear},#{bo.efYear},#{bo.fPeriod},#{bo.efPeriod})
+        and gb.f_currency_id = #{bo.fCurrencyId}
+        and gb.f_account_book_id = #{bo.fAccountBookId}
+        group by fAccountBookId,gb.f_account_id, fName,fDC,fCurrencyId
+        <if test="bo.fDetailCodeShow != '0'">
+            ,fDetailCode
+        </if>
+        order by gb.f_account_id
+    </select>
+    <select id="queryList4" resultType="java.util.Map">
+        select t1.f_date fDate,
+        t1.f_year fYear,
+        t1.f_period fPeriod,
+        t3.dimension_code fDetailCode,
+        t3.ds_code dsCode,
+        t4.f_acct_id fAccountId,
+        t4.f_number fAccountNumber,
+        t4.f_name fAccountName,
+        t1.f_voucher_group_id fVoucherGroupId,
+        t1.f_voucher_group_no fVoucherGroupNo,
+        t2.f_explanation Summary,
+        t5.f_name fMeasureUnitName,
+        t2.f_unit_price fUnitPrice,
+        t2.f_base_unit_qty fQuantity,
+        t2.f_amount balance,
+        t4.f_dc fAccountDc,
+        t2.f_dc fVoucherDc
+        from t_gl_voucher t1
+        inner join t_gl_voucher_entry t2
+        on t1.f_voucher_id = t2.f_voucher_id
+        inner join t_gl_voucher_entry_dimension t3
+        on t2.f_entry_id = t3.voucher_entry_id
+        inner join t_bd_account t4
+        on t2.f_account_id = t4.f_acct_id
+        left join t_bd_unit t5
+        on t2.f_measure_unit_id = t5.f_unit_id
+        where
+        yearPeriodIsBetween(t1.f_year,t1.f_period,#{bo.fYear},#{bo.efYear},#{bo.fPeriod},#{bo.efPeriod})
+        and t1.f_account_book_id = #{bo.fAccountBookId}
+        <if test="bo.fAccountIdList != null and bo.fAccountIdList.size() > 0">
+            and t2.f_account_id in (
+            <foreach collection="bo.fAccountIdList" item="faccountId" separator=",">
+                #{faccountId}
+            </foreach>
+            )
+        </if>
+    </select>
+    <select id="queryBeginBalance" resultType="java.math.BigDecimal">
+        select f_begin_balance
+        from t_gl_balance
+        where
+        f_year = #{fYear}
+        and f_period =#{fPeriod}
+        and f_account_book_id = #{fAccountBookId}
+        and f_account_id = #{fAccountId}
+        and dimension_code =#{dimensionCode}
+        and f_detail_code =#{fDetailCode}
+    </select>
+
+
+    <select id="queryByVchNoDetail" resultMap="TGlBalanceResult">
+        select b.*,a.f_dc from t_gl_balance b
+        LEFT JOIN t_bd_account a ON a.f_acct_id=b.f_account_id
+        where
+        <![CDATA[
+              b.f_period >= #{bo.fPeriod} and b.f_period<= #{bo.efPeriod}
+        and  b.f_year >= #{bo.fYear} and b.f_year<= #{bo.efYear}
+              ]]>
+        and b.f_account_book_id = #{bo.fAccountBookId}
+        and b.f_currency_id = #{bo.fCurrencyId}
+        and b.f_account_id=#{bo.fAccountId}
+        <if test="bo.fDetailCode!=null and bo.fDetailCode!=''">
+            and b.f_detail_code=#{bo.fDetailCode}
+        </if>
+        <if test="bo.fDetailCode==null and bo.fDetailCode==''">
+            and ISNULL(b.f_detail_code)
+        </if>
+        <if test="bo.dimensionCode!=null and bo.dimensionCode!=''">
+            and b.dimension_code=#{bo.dimensionCode}
+        </if>
+        <if test="bo.dimensionCode==null and bo.dimensionCode==''">
+            and ISNULL(b.dimension_code)
+        </if>
+    </select>
+
+    <select id="queryByVch" resultMap="TGlBalanceResult">
+        select b.*,a.f_dc from t_gl_balance b
+        LEFT JOIN t_bd_account a ON a.f_acct_id=b.f_account_id
+        <where>
+            <if test="bo.fPeriod!=null">
+                and  <![CDATA[
+                   b.f_period >= #{bo.fPeriod}
+                ]]>
+            </if>
+            <if test="bo.efPeriod!=null">
+                and  <![CDATA[
+                    b.f_period<= #{bo.efPeriod}
+                ]]>
+            </if>
+            <if test="bo.fYear!=null">
+                and  <![CDATA[
+                 b.f_year >= #{bo.fYear}
+                ]]>
+            </if>
+            <if test="bo.efYear!=null">
+                and  <![CDATA[
+                    b.f_year<= #{bo.efYear}
+                ]]>
+            </if>
+            <if test="bo.fAccountBookId!=null">
+                and b.f_account_book_id=#{bo.fAccountBookId}
+            </if>
+            <if test="bo.fAccountId!=null">
+                and b.f_account_id=#{bo.fAccountId}
+            </if>
+            <if test="bo.fCurrencyId!=null">
+                and b.f_currency_id=#{bo.fCurrencyId}
+            </if>
+            <if test="bo.fDetailCode!=null and bo.fDetailCode!=''">
+                and b.f_detail_code=#{bo.fDetailCode}
+            </if>
+            <if test="bo.fDetailCode==null and bo.fDetailCode==''">
+                and ISNULL(b.f_detail_code)
+            </if>
+            <if test="bo.dimensionCode!=null and bo.dimensionCode!=''">
+                and b.dimension_code=#{bo.dimensionCode}
+            </if>
+            <if test="bo.dimensionCode==null and bo.dimensionCode==''">
+                and ISNULL(b.dimension_code)
+            </if>
+        </where>
+    </select>
+</mapper>

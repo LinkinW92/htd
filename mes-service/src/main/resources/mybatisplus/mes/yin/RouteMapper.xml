@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.skeqi.mes.mapper.yin.RouteDao">
+
+<insert id="insertRoute" keyProperty="id" useGeneratedKeys="false">
+		INSERT INTO  C_MES_ROUTING_T(PROUDUCTION_NAME,LINENAME,PROUDUCTION_ID,LINE_ID,ROUTE)
+		VALUES (#{productionName},#{lineName},#{productionID},#{lineID},#{route})
+	</insert>
+
+
+	<insert id="insertProductionWay" keyProperty="id" useGeneratedKeys="false">
+		INSERT INTO C_MES_PRODUCTION_WAY_T(DT,PRODUCTION_NAME,PRODUCTION_ID,ST_NAME,ST_ID,SERIAL_NO,LINE_ID)
+		VALUES (#{DT},#{productionName},#{productionID},#{stationName},#{stationID},#{serialNo},#{lineId})
+	</insert>
+</mapper>

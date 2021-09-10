@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wf.linesidelibrary.pack.LslPackTMapper">
+  <resultMap id="BaseResultMap" type="com.skeqi.mes.pojo.wf.linesidelibrary.pack.LslPackT">
+    <!--@mbg.generated-->
+    <!--@Table c_lsl_pack_t-->
+    <id column="ID" jdbcType="INTEGER" property="id" />
+    <result column="cdt" jdbcType="TIMESTAMP" property="cdt" />
+    <result column="udt" jdbcType="TIMESTAMP" property="udt" />
+    <result column="containerId" jdbcType="INTEGER" property="containerId" />
+    <result column="containerNo" jdbcType="VARCHAR" property="containerNo" />
+    <result column="packager" jdbcType="VARCHAR" property="packager" />
+    <result column="lineId" jdbcType="INTEGER" property="lineId" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    ID, cdt, udt, containerId, containerNo, packager, lineId, `status`
+  </sql>
+  <select id="selectBySn" resultType="com.skeqi.mes.pojo.wf.linesidelibrary.pack.LslPackT">
+    <!--@mbg.generated-->
+    select
+    p.id, p.cdt, p.udt, p.containerid, p.containerno, p.packager, p.lineid, p.status, p.id, pd.lineno, pd.sn, pd.quantity
+    from c_lsl_pack_t p
+    left join c_lsl_pack_detail_t pd on p.containerNo = pd.containerNo
+    where pd.sn = #{sn,jdbcType=VARCHAR}
+  </select>
+</mapper>

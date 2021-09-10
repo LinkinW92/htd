@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.skeqi.mes.mapper.qh.api.CheckMaterialDao">
+
+    <!-- 查询工位是否存在 -->
+    <select id="findStationCount" resultType="java.lang.Integer">
+        select count(id) from c_mes_station_t where  STATION_NAME=#{name}
+    </select>
+
+    <!-- 查询产线是否存在-->
+    <select id="findLineCount" resultType="java.lang.Integer">
+        select count(id) from c_mes_line_t where name=#{name}
+    </select>
+
+    <!-- 查询总成信息-->
+    <select id="findTrackBySn" resultType="java.util.Map">
+        select ID,DT,ST,BST,SN,ENGINESN,GEARBOXSN,TYPENAME,TRAYNUM,PRODUCTNUM,STATUS,DIS,PLAN_ID,REWORK_FLAG,PRODUCTION_ID,LINE_ID,WORK_ORDER_ID
+        from r_mes_tracking_t where sn=#{sn}
+    </select>
+
+    <!-- 查询产品状态 -->
+    <select id="findProStatus" resultType="java.lang.Integer">
+        select PRODUCTION_STE from c_mes_production_t where id=#{id}
+    </select>
+
+    <!-- 查询产品的默认配方 -->
+    <select id="findDefaultRecipe" resultType="java.util.Map">
+        SELECT
+            datil.*
+        FROM
+            c_mes_recipe_t re,
+            c_mes_total_recipe_t total,
+            c_mes_production_t pro,
+            c_mes_recipe_datil_t datil
+        WHERE
+            re.TOTAL_ID = total.ID
+            AND pro.id = total.PRODUCTION_ID
+            AND re.id = datil.RECIPE_ID
+            AND total.STATUS = 1
+            AND datil.STEPNO=#{step}
+            AND pro.id=#{pid}
+    </select>
+    <!-- 查询条码是否被装配-->
+    <select id="findRKeypart" resultType="java.lang.Integer">
+        select count(id) from r_mes_keypart_t where KEYPART_NUM=#{nums}
+    </select>
+    <select id="findPKeypart" resultType="java.lang.Integer">
+        select count(id) from p_mes_keypart_t where KEYPART_NUM=#{nums}
+    </select>
+</mapper>

@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.chenj.srm.CSrmSurveyDetailsMapper">
+  <resultMap id="BaseResultMap" type="com.skeqi.mes.pojo.chenj.srm.CSrmSurveyDetails">
+    <!--@mbg.generated-->
+    <!--@Table c_srm_survey_details-->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="survey_form_number" jdbcType="VARCHAR" property="surveyFormNumber" />
+    <result column="auxiliary_type" jdbcType="VARCHAR" property="auxiliaryType" />
+    <result column="property_field" jdbcType="VARCHAR" property="propertyField" />
+    <result column=" field_value" jdbcType="VARCHAR" property="fieldValue" />
+    <result column="supplier_code" jdbcType="VARCHAR" property="supplierCode" />
+    <result column="whether_a_reply" jdbcType="VARCHAR" property="whetherAReply" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, survey_form_number, auxiliary_type, property_field, ` field_value`, supplier_code,
+    whether_a_reply, create_time, update_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select
+    <include refid="Base_Column_List" />
+    from c_srm_survey_details
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <!--@mbg.generated-->
+    delete from c_srm_survey_details
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmSurveyDetails" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into c_srm_survey_details (survey_form_number, auxiliary_type,
+      property_field, ` field_value`, supplier_code,
+      whether_a_reply, create_time, update_time
+      )
+    values (#{surveyFormNumber,jdbcType=VARCHAR}, #{auxiliaryType,jdbcType=VARCHAR},
+      #{propertyField,jdbcType=VARCHAR}, #{fieldValue,jdbcType=VARCHAR}, #{supplierCode,jdbcType=VARCHAR},
+      #{whetherAReply,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmSurveyDetails" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into c_srm_survey_details
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="surveyFormNumber != null">
+        survey_form_number,
+      </if>
+      <if test="auxiliaryType != null">
+        auxiliary_type,
+      </if>
+      <if test="propertyField != null">
+        property_field,
+      </if>
+      <if test="fieldValue != null">
+        ` field_value`,
+      </if>
+      <if test="supplierCode != null">
+        supplier_code,
+      </if>
+      <if test="whetherAReply != null">
+        whether_a_reply,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="surveyFormNumber != null">
+        #{surveyFormNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="auxiliaryType != null">
+        #{auxiliaryType,jdbcType=VARCHAR},
+      </if>
+      <if test="propertyField != null">
+        #{propertyField,jdbcType=VARCHAR},
+      </if>
+      <if test="fieldValue != null">
+        #{fieldValue,jdbcType=VARCHAR},
+      </if>
+      <if test="supplierCode != null">
+        #{supplierCode,jdbcType=VARCHAR},
+      </if>
+      <if test="whetherAReply != null">
+        #{whetherAReply,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmSurveyDetails">
+    <!--@mbg.generated-->
+    update c_srm_survey_details
+    <set>
+      <if test="auxiliaryType != null">
+        auxiliary_type = #{auxiliaryType,jdbcType=VARCHAR},
+      </if>
+      <if test="propertyField != null">
+        property_field = #{propertyField,jdbcType=VARCHAR},
+      </if>
+      <if test="fieldValue != null">
+        ` field_value` = #{fieldValue,jdbcType=VARCHAR},
+      </if>
+      <if test="supplierCode != null">
+        supplier_code = #{supplierCode,jdbcType=VARCHAR},
+      </if>
+      <if test="whetherAReply != null">
+        whether_a_reply = #{whetherAReply,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <where>
+      <if test="surveyFormNumber != null and surveyFormNumber != ''">
+        survey_form_number=#{surveyFormNumber,jdbcType=VARCHAR}
+      </if>
+      <if test="id != null">
+        and id = #{id,jdbcType=INTEGER}
+      </if>
+    </where>
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmSurveyDetails">
+    <!--@mbg.generated-->
+    update c_srm_survey_details
+    set survey_form_number = #{surveyFormNumber,jdbcType=VARCHAR},
+      auxiliary_type = #{auxiliaryType,jdbcType=VARCHAR},
+      property_field = #{propertyField,jdbcType=VARCHAR},
+      ` field_value` = #{fieldValue,jdbcType=VARCHAR},
+      supplier_code = #{supplierCode,jdbcType=VARCHAR},
+      whether_a_reply = #{whetherAReply,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateBatch" parameterType="java.util.List">
+    <!--@mbg.generated-->
+    update c_srm_survey_details
+    <trim prefix="set" suffixOverrides=",">
+      <trim prefix="survey_form_number = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.surveyFormNumber,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="auxiliary_type = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.auxiliaryType,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="property_field = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.propertyField,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="` field_value` = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.fieldValue,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="supplier_code = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.supplierCode,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="whether_a_reply = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.whetherAReply,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="create_time = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.createTime,jdbcType=TIMESTAMP}
+        </foreach>
+      </trim>
+      <trim prefix="update_time = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.updateTime,jdbcType=TIMESTAMP}
+        </foreach>
+      </trim>
+    </trim>
+    where id in
+    <foreach close=")" collection="list" item="item" open="(" separator=", ">
+      #{item.id,jdbcType=INTEGER}
+    </foreach>
+  </update>
+  <update id="updateBatchSelective" parameterType="java.util.List">
+    <!--@mbg.generated-->
+    update c_srm_survey_details
+    <trim prefix="set" suffixOverrides=",">
+      <trim prefix="survey_form_number = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.surveyFormNumber != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.surveyFormNumber,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="auxiliary_type = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.auxiliaryType != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.auxiliaryType,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="property_field = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.propertyField != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.propertyField,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="` field_value` = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.fieldValue != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.fieldValue,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="supplier_code = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.supplierCode != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.supplierCode,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="whether_a_reply = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.whetherAReply != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.whetherAReply,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="create_time = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.createTime != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.createTime,jdbcType=TIMESTAMP}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="update_time = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.updateTime != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.updateTime,jdbcType=TIMESTAMP}
+          </if>
+        </foreach>
+      </trim>
+    </trim>
+    where id in
+    <foreach close=")" collection="list" item="item" open="(" separator=", ">
+      #{item.id,jdbcType=INTEGER}
+    </foreach>
+  </update>
+  <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into c_srm_survey_details
+    (survey_form_number, auxiliary_type, property_field, ` field_value`, supplier_code,
+      whether_a_reply, create_time, update_time)
+    values
+    <foreach collection="list" item="item" separator=",">
+      (#{item.surveyFormNumber,jdbcType=VARCHAR}, #{item.auxiliaryType,jdbcType=VARCHAR},
+        #{item.propertyField,jdbcType=VARCHAR}, #{item.fieldValue,jdbcType=VARCHAR}, #{item.supplierCode,jdbcType=VARCHAR},
+        #{item.whetherAReply,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP},
+        #{item.updateTime,jdbcType=TIMESTAMP})
+    </foreach>
+  </insert>
+  <insert id="insertOrUpdate" keyColumn="id" keyProperty="id" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmSurveyDetails" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into c_srm_survey_details
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      survey_form_number,
+      auxiliary_type,
+      property_field,
+      ` field_value`,
+      supplier_code,
+      whether_a_reply,
+      create_time,
+      update_time,
+    </trim>
+    values
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      #{surveyFormNumber,jdbcType=VARCHAR},
+      #{auxiliaryType,jdbcType=VARCHAR},
+      #{propertyField,jdbcType=VARCHAR},
+      #{fieldValue,jdbcType=VARCHAR},
+      #{supplierCode,jdbcType=VARCHAR},
+      #{whetherAReply,jdbcType=VARCHAR},
+      #{createTime,jdbcType=TIMESTAMP},
+      #{updateTime,jdbcType=TIMESTAMP},
+    </trim>
+    on duplicate key update
+    <trim suffixOverrides=",">
+      <if test="id != null">
+        id = #{id,jdbcType=INTEGER},
+      </if>
+      survey_form_number = #{surveyFormNumber,jdbcType=VARCHAR},
+      auxiliary_type = #{auxiliaryType,jdbcType=VARCHAR},
+      property_field = #{propertyField,jdbcType=VARCHAR},
+      ` field_value` = #{fieldValue,jdbcType=VARCHAR},
+      supplier_code = #{supplierCode,jdbcType=VARCHAR},
+      whether_a_reply = #{whetherAReply,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+    </trim>
+  </insert>
+  <insert id="insertOrUpdateSelective" keyColumn="id" keyProperty="id" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmSurveyDetails" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into c_srm_survey_details
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="surveyFormNumber != null">
+        survey_form_number,
+      </if>
+      <if test="auxiliaryType != null">
+        auxiliary_type,
+      </if>
+      <if test="propertyField != null">
+        property_field,
+      </if>
+      <if test="fieldValue != null">
+        ` field_value`,
+      </if>
+      <if test="supplierCode != null">
+        supplier_code,
+      </if>
+      <if test="whetherAReply != null">
+        whether_a_reply,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    values
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="surveyFormNumber != null">
+        #{surveyFormNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="auxiliaryType != null">
+        #{auxiliaryType,jdbcType=VARCHAR},
+      </if>
+      <if test="propertyField != null">
+        #{propertyField,jdbcType=VARCHAR},
+      </if>
+      <if test="fieldValue != null">
+        #{fieldValue,jdbcType=VARCHAR},
+      </if>
+      <if test="supplierCode != null">
+        #{supplierCode,jdbcType=VARCHAR},
+      </if>
+      <if test="whetherAReply != null">
+        #{whetherAReply,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+    on duplicate key update
+    <trim suffixOverrides=",">
+      <if test="id != null">
+        id = #{id,jdbcType=INTEGER},
+      </if>
+      <if test="surveyFormNumber != null">
+        survey_form_number = #{surveyFormNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="auxiliaryType != null">
+        auxiliary_type = #{auxiliaryType,jdbcType=VARCHAR},
+      </if>
+      <if test="propertyField != null">
+        property_field = #{propertyField,jdbcType=VARCHAR},
+      </if>
+      <if test="fieldValue != null">
+        ` field_value` = #{fieldValue,jdbcType=VARCHAR},
+      </if>
+      <if test="supplierCode != null">
+        supplier_code = #{supplierCode,jdbcType=VARCHAR},
+      </if>
+      <if test="whetherAReply != null">
+        whether_a_reply = #{whetherAReply,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+</mapper>

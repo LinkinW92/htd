@@ -1,0 +1,827 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.chenj.srm.CSrmPurchaseOrderHMapper">
+    <resultMap id="BaseResultMap" type="com.skeqi.mes.pojo.chenj.srm.CSrmPurchaseOrderH">
+        <!--@mbg.generated-->
+        <!--@Table c_srm_purchase_order_h-->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="order_number" jdbcType="VARCHAR" property="orderNumber"/>
+        <result column="order_type" jdbcType="VARCHAR" property="orderType"/>
+        <result column="creator" jdbcType="VARCHAR" property="creator"/>
+        <result column="buyer" jdbcType="VARCHAR" property="buyer"/>
+        <result column="company" jdbcType="VARCHAR" property="company"/>
+        <result column="supplier_code" jdbcType="VARCHAR" property="supplierCode"/>
+        <result column="currency" jdbcType="VARCHAR" property="currency"/>
+        <result column="status" jdbcType="VARCHAR" property="status"/>
+        <result column="payment_method" jdbcType="VARCHAR" property="paymentMethod"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        id, order_number, order_type, creator, buyer, company, supplier_code, currency, `status`,
+        payment_method,payment_clause,remark, contract_no,create_time, update_time
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmPurchaseOrderH"
+            resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        select
+        <include refid="Base_Column_List"/>
+        from c_srm_purchase_order_h
+        <where>
+            <if test="orderNumber != null and orderNumber != ''">
+                order_number=#{orderNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="id != null">
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+        </where>
+    </select>
+
+    <!--查询SRM订单系统数据-->
+    <select id="selectCSrmPurchaseOrderH" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmPurchaseOrderH"
+            resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CSrmPurchaseOrderHRsp">
+        <!--@mbg.generated-->
+        SELECT
+        h.order_number, h.order_type, h.creator,h.buyer,h.supplier_code supplierCode,u.USER_NAME buyerName,
+        h.company, s.name
+        supplierName,ct.companyName companyName,
+        h.currency,
+        h.`status`,
+        h.payment_method,h.create_time,h.remark,payment_clause,contract_no,h.update_time,h.delivery_address,h.buyer_type
+        from c_srm_purchase_order_h h
+        left join c_srm_supplier s ON h.supplier_code=s.supplier_code
+        left join c_mes_user_t u ON u.ID=h.buyer
+        join c_mes_company_t ct ON ct.companyCode=h.company
+        <where>
+            <if test="orderNumber != null and orderNumber != ''">
+                h.order_number like concat('%',#{orderNumber,jdbcType=VARCHAR},'%')
+            </if>
+            and h.is_delete=0 and h.buyer_type=#{buyerType,jdbcType=VARCHAR}
+        </where>
+        group by order_number
+    </select>
+
+    <!--查询K3订单数据-->
+    <select id="selectCSrmPurchaseOrderHKThree" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmPurchaseOrderH"
+            resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CSrmPurchaseOrderHRsp">
+        <!--@mbg.generated-->
+        SELECT
+        h.order_number,h.buyer,h.supplier_code,h.buyer buyerName,
+        h.supplier_code,
+        h.`status`,
+        h.payment_method,h.create_time,h.update_time,h.remark,h.delivery_address,h.buyer_type,h.supplier_code
+        supplierCode
+        from c_srm_purchase_order_h h
+        <where>
+            <if test="orderNumber != null and orderNumber != ''">
+                h.order_number like concat('%',#{orderNumber,jdbcType=VARCHAR},'%')
+            </if>
+            and h.is_delete=0 and h.buyer_type=#{buyerType,jdbcType=VARCHAR}
+        </where>
+        group by order_number
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        <!--@mbg.generated-->
+        delete from c_srm_purchase_order_h
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <delete id="delKThreeData">
+        delete from c_srm_purchase_order_h where order_number in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.orderNumber,jdbcType=VARCHAR}
+        </foreach>
+        and is_delete=0
+    </delete>
+    <update id="delCSrmPurchaseOrderH">
+        update c_srm_purchase_order_h set is_delete=1 where order_number=#{orderNumber,jdbcType=VARCHAR}
+    </update>
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmPurchaseOrderH"
+            useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_purchase_order_h (order_number, order_type, creator,
+        buyer, company, supplier_code,
+        currency, `status`, payment_method,
+        create_time, update_time)
+        values (#{orderNumber,jdbcType=VARCHAR}, #{orderType,jdbcType=VARCHAR}, #{creator,jdbcType=VARCHAR},
+        #{buyer,jdbcType=VARCHAR}, #{company,jdbcType=VARCHAR}, #{supplierCode,jdbcType=VARCHAR},
+        #{currency,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, #{paymentMethod,jdbcType=VARCHAR},
+        #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+    </insert>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id"
+            parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmPurchaseOrderH"
+            useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_purchase_order_h
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderNumber != null">
+                order_number,
+            </if>
+            <if test="orderType != null">
+                order_type,
+            </if>
+            <if test="creator != null">
+                creator,
+            </if>
+            <if test="buyer != null">
+                buyer,
+            </if>
+            <if test="company != null">
+                company,
+            </if>
+            <if test="supplierCode != null">
+                supplier_code,
+            </if>
+            <if test="currency != null">
+                currency,
+            </if>
+            <if test="status != null">
+                `status`,
+            </if>
+            <if test="paymentMethod != null">
+                payment_method,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="paymentClause != null">
+                payment_clause,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+            <if test="contractNo != null">
+                contract_no,
+            </if>
+            <if test="deliveryAddress != null">
+                delivery_address,
+            </if>
+
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderNumber != null">
+                #{orderNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="orderType != null">
+                #{orderType,jdbcType=VARCHAR},
+            </if>
+            <if test="creator != null">
+                #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="buyer != null">
+                #{buyer,jdbcType=VARCHAR},
+            </if>
+            <if test="company != null">
+                #{company,jdbcType=VARCHAR},
+            </if>
+            <if test="supplierCode != null">
+                #{supplierCode,jdbcType=VARCHAR},
+            </if>
+            <if test="currency != null">
+                #{currency,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="paymentMethod != null">
+                #{paymentMethod,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="paymentClause != null">
+                #{paymentClause,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null">
+                #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="contractNo != null">
+                #{contractNo,jdbcType=VARCHAR},
+            </if>
+            <if test="deliveryAddress != null">
+                #{deliveryAddress,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmPurchaseOrderH">
+        <!--@mbg.generated-->
+        update c_srm_purchase_order_h
+        <set>
+            <if test="orderNumber != null">
+                order_number = #{orderNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="orderType != null">
+                order_type = #{orderType,jdbcType=VARCHAR},
+            </if>
+            <if test="creator != null">
+                creator = #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="buyer != null">
+                buyer = #{buyer,jdbcType=VARCHAR},
+            </if>
+            <if test="company != null">
+                company = #{company,jdbcType=VARCHAR},
+            </if>
+            <if test="supplierCode != null">
+                supplier_code = #{supplierCode,jdbcType=VARCHAR},
+            </if>
+            <if test="currency != null">
+                currency = #{currency,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                `status` = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="paymentMethod != null">
+                payment_method = #{paymentMethod,jdbcType=VARCHAR},
+            </if>
+            <if test="paymentClause != null">
+                payment_clause = #{paymentClause,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null">
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="contractNo != null">
+                contract_no = #{contractNo,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isDelete != null">
+                is_delete=#{isDelete,jdbcType=BOOLEAN},
+            </if>
+            <if test="isOpenTicket != null">
+                is_open_ticket=#{isOpenTicket,jdbcType=INTEGER},
+            </if>
+        </set>
+        <where>
+            <if test="orderNumber != null and orderNumber != ''">
+                order_number=#{orderNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="id != null">
+                and id=#{id,jdbcType=INTEGER}
+            </if>
+        </where>
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmPurchaseOrderH">
+        <!--@mbg.generated-->
+        update c_srm_purchase_order_h
+        set order_number = #{orderNumber,jdbcType=VARCHAR},
+        order_type = #{orderType,jdbcType=VARCHAR},
+        creator = #{creator,jdbcType=VARCHAR},
+        buyer = #{buyer,jdbcType=VARCHAR},
+        company = #{company,jdbcType=VARCHAR},
+        supplier_code = #{supplierCode,jdbcType=VARCHAR},
+        currency = #{currency,jdbcType=VARCHAR},
+        `status` = #{status,jdbcType=VARCHAR},
+        payment_method = #{paymentMethod,jdbcType=VARCHAR},
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+        update_time = #{updateTime,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateBatch" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update c_srm_purchase_order_h
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="order_number = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.orderNumber,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="order_type = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.orderType,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="creator = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.creator,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="buyer = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.buyer,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="company = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.company,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="supplier = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.supplierCode,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="currency = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.currency,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="`status` = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.status,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="payment_method = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.paymentMethod,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.createTime,jdbcType=TIMESTAMP}
+                </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.updateTime,jdbcType=TIMESTAMP}
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    <update id="updateBatchSelective" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update c_srm_purchase_order_h
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="order_number = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.orderNumber != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.orderNumber,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="order_type = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.orderType != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.orderType,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="creator = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.creator != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.creator,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="buyer = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.buyer != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.buyer,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="company = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.company != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.company,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="supplier = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.supplierCode != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.supplierCode,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="currency = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.currency != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.currency,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="`status` = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.status != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.status,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="payment_method = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.paymentMethod != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.paymentMethod,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.createTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.createTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.updateTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.updateTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_purchase_order_h
+        (order_number, order_type, creator, buyer, company, supplier_code, currency, `status`,
+        payment_method, create_time, update_time)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.orderNumber,jdbcType=VARCHAR}, #{item.orderType,jdbcType=VARCHAR}, #{item.creator,jdbcType=VARCHAR},
+            #{item.buyer,jdbcType=VARCHAR}, #{item.company,jdbcType=VARCHAR}, #{item.supplierCode,jdbcType=VARCHAR},
+            #{item.currency,jdbcType=VARCHAR}, #{item.status,jdbcType=VARCHAR}, #{item.paymentMethod,jdbcType=VARCHAR},
+            #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
+    <insert id="insertOrUpdate" keyColumn="id" keyProperty="id"
+            parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmPurchaseOrderH"
+            useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_purchase_order_h
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            order_number,
+            order_type,
+            creator,
+            buyer,
+            company,
+            supplier_code,
+            currency,
+            `status`,
+            payment_method,
+            create_time,
+            update_time,
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            #{orderNumber,jdbcType=VARCHAR},
+            #{orderType,jdbcType=VARCHAR},
+            #{creator,jdbcType=VARCHAR},
+            #{buyer,jdbcType=VARCHAR},
+            #{company,jdbcType=VARCHAR},
+            #{supplierCode,jdbcType=VARCHAR},
+            #{currency,jdbcType=VARCHAR},
+            #{status,jdbcType=VARCHAR},
+            #{paymentMethod,jdbcType=VARCHAR},
+            #{createTime,jdbcType=TIMESTAMP},
+            #{updateTime,jdbcType=TIMESTAMP},
+        </trim>
+        on duplicate key update
+        <trim suffixOverrides=",">
+            <if test="id != null">
+                id = #{id,jdbcType=INTEGER},
+            </if>
+            order_number = #{orderNumber,jdbcType=VARCHAR},
+            order_type = #{orderType,jdbcType=VARCHAR},
+            creator = #{creator,jdbcType=VARCHAR},
+            buyer = #{buyer,jdbcType=VARCHAR},
+            company = #{company,jdbcType=VARCHAR},
+            supplier_code = #{supplierCode,jdbcType=VARCHAR},
+            currency = #{currency,jdbcType=VARCHAR},
+            `status` = #{status,jdbcType=VARCHAR},
+            payment_method = #{paymentMethod,jdbcType=VARCHAR},
+            create_time = #{createTime,jdbcType=TIMESTAMP},
+            update_time = #{updateTime,jdbcType=TIMESTAMP},
+        </trim>
+    </insert>
+    <insert id="insertOrUpdateSelective" keyColumn="id" keyProperty="id"
+            parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmPurchaseOrderH" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_purchase_order_h
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="orderNumber != null">
+                order_number,
+            </if>
+            <if test="orderType != null">
+                order_type,
+            </if>
+            <if test="creator != null">
+                creator,
+            </if>
+            <if test="buyer != null">
+                buyer,
+            </if>
+            <if test="company != null">
+                company,
+            </if>
+            <if test="supplierCode != null">
+                supplier_code,
+            </if>
+            <if test="currency != null">
+                currency,
+            </if>
+            <if test="status != null">
+                `status`,
+            </if>
+            <if test="paymentMethod != null">
+                payment_method,
+            </if>
+            <if test="paymentClause != null">
+                payment_clause,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+            <if test="contractNo != null">
+                contract_no,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="orderNumber != null">
+                #{orderNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="orderType != null">
+                #{orderType,jdbcType=VARCHAR},
+            </if>
+            <if test="creator != null">
+                #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="buyer != null">
+                #{buyer,jdbcType=VARCHAR},
+            </if>
+            <if test="company != null">
+                #{company,jdbcType=VARCHAR},
+            </if>
+            <if test="supplierCode != null">
+                #{supplierCode,jdbcType=VARCHAR},
+            </if>
+            <if test="currency != null">
+                #{currency,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="paymentMethod != null">
+                #{paymentMethod,jdbcType=VARCHAR},
+            </if>
+            <if test="paymentClause != null">
+                #{paymentClause,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null">
+                #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="contractNo != null">
+                #{contractNo,jdbcType=VARCHAR},
+            </if>
+
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+        on duplicate key update
+        <trim suffixOverrides=",">
+            <if test="id != null">
+                id = #{id,jdbcType=INTEGER},
+            </if>
+            <if test="orderNumber != null">
+                order_number = #{orderNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="orderType != null">
+                order_type = #{orderType,jdbcType=VARCHAR},
+            </if>
+            <if test="creator != null">
+                creator = #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="buyer != null">
+                buyer = #{buyer,jdbcType=VARCHAR},
+            </if>
+            <if test="company != null">
+                company = #{company,jdbcType=VARCHAR},
+            </if>
+            <if test="supplierCode != null">
+                supplier_code = #{supplierCode,jdbcType=VARCHAR},
+            </if>
+            <if test="currency != null">
+                currency = #{currency,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                `status` = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="paymentMethod != null">
+                payment_method = #{paymentMethod,jdbcType=VARCHAR},
+            </if>
+            <if test="paymentClause != null">
+                payment_clause = #{paymentClause,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null">
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="contractNo != null">
+                contract_no = #{contractNo,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <!--获取最后一条数据-->
+    <select id="selectFinallyData" resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        SELECT
+        order_number
+        FROM
+        c_srm_purchase_order_h
+        where order_number like concat('PO2','%')
+        ORDER BY
+        id DESC
+        LIMIT 1
+    </select>
+    <select id="selectByPrimaryList" resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CSrmPurchaseOrderHRsp">
+        SELECT
+        h.order_number,
+        h.order_type,
+        h.creator,
+        h.buyer,
+        IF
+        ( h.buyer_type = '1',(SELECT u.`USER_NAME` from c_mes_user_t u where u.ID=h.buyer) , h.buyer ) buyerName,
+        h.company,
+        IF
+        ( h.buyer_type = '1', (SELECT ct.`companyName` from c_mes_company_t ct where ct.companyCode=h.company),
+        h.company ) companyName,
+        h.supplier_code supplierCode,
+        IF
+        ( h.buyer_type = '1', (SELECT sup.`name` from c_srm_supplier sup where sup.supplier_code=h.supplier_code GROUP
+        BY sup.supplier_code), h.supplier_name ) supplierName,
+        h.currency,
+        h.`status`,
+        h.remark,
+        h.payment_method,
+        h.create_time,
+        h.delivery_address,
+        h.update_time,
+        h.buyer_type
+        FROM
+        c_srm_purchase_order_h h
+        <where>
+            <if test="orderNumber != null and orderNumber != ''">
+                h.order_number like concat('%',#{orderNumber,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="status != null and status != ''">
+                and h.status in
+                <foreach close=")" collection="status" item="item" open="(" separator=", ">
+                    #{item,jdbcType=VARCHAR}
+                </foreach>
+            </if>
+            <if test="supplierCode != null and supplierCode != ''">
+                and h.supplier_code like concat('%',#{supplierCode,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="isOpenTicket != null">
+                and h.is_open_ticket=#{isOpenTicket,jdbcType=INTEGER}
+            </if>
+            and h.is_delete=0
+        </where>
+        group by h.order_number
+        order by h.create_time desc
+    </select>
+
+
+    <insert id="batchInsertKThree" parameterType="map">
+        <!--@mbg.generated-->
+        insert into c_srm_purchase_order_h
+        (order_number, buyer, supplier_code,
+        create_time, update_time, remark,payment_method,
+        delivery_address,buyer_type,status,is_delete,supplier_name)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.orderNumber,jdbcType=VARCHAR}, #{item.buyer,jdbcType=VARCHAR},
+            #{item.supplier,jdbcType=VARCHAR},#{item.createTime,jdbcType=TIMESTAMP},
+            #{item.updateTime,jdbcType=TIMESTAMP},#{item.remark,jdbcType=VARCHAR},
+            #{item.paymentMethod,jdbcType=VARCHAR},
+            #{item.deliveryAddress,jdbcType=VARCHAR},'2','3',0,#{item.supplierName,jdbcType=VARCHAR}
+            )
+        </foreach>
+    </insert>
+
+    <update id="updateBatchSelectiveKThree" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update c_srm_purchase_order_h
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="buyer = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.buyer != null">
+                        when order_number = #{item.orderNumber,jdbcType=VARCHAR} then #{item.buyer,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="supplier = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.supplier != null">
+                        when order_number = #{item.orderNumber,jdbcType=VARCHAR} then #{item.supplier,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="payment_method = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.paymentMethod != null">
+                        when order_number = #{item.orderNumber,jdbcType=VARCHAR} then
+                        #{item.paymentMethod,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.createTime != null">
+                        when order_number = #{item.orderNumber,jdbcType=VARCHAR} then
+                        #{item.createTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.updateTime != null">
+                        when order_number = #{item.orderNumber,jdbcType=VARCHAR} then
+                        #{item.updateTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="remark = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.remark != null">
+                        when order_number = #{item.orderNumber,jdbcType=VARCHAR} then #{item.remark,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delivery_address = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.deliveryAddress != null">
+                        when order_number = #{item.orderNumber,jdbcType=VARCHAR} then
+                        #{item.deliveryAddress,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="supplier_name = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.supplierName != null">
+                        when order_number = #{item.orderNumber,jdbcType=VARCHAR} then
+                        #{item.supplierName,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where order_number in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.orderNumber,jdbcType=VARCHAR}
+        </foreach>
+        and is_delete=0
+    </update>
+    <update id="updateBatchSelectiveStatusTrue">
+        update c_srm_purchase_order_h set is_open_ticket=1 where order_number
+        in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.orderNumber,jdbcType=VARCHAR}
+        </foreach>
+        and is_delete=0
+    </update>
+    <update id="updateBatchSelectiveStatusFalse">
+        update c_srm_purchase_order_h set is_open_ticket=0 where order_number
+        in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.orderNumber,jdbcType=VARCHAR}
+        </foreach>
+        and is_delete=0
+    </update>
+</mapper>

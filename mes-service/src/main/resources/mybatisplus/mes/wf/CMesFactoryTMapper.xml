@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wf.CMesFactoryTMapper">
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, factoryCode, factoryName, `describe`,dateTime,alterDt
+  </sql>
+
+<!--  查询工厂 -->
+  <select id="findFactoryAll" resultType="com.skeqi.mes.pojo.qh.CMesFactoryT">
+    select
+    f.*,c.companyName as companyName
+    from c_mes_factory_t f,c_mes_company_t c
+    where f.companyCode = c.companyCode
+    <if test="companyName != null and companyName != ''">
+     and companyName like concat('%',#{companyName},'%')
+    </if>
+    <if test="factoryCode != null and factoryCode != ''">
+      and factoryCode like concat('%',#{factoryCode},'%')
+    </if>
+    <if test="factoryName != null and factoryName != ''">
+      and factoryName like concat('%',#{factoryName},'%')
+    </if>
+
+  </select>
+
+  <!--添加工厂-->
+  <insert id="addFactory">
+    insert into c_mes_factory_t
+    <trim  prefix="(" suffix=")" suffixOverrides=",">
+      <if test="companyCode != null and companyCode != ''">
+        companyCode,
+      </if>
+      <if test="factoryCode != null and factoryCode != ''">
+        factoryCode,
+      </if>
+      <if test="factoryName != null and factoryName != ''">
+        factoryName,
+      </if>
+      <if test="describe != null and describe != ''">
+        `describe`,
+      </if>
+      <if test="dateTime != null and dateTime != ''">
+        dateTime,
+      </if>
+      <if test="alterDt != null and alterDt != ''">
+        alterDt
+      </if>
+    </trim>
+    <trim  prefix="value (" suffix=")" suffixOverrides=",">
+      <if test="companyCode != null and companyCode != ''">
+        #{companyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="factoryCode != null and factoryCode != ''">
+        #{factoryCode,jdbcType=VARCHAR},
+      </if>
+      <if test="factoryName != null and factoryName != ''">
+        #{factoryName,jdbcType=VARCHAR},
+      </if>
+      <if test="describe != null and describe != ''">
+        #{describe,jdbcType=VARCHAR},
+      </if>
+      <if test="dateTime != null and dateTime != ''">
+        #{dateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="alterDt != null and alterDt != ''">
+        #{alterDt,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+  <!--按工厂编号查询工厂是否存在-->
+  <select id="selectFactoryByCode" resultType="com.skeqi.mes.pojo.qh.CMesFactoryT">
+    select
+    *
+    from c_mes_factory_t
+    <where>
+      <if test="factoryCode != null and factoryCode != ''">
+        factoryCode = #{factoryCode,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </select>
+
+  <update id="editFactory">
+    update c_mes_factory_t
+    <set>
+        `describe`=#{describe,jdbcType=VARCHAR},
+      <if test="companyCode != null and companyCode != ''">
+        companyCode = #{companyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="factoryName != null and factoryName != ''">
+        factoryName=#{factoryName,jdbcType=VARCHAR},
+      </if>
+      <if test="dateTime != null and dateTime != ''">
+        dateTime=#{dateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="alterDt != null and alterDt != ''">
+        alterDt=#{alterDt,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <where>
+      <if test="id != null">
+        id = #{id,jdbcType=INTEGER}
+      </if>
+    </where>
+  </update>
+  <!--删除工厂-->
+  <delete id="delFactoryByIdAndCode">
+    delete from c_mes_factory_t
+    <where>
+      <if test="id != null">
+        id = #{id,jdbcType=INTEGER}
+      </if>
+    </where>
+  </delete>
+
+  <select id="selectFactoryById" resultType="com.skeqi.mes.pojo.qh.CMesFactoryT">
+    select
+    *
+    from c_mes_factory_t
+    <where>
+      id = #{id,jdbcType=INTEGER}
+    </where>
+  </select>
+
+  <!--按公司编号查询工厂-->
+  <select id="selectFactoryByCompanyCode" resultType="com.skeqi.mes.pojo.qh.CMesFactoryT">
+    select
+    *
+    from c_mes_factory_t
+    <where>
+      <if test="companyCode != null and companyCode != ''">
+        companyCode = #{companyCode,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </select>
+
+  <!--按公司编号删除工厂-->
+  <delete id="delFactoryByCompanyCode">
+    delete from c_mes_factory_t
+    <where>
+      <if test="companyCode != null and companyCode !=''">
+        companyCode= #{companyCode,jdbcType=INTEGER}
+      </if>
+    </where>
+  </delete>
+
+  <select id="findFactoryList" resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CMesFactoryTRsp">
+    select
+    factoryCode factoryCode,factoryName factoryName
+    from c_mes_factory_t
+    <where>
+      <if test="factoryCode != null and factoryCode != ''">
+        factoryCode like concat('%',#{factoryCode,jdbcType=VARCHAR},'%')
+      </if>
+      <if test="factoryName != null and factoryName != ''">
+        and factoryName like concat('%',#{factoryName,jdbcType=VARCHAR},'%')
+      </if>
+
+    </where>
+
+  </select>
+    <select id="findDepartmentData" resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CWmsDepartmentTRsp">
+        select DM_NUMBER deNumber, DM_NAME deName
+        from c_wms_department_t
+        <where>
+            <if test="deName != null and deName != ''">
+                DM_NAME like concat('%',#{deName,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="deNumber != null and deNumber != ''">
+                and DM_NUMBER like concat('%',#{deNumber,jdbcType=VARCHAR},'%')
+            </if>
+            and VIEW_MODE=1 and DM_NUMBER is not null
+        </where>
+
+    </select>
+
+</mapper>

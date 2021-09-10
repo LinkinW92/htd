@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.dzb.report.EquipmentUseDao">
+
+    <!-- 查询全部产线 EquipmentUseDao-->
+    <select id="listLine" resultType="java.util.Map">
+        select id,name from c_mes_line_t
+    </select>
+
+    <select id="countSnByDayAndLineId" resultType="int">
+        select count(*)
+        from P_MES_TRACKING_T tt
+        where line_id=#{lineId}
+        and  TO_DAYS(tt.OFFLINE_DT)=to_days(#{date})
+    </select>
+    <select id="countSnGroupSt" resultType="java.util.Map">
+        	select st,count(*) snCount
+            from p_mes_station_pass_t
+            where line_id=#{lineId}
+            and  TO_DAYS(dt)=to_days(#{date})
+            GROUP BY st
+    </select>
+    <select id="countSnByDateRangeAndLineId" resultType="java.util.Map">
+        select to_days(OFFLINE_DT) days, count(sn) snCount
+        from p_mes_tracking_t
+        <![CDATA[
+        WHERE TO_DAYS(OFFLINE_DT)>=TO_DAYS(#{start}) and TO_DAYS(OFFLINE_DT) <= TO_DAYS(#{end}) and LINE_ID=#{lineId}
+        group by days;
+
+        ]]>
+    </select>
+    <select id="countSnGroupSt2" resultType="java.util.Map">
+        select st,count(sn) snCount
+        FROM p_mes_station_pass_t
+       <![CDATA[
+        WHERE dt>=#{start} and dt<#{end} and line_id=#{lineId}   GROUP BY st;
+       ]]>
+    </select>
+
+</mapper>
+
+

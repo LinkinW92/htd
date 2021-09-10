@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.endhandle.TGlAutoTransferEntryMapper">
+
+    <resultMap type="com.skeqi.finance.domain.endhandle.transfer.TGlAutoTransferEntry" id="TGlAutoTransferEntryResult">
+        <result property="fTransferEntryId" column="f_transfer_entry_id"/>
+        <result property="fTransferId" column="f_transfer_id"/>
+        <result property="fEntrySeq" column="f_entry_seq"/>
+        <result property="fExplanation" column="f_explanation"/>
+        <result property="fAccountId" column="f_account_id"/>
+        <result property="fItemIsvalid" column="f_item_isvalid"/>
+        <result property="fCurrencyId" column="f_currency_id"/>
+        <result property="fExchangeRateType" column="f_exchange_rate_type"/>
+        <result property="fDc" column="f_dc"/>
+        <result property="fType" column="f_type"/>
+        <result property="fPercentage" column="f_percentage"/>
+        <result property="fFormulaType" column="f_formula_type"/>
+        <result property="fAmountforFormula" column="f_amountfor_formula"/>
+        <result property="fAmountFormula" column="f_amount_formula"/>
+        <result property="fQtymula" column="f_qtymula"/>
+        <result property="fIsmultiCollect" column="f_ismulti_collect"/>
+        <result property="fPosted" column="f_posted"/>
+    </resultMap>
+
+
+    <delete id="delByTransferId">
+        delete from t_gl_auto_transfer_entry where f_transfer_id=#{id}
+    </delete>
+
+    <select id="queryPageByPId" resultType="com.skeqi.finance.pojo.vo.transfer.TGlAutoTransferEntryVo">
+         SELECT
+            e.*,
+            a.f_name AS acct_name,
+            a.f_number AS acct_number ,
+            c.f_number as cuy_number,
+            c.f_code as cuy_name,
+            rt.f_number as rate_number,
+            rt.f_name as rate_name
+        FROM
+            t_gl_auto_transfer_entry e
+            LEFT JOIN t_bd_account a ON a.f_acct_id = e.f_account_id
+            LEFT JOIN t_bd_currency c ON c.f_currency_id = e.f_currency_id
+            LEFT JOIN t_bd_rate_type rt ON rt.f_rate_type_id = e.f_exchange_rate_type
+    </select>
+</mapper>

@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.all.CMesUserTDAO">
+
+	<resultMap type="CMesUserT" id="userMap">
+		<result column="ID" property="id" />
+		<result column="user_name" property="userName" />
+		<result column="user_pwd" property="userPwd" />
+		<result column="status" property="status" />
+		<result column="department" property="department" />
+		<result column="security" property="security" />
+		<result column="user_Power" property="userPower" />
+		<result column="role_Id" property="roleId" />
+		<result column="user_Number" property="userNumber" />
+		<result column="login_Status" property="loginStatus" />
+		<result column="position" property="position" />
+		<result column="organizationalPath" property="organizationalPath" />
+		<result column="rank" property="rank" />
+		<result column="reportsToName" property="reportsToName" />
+
+		<association property="role" javaType="com.skeqi.mes.pojo.CMesRoleT">
+			<result column="ROLE_NAME" property="roleName" />
+			<result column="role_Id" property="rid" />
+		</association>
+
+		<association property="departmentT" javaType="com.skeqi.mes.pojo.wms.CWmsDepartmentT">
+			<result column="DM_NAME" property="dmName" />
+			<result column="department" property="id" />
+		</association>
+	</resultMap>
+
+	<!-- 查询 -->
+	<select id="findAllUser" resultMap="userMap">
+		SELECT
+			`user`.*,
+			role.role_name AS ROLE_NAME,
+			department.DM_NAME,
+			department.organizationalPath,
+			b.USER_NAME as reportsToName
+		FROM
+			c_mes_user_t `user`
+			left JOIN c_qh_role role ON `user`.ROLE_ID = role.id
+			LEFT JOIN c_wms_department_t department ON `user`.department = department.id
+			left join c_mes_user_t b on `user`.reportsTo = b.id
+		WHERE user.viewMode =1 and user.supplier_code is null
+		<if test="id!=null">
+			and `user`.id = #{id}
+		</if>
+		<if test="status!='null' and status!=''">
+			and `user`.STATUS=#{status}
+		</if>
+		<if test="userName!=null and userName!=''">
+			and `user`.USER_NAME like concat('%',#{userName},'%')
+		</if>
+		<if test="department!=null and department!=''">
+			and `user`.DEPARTMENT like concat('%',#{department},'%')
+		</if>
+		<if test="roleId !=null and roleId !=''">
+			and `user`.ROLE_ID = #{roleId}
+		</if>
+		<if test="userNumber !=null and userNumber !=''">
+			and `user`.USER_NUMBER like concat('%',#{userNumber},'%')
+		</if>
+		order by `user`.USER_NUMBER
+	</select>
+
+	<!-- 根据id查询 -->
+	<select id="findByidUser" resultType="CMesUserT">
+		select u.*,r.ROLE_NAME from C_MES_USER_T u,c_qh_role r
+		WHERE u.viewMode = 1
+		and u.ROLE_ID=r.ID and u.id=#{id}
+	</select>
+
+	<!-- 添加 -->
+	<insert id="addUser">
+		INSERT INTO C_MES_USER_T(USER_NAME,USER_PWD,STATUS,DEPARTMENT,SECURITY,USER_POWER,ROLE_ID,USER_NUMBER,position,name)
+		VALUES (#{userName},#{userPwd},#{status},#{department},'','0',#{roleId},#{userNumber},#{position},#{name})
+	</insert>
+
+	<!-- 修改 -->
+	<update id="updateUser">
+		UPDATE C_MES_USER_T
+		SET
+		USER_NAME = #{userName},
+		USER_PWD = #{userPwd},
+		STATUS = #{status},
+		ROLE_ID = #{roleId},
+		department = #{department},
+		position = #{position}
+		where ID=#{id}
+	</update>
+
+	<!-- 删除 -->
+	<delete id="delUser">
+		delete from C_MES_USER_T where id=#{id}
+	</delete>
+
+	<!-- 获取最大的number -->
+	<select id="findMaxNumber" resultType="integer">
+		select max(USER_NUMBER) from C_MES_USER_T where viewMode = 1
+	</select>
+	<update id="updatePwd">
+	  	UPDATE C_MES_USER_T SET   USER_PWD = #{pwd}  where ID=#{id}
+	</update>
+
+	<select id="findUserByName" resultType="com.skeqi.mes.pojo.CMesUserT">
+		select * from c_mes_user_t
+		where viewMode = 1
+		and USER_NAME = #{userName}
+	</select>
+
+	<!-- 查询所有部门 -->
+	<select id="findDepartment" resultType="com.alibaba.fastjson.JSONObject">
+		select id,DM_NAME as dmName,organizationalPath from c_wms_department_t
+		ORDER BY id
+	</select>
+
+	<!-- 通过用户id查询所在部门用户 -->
+	<select id="QueryUserSDepartmentUserByuserId" resultType="com.alibaba.fastjson.JSONObject">
+		select id,user_name as userName from c_mes_user_t a
+		where a.viewMode = 1
+		and DEPARTMENT = (
+			select DEPARTMENT from c_mes_user_t
+			where viewMode = 1 and id = #{userId}
+		)
+	</select>
+
+	<!-- 查询用户直属主管 -->
+	<select id="findReportsTo" resultType="com.alibaba.fastjson.JSONObject">
+		select id,user_name as userName from c_mes_user_t a
+			where a.viewMode = 1
+			and id = (
+			select reportsTo from c_mes_user_t
+			where viewMode = 1 and id = #{userId}
+		)
+	</select>
+
+	<!-- 更新直属主管 -->
+	<update id="updateReportsTo">
+		update c_mes_user_t
+		set
+		reportsTo = #{reportsToId}
+		where id = #{userId}
+	</update>
+
+</mapper>

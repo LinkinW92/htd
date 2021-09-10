@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.all.CMesLineTDAO">
+
+
+	<!-- 查询全部 -->
+    <select id="findAllLine" resultType="CMesLineT">
+        <!--select *,DT as dt from c_mes_line_t where 1=1-->
+        SELECT
+		line.id id,line.NAME name,line.CODE_TYPE codeType,line.DSC dsc,line.CODE code
+		,c.companyName,c.companyCode,f.factoryName,f.factoryCode,a.areaName,a.areaCode,p.plantName,p.plantCode,line.STATUS status
+        FROM
+        c_mes_company_t c
+        RIGHT JOIN c_mes_factory_t f ON c.companyCode=f.companyCode
+        RIGHT JOIN c_mes_area_t a ON f.factoryCode=a.factoryCode
+        RIGHT JOIN c_mes_plant_t p ON a.areaCode=p.areaCode
+        RIGHT JOIN c_mes_line_t line ON line.plantCode=p.plantCode
+        where 1=1
+        <if test="id!=null and id!=0">
+            and line.id=#{id}
+        </if>
+        <if test="name!=null and name!=''">
+            and line.name like concat('%',#{name},'%')
+        </if>
+        <if test="companyCode!=null and companyCode!=''">
+            and c.companyCode= #{companyCode}
+        </if>
+        <if test="factoryCode!=null and factoryCode!=''">
+            and f.factoryCode= #{factoryCode}
+        </if>
+        <if test="areaCode!=null and areaCode!=''">
+            and a.areaCode= #{areaCode}
+        </if>
+        <if test="plantCode!=null and plantCode!=''">
+            and p.plantCode= #{plantCode}
+        </if>
+    </select>
+
+	<!-- 根据id查询 -->
+	<select id="findLineByid" resultType="CMesLineT">
+		select * from c_mes_line_t where id=#{id}
+	</select>
+
+	<!-- //根据产线ID查询工位 -->
+	<!--<select id="findStationByLid" resultType="CMesStationLine">
+		select  s.STATION_NAME sname  from c_mes_line_t l,c_mes_station_t s where l.id=s.LINE_ID and l.id=#{id}
+	</select>-->
+	<select id="findStationByLid" resultType="CMesStationLine">
+		select  s.STATION_NAME sname, s.id id, l.name lname  from c_mes_line_t l,c_mes_station_t s where l.id=s.LINE_ID and l.id=#{id}
+	</select>
+
+
+	<!-- 添加 -->
+	<insert id="addLine">
+		insert into c_mes_line_t(DT,NAME,DSC,CODE_TYPE,STATUS, CODE, companyCode, factoryCode, areaCode, plantCode)
+		values(now(),#{name},#{dsc},#{codeType},0,#{code}, #{companyCode}, #{factoryCode}, #{areaCode}, #{plantCode})
+        <!-- insert into c_mes_line_t(DT,NAME,DSC,CODE_TYPE,STATUS,CODE)
+		<trim prefix="values(" suffix=")" suffixOverrides=",">
+			now(),
+			<if test="name!=null and name!=''">
+				#{name},
+			</if>
+			<if test="dsc!=null and dsc!=''">
+				#{dsc},
+			</if>
+			<if test="codeType!=null">
+				#{codeType},
+			</if>
+			0,
+			<if test="code!=null and code!=''">
+				#{code}
+			</if>
+		</trim> -->
+	</insert>
+
+	<!-- 修改 -->
+	<update id="updateLine">
+		update c_mes_line_t set DT=now(),
+							    NAME=#{name},
+							    DSC=#{dsc},
+							    CODE_TYPE=#{codeType},
+							    STATUS=#{status},
+							    companyCode=#{companyCode},
+							    factoryCode=#{factoryCode},
+							    areaCode=#{areaCode},
+							    plantCode=#{plantCode}
+							where id=#{id}
+	</update>
+
+	<!-- 删除 -->
+	<delete id="delLine">
+		delete from c_mes_line_t where id=#{id}
+	</delete>
+
+	<!-- 修改状态 -->
+	<select id="updateStatus" resultType="Integer">
+		update c_mes_line_t set STATUS=#{status}
+							where id=#{id}
+	</select>
+	<insert id="addScheduling"  parameterType="com.skeqi.mes.pojo.project.CMesScheduling"  useGeneratedKeys="true"  keyProperty="id"   >
+     insert into c_mes_scheduling_t   VALUES (null,#{shiftId},#{teamId},#{dt},#{lineId},#{planNumber},#{actualNumber})
+	</insert>
+
+
+	<select id="findByName"  resultType="com.skeqi.mes.pojo.qh.CMesEndStocks">
+
+		SELECT
+			andonInfo.PRODUCT_MARK as proName,
+			andonInfo.LINE_NAME  AS  lineName,
+			line.REGION lineRegion,
+			count(*) sum
+		FROM
+			c_mes_andon_info_t andonInfo
+			LEFT JOIN c_mes_line_t line on line.`NAME`=andonInfo.LINE_NAME
+		WHERE
+			andonInfo.PRODUCT_MARK = #{proName}
+			AND andonInfo.LINE_NAME = #{lineName}
+			and DATE_SUB( CURDATE(), INTERVAL 7 DAY ) &lt;= date( andonInfo.dt )
+
+<!-- 		SELECT -->
+<!-- 			pro.ID AS pid, -->
+<!-- 			pro.PRODUCTION_SERIES AS proName, -->
+<!-- 			andonInfo.LINE_NAME  AS  lineName, -->
+<!-- 			line.REGION lineRegion, -->
+<!-- 			count(*) sum  -->
+<!-- 		FROM -->
+<!-- 			c_mes_andon_info_t andonInfo -->
+<!-- 			LEFT JOIN c_mes_production_t pro ON pro.PRODUCTION_TYPE = SUBSTRING_INDEX( andonInfo.sn, '|', 1 )  -->
+<!-- 				LEFT JOIN c_mes_line_t line on line.`NAME`=andonInfo.LINE_NAME -->
+<!-- 		WHERE -->
+<!-- 			pro.PRODUCTION_SERIES = #{proName} -->
+<!-- 			AND andonInfo.LINE_NAME = #{lineName} -->
+	</select>
+
+	<select id="getLineByName" resultType="java.util.Map">
+		select * from c_mes_line_t
+		<where>
+			<if test="name != null and name != ''">
+				NAME = #{name}
+			</if>
+			<if test="code != null and code != ''">
+				or CODE=#{code}
+			</if>
+		</where>
+		limit 1
+	</select>
+
+	<select id="getLineByLineIdAndName" resultType="CMesLineT">
+		select ID id,NAME name from c_mes_line_t
+            where 1=1
+			<if test="name != null and name != ''">
+			   and NAME = #{name}
+			</if>
+			<if test="code != null and code != ''">
+				and CODE=#{code}
+			</if>
+		<if test="id != null and id != 0">
+			and ID=#{id}
+		</if>
+	</select>
+
+</mapper>

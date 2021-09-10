@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.skeqi.mes.mapper.alarm.CAlarmProblemLevelDao">
+
+	<!-- 查询问题等级 -->
+	<select id="findProblemLevel" resultType="com.skeqi.mes.pojo.alarm.CAlarmProblemLevel">
+		select id,`level`,`explain` from c_alarm_problem_level
+		ORDER BY `level`
+	</select>
+
+	<!-- 新增问题等级 -->
+	<insert id="addProblemLevel">
+		INSERT INTO c_alarm_problem_level(`level`,`explain`)
+		value(#{level},#{explain})
+	</insert>
+
+	<!-- 更新问题等级 -->
+	<update id="updateProblemLevel">
+		update c_alarm_problem_level
+		set
+		`level` = #{level},
+		`explain` = #{explain}
+		where id = #{id}
+	</update>
+
+	<!-- 删除新增问题等级 -->
+	<delete id="deleteProblemLevel">
+		delete from c_alarm_problem_level
+		where id = #{id}
+	</delete>
+
+</mapper>

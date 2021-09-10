@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.chenj.srm.CSrmProductMapper">
+    <resultMap id="BaseResultMap" type="com.skeqi.mes.pojo.chenj.srm.CSrmProduct">
+        <!--@mbg.generated-->
+        <!--@Table c_srm_product-->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="supplier_code" jdbcType="VARCHAR" property="supplierCode"/>
+        <result column="product_name" jdbcType="VARCHAR" property="productName"/>
+        <result column="product_type" jdbcType="VARCHAR" property="productType"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        id, supplier_code, product_name, product_type, create_time, update_time, supplier_id,
+        is_delete, business_nature, products_or_services, client, company_code
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        select
+        <include refid="Base_Column_List"/>
+        from c_srm_product
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <select id="selectByPrimaryKeyList" resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CSrmSupplierChangeRecordRsp">
+        <!--@mbg.generated-->
+        select
+        <include refid="Base_Column_List"/>
+        from c_srm_product
+        <where>
+            <if test="supplierCode != null and supplierCode != ''">
+                supplier_code=#{supplierCode,jdbcType=VARCHAR}
+            </if>
+            <if test="companyCode != null and companyCode != ''">
+                and company_code=#{companyCode,jdbcType=VARCHAR}
+            </if>
+            and is_delete=0
+        </where>
+    </select>
+
+    <!--查询供应商代码是否存在-->
+    <select id="selectSupplierCode" parameterType="java.lang.String" resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        c_srm_product
+        where supplier_code=#{supplierCode,jdbcType=VARCHAR}
+    </select>
+
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        <!--@mbg.generated-->
+        delete from c_srm_product
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmProduct"
+            useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_product (supplier_code, product_name, product_type,
+        create_time, update_time)
+        values (#{supplierCode,jdbcType=VARCHAR}, #{productName,jdbcType=VARCHAR}, #{productType,jdbcType=VARCHAR},
+        #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+    </insert>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_product
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="supplierCode != null">
+                supplier_code,
+            </if>
+            <if test="productName != null">
+                product_name,
+            </if>
+            <if test="productType != null">
+                product_type,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="businessNature != null">
+                business_nature,
+            </if>
+            <if test="productsOrServices != null">
+                products_or_services,
+            </if>
+            <if test="client != null">
+                client,
+            </if>
+            <if test="companyCode != null">
+                company_code,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="supplierCode != null">
+                #{supplierCode,jdbcType=VARCHAR},
+            </if>
+            <if test="productName != null">
+                #{productName,jdbcType=VARCHAR},
+            </if>
+            <if test="productType != null">
+                #{productType,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="businessNature != null">
+                #{businessNature,jdbcType=VARCHAR},
+            </if>
+            <if test="productsOrServices != null">
+                #{productsOrServices,jdbcType=VARCHAR},
+            </if>
+            <if test="client != null">
+                #{client,jdbcType=VARCHAR},
+            </if>
+            <if test="companyCode != null">
+                #{companyCode,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmProduct">
+        <!--@mbg.generated-->
+        update c_srm_product
+        <set>
+            is_delete=0,
+            <if test="productName != null">
+                product_name = #{productName,jdbcType=VARCHAR},
+            </if>
+            <if test="productType != null">
+                product_type = #{productType,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="businessNature != null">
+                business_nature = #{businessNature,jdbcType=VARCHAR},
+            </if>
+            <if test="productsOrServices != null">
+                products_or_services = #{productsOrServices,jdbcType=VARCHAR},
+            </if>
+            <if test="client != null">
+                client = #{client,jdbcType=VARCHAR},
+            </if>
+
+        </set>
+        <where>
+            <if test="supplierCode != null and supplierCode != ''">
+                and supplier_code=#{supplierCode,jdbcType=VARCHAR}
+            </if>
+            <if test="id != null">
+                and id=#{id,jdbcType=INTEGER}
+            </if>
+            and is_delete=0
+        </where>
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmProduct">
+        <!--@mbg.generated-->
+        update c_srm_product
+        set supplier_code = #{supplierCode,jdbcType=VARCHAR},
+        product_name = #{productName,jdbcType=VARCHAR},
+        product_type = #{productType,jdbcType=VARCHAR},
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+        update_time = #{updateTime,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateBatch" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update c_srm_product
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="supplier_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.supplierCode,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="product_name = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.productName,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="product_type = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.productType,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.createTime,jdbcType=TIMESTAMP}
+                </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.updateTime,jdbcType=TIMESTAMP}
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    <update id="updateBatchSelective" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update c_srm_product
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="supplier_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.supplierCode != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.supplierCode,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="product_name = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.productName != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.productName,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="product_type = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.productType != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.productType,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.createTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.createTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.updateTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.updateTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_product
+        (supplier_code, product_name, product_type, create_time, update_time)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.supplierCode,jdbcType=VARCHAR}, #{item.productName,jdbcType=VARCHAR},
+            #{item.productType,jdbcType=VARCHAR},
+            #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
+    <insert id="insertOrUpdate" keyColumn="id" keyProperty="id" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmProduct"
+            useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_product
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            supplier_code,
+            product_name,
+            product_type,
+            create_time,
+            update_time,
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            #{supplierCode,jdbcType=VARCHAR},
+            #{productName,jdbcType=VARCHAR},
+            #{productType,jdbcType=VARCHAR},
+            #{createTime,jdbcType=TIMESTAMP},
+            #{updateTime,jdbcType=TIMESTAMP},
+        </trim>
+        on duplicate key update
+        <trim suffixOverrides=",">
+            <if test="id != null">
+                id = #{id,jdbcType=INTEGER},
+            </if>
+            supplier_code = #{supplierCode,jdbcType=VARCHAR},
+            product_name = #{productName,jdbcType=VARCHAR},
+            product_type = #{productType,jdbcType=VARCHAR},
+            create_time = #{createTime,jdbcType=TIMESTAMP},
+            update_time = #{updateTime,jdbcType=TIMESTAMP},
+        </trim>
+    </insert>
+    <insert id="insertOrUpdateSelective" keyColumn="id" keyProperty="id"
+            parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmProduct" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_product
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="supplierCode != null">
+                supplier_code,
+            </if>
+            <if test="productName != null">
+                product_name,
+            </if>
+            <if test="productType != null">
+                product_type,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="supplierCode != null">
+                #{supplierCode,jdbcType=VARCHAR},
+            </if>
+            <if test="productName != null">
+                #{productName,jdbcType=VARCHAR},
+            </if>
+            <if test="productType != null">
+                #{productType,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+        on duplicate key update
+        <trim suffixOverrides=",">
+            <if test="id != null">
+                id = #{id,jdbcType=INTEGER},
+            </if>
+            <if test="supplierCode != null">
+                supplier_code = #{supplierCode,jdbcType=VARCHAR},
+            </if>
+            <if test="productName != null">
+                product_name = #{productName,jdbcType=VARCHAR},
+            </if>
+            <if test="productType != null">
+                product_type = #{productType,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+</mapper>

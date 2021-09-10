@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wf.productionQuality.dataCollection.record.MesDataCollectionRecordTMapper">
+  <resultMap id="BaseResultMap" type="com.skeqi.mes.pojo.wf.productionQuality.dataCollection.record.MesDataCollectionRecordT">
+    <!--@mbg.generated-->
+    <!--@Table c_mes_data_collection_record_t-->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="number" jdbcType="VARCHAR" property="number" />
+    <result column="grou_number" jdbcType="VARCHAR" property="grouNumber" />
+    <result column="staff" jdbcType="VARCHAR" property="staff" />
+    <result column="process" jdbcType="VARCHAR" property="process" />
+    <result column="equipment" jdbcType="VARCHAR" property="equipment" />
+    <result column="sn" jdbcType="VARCHAR" property="sn" />
+    <result column="cdt" jdbcType="TIMESTAMP" property="cdt" />
+    <result column="udt" jdbcType="TIMESTAMP" property="udt" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, `number`, grou_number, staff, `process`, equipment, sn, cdt, udt
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select
+    <include refid="Base_Column_List" />
+    from c_mes_data_collection_record_t
+    where `number` = #{number,jdbcType=VARCHAR}
+  </select>
+    <select id="selectAll"
+            resultType="com.skeqi.mes.pojo.wf.productionQuality.dataCollection.record.MesDataCollectionRecordT">
+      select
+      <include refid="Base_Column_List" />
+      from c_mes_data_collection_record_t
+    </select>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.skeqi.mes.pojo.wf.productionQuality.dataCollection.record.MesDataCollectionRecordT" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into c_mes_data_collection_record_t
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="number != null">
+        `number`,
+      </if>
+      <if test="grouNumber != null">
+        grou_number,
+      </if>
+      <if test="staff != null">
+        staff,
+      </if>
+      <if test="process != null">
+        `process`,
+      </if>
+      <if test="equipment != null">
+        equipment,
+      </if>
+      <if test="sn != null">
+        sn,
+      </if>
+      <if test="cdt != null">
+        cdt,
+      </if>
+      <if test="udt != null">
+        udt,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="number != null">
+        #{number,jdbcType=VARCHAR},
+      </if>
+      <if test="grouNumber != null">
+        #{grouNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="staff != null">
+        #{staff,jdbcType=VARCHAR},
+      </if>
+      <if test="process != null">
+        #{process,jdbcType=VARCHAR},
+      </if>
+      <if test="equipment != null">
+        #{equipment,jdbcType=VARCHAR},
+      </if>
+      <if test="sn != null">
+        #{sn,jdbcType=VARCHAR},
+      </if>
+      <if test="cdt != null">
+        #{cdt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="udt != null">
+        #{udt,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+  <select id="findRecordList" resultType="java.util.Map">
+  	select rd.*, DATE_FORMAT(r.udt, '%Y-%m-%d %H:%i:%S') as operationTime,
+  	r.sn, r.grou_number, g.name, r.staff
+  	from c_mes_data_collection_record_detail_t rd
+  	left join c_mes_data_collection_record_t r on r.`number` = rd.record_number
+  	left join c_mes_data_collection_group_t g on g.`number` = r.grou_number
+  	where 1=1
+  	<if test="sn != null and sn != ''">
+  		and r.sn like concat('%', #{sn}, '%')
+  	</if>
+  	<if test="beginTime != null and beginTime != ''">
+         and r.cdt &gt;= date_format(#{beginTime}, '%Y-%m-%d 00:00:00')
+     </if>
+     <if test="endTime != null and endTime != ''">
+         and r.cdt &lt;= date_format(#{endTime}, '%Y-%m-%d 23:59:59')
+     </if>
+  	order by r.cdt desc
+  </select>
+</mapper>

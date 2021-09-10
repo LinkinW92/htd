@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.TBdAccountPeriodMapper">
+
+    <resultMap type="com.skeqi.finance.domain.TBdAccountPeriod" id="TBdAccountPeriodResult">
+        <result property="fId" column="f_id"/>
+        <result property="fEntryId" column="f_entry_id"/>
+        <result property="fYear" column="f_year"/>
+        <result property="fPeriod" column="f_period"/>
+        <result property="fPeriodStartdate" column="f_period_startdate"/>
+        <result property="fPeriodEnddate" column="f_period_enddate"/>
+        <result property="fQuarter" column="f_quarter"/>
+        <result property="fMonth" column="f_month"/>
+        <result property="fWeek" column="f_week"/>
+        <result property="fEntryseq" column="f_entryseq"/>
+    </resultMap>
+
+    <delete id="delByEntryId">
+        delete from t_bd_account_period where f_entry_id=#{entryId}
+    </delete>
+
+    <select id="findInfo" resultMap="TBdAccountPeriodResult">
+         select  * from t_bd_account_period where f_entry_id=#{entryId} and f_year=#{year} and  f_period=#{period}
+    </select>
+
+    <select id="findPeriodInfo" resultMap="TBdAccountPeriodResult">
+         select  * from t_bd_account_period where   f_entry_id=#{entryId}  and f_year=#{year} and  f_month=#{month}
+    </select>
+
+    <select id="listPeriod" resultType="com.skeqi.finance.pojo.vo.period.AccountPeriodVo">
+        SELECT
+        p.f_id,
+        p.f_year,
+        p.f_period,
+        p.f_entry_id,
+        CONCAT(p.f_year,'.',p.f_period) as f_year_and_period
+        FROM t_bd_account_period p
+        <where>
+            <if test="bo.fEntryId!=null">
+                and f_entry_id=#{bo.fEntryId}
+            </if>
+            <if test="bo.fYear!=null">
+                and f_year=#{bo.fYear}
+            </if>
+            <if test="bo.fPeriod!=null">
+                and  f_period=#{bo.fPeriod}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryNextPeriod" resultType="com.skeqi.finance.pojo.vo.period.AccountPeriodVo">
+        SELECT p.* from (select * from t_bd_account_calendar where f_id=#{cId}) c
+        LEFT JOIN t_bd_account_period p on c.f_id = p.f_entry_id
+        WHERE  p.f_year <![CDATA[ >= ]]> #{fYear} and p.f_year <![CDATA[ < ]]> #{pYear} and p.f_period <![CDATA[ > ]]> #{fPeriod} limit 1
+    </select>
+
+    <select id="queryPrePeriod" resultType="com.skeqi.finance.pojo.vo.period.AccountPeriodVo">
+        SELECT p.* from (SELECT * from t_bd_account_calendar WHERE f_id=#{cId}) c
+        LEFT JOIN t_bd_account_period p on c.f_id = p.f_entry_id
+        WHERE  p.f_year <![CDATA[ <= ]]> #{fYear} and p.f_year <![CDATA[ > ]]> #{pYear} and p.f_period <![CDATA[ > ]]> #{fPeriod}
+        ORDER BY p.f_period_startdate desc
+        limit 1
+    </select>
+</mapper>

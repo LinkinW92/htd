@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.yp.wms.other.OtherLineEdgeLibraryDao">
+
+	<!-- 查询集合 -->
+	<select id="findList" resultType="com.alibaba.fastjson.JSONObject">
+		select * from c_lsl_rock_t
+		where 1 = 1
+		<if test="name != null and name != ''">
+		and (
+			rockNo like '%${name}%'
+			or
+			rackNo like '%${name}%'
+		)
+		</if>
+		ORDER BY rackNo
+	</select>
+
+
+</mapper>

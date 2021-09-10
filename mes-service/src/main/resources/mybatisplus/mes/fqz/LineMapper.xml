@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.skeqi.mes.mapper.fqz.LineDAO">
+
+	<select id="listLine" resultType="CMesLineT">
+		  select t.id,t.dt,t.name,t.dsc,t.code_type from C_MES_LINE_T t
+	</select>
+
+	<select id="listStatus" resultType="PMesStationPassEqStatusT">
+		select * from P_MES_STATION_EQ_STATUS_T where id in
+		( select max(t.id) from P_MES_STATION_EQ_STATUS_T t where t.line_id=#{id} group by eq_name )
+		order by st
+	</select>
+
+	<select id="findName" resultType="String">
+		  select t.name from C_MES_LINE_T t where t.id=#{id}
+	</select>
+</mapper>

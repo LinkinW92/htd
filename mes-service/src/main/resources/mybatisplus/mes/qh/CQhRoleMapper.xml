@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.qh.CQhRoleDao">
+
+	<!-- 查询角色集合  -->
+	<select id="queryRoleList" resultType="com.skeqi.mes.pojo.qh.CQhRoleT">
+		select * from c_qh_role
+		<where>
+			<if test="roleName != null and roleName != ''">
+				role_name like concat('%',#{roleName},'%')
+			</if>
+			<if test="id != null">
+				and id=#{id}
+			</if>
+		</where>
+		ORDER BY id
+	</select>
+
+	<!-- 查询是否重名 -->
+	<select id="queryForDuplicateName" resultType="java.lang.Integer">
+		select count(*) from c_qh_role
+		where 1=1
+		and role_name = #{roleName}
+		<if test="id != null and id !=''">
+		and id !=  #{id}
+		</if>
+	</select>
+
+	<!-- 新增角色 -->
+	<insert id="addRole">
+		INSERT INTO c_qh_role(role_name,`describe`)
+		value(#{roleName},#{describe})
+	</insert>
+
+	<!-- 更新角色 -->
+	<update id="updateRole">
+		update c_qh_role
+		set role_name = #{roleName},
+		`describe` = #{describe}
+		where id = #{id}
+	</update>
+
+	<!-- 删除角色 -->
+	<delete id="deleteRole">
+		delete from c_qh_role
+		where id = #{id}
+	</delete>
+
+</mapper>

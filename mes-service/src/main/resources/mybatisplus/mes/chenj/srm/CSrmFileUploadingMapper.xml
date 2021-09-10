@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.chenj.srm.CSrmFileUploadingMapper">
+    <resultMap id="BaseResultMap" type="com.skeqi.mes.pojo.chenj.srm.CSrmFileUploading">
+        <!--@mbg.generated-->
+        <!--@Table c_srm_file_uploading-->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="file_path" jdbcType="VARCHAR" property="filePath"/>
+        <result column="file_name" jdbcType="VARCHAR" property="fileName"/>
+        <result column="flag" jdbcType="INTEGER" property="flag"/>
+        <result column="order_number" jdbcType="VARCHAR" property="orderNumber"/>
+        <result column="line_number" jdbcType="VARCHAR" property="lineNumber"/>
+        <result column="is_delete" jdbcType="BIT" property="isDelete"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        id, file_path, file_name, flag, order_number, line_number, is_delete, create_time,
+        update_time,only_pur_show
+    </sql>
+    <select id="selectByPrimaryKey" resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CSrmFileUploadingRsp">
+        <!--@mbg.generated-->
+        select
+        <include refid="Base_Column_List"/>
+        from c_srm_file_uploading
+        <where>
+            <if test="orderNumber != null and orderNumber != ''">
+                order_number=#{orderNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="lineNumber != null and lineNumber != ''">
+                and line_number=#{lineNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="supplierCode != null and supplierCode != ''">
+                and supplier_code=#{supplierCode,jdbcType=VARCHAR}
+            </if>
+            <if test="flag != null">
+                and flag=#{flag,jdbcType=INTEGER}
+            </if>
+            <if test="onlyPurShow != null">
+                and only_pur_show=#{onlyPurShow,jdbcType=INTEGER}
+            </if>
+            and is_delete=0
+        </where>
+        order by create_time desc
+    </select>
+    <update id="deleteByPrimaryKey">
+        update c_srm_file_uploading set is_delete=1
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    <insert id="insertSelective" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmFileUploading">
+        <!--@mbg.generated-->
+        insert into c_srm_file_uploading
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="filePath != null">
+                file_path,
+            </if>
+            <if test="fileName != null">
+                file_name,
+            </if>
+            <if test="flag != null">
+                flag,
+            </if>
+            <if test="orderNumber != null">
+                order_number,
+            </if>
+            <if test="lineNumber != null">
+                line_number,
+            </if>
+            <if test="isDelete != null">
+                is_delete,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="filePath != null">
+                #{filePath,jdbcType=VARCHAR},
+            </if>
+            <if test="fileName != null">
+                #{fileName,jdbcType=VARCHAR},
+            </if>
+            <if test="flag != null">
+                #{flag,jdbcType=INTEGER},
+            </if>
+            <if test="orderNumber != null">
+                #{orderNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="lineNumber != null">
+                #{lineNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="isDelete != null">
+                #{isDelete,jdbcType=BIT},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmFileUploading">
+        update c_srm_file_uploading
+        <set>
+            <if test="supplierCode != null and supplierCode != ''">
+                supplier_code = #{supplierCode,jdbcType=VARCHAR},
+            </if>
+            <if test="onlyPurShow != null">
+                only_pur_show=#{onlyPurShow,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                create_time=#{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time=#{updateTime,jdbcType=TIMESTAMP}
+            </if>
+        </set>
+        <where>
+            <if test="orderNumber != null and orderNumber != ''">
+                order_number=#{orderNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="lineNumber != null and lineNumber != ''">
+                and line_number=#{lineNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="id != null">
+                and id=#{id,jdbcType=INTEGER}
+            </if>
+            <if test="flag != null">
+                and flag=#{flag,jdbcType=INTEGER}
+            </if>
+            and is_delete=0
+        </where>
+    </update>
+    <update id="updateBatchSelective" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update c_srm_file_uploading
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="file_path = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.filePath != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.filePath,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="file_name = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.fileName != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.fileName,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="flag = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.flag != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.flag,jdbcType=INTEGER}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="order_number = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.orderNumber != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.orderNumber,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="line_number = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.lineNumber != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.lineNumber,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="is_delete = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.isDelete != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.isDelete,jdbcType=BIT}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.createTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.createTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.updateTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.updateTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    <insert id="batchInsert" parameterType="map">
+        <!--@mbg.generated-->
+        insert into c_srm_file_uploading
+        (file_path, file_name, flag, order_number, line_number, is_delete, create_time,supplier_code,only_pur_show)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.filePath,jdbcType=VARCHAR}, #{item.fileName,jdbcType=VARCHAR},
+            #{item.flag,jdbcType=INTEGER}, #{item.orderNumber,jdbcType=VARCHAR}, #{item.lineNumber,jdbcType=VARCHAR},
+            0,now(),#{item.supplierCode,jdbcType=VARCHAR},0)
+        </foreach>
+    </insert>
+    <select id="findRepetitionFileNameList" resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CSrmFileUploadingRsp">
+        SELECT order_number,file_name, count(file_name) count
+        from c_srm_file_uploading up
+        <where>
+            <if test="reqList != null and reqList.size() != 0">
+                order_number in
+                <foreach close=")" collection="reqList" item="item" open="(" separator=", ">
+                    #{item,jdbcType=VARCHAR}
+                </foreach>
+            </if>
+            and is_delete=0
+        </where>
+        GROUP BY file_name
+        ORDER BY count desc
+
+
+    </select>
+    <select id="selectByPrimaryOrderNumberList" resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CSrmFileUploadingRsp">
+        SELECT order_number
+        from c_srm_file_uploading up
+        <where>
+            <if test="fileName != null and fileName != ''">
+                file_name=#{fileName,jdbcType=VARCHAR}
+            </if>
+            <if test="reqList != null and reqList.size() != 0">
+                and order_number in
+                <foreach close=")" collection="reqList" item="item" open="(" separator=", ">
+                    #{item,jdbcType=VARCHAR}
+                </foreach>
+            </if>
+            and is_delete=0
+        </where>
+    </select>
+</mapper>

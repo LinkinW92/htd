@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.yp.SimulationGoOnlineDao">
+
+	<!-- 更新条码打印标记 -->
+	<update id="updatePrintFlag">
+		update r_mes_plan_print_t
+		set PRINT_FLAG = 1
+		where SN = #{sn}
+	</update>
+
+	<!-- 新增临时步序表 -->
+	<insert id="addRStep">
+		INSERT INTO r_mes_step_t(DT,ST,SN,STEP_NO,LINE_NAME)
+		VALUE(now(),#{stationName},#{sn},1,#{lineName})
+	</insert>
+
+</mapper>

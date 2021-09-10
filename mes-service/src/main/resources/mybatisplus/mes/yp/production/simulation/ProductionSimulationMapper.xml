@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.skeqi.mes.mapper.yp.production.simulation.ProductionSimulationDao">
+
+	<resultMap type="com.alibaba.fastjson.JSONObject"
+		id="jsonMap">
+		<result column="lineId" property="lineId" />
+		<result column="lineName" property="lineName" />
+		<result column="status" property="status" />
+		<result column="workName" property="workName" />
+		<result column="surplusNumber" property="surplusNumber" />
+		<result column="offlineNumber" property="offlineNumber" />
+		<collection property="station" javaType="list"
+			ofType="com.alibaba.fastjson.JSONObject">
+			<result column="stationId" property="stationId" />
+			<result column="stationName" property="stationName" />
+			<result column="ip" property="ip" />
+			<result column="userName" property="userName" />
+			<result column="password" property="password" />
+			<result column="sn" property="sn" />
+		</collection>
+	</resultMap>
+
+	<!-- 查询 -->
+	<select id="list" resultMap="jsonMap">
+		SELECT
+			line.id AS lineId,
+			line.`NAME` AS lineName,
+			line.STATUS AS STATUS,
+			station.id AS stationId,
+			station.STATION_NAME AS stationName,
+			station.ip,
+			station.userName,
+			station.`password`,
+			step.sn,
+			`work`.WORKORDER_ID AS workName,
+			`work`.ORDER_NUMBER - `work`.OFFLINE_NUMBER AS surplusNumber,
+			`work`.OFFLINE_NUMBER AS offlineNumber
+		FROM
+			c_mes_line_t line
+			JOIN c_mes_station_t station ON line.id = station.LINE_ID
+			LEFT join r_mes_step_t step on (step.LINE_NAME = line.`name` and step.ST = station.STATION_NAME)
+			LEFT JOIN ( SELECT * FROM r_mes_workorder_detail_t AS `work` WHERE `work`.`STATUS` = 1 GROUP BY LINE_ID ) `work` ON `work`.LINE_ID = line.id
+		ORDER BY
+			line.id
+	</select>
+
+	<!-- 查询是否是系统生成的条码 -->
+	<select id="findPlanPrint"
+		resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+		b.id as productionId,
+		b.PRODUCTION_NAME as
+		productionName,
+		b.PRODUCTION_TYPE as productionType,
+		b.PRODUCTION_SN as
+		productionSn,
+		b.MATERIAL_CODE as productionCode,
+		b.PRODUCTION_VR as
+		productionVr,
+		b.PRODUCTION_STE as productionste,
+		b.PRODUCTION_DISCRIPTION as productionDiscription
+
+		FROM
+		r_mes_plan_print_t a
+		JOIN c_mes_production_t b ON a.PRODUCTION_ID =
+		b.id
+		WHERE
+		a.SN = #{sn}
+	</select>
+
+	<!--通过sn匹配产品的校验规则 -->
+	<select id="findProductionVr"
+		resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+		id AS productionId,
+		PRODUCTION_NAME AS productionName,
+		PRODUCTION_TYPE AS productionType,
+		PRODUCTION_SN AS productionSn,
+		MATERIAL_CODE AS productionCode,
+		PRODUCTION_VR AS productionVr,
+		PRODUCTION_STE AS productionste,
+		PRODUCTION_DISCRIPTION AS
+		productionDiscription
+		FROM
+		c_mes_production_t
+		WHERE #{sn} REGEXP
+		PRODUCTION_VR
+	</select>
+
+	<resultMap type="com.alibaba.fastjson.JSONObject" id="technologyMap">
+		<result column="sn" property="sn" />
+		<result column="lineName" property="lineName" />
+		<result column="stationId" property="stationId" />
+		<result column="stationName" property="stationName" />
+		<result column="nowStepNo" property="nowStepNo" />
+		<!-- collection：一对多 property：实体类里的 ofType：实体类 -->
+		<collection property="technology" javaType="list" ofType="com.alibaba.fastjson.JSONObject">
+			<result column="stepNo" property="stepNo" />
+			<result column="stepCategory" property="stepCategory" />
+			<result column="materialName" property="materialName" />
+			<result column="numbers" property="numbers" />
+			<result column="materialPn" property="materialPn" />
+			<result column="tLimit" property="tLimit" />
+			<result column="aLimit" property="aLimit" />
+			<result column="programNo" property="programNo" />
+			<result column="emp" property="emp" />
+			<result column="typeName" property="typeName" />
+		</collection>
+	</resultMap>
+	<!-- 查询当前正在做的工艺 -->
+	<select id="findTechnology" resultMap="technologyMap">
+		SELECT
+		c.STATION_ID as stationId,
+		e.STATION_NAME as stationName,
+		STEPNO as stepNo,
+		d.STEP_CATEGORY as stepCategory,
+		d.MATERIAL_NAME as materialName,
+		(
+		CASE
+		WHEN d.NUMBERS > 0 THEN
+		d.NUMBERS - (
+		SELECT
+		ifnull( sum( substring( BOLT_NAME, char_length( d.MATERIAL_NAME )+ 2,
+		char_length( BOLT_NAME ))), 0 )
+		FROM
+		r_mes_bolt_t
+		WHERE
+		id = ( SELECT max( id ) FROM r_mes_bolt_t WHERE sn = f.sn AND r = 'OK' )
+		)
+		END
+		) AS numbers,
+		d.MATERIALPN as materialPn,
+		d.T_LIMIT as tLimit,
+		d.A_LIMIT as aLimit,
+		d.PROGRAM_NO as programNo,
+		f.sn as sn,
+		g.STEP_NO as nowStepNo,
+		g.emp as emp,
+		i.TYPE_NAME as typeName,
+		o.`name` as lineName
+		FROM
+		c_mes_production_t a
+		JOIN c_mes_total_recipe_t b ON a.id = b.PRODUCTION_ID
+		JOIN c_mes_recipe_t c ON b.id = c.TOTAL_ID
+		JOIN c_mes_recipe_datil_t d ON c.id = d.RECIPE_ID
+		LEFT JOIN c_mes_station_t e ON c.STATION_ID = e.id
+		LEFT JOIN r_mes_tracking_t f ON e.STATION_NAME = f.ST
+		LEFT JOIN r_mes_step_t g ON f.sn = g.sn
+		JOIN c_mes_production_way_t h ON h.ST_ID = e.id
+		join c_mes_recipe_type_t i on d.STEP_CATEGORY = i.id
+		join c_mes_line_t o on e.LINE_ID = o.id
+		WHERE
+		a.id = #{productionId}
+		and e.STATION_NAME = #{stationName}
+		and f.sn = #{sn}
+	</select>
+
+	<!-- 产线产线下的条码 -->
+	<select id="findSN" resultType="com.alibaba.fastjson.JSONObject">
+		select sn,PRINT_FLAG as printFlag from r_mes_plan_print_t
+		where LINE_ID = #{lineId}
+	</select>
+
+	<!-- 产线产线下的工位 -->
+	<select id="findStation" resultType="com.alibaba.fastjson.JSONObject">
+		select id,STATION_NAME as stationName from c_mes_station_t
+		where LINE_ID = #{lineId}
+		ORDER BY id
+	</select>
+
+</mapper>

@@ -1,0 +1,565 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.all.CMesBomTDAO">
+
+    <!-- 料单列表 -->
+    <select id="findAllMaterialList" resultType="com.skeqi.mes.pojo.CMesMaterialListT">
+        SELECT materialList.* FROM C_MES_MATERIAL_LIST_T materialList
+        <where>
+            <if test="listNo!=null and listNo!='' ">
+                and materialList.LIST_NO like concat('%',#{listNo},'%')
+            </if>
+            <if test="productType!=null and productType!='' ">
+                and materialList.PRODUCT_TYPE like concat('%',#{productType,jdbcType=VARCHAR},'%')
+            </if>
+        </where>
+        order by materialList.DT desc
+    </select>
+
+    <!-- 根据ID查询 -->
+    <select id="findMaterialListByid" resultType="com.skeqi.mes.pojo.CMesMaterialListT">
+        select * from C_MES_MATERIAL_LIST_T where id=#{id}
+    </select>
+
+    <select id="findAllBomIdAndListName" resultType="com.skeqi.mes.pojo.CMesMaterialListT">
+        SELECT ID id, LIST_NAME listName FROM c_mes_material_list_t
+        where 1=1
+        <if test="id!=null and id!=0">
+            and ID = #{id}
+        </if>
+        <if test="listName!=null and listName!=''">
+            and LIST_NAME = #{listName}
+        </if>
+    </select>
+
+    <!--根据id或者根据bom编号查询-->
+    <select id="findMaterialByIdAndListNo" resultType="com.skeqi.mes.pojo.CMesMaterialListT">
+        select * from C_MES_MATERIAL_LIST_T
+        <where>
+            <if test="id != null  and id > 0">
+                and id=#{id,jdbcType=INTEGER}
+            </if>
+            <if test="listNo != null and listNo!=''">
+                and LIST_NO = #{listNo}
+            </if>
+        </where>
+    </select>
+    <!-- 添加 -->
+    <insert id="addMaterialList">
+        INSERT INTO C_MES_MATERIAL_LIST_T
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                DT,
+            <if test="listNo != null and listNo != ''">
+                LIST_NO,
+            </if>
+            <if test="listName != null and listName != ''">
+                LIST_NAME,
+            </if>
+            <if test="effectiveTime != null and effectiveTime != ''">
+                EFFECTIVE_TIME,
+            </if>
+            <if test="invalidTime != null and invalidTime != ''">
+                INVALID_TIME,
+            </if>
+            <if test="listVersion != null and listVersion != ''">
+                LIST_VERSION,
+            </if>
+            <if test="productType != null and productType != ''">
+                PRODUCT_TYPE,
+            </if>
+        </trim>
+        <trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+            now(),
+            <if test="listNo != null and listNo != ''">
+                #{listNo},
+            </if>
+            <if test="listName != null and listName != ''">
+                #{listName},
+            </if>
+            <if test="effectiveTime != null and effectiveTime != ''">
+                #{effectiveTime},
+            </if>
+            <if test="invalidTime != null and invalidTime != ''">
+                #{invalidTime},
+            </if>
+            <if test="listVersion != null and listVersion != ''">
+                #{listVersion},
+            </if>
+            <if test="productType != null and productType != ''">
+                #{productType},
+            </if>
+        </trim>
+    </insert>
+
+    <!-- 修改 -->
+    <update id="updateMaterialList">
+        UPDATE C_MES_MATERIAL_LIST_T
+        <set>
+            <if test="listNo != null and listNo != ''">
+                LIST_NO = #{listNo},
+            </if>
+            <if test="listName != null and listName != ''">
+                LIST_NAME=#{listName,jdbcType=VARCHAR},
+            </if>
+            <if test="effectiveTime != null and effectiveTime != ''">
+                EFFECTIVE_TIME=#{effectiveTime},
+            </if>
+            <if test="invalidTime != null and invalidTime != ''">
+                INVALID_TIME=#{invalidTime},
+            </if>
+            <if test="listVersion != null and listVersion != ''">
+                LIST_VERSION=#{listVersion},
+            </if>
+            <if test="productType != null and productType != ''">
+                PRODUCT_TYPE=#{productType},
+            </if>
+        </set>
+        <where>
+            ID = #{id}
+        </where>
+    </update>
+
+    <!-- 删除 -->
+    <delete id="delMaterialList">
+        delete from C_MES_MATERIAL_LIST_T where id=#{id}
+    </delete>
+
+    <!-- 料单详情列表 -->
+    <select id="findMaterialListDetail" resultType="com.skeqi.mes.pojo.CMesMaterialListDetailT">
+        SELECT materialListDetail.*
+        FROM C_MES_MATERIAL_LIST_DETAIL_T materialListDetail
+        <where>
+            <if test="materilaListId != null and materilaListId!=''">
+                and materialListDetail.MATERILA_LIST_ID = #{materilaListId}
+            </if>
+            <if test="materialNo != null and materialNo != ''">
+                and materialListDetail.MATERIAL_NO = #{materialNo,jdbcType=VARCHAR}
+            </if>
+        </where>
+
+        order by materialListDetail.DT desc
+    </select>
+
+    <!-- 料单详情列表模糊查询 -->
+    <select id="findMaterialListDetailByLike" resultType="CMesMaterialListDetailT">
+        SELECT materialListDetail.*
+        FROM C_MES_MATERIAL_LIST_DETAIL_T materialListDetail
+        <where>
+            <if test="materilaListId != null and materilaListId!=''">
+                and materialListDetail.MATERILA_LIST_ID like concat('%',#{materilaListId},'%')
+            </if>
+            <if test="materialNo != null and materialNo != ''">
+                and materialListDetail.MATERIAL_NO = #{materialNo,jdbcType=VARCHAR}
+            </if>
+        </where>
+
+        order by materialListDetail.DT desc
+    </select>
+
+    <!-- 根据ID查询 -->
+    <select id="findMaterialListDetailByid" resultType="CMesMaterialListDetailT">
+        select * from C_MES_MATERIAL_LIST_DETAIL_T where id=#{id}
+    </select>
+
+    <!-- 根据ID查询 -->
+    <select id="findMaterialListDetailByfigureNo" resultType="CMesMaterialListDetailT">
+        select ID id,FIGURE_NO figureNo from C_MES_MATERIAL_LIST_DETAIL_T
+        where 1=1
+        <if test="id!=null and id!=0">
+            and ID=#{id}
+        </if>
+        <if test="figureNo!=null and figureNo!=''">
+            and FIGURE_NO=#{figureNo}
+        </if>
+    </select>
+
+    <!-- 添加 -->
+    <insert id="addMaterialListDetail">
+        INSERT INTO
+        C_MES_MATERIAL_LIST_DETAIL_T(
+        DT,
+        FIGURE_NO,
+        MATERIAL_NO,
+        MATERIAL_NAME,
+        MATERIAL_TRACE,
+        MATERIAL_NUMBER,
+        MATERILA_LIST_ID
+        )
+        VALUES(
+        NOW(),
+        #{figureNo},
+        #{materialNo},
+        #{materialName},
+        #{materialTrace},
+        #{materialNumber},
+        #{materilaListId}
+        )
+    </insert>
+
+    <!-- 修改 -->
+    <update id="updateMaterialListDetail">
+
+        UPDATE C_MES_MATERIAL_LIST_DETAIL_T SET
+        DT = NOW(),
+        FIGURE_NO=#{figureNo},
+        MATERIAL_NO=#{materialNo},
+        MATERIAL_NAME=#{materialName},
+        MATERIAL_TRACE=#{materialTrace},
+        MATERIAL_NUMBER=#{materialNumber},
+        MATERILA_LIST_ID=#{materilaListId}
+        WHERE ID = #{id}
+    </update>
+
+    <!-- 删除 -->
+    <delete id="delMaterialListDetail">
+        delete from C_MES_MATERIAL_LIST_DETAIL_T where id=#{id}
+    </delete>
+
+    <!-- 查询制造参数清单列表 -->
+    <select id="findAllMFG" resultType="CMesManufactureParametersT">
+        SELECT manuParameterList.*,line.NAME as lineName FROM C_MES_MANUFACTURE_PARAMETERS_T
+        manuParameterList,C_MES_LINE_T line
+        WHERE manuParameterList.LINE_ID = line.ID
+        <if test="lineId!=null">
+            and line.id=#{lineId}
+        </if>
+        <if test="listName!=null and listName!=''">
+            and manuParameterList.List_NAME=#{listName}
+        </if>
+        <if test="listNo!=null and listNo!='' ">
+            and manuParameterList.LIST_NO = #{listNo}
+        </if>
+    </select>
+
+    <!-- 根据id查询 -->
+    <select id="findMFGByid" resultType="CMesManufactureParametersT">
+        select * from C_MES_MANUFACTURE_PARAMETERS_T where id=#{id}
+    </select>
+
+    <!-- 添加 -->
+    <insert id="addMFG">
+        INSERT INTO
+        C_MES_MANUFACTURE_PARAMETERS_T(DT,LIST_NO,LIST_NAME,EFFECTIVE_TIME,INVALID_TIME,LIST_VERSION,LINE_ID)
+        VALUES(NOW(),#{listNo},#{listName},#{effectiveTime},#{invalidTime},#{listVersion},#{lineId})
+    </insert>
+
+
+    <!-- 修改 -->
+    <update id="updateMFG">
+        UPDATE C_MES_MANUFACTURE_PARAMETERS_T SET DT=NOW(),LIST_NO=#{listNo},LIST_NAME=#{listName},
+        EFFECTIVE_TIME=#{effectiveTime},
+        INVALID_TIME=#{invalidTime},LIST_VERSION=#{listVersion},
+        LINE_ID=#{lineId} WHERE ID = #{id}
+    </update>
+
+    <!-- 删除 -->
+    <delete id="delMFG">
+        delete from C_MES_MANUFACTURE_PARAMETERS_T where id=#{id}
+    </delete>
+
+    <!-- 制造参数明细 列表-->
+    <select id="findAllMFGDetail" resultType="CMesMfParametersDetailT">
+        SELECT mfParametersDetail.*,mfParamters.LIST_NAME AS mfParametersName,t.STATION_NAME as stationName
+        FROM C_MES_MF_PARAMETERS_DETAIL_T mfParametersDetail,C_MES_MANUFACTURE_PARAMETERS_T mfParamters,C_MES_STATION_T
+        t
+        WHERE mfParametersDetail.MF_PARAMETERS_ID = mfParamters.ID and t.id=mfParametersDetail.station_id
+        <if test="parameterNo!=null and parameterNo!=''">
+            AND mfParametersDetail.PARAMETER_NO =#{parameterNo}
+        </if>
+        <if test="stationId!=null and stationId!=''">
+            and mfParametersDetail.station_id= #{stationId}
+        </if>
+    </select>
+
+    <!-- 根据id查询 -->
+    <select id="findMFGDetailByid" resultType="CMesMfParametersDetailT">
+        select * from C_MES_MF_PARAMETERS_DETAIL_T where id=#{id}
+    </select>
+
+    <!-- 添加 -->
+    <insert id="addMFGDetail">
+        INSERT INTO C_MES_MF_PARAMETERS_DETAIL_T(DT,PARAMETER_NO,PARAMETER_NAME,PARAMETER_MAIN_FLAG,PARAMETER_CHECK,
+        PARAMETER_REPLACE,SCREW_NUMBER,NORMAL_T,T_UPPER_LIMIT,T_LOWER_LIMIT,NORMAL_A,A_UPPER_LIMIT,A_LOWER_LIMIT,OTHER_MORMAL_T,
+        OTHER_UPPER_LIMIT,OTHER_LOWER_LIMIT,MF_PARAMETERS_ID,STATION_ID)
+        VALUES(NOW(),#{parameterNo},#{parameterName},
+        #{parameterMainFlag},#{parameterCheck},#{parameterReplace},#{screwNumber},#{normalT},#{tUpperLimit},
+        #{tLowerLimit},#{normalA},#{aUpperLimit},#{aLowerLimit},#{otherMormalT},#{otherUpperLimit},#{otherLowerLimit},
+        #{mfParametersId},#{stationId})
+    </insert>
+
+    <!-- 修改 -->
+    <update id="updateMFGDetail">
+        UPDATE C_MES_MF_PARAMETERS_DETAIL_T SET DT=NOW(),PARAMETER_NO=#{parameterNo},PARAMETER_NAME=#{parameterName},
+        PARAMETER_MAIN_FLAG=#{parameterMainFlag},PARAMETER_CHECK=#{parameterCheck},PARAMETER_REPLACE=#{parameterReplace},
+        SCREW_NUMBER=#{screwNumber},NORMAL_T=#{normalT},T_UPPER_LIMIT=#{tUpperLimit},T_LOWER_LIMIT=#{tLowerLimit},
+        NORMAL_A=#{normalA},A_UPPER_LIMIT=#{aUpperLimit},A_LOWER_LIMIT=#{aLowerLimit},OTHER_MORMAL_T=#{otherMormalT},
+        OTHER_UPPER_LIMIT=#{otherUpperLimit},OTHER_LOWER_LIMIT=#{otherLowerLimit},MF_PARAMETERS_ID=#{mfParametersId},STATION_ID=#{stationId}
+        WHERE ID = #{id}
+    </update>
+
+    <!-- 删除 -->
+    <delete id="delMFGDetail">
+        DELETE FROM C_MES_MF_PARAMETERS_DETAIL_T WHERE ID = #{id}
+    </delete>
+
+    <!-- bom列表 -->
+    <select id="findAllBom" resultType="CMesBomT">
+        SELECT bom.*,production.PRODUCTION_NAME FROM C_MES_BOM_T bom,C_MES_PRODUCTION_T production WHERE
+        production.id=bom.production_id
+        <if test="bomName!=null">
+            and bom.bom_name = #{bomName}
+        </if>
+    </select>
+
+    <!-- 根据id查询 -->
+    <select id="findBomByid" resultType="CMesBomT">
+        select * from C_MES_BOM_T where id=#{id}
+    </select>
+
+    <!-- 添加 -->
+    <insert id="addBom">
+        INSERT INTO C_MES_BOM_T(PRODUCTION_ID,BOM_NAME,DIS) VALUES(#{productionId},#{bomName},#{dis})
+    </insert>
+
+    <!-- 修改 -->
+    <update id="updateBom">
+        UPDATE C_MES_BOM_T SET PRODUCTION_ID = #{productionId},BOM_NAME = #{bomName},DIS = #{dis} WHERE ID = #{id}
+    </update>
+
+    <!-- 删除 -->
+    <delete id="delBom">
+        delete from C_MES_BOM_T where id=#{id}
+    </delete>
+
+    <!-- 物料列表 -->
+    <select id="findAllMaterialMsg" resultType="CMesMaterialMsgT">
+        SELECT materialMsg.*,station.STATION_NAME FROM C_MES_MATERIAL_MSG_T materialMsg,C_MES_STATION_T station where
+        station.id=materialMsg.st
+        <if test="stationName!=null and stationName!=''">
+            AND station.STATION_NAME = #{stationName}
+        </if>
+    </select>
+
+    <!-- 根据ID查询 -->
+    <select id="findMaterialMsgByid" resultType="CMesMaterialMsgT">
+        select * from C_MES_MATERIAL_MSG_T where id=#{id}
+    </select>
+
+    <!-- 添加 -->
+    <insert id="addMaterialMsg">
+        INSERT INTO
+        C_MES_MATERIAL_MSG_T(MATERIAL_NAME,ST,MATERIAL_TYPE,MATERIAL_VR,MATERIAL_COME_TYPE,MATERIAL_SUPPLIER,DIS,UPLOAD_CODE)
+        VALUES(#{materialName},#{st},#{materialType},#{materialVr},#{materialComeType},#{materialSupplier},#{dis},#{uploadCode})
+    </insert>
+
+    <!-- 修改 -->
+    <update id="updateMaterialMsg">
+        UPDATE C_MES_MATERIAL_MSG_T SET MATERIAL_NAME = #{materialName},ST = #{st},MATERIAL_TYPE =
+        #{materialType},MATERIAL_VR = #{materialVr},
+        MATERIAL_COME_TYPE = #{materialComeType},MATERIAL_SUPPLIER = #{materialSupplier},DIS = #{dis},UPLOAD_CODE =
+        #{uploadCode} WHERE ID = #{id}
+    </update>
+
+    <!-- 删除 -->
+    <delete id="delMaterialMsg">
+        delete from C_MES_MATERIAL_MSG_T where id=#{id}
+    </delete>
+
+    <!-- 螺栓信息列表 -->
+    <select id="findAllBolt" resultType="CMesBoltInfomationT">
+        SELECT bolt.*,station.STATION_NAME FROM C_MES_BOLT_INFOMATION_T bolt,C_MES_STATION_T station WHERE bolt.ST =
+        station.ID
+        <if test="stationName!=null and stationName!='' ">
+            AND station.STATION_NAME = #{stationName}
+        </if>
+    </select>
+
+    <!-- 根据低查询螺栓信息 -->
+    <select id="findBoltByid" resultType="CMesBoltInfomationT">
+        select * from C_MES_BOLT_INFOMATION_T where id=#{id}
+    </select>
+
+    <!-- 添加 -->
+    <insert id="addBolt">
+        INSERT INTO C_MES_BOLT_INFOMATION_T(BOLT_NAME,ST,A_LIMIT,T_LIMIT,UPLOAD_CODE,PROGRAM_NO,BOLT_NO,DIS)
+        VALUES(#{boltName},#{st},#{aLimit},#{tLimit},#{uploadCode},#{programNo},#{boltNo},#{dis})
+    </insert>
+
+    <!-- 修改 -->
+    <update id="updateBolt">
+        UPDATE C_MES_BOLT_INFOMATION_T SET BOLT_NAME = #{boltName},ST = #{st},A_LIMIT = #{aLimit},T_LIMIT = #{tLimit},
+        UPLOAD_CODE = #{uploadCode},PROGRAM_NO = #{programNo},BOLT_NO = #{boltNo},DIS = #{dis} WHERE ID = #{id}
+    </update>
+
+    <!-- 删除 -->
+    <delete id="delBolt">
+        DELETE FROM C_MES_BOLT_INFOMATION_T WHERE ID = #{id}
+    </delete>
+
+    <!-- 气密性信息 -->
+    <select id="findAllLeakage" resultType="CMesLeakageInfoT">
+        SELECT leakage.*,station.STATION_NAME FROM C_MES_LEAKAGE_INFO_T leakage,C_MES_STATION_T station where
+        leakage.st=station.id
+        <if test="stationName!=null and stationName!='' ">
+            AND station.STATION_NAME = #{stationName}
+        </if>
+    </select>
+
+
+    <!-- 根据ID查询 -->
+    <select id="findLeakageByid" resultType="CMesLeakageInfoT">
+        select * from C_MES_LEAKAGE_INFO_T where id=#{id}
+    </select>
+
+    <!-- 添加 -->
+    <insert id="addLeakage">
+        INSERT INTO C_MES_LEAKAGE_INFO_T(ST,LEAKAGE_NAME,PV_LIMIT,LV_LIMIT,DIS,UPLOAD_CODE)
+        VALUES(#{st},#{leakageName},#{pvLimit},#{lvLimit},#{dis},#{uploadCode})
+    </insert>
+
+    <!-- 修改 -->
+    <update id="updateLeakage">
+        UPDATE C_MES_LEAKAGE_INFO_T SET ST = #{st},LEAKAGE_NAME = #{leakageName},PV_LIMIT = #{pvLimit},LV_LIMIT =
+        #{lvLimit},
+        DIS = #{dis},UPLOAD_CODE = #{uploadCode} WHERE ID = #{id}
+    </update>
+
+    <!-- 删除 -->
+    <delete id="delLeakage">
+        DELETE FROM C_MES_LEAKAGE_INFO_T WHERE ID = #{id}
+    </delete>
+
+    <!-- 其他信息列表 -->
+    <select id="findAllOther" resultType="CMesOtherDataT">
+        SELECT otherData.*,station.STATION_NAME FROM C_MES_OTHER_DATA_T otherData,C_MES_STATION_T station where
+        otherData.st=station.id
+        <if test="stationName!=null and stationName!='' ">
+            AND station.STATION_NAME = #{stationName}
+        </if>
+    </select>
+
+    <!-- 根据id查询 -->
+    <select id="findOtherByid" resultType="CMesOtherDataT">
+        select * from C_MES_OTHER_DATA_T where id=#{id}
+    </select>
+
+    <!--添加 -->
+    <insert id="addOther">
+        insert into C_MES_OTHER_DATA_T(OTHER_NAME,ST,UPLOAD_CODE,DIS)
+        values(#{otherName},#{st},#{uploadCode},#{dis})
+    </insert>
+
+    <!-- 修改 -->
+    <update id="updateOther">
+        UPDATE C_MES_OTHER_DATA_T SET OTHER_NAME = #{otherName},ST=#{st},UPLOAD_CODE = #{uploadCode},DIS = #{dis}
+        WHERE ID = #{id}
+    </update>
+
+    <!-- 删除 -->
+    <delete id="delOther">
+        DELETE FROM C_MES_OTHER_DATA_T WHERE ID =#{id}
+    </delete>
+
+    <!-- bom详情列表 -->
+    <select id="findAllBomDetail" resultType="CMesBomDetailT">
+        SELECT bomDetail.*,bom.BOM_NAME,line.name as lineName,station.station_name,material.material_name
+        FROM C_MES_BOM_T bom,C_MES_BOM_DETAIL_T bomDetail,C_MES_LINE_T line,C_MES_STATION_T station,C_MES_MATERIAL_T
+        material
+        WHERE bom.ID = bomdetail.BOM_ID AND bomDetail.Line_Id = line.id AND bomDetail.Station_Id = station.id AND
+        bomDetail.DATA_ID = material.ID
+        <if test="bomId!=null and bomId!=''">
+            AND bom.ID = #{bomId}
+        </if>
+    </select>
+
+    <!-- 根据ID查询 -->
+    <select id="findBomDetailByid" resultType="CMesBomDetailT">
+        select * from C_MES_BOM_DETAIL_T where id=#{id}
+    </select>
+
+    <!-- 添加 -->
+    <insert id="addBomDetail">
+        insert into C_MES_BOM_DETAIL_T(BOM_ID,DATA_TYPE,DATA_ID,RECIVE_NUMBER,TRACE_FLAG,LINE_ID,STATION_ID)
+        values(#{bomId},#{dataType},#{dataId},#{reciveNumber},#{traceFlag},#{lineId},#{stationId})
+    </insert>
+
+    <!-- 修改 -->
+    <update id="updateBomDetail">
+        UPDATE C_MES_BOM_DETAIL_T SET BOM_ID = #{bomId},DATA_TYPE = #{dataType},DATA_ID = #{dataId},RECIVE_NUMBER =
+        #{reciveNumber},
+        TRACE_FLAG = #{traceFlag},LINE_ID = #{lineId},STATION_ID = #{stationId} WHERE ID = #{id}
+    </update>
+
+    <!-- 删除 -->
+    <delete id="delBomDetail">
+        delete from C_MES_BOM_DETAIL_T where id=#{id}
+    </delete>
+
+    <!-- 根据制造参数清单id查询所属产线下的工位-->
+    <select id="findStationById" resultType="CMesStationT">
+        SELECT ID,STATION_NAME FROM C_MES_STATION_T WHERE 1=1
+        and LINE_ID=(SELECT LINE_ID FROM c_mes_manufacture_parameters_t WHERE ID=#{id})
+    </select>
+
+    <select id="findBOMMaterialList" resultType="com.skeqi.mes.pojo.CMesMaterialListT">
+        SELECT materialList.* FROM C_MES_MATERIAL_LIST_T materialList
+        <where>
+            <if test="productType!=null and productType!='' ">
+                and materialList.PRODUCT_TYPE =#{productType,jdbcType=VARCHAR}
+            </if>
+        </where>
+        order by materialList.DT desc
+    </select>
+
+    <!--按物料编码或bomId查询BOM详情-->
+    <select id="findBOMDetailByMaterialCode" resultType="com.skeqi.mes.pojo.CMesMaterialListT">
+        select b.*,bd.FIGURE_NO,bd.MATERIAL_NO,bd.MATERIAL_NAME
+        FROM
+        c_mes_material_list_t b
+        LEFT JOIN c_mes_material_list_detail_t bd
+        on b.LIST_NO=bd.MATERILA_LIST_ID
+        <where>
+            <if test="id != null and id > 0">
+                and b.id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="materialNo != null and materialNo != ''">
+                and bd.MATERIAL_NO = #{materialNo}
+            </if>
+        </where>
+        order by b.DT desc
+    </select>
+
+    <!--按物料编码查询bom明细-->
+    <select id="findMaterialListDetailByCode" resultType="com.skeqi.mes.pojo.CMesMaterialListDetailT">
+        select bd.*
+        FROM
+        c_mes_material_list_detail_t bd
+        <where>
+            <if test="materialCode != null and materialCode != ''">
+                and bd.MATERIAL_NO = #{materialCode,jdbcType=VARCHAR}
+            </if>
+        </where>
+        order by bd.DT desc
+    </select>
+
+    <!--按listNo查询bom信息-->
+    <select id="findAllMaterialListByListNo" resultType="com.skeqi.mes.pojo.CMesMaterialListT">
+        SELECT * FROM C_MES_MATERIAL_LIST_T materialList
+        <where>
+            <if test="listNo!=null and listNo!='' ">
+                and materialList.LIST_NO =#{listNo}
+            </if>
+        </where>
+        order by materialList.DT desc
+    </select>
+
+    <select id="findMaterialListDetailByFigureNo" resultType="java.lang.Integer">
+        SELECT count(1) FROM c_mes_material_list_detail_t materialList
+        <where>
+            <if test="figureNo!=null and figureNo!='' ">
+                and materialList.FIGURE_NO =#{figureNo}
+            </if>
+        </where>
+    </select>
+</mapper>

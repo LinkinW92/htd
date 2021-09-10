@@ -1,0 +1,737 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.chenj.srm.CSrmContractHMapper">
+    <resultMap id="BaseResultMap" type="com.skeqi.mes.pojo.chenj.srm.CSrmContractH">
+        <!--@mbg.generated-->
+        <!--@Table c_srm_contract_h-->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="contract_no" jdbcType="VARCHAR" property="contractNo"/>
+        <result column="contract_name" jdbcType="VARCHAR" property="contractName"/>
+        <result column="creator" jdbcType="VARCHAR" property="creator"/>
+        <result column="contract_character" jdbcType="VARCHAR" property="contractCharacter"/>
+        <result column="company_code" jdbcType="VARCHAR" property="companyCode"/>
+        <result column="supplier_code" jdbcType="VARCHAR" property="supplierCode"/>
+        <result column="effective_date_of_contract" jdbcType="TIMESTAMP" property="effectiveDateOfContract"/>
+        <result column="date_of_termination" jdbcType="TIMESTAMP" property="dateOfTermination"/>
+        <result column="using_template_numbers" jdbcType="VARCHAR" property="usingTemplateNumbers"/>
+        <result column="status" jdbcType="VARCHAR" property="status"/>
+        <result column="is_delete" jdbcType="BIT" property="isDelete"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        id, contract_no, contract_name, creator, contract_character, company_code, supplier_code,
+        effective_date_of_contract, date_of_termination, using_template_numbers, `status`,`is_delete`,
+        create_time, update_time
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmContractH" resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        select
+        <include refid="Base_Column_List"/>
+        from c_srm_contract_h
+        <where>
+            <if test="contractNo != null and contractNo != ''">
+                contract_no=#{contractNo,jdbcType=VARCHAR}
+            </if>
+            <if test="contractName != null and contractName != ''">
+                and contract_name=#{contractName,jdbcType=VARCHAR}
+            </if>
+            <if test="id != null">
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+            and is_delete=0
+        </where>
+    </select>
+    <select id="selectByPrimaryAllList" resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CSrmContractHRsp">
+        <!--@mbg.generated-->
+        select
+        contract_no, contract_name
+        from c_srm_contract_h
+        <where>
+            <if test="contractNo != null and contractNo != ''">
+                contract_no like concat('%',#{contractNo,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="contractName != null and contractName != ''">
+                and contract_name like concat('%',#{contractName,jdbcType=VARCHAR},'%')
+            </if>
+            and is_delete=0
+        </where>
+    </select>
+
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        <!--@mbg.generated-->
+        delete from c_srm_contract_h
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <update id="delPurchaseContract">
+        update c_srm_contract_h set is_delete=1 where contract_no=#{contractNo,jdbcType=VARCHAR}
+    </update>
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmContractH"
+            useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_contract_h (contract_no, contract_name, creator,
+        contract_character, company_code, supplier_code,
+        effective_date_of_contract, date_of_termination,
+        using_template_numbers, `status`, create_time,
+        update_time)
+        values (#{contractNo,jdbcType=VARCHAR}, #{contractName,jdbcType=VARCHAR}, #{creator,jdbcType=VARCHAR},
+        #{contractCharacter,jdbcType=VARCHAR}, #{companyCode,jdbcType=VARCHAR}, #{supplierCode,jdbcType=VARCHAR},
+        #{effectiveDateOfContract,jdbcType=TIMESTAMP}, #{dateOfTermination,jdbcType=TIMESTAMP},
+        #{usingTemplateNumbers,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
+        #{updateTime,jdbcType=TIMESTAMP})
+    </insert>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmContractH"
+            useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_contract_h
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="contractNo != null">
+                contract_no,
+            </if>
+            <if test="contractName != null">
+                contract_name,
+            </if>
+            <if test="creator != null">
+                creator,
+            </if>
+            <if test="contractCharacter != null">
+                contract_character,
+            </if>
+            <if test="companyCode != null">
+                company_code,
+            </if>
+            <if test="supplierCode != null">
+                supplier_code,
+            </if>
+            <if test="effectiveDateOfContract != null">
+                effective_date_of_contract,
+            </if>
+            <if test="dateOfTermination != null">
+                date_of_termination,
+            </if>
+            <if test="usingTemplateNumbers != null">
+                using_template_numbers,
+            </if>
+            <if test="status != null">
+                `status`,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="contractNo != null">
+                #{contractNo,jdbcType=VARCHAR},
+            </if>
+            <if test="contractName != null">
+                #{contractName,jdbcType=VARCHAR},
+            </if>
+            <if test="creator != null">
+                #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="contractCharacter != null">
+                #{contractCharacter,jdbcType=VARCHAR},
+            </if>
+            <if test="companyCode != null">
+                #{companyCode,jdbcType=VARCHAR},
+            </if>
+            <if test="supplierCode != null">
+                #{supplierCode,jdbcType=VARCHAR},
+            </if>
+            <if test="effectiveDateOfContract != null">
+                #{effectiveDateOfContract,jdbcType=TIMESTAMP},
+            </if>
+            <if test="dateOfTermination != null">
+                #{dateOfTermination,jdbcType=TIMESTAMP},
+            </if>
+            <if test="usingTemplateNumbers != null">
+                #{usingTemplateNumbers,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmContractH">
+        <!--@mbg.generated-->
+        update c_srm_contract_h
+        <set>
+            <if test="contractNo != null">
+                contract_no = #{contractNo,jdbcType=VARCHAR},
+            </if>
+            <if test="contractName != null">
+                contract_name = #{contractName,jdbcType=VARCHAR},
+            </if>
+            <if test="creator != null">
+                creator = #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="contractCharacter != null">
+                contract_character = #{contractCharacter,jdbcType=VARCHAR},
+            </if>
+            <if test="companyCode != null">
+                company_code = #{companyCode,jdbcType=VARCHAR},
+            </if>
+            <if test="supplierCode != null">
+                supplier_code = #{supplierCode,jdbcType=VARCHAR},
+            </if>
+            <if test="effectiveDateOfContract != null">
+                effective_date_of_contract = #{effectiveDateOfContract,jdbcType=TIMESTAMP},
+            </if>
+            <if test="dateOfTermination != null">
+                date_of_termination = #{dateOfTermination,jdbcType=TIMESTAMP},
+            </if>
+            <if test="usingTemplateNumbers != null">
+                using_template_numbers = #{usingTemplateNumbers,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                `status` = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="buyer != null">
+                `buyer` = #{buyer,jdbcType=VARCHAR},
+            </if>
+            <if test="masterContract != null">
+                `master_contract` = #{masterContract,jdbcType=VARCHAR},
+            </if>
+            <if test="sourceOfTheContract != null">
+                `source_of_the_contract` = #{sourceOfTheContract,jdbcType=VARCHAR},
+            </if>
+            <if test="contractRental != null">
+                `contract_rental` = #{contractRental,jdbcType=VARCHAR},
+            </if>
+            <if test="purchasingOrganization != null">
+                `purchasing_organization` = #{purchasingOrganization,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null">
+                `remark` = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isDelete != null">
+                is_delete=#{isDelete,jdbcType=INTEGER},
+            </if>
+        </set>
+        <where>
+            <if test="contractNo != null and contractNo != ''">
+                contract_no=#{contractNo,jdbcType=VARCHAR}
+            </if>
+            <if test="id != null">
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+        </where>
+
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmContractH">
+        <!--@mbg.generated-->
+        update c_srm_contract_h
+        set contract_no = #{contractNo,jdbcType=VARCHAR},
+        contract_name = #{contractName,jdbcType=VARCHAR},
+        creator = #{creator,jdbcType=VARCHAR},
+        contract_character = #{contractCharacter,jdbcType=VARCHAR},
+        company_code = #{companyCode,jdbcType=VARCHAR},
+        supplier_code = #{supplierCode,jdbcType=VARCHAR},
+        effective_date_of_contract = #{effectiveDateOfContract,jdbcType=TIMESTAMP},
+        date_of_termination = #{dateOfTermination,jdbcType=TIMESTAMP},
+        using_template_numbers = #{usingTemplateNumbers,jdbcType=VARCHAR},
+        `status` = #{status,jdbcType=VARCHAR},
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+        update_time = #{updateTime,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateBatch" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update c_srm_contract_h
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="contract_no = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.contractNo,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="contract_name = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.contractName,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="creator = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.creator,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="contract_character = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.contractCharacter,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="company_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.companyCode,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="supplier_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.supplierCode,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="effective_date_of_contract = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.effectiveDateOfContract,jdbcType=TIMESTAMP}
+                </foreach>
+            </trim>
+            <trim prefix="date_of_termination = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.dateOfTermination,jdbcType=TIMESTAMP}
+                </foreach>
+            </trim>
+            <trim prefix="using_template_numbers = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.usingTemplateNumbers,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="`status` = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.status,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.createTime,jdbcType=TIMESTAMP}
+                </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.updateTime,jdbcType=TIMESTAMP}
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    <update id="updateBatchSelective" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update c_srm_contract_h
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="contract_no = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.contractNo != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.contractNo,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="contract_name = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.contractName != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.contractName,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="creator = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.creator != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.creator,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="contract_character = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.contractCharacter != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.contractCharacter,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="company_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.companyCode != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.companyCode,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="supplier_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.supplierCode != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.supplierCode,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="effective_date_of_contract = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.effectiveDateOfContract != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.effectiveDateOfContract,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="date_of_termination = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.dateOfTermination != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.dateOfTermination,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="using_template_numbers = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.usingTemplateNumbers != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.usingTemplateNumbers,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="`status` = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.status != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.status,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.createTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.createTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.updateTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.updateTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_contract_h
+        (contract_no, contract_name, creator, contract_character, company_code, supplier_code,
+        effective_date_of_contract, date_of_termination, using_template_numbers, `status`,
+        create_time, update_time)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.contractNo,jdbcType=VARCHAR}, #{item.contractName,jdbcType=VARCHAR},
+            #{item.creator,jdbcType=VARCHAR},
+            #{item.contractCharacter,jdbcType=VARCHAR}, #{item.companyCode,jdbcType=VARCHAR},
+            #{item.supplierCode,jdbcType=VARCHAR}, #{item.effectiveDateOfContract,jdbcType=TIMESTAMP},
+            #{item.dateOfTermination,jdbcType=TIMESTAMP}, #{item.usingTemplateNumbers,jdbcType=VARCHAR},
+            #{item.status,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP},
+            #{item.updateTime,jdbcType=TIMESTAMP}
+            )
+        </foreach>
+    </insert>
+    <insert id="insertOrUpdate" keyColumn="id" keyProperty="id" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmContractH"
+            useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_contract_h
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            contract_no,
+            contract_name,
+            creator,
+            contract_character,
+            company_code,
+            supplier_code,
+            effective_date_of_contract,
+            date_of_termination,
+            using_template_numbers,
+            `status`,
+            create_time,
+            update_time,
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            #{contractNo,jdbcType=VARCHAR},
+            #{contractName,jdbcType=VARCHAR},
+            #{creator,jdbcType=VARCHAR},
+            #{contractCharacter,jdbcType=VARCHAR},
+            #{companyCode,jdbcType=VARCHAR},
+            #{supplierCode,jdbcType=VARCHAR},
+            #{effectiveDateOfContract,jdbcType=TIMESTAMP},
+            #{dateOfTermination,jdbcType=TIMESTAMP},
+            #{usingTemplateNumbers,jdbcType=VARCHAR},
+            #{status,jdbcType=VARCHAR},
+            #{createTime,jdbcType=TIMESTAMP},
+            #{updateTime,jdbcType=TIMESTAMP},
+        </trim>
+        on duplicate key update
+        <trim suffixOverrides=",">
+            <if test="id != null">
+                id = #{id,jdbcType=INTEGER},
+            </if>
+            contract_no = #{contractNo,jdbcType=VARCHAR},
+            contract_name = #{contractName,jdbcType=VARCHAR},
+            creator = #{creator,jdbcType=VARCHAR},
+            contract_character = #{contractCharacter,jdbcType=VARCHAR},
+            company_code = #{companyCode,jdbcType=VARCHAR},
+            supplier_code = #{supplierCode,jdbcType=VARCHAR},
+            effective_date_of_contract = #{effectiveDateOfContract,jdbcType=TIMESTAMP},
+            date_of_termination = #{dateOfTermination,jdbcType=TIMESTAMP},
+            using_template_numbers = #{usingTemplateNumbers,jdbcType=VARCHAR},
+            `status` = #{status,jdbcType=VARCHAR},
+            create_time = #{createTime,jdbcType=TIMESTAMP},
+            update_time = #{updateTime,jdbcType=TIMESTAMP},
+        </trim>
+    </insert>
+    <insert id="insertOrUpdateSelective" keyColumn="id" keyProperty="id"
+            parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmContractH" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_contract_h
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="contractNo != null">
+                contract_no,
+            </if>
+            <if test="contractName != null">
+                contract_name,
+            </if>
+            <if test="creator != null">
+                creator,
+            </if>
+            <if test="contractCharacter != null">
+                contract_character,
+            </if>
+            <if test="companyCode != null">
+                company_code,
+            </if>
+            <if test="supplierCode != null">
+                supplier_code,
+            </if>
+            <if test="effectiveDateOfContract != null">
+                effective_date_of_contract,
+            </if>
+            <if test="dateOfTermination != null">
+                date_of_termination,
+            </if>
+            <if test="usingTemplateNumbers != null">
+                using_template_numbers,
+            </if>
+            <if test="status != null">
+                `status`,
+            </if>
+            <if test="buyer != null">
+                `buyer`,
+            </if>
+            <if test="masterContract != null">
+                `master_contract`,
+            </if>
+            <if test="sourceOfTheContract != null">
+                `source_of_the_contract`,
+            </if>
+            <if test="contractRental != null">
+                `contract_rental`,
+            </if>
+            <if test="purchasingOrganization != null">
+                `purchasing_organization`,
+            </if>
+            <if test="remark != null">
+                `remark`,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="contractNo != null">
+                #{contractNo,jdbcType=VARCHAR},
+            </if>
+            <if test="contractName != null">
+                #{contractName,jdbcType=VARCHAR},
+            </if>
+            <if test="creator != null">
+                #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="contractCharacter != null">
+                #{contractCharacter,jdbcType=VARCHAR},
+            </if>
+            <if test="companyCode != null">
+                #{companyCode,jdbcType=VARCHAR},
+            </if>
+            <if test="supplierCode != null">
+                #{supplierCode,jdbcType=VARCHAR},
+            </if>
+            <if test="effectiveDateOfContract != null">
+                #{effectiveDateOfContract,jdbcType=TIMESTAMP},
+            </if>
+            <if test="dateOfTermination != null">
+                #{dateOfTermination,jdbcType=TIMESTAMP},
+            </if>
+            <if test="usingTemplateNumbers != null">
+                #{usingTemplateNumbers,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="buyer != null">
+                #{buyer,jdbcType=VARCHAR},
+            </if>
+            <if test="masterContract != null">
+                #{masterContract,jdbcType=VARCHAR},
+            </if>
+            <if test="sourceOfTheContract != null">
+                #{sourceOfTheContract,jdbcType=VARCHAR},
+            </if>
+            <if test="contractRental != null">
+                #{contractRental,jdbcType=VARCHAR},
+            </if>
+            <if test="purchasingOrganization != null">
+                #{purchasingOrganization,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null">
+                #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+        on duplicate key update
+        <trim suffixOverrides=",">
+            <if test="id != null">
+                id = #{id,jdbcType=INTEGER},
+            </if>
+            <if test="contractNo != null">
+                contract_no = #{contractNo,jdbcType=VARCHAR},
+            </if>
+            <if test="contractName != null">
+                contract_name = #{contractName,jdbcType=VARCHAR},
+            </if>
+            <if test="creator != null">
+                creator = #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="contractCharacter != null">
+                contract_character = #{contractCharacter,jdbcType=VARCHAR},
+            </if>
+            <if test="companyCode != null">
+                company_code = #{companyCode,jdbcType=VARCHAR},
+            </if>
+            <if test="supplierCode != null">
+                supplier_code = #{supplierCode,jdbcType=VARCHAR},
+            </if>
+            <if test="effectiveDateOfContract != null">
+                effective_date_of_contract = #{effectiveDateOfContract,jdbcType=TIMESTAMP},
+            </if>
+            <if test="dateOfTermination != null">
+                date_of_termination = #{dateOfTermination,jdbcType=TIMESTAMP},
+            </if>
+            <if test="usingTemplateNumbers != null">
+                using_template_numbers = #{usingTemplateNumbers,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                `status` = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="buyer != null">
+                `buyer` = #{buyer,jdbcType=VARCHAR},
+            </if>
+            <if test="masterContract != null">
+                `master_contract` = #{masterContract,jdbcType=VARCHAR},
+            </if>
+            <if test="sourceOfTheContract != null">
+                `source_of_the_contract` = #{sourceOfTheContract,jdbcType=VARCHAR},
+            </if>
+            <if test="contractRental != null">
+                `contract_rental` = #{contractRental,jdbcType=VARCHAR},
+            </if>
+            <if test="purchasingOrganization != null">
+                `purchasing_organization` = #{purchasingOrganization,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null">
+                `remark` = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <!--获取最后一条数据-->
+    <select id="selectFinallyData" resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        SELECT
+        contract_no
+        FROM
+        c_srm_contract_h
+        where contract_no like concat('C2','%')
+        ORDER BY
+        id DESC
+        LIMIT 1
+    </select>
+    <select id="selectByPrimaryList" resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CSrmContractHRsp">
+        select
+        h.contract_no, h.contract_name, h.creator, h.contract_character, css.name
+        supplierName,c.company_name companyName,h.company_code, h.supplier_code,
+        h.effective_date_of_contract, h.date_of_termination, h.using_template_numbers, h.`status`,h.`is_delete`,
+        h.create_time, h.update_time
+        from c_srm_contract_h h
+        left join c_srm_supplier css on h.supplier_code = css.supplier_code
+        left join c_srm_company c on h.company_code = c.company_code
+        <where>
+            <if test="contractNo != null and contractNo != ''">
+                h.contract_no like concat('%',#{contractNo,jdbcType=VARCHAR}'%')
+            </if>
+            <if test="contractName != null and contractName != ''">
+                and h.contract_name like concat('%',#{contractName,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="supplierCode != null and supplierCode != ''">
+                and h.supplier_code like concat('%',#{supplierCode,jdbcType=VARCHAR},'%')
+            </if>
+            and h.is_delete=0
+        </where>
+        order by h.create_time desc
+
+    </select>
+    <select id="selectByPrimaryData" resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CSrmContractHRsp">
+
+        select
+        contract_no, contract_name, creator, contract_character, company_code, supplier_code,
+        DATE_FORMAT(effective_date_of_contract,'%Y-%m-%d') effectiveDateOfContract,
+        DATE_FORMAT(date_of_termination,'%Y-%m-%d') dateOfTermination, using_template_numbers, `status`,
+        DATE_FORMAT(create_time,'%Y-%m-%d') createTime,
+        buyer buyer,master_contract masterContract,source_of_the_contract sourceOfTheContract,contract_rental
+        contractRental,purchasing_organization purchasingOrganization,remark remark
+        from c_srm_contract_h
+        <where>
+            <if test="contractNo != null and contractNo != ''">
+                contract_no like concat('%',#{contractNo,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="contractName != null and contractName != ''">
+                and contract_name like concat('%',#{contractName,jdbcType=VARCHAR},'%')
+            </if>
+            and is_delete=0
+        </where>
+        order by create_time desc
+    </select>
+</mapper>

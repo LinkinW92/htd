@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.fqz.WarehouseListDAO">
+	<select id="findAll" resultType="CMesWarehouseListT">
+    select house.*,p.production_name as productionName,
+               plans.plan_name as planName,
+               orders.production_id as orderName
+     from C_MES_WAREHOUSE_LIST_T house,
+          c_mes_production_t p,
+          p_mes_plan_t plans,
+          p_mes_workorder_detail_t orders
+        where house.production_id=p.id and house.plan_id=plans.id and house.order_id=orders.id
+				<if test="sn!=null and sn!=''">
+					and house.sn like '%${sn}%'
+				</if>
+	</select>
+
+	<select id="listEnter" resultType="CMesCheckoutEnterT">
+		select  t.id,t.SN,t.STATUS,t.ORDER_NUMBER,t.PROJECT_NAME,t.status,t.QUAILTY from C_MES_CHECKOUT_ENTER_T t where SN=#{sn}
+	</select>
+</mapper>

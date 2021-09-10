@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.fqz.DefectEntryDAO">
+
+	<select id="findAll" resultType="CMesDefectEntryT">
+		select t.*,p.production_name as productionName from C_MES_DEFECT_ENTRY_T t,c_mes_production_t p
+			where t.production_id=p.id
+		<if test="productionName!=null and productionName!=''">
+			and p.production_name like  '%${productionName}%'
+		</if>
+		<if test="sn!=null and sn!=''">
+			and t.sn = #{sn}
+		</if>
+		<if test="starttime!=null and starttime!='' and endtime!=null and endtime!=''">
+			and dt between #{starttime} and #{endtime}
+		</if>
+		order by t.id
+	</select>
+
+	<insert id="insertentry">
+		insert into C_MES_DEFECT_ENTRY_T(DT,SN,PRODUCTION_ID,REASON,EMP)
+		values(NOW(),#{sn},#{productionId},#{reason},#{emp})
+	</insert>
+
+	<update id="updateentry">
+		update C_MES_DEFECT_ENTRY_T set dt=NOW(),
+											   sn=#{sn},
+											   production_id=#{productionId},
+											   reason=#{reason},
+											   emp=#{emp}
+										where id=#{id}
+	</update>
+
+	<delete id="deleteentry">
+		delete from C_MES_DEFECT_ENTRY_T where id=#{id}
+	</delete>
+
+	<select id="findByid" resultType="CMesDefectEntryT">
+		select * from C_MES_DEFECT_ENTRY_T where id=#{id}
+	</select>
+
+	<select id="findProduction" resultType="CMesProductionT">
+		select * from c_mes_production_t
+	</select>
+</mapper>

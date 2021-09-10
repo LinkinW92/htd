@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wf.productionQuality.dataCollection.record.MesDataCollectionRecordDetailTMapper">
+    <insert id="addRecordDetailByList">
+      <!--@mbg.generated-->
+      insert into c_mes_data_collection_record_detail_t
+      <trim prefix="(" suffix=")" suffixOverrides=",">
+          record_number,
+          params_number,
+          params_name,
+          upper_limit,
+          lower_limit,
+          `value`,
+          cdt,
+          udt
+      </trim>
+      <foreach collection="list" item="item" open="values" separator=",">
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            #{item.recordNumber,jdbcType=VARCHAR},
+            #{item.paramsNumber,jdbcType=VARCHAR},
+            #{item.paramsName,jdbcType=VARCHAR},
+            #{item.upperLimit,jdbcType=VARCHAR},
+            #{item.lowerLimit,jdbcType=VARCHAR},
+            #{item.value,jdbcType=VARCHAR},
+            #{item.cdt,jdbcType=TIMESTAMP},
+            #{item.udt,jdbcType=TIMESTAMP}
+        </trim>
+      </foreach>
+    </insert>
+</mapper>

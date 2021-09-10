@@ -1,0 +1,440 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.chenj.srm.CSrmAssessRecordHMapper">
+    <resultMap id="BaseResultMap" type="com.skeqi.mes.pojo.chenj.srm.CSrmAssessRecordH">
+        <!--@mbg.generated-->
+        <!--@Table c_srm_assess_record_h-->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="file_number" jdbcType="VARCHAR" property="fileNumber"/>
+        <result column="file_name" jdbcType="VARCHAR" property="fileName"/>
+        <result column="evaluation_start_time" jdbcType="VARCHAR" property="evaluationStartTime"/>
+        <result column="evaluation_cutoff_time" jdbcType="VARCHAR" property="evaluationCutoffTime"/>
+        <result column="status" jdbcType="VARCHAR" property="status"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="is_delete" jdbcType="BIT" property="isDelete"/>
+        <result column="file_description" jdbcType="VARCHAR" property="fileDescription"/>
+        <result column="evaluation_template" jdbcType="VARCHAR" property="evaluationTemplate"/>
+        <result column="company_code" jdbcType="VARCHAR" property="companyCode"/>
+        <result column="evaluation_period" jdbcType="VARCHAR" property="evaluationPeriod"/>
+        <result column="appraisal_way" jdbcType="VARCHAR" property="appraisalWay"/>
+        <result column="appraisal_leader" jdbcType="VARCHAR" property="appraisalLeader"/>
+        <result column="evaluation_rule_explain" jdbcType="VARCHAR" property="evaluationRuleExplain"/>
+        <result column="evaluation_explain" jdbcType="VARCHAR" property="evaluationExplain"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        id, file_number, file_name, evaluation_start_time, evaluation_cutoff_time, `status`,
+        create_time, update_time, is_delete, file_description, evaluation_template, company_code,
+        evaluation_period, appraisal_way, appraisal_leader, evaluation_rule_explain, evaluation_explain
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmAssessRecordH"
+            resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        select
+        <include refid="Base_Column_List"/>
+        from c_srm_assess_record_h
+        <where>
+            <if test="fileNumber != null and fileNumber != ''">
+                file_number=#{fileNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="fileName != null and fileName != ''">
+                and file_name=#{fileName,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null and status != ''">
+                and status=#{status,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id"
+            parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmAssessRecordH"
+            useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_assess_record_h
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="fileNumber != null">
+                file_number,
+            </if>
+            <if test="fileName != null">
+                file_name,
+            </if>
+            <if test="evaluationStartTime != null">
+                evaluation_start_time,
+            </if>
+            <if test="evaluationCutoffTime != null">
+                evaluation_cutoff_time,
+            </if>
+            <if test="status != null">
+                `status`,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="isDelete != null">
+                is_delete,
+            </if>
+            <if test="fileDescription != null">
+                file_description,
+            </if>
+            <if test="evaluationTemplate != null">
+                evaluation_template,
+            </if>
+            <if test="companyCode != null">
+                company_code,
+            </if>
+            <if test="evaluationPeriod != null">
+                evaluation_period,
+            </if>
+            <if test="appraisalWay != null">
+                appraisal_way,
+            </if>
+            <if test="appraisalLeader != null">
+                appraisal_leader,
+            </if>
+            <if test="evaluationRuleExplain != null">
+                evaluation_rule_explain,
+            </if>
+            <if test="evaluationExplain != null">
+                evaluation_explain,
+            </if>
+            <if test="supplierCode != null">
+                supplier_code,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="fileNumber != null">
+                #{fileNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="fileName != null">
+                #{fileName,jdbcType=VARCHAR},
+            </if>
+            <if test="evaluationStartTime != null">
+                #{evaluationStartTime,jdbcType=VARCHAR},
+            </if>
+            <if test="evaluationCutoffTime != null">
+                #{evaluationCutoffTime,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isDelete != null">
+                #{isDelete,jdbcType=BIT},
+            </if>
+            <if test="fileDescription != null">
+                #{fileDescription,jdbcType=VARCHAR},
+            </if>
+            <if test="evaluationTemplate != null">
+                #{evaluationTemplate,jdbcType=VARCHAR},
+            </if>
+            <if test="companyCode != null">
+                #{companyCode,jdbcType=VARCHAR},
+            </if>
+            <if test="evaluationPeriod != null">
+                #{evaluationPeriod,jdbcType=VARCHAR},
+            </if>
+            <if test="appraisalWay != null">
+                #{appraisalWay,jdbcType=VARCHAR},
+            </if>
+            <if test="appraisalLeader != null">
+                #{appraisalLeader,jdbcType=VARCHAR},
+            </if>
+            <if test="evaluationRuleExplain != null">
+                #{evaluationRuleExplain,jdbcType=VARCHAR},
+            </if>
+            <if test="evaluationExplain != null">
+                #{evaluationExplain,jdbcType=VARCHAR},
+            </if>
+            <if test="supplierCode != null">
+                #{supplierCode,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmAssessRecordH">
+        <!--@mbg.generated-->
+        update c_srm_assess_record_h
+        <set>
+            <if test="fileNumber != null">
+                file_number = #{fileNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="fileName != null">
+                file_name = #{fileName,jdbcType=VARCHAR},
+            </if>
+            <if test="evaluationStartTime != null">
+                evaluation_start_time = #{evaluationStartTime,jdbcType=VARCHAR},
+            </if>
+            <if test="evaluationCutoffTime != null">
+                evaluation_cutoff_time = #{evaluationCutoffTime,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                `status` = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isDelete != null">
+                is_delete = #{isDelete,jdbcType=BIT},
+            </if>
+            <if test="fileDescription != null">
+                file_description = #{fileDescription,jdbcType=VARCHAR},
+            </if>
+            <if test="evaluationTemplate != null">
+                evaluation_template = #{evaluationTemplate,jdbcType=VARCHAR},
+            </if>
+            <if test="companyCode != null">
+                company_code = #{companyCode,jdbcType=VARCHAR},
+            </if>
+            <if test="evaluationPeriod != null">
+                evaluation_period = #{evaluationPeriod,jdbcType=VARCHAR},
+            </if>
+            <if test="appraisalWay != null">
+                appraisal_way = #{appraisalWay,jdbcType=VARCHAR},
+            </if>
+            <if test="appraisalLeader != null">
+                appraisal_leader = #{appraisalLeader,jdbcType=VARCHAR},
+            </if>
+            <if test="evaluationRuleExplain != null">
+                evaluation_rule_explain = #{evaluationRuleExplain,jdbcType=VARCHAR},
+            </if>
+            <if test="evaluationExplain != null">
+                evaluation_explain = #{evaluationExplain,jdbcType=VARCHAR},
+            </if>
+            <if test="supplierCode != null">
+                supplier_code = #{supplierCode,jdbcType=VARCHAR},
+            </if>
+        </set>
+        <where>
+            <if test="fileNumber != null and fileNumber != ''">
+                file_number=#{fileNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="id != null">
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+        </where>
+    </update>
+    <update id="updateBatchSelective" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update c_srm_assess_record_h
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="file_number = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.fileNumber != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.fileNumber,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="file_name = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.fileName != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.fileName,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="evaluation_start_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.evaluationStartTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.evaluationStartTime,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="evaluation_cutoff_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.evaluationCutoffTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.evaluationCutoffTime,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="`status` = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.status != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.status,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.createTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.createTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.updateTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.updateTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="is_delete = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.isDelete != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.isDelete,jdbcType=BIT}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="file_description = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.fileDescription != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.fileDescription,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="evaluation_template = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.evaluationTemplate != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.evaluationTemplate,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="company_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.companyCode != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.companyCode,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="evaluation_period = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.evaluationPeriod != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.evaluationPeriod,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="appraisal_way = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.appraisalWay != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.appraisalWay,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="appraisal_leader = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.appraisalLeader != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.appraisalLeader,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="evaluation_rule_explain = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.evaluationRuleExplain != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.evaluationRuleExplain,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="evaluation_explain = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.evaluationExplain != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.evaluationExplain,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_assess_record_h
+        (file_number, file_name, evaluation_start_time, evaluation_cutoff_time, `status`,
+        create_time, update_time, is_delete, file_description, evaluation_template, company_code,
+        evaluation_period, appraisal_way, appraisal_leader, evaluation_rule_explain, evaluation_explain
+        )
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.fileNumber,jdbcType=VARCHAR}, #{item.fileName,jdbcType=VARCHAR},
+            #{item.evaluationStartTime,jdbcType=VARCHAR},
+            #{item.evaluationCutoffTime,jdbcType=VARCHAR}, #{item.status,jdbcType=VARCHAR},
+            #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.isDelete,jdbcType=BIT},
+            #{item.fileDescription,jdbcType=VARCHAR}, #{item.evaluationTemplate,jdbcType=VARCHAR},
+            #{item.companyCode,jdbcType=VARCHAR}, #{item.evaluationPeriod,jdbcType=VARCHAR},
+            #{item.appraisalWay,jdbcType=VARCHAR}, #{item.appraisalLeader,jdbcType=VARCHAR},
+            #{item.evaluationRuleExplain,jdbcType=VARCHAR}, #{item.evaluationExplain,jdbcType=VARCHAR}
+            )
+        </foreach>
+    </insert>
+    <!--获取最后一条数据-->
+    <select id="selectFinallyData" resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        SELECT
+        file_number
+        FROM
+        c_srm_assess_record_h
+        where file_number like concat('PE2','%')
+        ORDER BY
+        id DESC
+        LIMIT 1
+    </select>
+
+    <select id="findReceivedAssess" resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CSrmAssessRecordHRsp">
+
+        SELECT h.file_number,
+        h.file_name,
+        h.evaluation_start_time,
+        h.evaluation_cutoff_time,
+        h.status,
+        r.index,
+        r.index_value
+        FROM c_srm_assess_record_h h
+        LEFT JOIN c_srm_assess_record_r r ON h.file_number = r.file_number
+
+        <where>
+            <if test="fileNumber != null and fileNumber != ''">
+                h.file_number like  concat('%',#{fileNumber,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="fileName != null and fileName != ''">
+                and h.file_name like concat('%',#{fileName,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="status != null and status != ''">
+                and h.status=#{status,jdbcType=VARCHAR}
+            </if>
+            and h.is_delete=0
+        </where>
+    </select>
+    <select id="selectByPrimaryKeyListH" resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CSrmAssessRecordHRRsp">
+        select
+        h.file_number,h.file_description,h.create_time,h.company_code,c.company_name companyName,h.supplier_code,s.name
+        name,
+        h.evaluation_start_time, h.evaluation_cutoff_time, h.`status`,
+        h.create_time, h.file_description,
+        h.evaluation_period, h.appraisal_way, h.appraisal_leader,h. evaluation_rule_explain,h. evaluation_explain
+        from c_srm_assess_record_h h
+        left join c_srm_company c on h.company_code = c.company_code
+        left join c_srm_supplier s on h.supplier_code = s.supplier_code
+        <where>
+            <if test="fileNumber != null and fileNumber != ''">
+                h.file_number like concat('%',#{fileNumber,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="status != null and status != ''">
+                and h.status=#{status,jdbcType=VARCHAR}
+            </if>
+            <if test="companyName != null and companyName != ''">
+                and c.company_name like concat('%',#{companyName,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="evaluationStartTime != null and evaluationStartTime != ''">
+                and h.create_time  <![CDATA[ >= ]]> #{evaluationStartTime,jdbcType=VARCHAR}
+            </if>
+            <if test="filingStop != null and filingStop != ''">
+                and h.create_time <![CDATA[ <= ]]>
+                #{filingStop,jdbcType=VARCHAR}
+            </if>
+            <if test="supplierCode != null and supplierCode != ''">
+                and h.supplier_code like concat('%',#{supplierCode,jdbcType=VARCHAR},'%')
+            </if>
+            and h.is_delete=0
+        </where>
+        order by h.create_time desc
+    </select>
+</mapper>

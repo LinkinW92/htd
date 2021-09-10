@@ -1,0 +1,435 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.yin.UsersDao">
+
+	<select id="findUserList" resultType="CMesUserT">
+		select id,USER_NAME from c_mes_user_t
+		where viewMode = 1
+		and DEPARTMENT = #{department}
+		and ROLE_ID = #{roleId}
+	</select>
+
+	<update id="toeditstatus">
+		update C_MES_LINE_T set  STATUS=#{status}
+								where id=#{id}
+	</update>
+
+	<update id="upkeypart">
+		update r_mes_keypart_t set KEYPART_NUM=null,
+										  WID=null,
+										  REASONS=#{reasons}
+									where id=#{id}
+	</update>
+
+	<update id="upbolt">
+		update R_MES_BOLT_T SET T=null,
+									   R=null,
+									   A=null,
+									   WID=null,
+									   REASONS=#{reasons}
+									where id=#{id}
+	</update>
+
+	<update id="upleakage">
+		update R_MES_LEAKAGE_T set LEAKAGE_PV=null,
+										  LEAKAGE_LV=null,
+										  LEAKAGE_R=null,
+										  WID=null,
+										  REASONS=#{reasons}
+									where id=#{id}
+	</update>
+	<select id="userList" resultType="CMesUserT">
+		select u.*,r.ROLE_NAME from C_MES_USER_T u,C_MES_ROLE_T r WHERE u.viewMode = 1 and u.ROLE_ID=r.ID
+		<if test="id!=null">
+			and u.id = #{id}
+		</if>
+		<if test="userName1!=null">
+			AND U.USER_NAME = #{userName1}
+		</if>
+		order by u.USER_NUMBER
+	</select>
+	<select id="getMaxNumber" resultType="int">
+		select max(USER_NUMBER) from C_MES_USER_T where viewMode = 1
+	</select>
+	<select id="roleList" resultType="RoleT">
+		select * from C_MES_ROLE_T where viewMode = 1
+		<if test="roleId!=null">
+			and id = #{roleId}
+		</if>
+	</select>
+	<insert id="addUser" keyProperty="id" useGeneratedKeys="false">
+		INSERT INTO C_MES_USER_T(USER_NAME,USER_PWD,STATUS,DEPARTMENT,SECURITY,USER_POWER,ROLE_ID,USER_NUMBER)
+		VALUES (#{userName1},#{userPwd},#{status},'','','0',#{roleId},#{userNumber})
+	</insert>
+	<delete id="delUser">
+		DELETE FROM C_MES_USER_T WHERE ID = #{id}
+	</delete>
+	<update id="updateUser">
+		UPDATE C_MES_USER_T SET USER_NAME = #{userName},USER_PWD = #{userPwd},STATUS = #{status},ROLE_ID = #{roleId} where ID=#{id}
+	</update>
+	<insert id="addRole" keyProperty="id" useGeneratedKeys="false">
+		INSERT INTO C_MES_ROLE_T(ROLE_NAME,ROLE_DIS)
+		values(#{roleName},#{roleDis})
+	</insert>
+
+	<select id="menuList" resultType="CMesMenuT">
+		SELECT * FROM C_MES_MENU_T WHERE 1 = 1
+		<if test="grade!=null and grade !=''">
+			AND GRADe = #{grade}
+		</if>
+		<if test="menuType!=null and menuType !=''">
+			AND MENU_TYPE = #{menuType}
+		</if>
+		<if test="menuId!=null">
+			AND ID = #{menuId}
+		</if>
+	</select>
+	<select id="roleAndMenuList" resultType="CMesRoleMenuT">
+		SELECT * FROM C_MES_ROLE_MENU_T RM,C_MES_MENU_T M WHERE RM.MENU_ID = M.ID
+		<if test="roleId!=null">
+			and role_id = #{roleId}
+		</if>
+		<if test="menuId!=null">
+			and menu_id = #{menuId}
+		</if>
+		<if test="flag!=null">
+			AND M.ID!=1 AND M.ID!=2 AND M.ID!=3 AND M.ID!=4 AND M.ID!=5 AND M.ID!=6
+			 AND M.ID!=7 AND M.ID!=8 AND M.ID!=9 AND M.ID!=10 AND M.ID!=11
+		</if>
+	</select>
+
+	<insert id="addRoleAndMenu" keyProperty="id" useGeneratedKeys="false">
+		insert into C_MES_ROLE_MENU_T(ROLE_ID,MENU_ID)
+		values(#{roleId},#{menuId})
+	</insert>
+
+	<select id="finMaxIdByRole" resultType="int">
+		select max(id) from C_MES_ROLE_T
+	</select>
+
+	<select id="selectIDByName" resultType="int">
+		select ID from C_MES_PRODUCTION_T  proOo  where proOo.PRODUCTION_NAME= #{productName}
+	</select>
+
+	<update id="editRole">
+		UPDATE C_MES_ROLE_T SET ROLE_NAME = #{roleName},ROLE_DIS = #{roleDis} WHERE ID = #{id}
+	</update>
+
+	<delete id="removeRoleAndMenuByRoleId">
+		DELETE FROM C_MES_ROLE_MENU_T WHERE ROLE_ID = #{roleId}
+	</delete>
+
+	<delete id="DeleteRoute_Routing_ByproductName">
+		delete FROM c_mes_routing_t rou1 where  rou1.prouduction_name=#{productionName}
+	</delete>
+
+	<delete id="DeleteRoute_Production_ByproductName">
+		delete FROM c_mes_production_way_t ppway where  ppway.production_name=#{productionName}
+	</delete>
+
+	<select id="GetRoute"  resultType="Routing">
+		select rou.route ,rou.linename  from c_mes_routing_t rou   where rou.prouduction_id=#{productID} and rou.LINE_ID=#{productLine}
+	</select>
+	<select id="findIDByName"  resultType="int">
+		select ID from C_MES_LINE_T lineQ   where lineQ.name=#{lineName}
+	</select>
+	<delete id="removeRoleByRoleId">
+		DELETE FROM C_MES_ROLE_T WHERE ID = #{roleId}
+	</delete>
+	<select id="stationList" resultType="CMesStationT">
+		SELECT station.*,line.ID AS lineID,line.DT,line.NAME as lineName,line.DSC FROM C_MES_STATION_T station,C_MES_LINE_T line WHERE station.LINE_ID = line.ID
+		<if test="lineId!=null">
+			and station.line_id = #{lineId}
+		</if>
+		<if test="stationId!=null">
+			and station.ID = #{stationId}
+		</if>
+		<if test="stationNames!=null">
+			AND station.STATION_NAME = #{stationNames}
+		</if>
+		ORDER BY station.STATION_INDEX
+	</select>
+
+
+	<select id="productionList" resultType="CMesProductionT">
+		SELECT production.ID,production.PRODUCTION_NAME FROM C_MES_PRODUCTION_T production
+
+		ORDER BY production.ID
+	</select>
+
+
+
+	<insert id="addLine" keyProperty="id" useGeneratedKeys="false">
+		INSERT INTO C_MES_LINE_T (DT,NAME,DSC,CODE_TYPE,STATUS)
+		VALUES(NOW(),#{lineName},#{lineDsc},#{codeType},0)
+	</insert>
+	<select id="lineList" resultType="CMesLineT">
+		select * from C_MES_LINE_T WHERE 1 = 1
+		<if test="id!=null">
+			AND ID = #{id}
+		</if>
+		<if test="lineNames!=null">
+			AND NAME = #{lineNames}
+		</if>
+	</select>
+	<update id="editLine">
+		UPDATE C_MES_LINE_T SET NAME = #{lineName},DSC = #{lineDsc},CODE_TYPE=#{codeType},DT=NOW() where ID = #{id}
+	</update>
+	<delete id="delStation">
+		DELETE FROM C_MES_STATION_T WHERE ID = #{id}
+	</delete>
+	<delete id="delLine">
+		DELETE FROM C_MES_LINE_T WHERE ID = #{id}
+	</delete>
+	<insert id="addStation" keyProperty="id" useGeneratedKeys="false">
+		INSERT INTO C_MES_STATION_T(STATION_INDEX,STATION_NAME,STATION_PROCESSOK,STATION_DATAOK,STATION_TYPE,STATION_RECIPEORNOT,STATION_AGVORNOT,STATION_REQUSTOUTLINE,STATION_LIGHTORNOT,STATION_REQUSTIN,STATION_REVIEWORNOT,STATION_PRINTORNOT,STATION_UPLOADMES,STATION_ENDORNOT,STATION_GUNORNOT,STATION_AUTOORNOT,STATION_TIME,STAION_FLOWORNOT,LINE_ID,STATION_SCANDER_FLAG,STATION_CCD_FLAG,STATION_RUBBER_FLAG,STATION_LEAKAGE_FLAG,STATION_EOL_FLAG,STATION_ADAM_FLAG,STATION_PLC_FLAG)
+		VALUES(#{stationIndex},#{stationName},#{stationProcessok},#{stationDataok},
+		#{stationType},#{stationRecipeornot},#{stationAgvornot},#{stationRequstoutline},#{stationLightornot},
+		#{stationRequstin},#{stationReviewornot},#{stationPrintornot},#{stationUploadmes},#{stationEndornot},
+		#{stationGunornot},#{stationAutoornot},#{stationTime},'',#{lineId},#{stationScanderFlag},#{stationCcdFlag},#{stationRubberFlag},
+		#{stationLeakageFlag},#{stationEolFlag},#{stationAdamFlag},#{stationPlcFlag}
+		)
+	</insert>
+	<update id="editStation">
+		UPDATE C_MES_STATION_T SET STATION_NAME = #{stationName},STATION_INDEX = #{stationIndex},
+		STATION_TIME = #{stationTime},STATION_PROCESSOK=#{stationProcessok},STATION_DATAOK=#{stationDataok},
+		STATION_TYPE=#{stationType},STATION_RECIPEORNOT=#{stationRecipeornot},STATION_AGVORNOT=#{stationAgvornot},
+		STATION_REQUSTOUTLINE=#{stationRequstoutline},STATION_LIGHTORNOT=#{stationLightornot},
+		STATION_REQUSTIN=#{stationRequstin},STATION_REVIEWORNOT=#{stationReviewornot},
+		STATION_PRINTORNOT=#{stationPrintornot},STATION_UPLOADMES=#{stationUploadmes},
+		STATION_ENDORNOT=#{stationEndornot},STATION_GUNORNOT=#{stationGunornot},
+		STATION_AUTOORNOT=#{stationAutoornot},STAION_FLOWORNOT='0',LINE_ID=#{lineId},
+		STATION_SCANDER_FLAG=#{stationScanderFlag},STATION_CCD_FLAG=#{stationCcdFlag},
+		STATION_RUBBER_FLAG=#{stationRubberFlag},STATION_LEAKAGE_FLAG=#{stationLeakageFlag},
+		STATION_EOL_FLAG=#{stationEolFlag},STATION_ADAM_FLAG=#{stationAdamFlag},STATION_PLC_FLAG=#{stationPlcFlag}
+		WHERE ID = #{id}
+	</update>
+	<select id="countLineByLineName" resultType="int">
+		SELECT COUNT(NAME) FROM C_MES_LINE_T WHERE upper(NAME) = upper(#{lineName})
+	</select>
+	<select id="countStationByStationName" resultType="int">
+		SELECT COUNT(STATION_NAME) FROM C_MES_STATION_T WHERE upper(STATION_NAME) = upper(#{stationName}) AND LINE_ID = #{lineId}
+	</select>
+	<select id="carrierList" resultType="CMesTrayT">
+		SELECT tray.*,line.NAME AS lineName FROM C_MES_TRAY_T tray,C_MES_LINE_T line where tray.LINE_ID = line.ID
+		<if test="id!=null">
+			AND tray.ID = #{id}
+		</if>
+	</select>
+	<insert id="addCarrier" keyProperty="id" useGeneratedKeys="false">
+		INSERT INTO C_MES_TRAY_T(TRAY_NAME,TRAY_VR,DT,LINE_ID,DIS)
+		VALUES(#{trayName},#{trayVr},NOW(),#{lineId},#{dis})
+	</insert>
+	<select id="countCarrierByName" resultType="int">
+		SELECT COUNT(*) FROM C_MES_TRAY_T WHERE TRAY_NAME = #{trayName}
+	</select>
+	<select id="findAllLine" resultType="CMesLineT">
+		SELECT ID,NAME FROM c_mes_line_t
+	</select>
+
+	<select id="findStationByLine" resultType="CMesStationT">
+ SELECT station_.STATION_INDEX,station_.STATION_NAME,station_.STATION_PROCESSOK,station_.STATION_DATAOK,station_.STATION_TYPE,station_.STATION_RECIPEORNOT,station_.STATION_AGVORNOT,station_.STATION_REQUSTOUTLINE,station_.STATION_LIGHTORNOT,station_.STATION_REQUSTIN,station_.STATION_REVIEWORNOT,station_.STATION_PRINTORNOT,station_.STATION_UPLOADMES,station_.STATION_ENDORNOT,station_.STATION_GUNORNOT,station_.STATION_AUTOORNOT,station_.STATION_TIME,station_.STAION_FLOWORNOT,station_.STATION_SCANDER_FLAG,station_.STATION_CCD_FLAG,station_.STATION_RUBBER_FLAG,station_.STATION_LEAKAGE_FLAG,station_.STATION_EOL_FLAG,station_.STATION_ADAM_FLAG,station_.STATION_PLC_FLAG   FROM C_MES_STATION_T  station_ WHERE station_.line_id in ( select ID from C_MES_LINE_T where  name=#{lineName})  order by station_.station_index	</select>
+
+	<update id="editCarrier">
+		UPDATE C_MES_TRAY_T SET TRAY_NAME = #{trayName},TRAY_VR = #{trayVr},DT = #{dt},LINE_ID = #{lineId},
+		DIS = #{dis} where ID = #{id}
+	</update>
+	<delete id="delCarrier">
+		DELETE FROM C_MES_TRAY_T WHERE ID = #{id}
+	</delete>
+	<update id="relieveDataForBoltP">
+		UPDATE R_MES_BOLT_T SET BOLT_MODE =1 WHERE ID =  #{id}
+	</update>
+	<update id="relieveDataForKeypartP">
+		UPDATE R_MES_KEYPART_T SET KEYPART_MODE=1 WHERE ID = #{id}
+	</update>
+	<update id="relieveDataForLeakageP">
+		UPDATE R_MES_LEAKAGE_T SET LEAKAGE_MODE=1 WHERE ID = #{id}
+	</update>
+	<select id="getBoltById" resultType="RMesBolt">
+		SELECT * FROM R_MES_BOLT_T WHERE ID = #{id}
+	</select>
+	<select id="getKeypartById" resultType="RMesKeypart">
+		SELECT * FROM R_MES_KEYPART_T WHERE ID = #{id}
+	</select>
+	<select id="getLeakageById" resultType="RMesLeakage">
+		SELECT * FROM R_MES_LEAKAGE_T WHERE ID = #{id}
+	</select>
+	<insert id="addBolt" keyProperty="id" useGeneratedKeys="false">
+		INSERT INTO R_MES_BOLT_T (DT,BOLT_NAME,ST,SN,BOLT_MODE,REWORK_FLAG)
+		VALUES(#{dt},#{boltName},#{st},#{sn},0,'1')
+	</insert>
+	<insert id="addKeypart" keyProperty="id" useGeneratedKeys="false">
+		INSERT INTO R_MES_KEYPART_T (DT,KEYPART_NAME,ST,SN,KEYPART_MODE,KEYPART_REWORK_FG)
+		VALUES(#{dt},#{keypartName},#{st},#{sn},0,'1')
+	</insert>
+	<insert id="addLeakage" keyProperty="id" useGeneratedKeys="false">
+		INSERT INTO R_MES_LEAKAGE_T (DT,LEAKAGE_NAME,ST,SN,LEAKAGE_MODE,REWORK_FLAG)
+		VALUES(#{dt},#{leakageName},#{st},#{sn},0,'1')
+	</insert>
+	<insert id="addMenuCrud" keyProperty="id" useGeneratedKeys="false">
+        	INSERT INTO C_MES_MENU_CRUD_T(MENU_ID,MENU_CRUD_ID,ROLE_ID)
+			VALUES(#{menuId},#{menuCrudId},#{roleId})
+	</insert>
+	<delete id="delMenuCrudByRoleId">
+		DELETE FROM C_MES_MENU_CRUD_T WHERE ROLE_ID = #{roleId}
+	</delete>
+	<select id="listMenuCrudByRoleId" resultType="CMesMenuCrudT">
+		SELECT * FROM C_MES_MENU_CRUD_T WHERE ROLE_ID = #{roleId}
+	</select>
+	<select id="getCountByID" resultType="int">
+		select COUNT(*) from C_MES_PRODUCTION_WAY_T where PRODUCTION_ID= #{productId}
+	</select>
+	<delete id="deleteByID">
+		DELETE from C_MES_PRODUCTION_WAY_T WHERE PRODUCTION_ID= #{productId}
+	</delete>
+	<select id="countUserByRoleId" resultType="int">
+		SELECT COUNT(*) FROM C_MES_USER_T WHERE viewMode = 1 and ROLE_ID = #{roleId}
+	</select>
+	<select id="countRegisterByStationId" resultType="int">
+		SELECT COUNT(*) FROM S_MES_REGISTER_T WHERE STATION_ID = #{id}
+	</select>
+	<select id="countMaterialListDetailByStationId" resultType="int">
+		SELECT COUNT(*) FROM C_MES_MATERIAL_LIST_DETAIL_T WHERE STATION_ID=#{id}
+	</select>
+	<select id="countDeviceByStationId" resultType="int">
+		SELECT COUNT(*) FROM C_MES_DEVICE_T WHERE DEVICE_STATION = #{id}
+	</select>
+	<select id="countMaterialMsgByStationId" resultType="int">
+		SELECT COUNT(*) FROM C_MES_MATERIAL_MSG_T WHERE ST= #{id}
+	</select>
+	<select id="countBoltByStationId" resultType="int">
+		SELECT COUNT(*) FROM P_MES_BOLT_T WHERE ST = #{id}
+	</select>
+	<select id="countLeakageByStationId" resultType="int">
+		SELECT COUNT(*) FROM P_MES_LEAKAGE_T WHERE ST = #{id}
+	</select>
+	<select id="countOtherByStationId" resultType="int">
+		SELECT COUNT(*) FROM C_MES_OTHER_DATA_T WHERE ST = #{id}
+	</select>
+	<select id="countProductionRecipeByStationId" resultType="int">
+		SELECT COUNT(*) FROM C_MES_PRODUCTION_RECIPE_T WHERE STATION_ID = #{id}
+	</select>
+
+
+	<select id="countRegisterByLineId" resultType="int">
+		SELECT COUNT(*) FROM S_MES_REGISTER_T WHERE LINE_ID = #{id}
+	</select>
+	<select id="countTrayByLineId" resultType="int">
+		SELECT COUNT(*) FROM C_MES_TRAY_T WHERE LINE_ID = #{id}
+	</select>
+	<select id="countProductionProcessByLineId" resultType="int">
+		select COUNT(*) FROM C_MES_PRODUCTION_PROCESS_T  WHERE LINE_ID = #{id}
+	</select>
+	<select id="countMaterialListByLineId" resultType="int">
+		SELECT COUNT(*) FROM C_MES_MATERIAL_LIST_T WHERE LINE_ID = #{id}
+	</select>
+	<select id="countManufactureParametersByLineId" resultType="int">
+		SELECT COUNT(*) FROM C_MES_MANUFACTURE_PARAMETERS_T WHERE LINE_ID = #{id}
+	</select>
+	<select id="countAssemblyTypeByLineId" resultType="int">
+		SELECT COUNT(*) FROM C_MES_ASSEMBLY_TYPE WHERE LINE_ID = #{id}
+	</select>
+	<select id="countDeviceByLineId" resultType="int">
+		SELECT COUNT(*) FROM C_MES_DEVICE_T WHERE DEVICE_LINE = #{id}
+	</select>
+	<select id="countLabelManagerByLineId" resultType="int">
+		SELECT COUNT(*) FROM C_MES_LABEL_MANAGER_T WHERE LINE_ID = #{id}
+	</select>
+	<select id="countPlanByLineId" resultType="int">
+		SELECT COUNT(*) FROM R_MES_PLAN_T WHERE LINE_ID = #{id}
+	</select>
+	<select id="countShiftsTeamByLineId" resultType="int">
+		SELECT COUNT(*) FROM C_MES_SHIFTS_TEAM_T WHERE LINE_ID = #{id}
+	</select>
+	<select id="countEmpByLineId" resultType="int">
+		SELECT COUNT(*) FROM C_MES_EMP_T WHERE LINE_ID = #{id}
+	</select>
+	<select id="countBarCodeByLineId" resultType="int">
+		SELECT COUNT(*) FROM R_MES_PLAN_PRINT_T WHERE LINE_ID = #{id}
+	</select>
+	<select id="countRoleByName" resultType="int">
+		SELECT COUNT(*) FROM C_MES_ROLE_T WHERE ROLE_NAME = #{roleName}
+	</select>
+	<select id="countStationByLineId" resultType="int">
+		SELECT COUNT(*) FROM C_MES_STATION_T WHERE ID = #{id}
+	</select>
+	<select id="countIndexById" resultType="int">
+		SELECT COUNT(*) FROM C_MES_STATION_T WHERE LINE_ID = #{lineId} AND STATION_INDEX = #{stationIndex}
+	</select>
+	<select id="GetAllLine" resultType="PMesStationPassLineT">
+		SELECT DISTINCT LINE_ID from P_MES_STATION_PASS_T
+	</select>
+	<select id="GetAllLineByStation" resultType="PMesStaionT">
+		select DISTINCT  ST  from P_MES_STATION_PASS_T  where LINE_ID=#{appointStation}
+	</select>
+	<select id="GetAllMsgByLineandStation" resultType="PMesStationPassT">
+		select  *  from   P_MES_STATION_PASS_T test1 where TEST1.LINE_ID=#{str_line} and TEST1.ST=#{str_station}   ORDER  BY TEST1.SN,TEST1.DT
+	</select>
+
+	<select id="GetLineIDByName" resultType="int">
+		select  ID  from C_MES_LINE_T  where NAME=#{str_line}
+	</select>
+	  <!-- <select id="GetStationPassTimeMSG" parameterMap="gsptmsg" statementType="CALLABLE">
+          call P_MES_STATIONPASS_P(?,?,?,?,?,?,?,?)
+      </select>
+	  <parameterMap type="java.util.Map" id="gsptmsg">
+	      <parameter property="str_line" mode="IN" jdbcType="VARCHAR2"/>
+	      <parameter property="begin_time" mode="IN" jdbcType="VARCHAR2"/>
+	      <parameter property="end_time" mode="IN" jdbcType="VARCHAR2"/>
+	      <parameter property="addtime" mode="OUT" jdbcType="VARCHAR2"/>
+	      <parameter property="averagetime" mode="OUT" jdbcType="VARCHAR2"/>
+	      <parameter property="qualified" mode="OUT" jdbcType="VARCHAR2"/>
+	      <parameter property="EMPGROUP_" mode="OUT" jdbcType="VARCHAR2"/>
+	      <parameter property="station_" mode="OUT" jdbcType="VARCHAR2"/>
+      </parameterMap> -->
+      <select id="interfaceList" resultType="CMesInterface">
+      	SELECT * FROM C_MES_INTERFACE_T WHERE 1 = 1
+      	<if test="id!=null">
+      		AND ID = #{id}
+      	</if>
+      	<if test="mark!=null">
+      		AND remark = #{mark}
+      	</if>
+      </select>
+      <insert id="addInterface" keyProperty="id" useGeneratedKeys="false">
+        INSERT INTO C_MES_INTERFACE_T(DT,NAME,REMARK,VAL,DIS)
+		VALUES(NOW(),#{name},#{remark},#{val},#{dis})
+      </insert>
+      <select id="countInterfaceByName" resultType="int">
+      	SELECT COUNT(*) FROM C_MES_INTERFACE_T WHERE NAME = #{name}
+      </select>
+      <delete id="delInterface">
+      	DELETE FROM C_MES_INTERFACE_T WHERE ID = #{id}
+      </delete>
+      <update id="editInterface">
+      	UPDATE C_MES_INTERFACE_T SET DT=NOW(),NAME=#{name},REMARK=#{remark},VAL=#{val},DIS=#{dis}
+      	WHERE ID = #{id}
+      </update>
+
+      <delete id="delBolt">
+      	DELETE FROM R_MES_BOLT_T WHERE ID = #{boltId}
+      </delete>
+      <delete id="delKeypart">
+      	DELETE FROM R_MES_KEYPART_T WHERE ID = #{keyPartId}
+      </delete>
+      <delete id="delLeakage">
+      	DELETE FROM R_MES_LEAKAGE_T WHERE ID = #{leakageId}
+      </delete>
+      <insert id="addToReasons" keyProperty="id" useGeneratedKeys="false">
+        INSERT INTO C_MES_REASONS_T (FLAG,MSG_ID,REASONS)
+		VALUES(#{flag},#{msgId},#{reasons})
+      </insert>
+      <insert id="addToReasonsBolt" keyProperty="id" useGeneratedKeys="false">
+        INSERT INTO C_MES_REASONS_BOLT_T (ID,DT,TRANSFER,BOLT_MODE,SN,ST,T,A,P,C,R,EQS,T_LIMIT,A_LIMIT,WID,TID,BOLT_NUM,BOLT_NAME,REWORK_FLAG,REWORK_ST,GUN_NO,REASONS,UPDATE_DATE,USER_NAME)
+        VALUES(#{id},#{reasonsBolt.dt},#{reasonsBolt.transfer},#{reasonsBolt.boltMode},#{reasonsBolt.sn,jdbcType=VARCHAR},#{reasonsBolt.st,jdbcType=VARCHAR},#{reasonsBolt.t,jdbcType=VARCHAR},#{reasonsBolt.a,jdbcType=VARCHAR},#{reasonsBolt.p,jdbcType=VARCHAR},#{reasonsBolt.c,jdbcType=VARCHAR},#{reasonsBolt.r,jdbcType=VARCHAR},#{reasonsBolt.eqs,jdbcType=VARCHAR},#{reasonsBolt.tLimit,jdbcType=VARCHAR},#{reasonsBolt.aLimit,jdbcType=VARCHAR},#{reasonsBolt.wid,jdbcType=VARCHAR},#{reasonsBolt.tid,jdbcType=VARCHAR},#{reasonsBolt.boltNum},#{reasonsBolt.boltName,jdbcType=VARCHAR},#{reasonsBolt.reworkFlag,jdbcType=VARCHAR},#{reasonsBolt.reworkSt,jdbcType=VARCHAR},#{reasonsBolt.gunNo,jdbcType=VARCHAR},#{reasons,jdbcType=VARCHAR},NOW(),#{account})
+      </insert>
+      <insert id="addToReasonsKeypart" keyProperty="id" useGeneratedKeys="false">
+        INSERT INTO C_MES_REASONS_KEYPART_T (REASONS,DT,TRANSFER,KEYPART_MODE,ST,SN,WID,TID,SECOND_NUM,KEYPART_ID,KEYPART_NAME,KEYPART_PN,KEYPART_NUM,KEYPART_MODULE,KEYPART_REWORK_FG,KEYPART_REWORK_ST,MATERIAL_ID,MATERIAL_NUMBER,UPDATE_DATE,USER_NAME)
+        VALUES(#{reasons,jdbcType=VARCHAR},#{reasonsKeypart.dt},#{reasonsKeypart.transfer,jdbcType=NUMERIC},#{reasonsKeypart.keypartMode,jdbcType=VARCHAR},#{reasonsKeypart.st,jdbcType=VARCHAR},#{reasonsKeypart.sn,jdbcType=VARCHAR},#{reasonsKeypart.wid,jdbcType=VARCHAR},#{reasonsKeypart.tid,jdbcType=VARCHAR},#{reasonsKeypart.secondNum,jdbcType=VARCHAR},#{reasonsKeypart.keypartId,jdbcType=NUMERIC},#{reasonsKeypart.keypartName,jdbcType=VARCHAR},#{reasonsKeypart.keypartPn,jdbcType=VARCHAR},#{reasonsKeypart.keypartNum,jdbcType=VARCHAR},#{reasonsKeypart.keypartModule,jdbcType=VARCHAR},#{reasonsKeypart.keypartReworkFg,jdbcType=VARCHAR},#{reasonsKeypart.keypartReworkSt,jdbcType=VARCHAR},#{reasonsKeypart.materialId,jdbcType=NUMERIC},#{reasonsKeypart.materialNumber,jdbcType=VARCHAR},NOW(),#{account})
+      </insert>
+      <insert id="addToReasonsLeakage" keyProperty="id" useGeneratedKeys="false">
+        INSERT INTO C_MES_REASONS_LEAKAGE_T (DT,ST,SN,LEAKAGE_NAME,LEAKAGE_PV,LEAKAGE_LV,LEAKAGE_R,WID,TRANSFER,LEAKAGE_MODE,REWORK_FLAG,REASONS,UPDATE_DATE,USER_NAME)
+        VALUES(#{reasonsLeakage.dt},#{reasonsLeakage.st,jdbcType=VARCHAR},#{reasonsLeakage.sn,jdbcType=VARCHAR},#{reasonsLeakage.leakageName,jdbcType=VARCHAR},#{reasonsLeakage.leakagePv,jdbcType=VARCHAR},#{reasonsLeakage.leakageLv,jdbcType=VARCHAR},#{reasonsLeakage.leakageR,jdbcType=VARCHAR},#{reasonsLeakage.wid,jdbcType=VARCHAR},#{reasonsLeakage.transfer,jdbcType=NUMERIC},#{reasonsLeakage.leakageMode,jdbcType=NUMERIC},#{reasonsLeakage.reworkFlag,jdbcType=VARCHAR},#{reasonsLeakage.reasons,jdbcType=VARCHAR},NOW(),#{account})
+      </insert>
+</mapper>

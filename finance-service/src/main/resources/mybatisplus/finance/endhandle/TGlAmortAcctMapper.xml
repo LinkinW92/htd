@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.endhandle.TGlAmortAcctMapper">
+
+    <resultMap type="com.skeqi.finance.domain.endhandle.amortization.TGlAmortAcct" id="TGlAmortAcctResult">
+        <result property="fSchemeId" column="f_scheme_id"/>
+        <result property="fId" column="f_id"/>
+        <result property="fAmortizeAccount" column="f_amortize_account"/>
+        <result property="fAmortizingAmount" column="f_amortizing_amount"/>
+        <result property="fDetailId" column="f_detail_id"/>
+        <result property="fExpression" column="f_expression"/>
+    </resultMap>
+
+    <select id="queryList" resultType="com.skeqi.finance.pojo.vo.endhandle.TGlAmortAcctVo">
+         select a.*,concat(d.ds_code,'/',d.ds_name) as f_detail ,ac.f_name as f_account_name  from t_gl_amort_acct a
+         LEFT JOIN t_gl_amort_acct_dimension d ON d.amort_entry_id=a.f_id
+         LEFT JOIN t_bd_account ac ON ac.f_acct_id= a.f_amortize_account
+         where  f_scheme_id=#{fSchemeId}
+    </select>
+
+</mapper>

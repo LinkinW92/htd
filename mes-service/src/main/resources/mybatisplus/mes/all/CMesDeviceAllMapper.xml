@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.all.CMesDeviceAllTDAO">
+	<!-- 查询列表 -->
+	<select id="findAllSpot" resultType="CMesDeviceSpotT">
+		SELECT L.NAME AS lineName,S.* FROM C_MES_DEVICE_SPOT_T S
+		JOIN C_MES_LINE_T L ON S.LINE_ID=L.ID
+		<where>
+			<if test="deviceName != null and deviceName != ''">
+				S.DEVICE_NAME like '%${deviceName}%'
+			</if>
+			<if test="lineId != null and lineId != ''">
+				AND S.LINE_ID=#{lineId}
+			</if>
+		</where>
+	</select>
+
+	<!-- 根据id查询 -->
+	<select id="findSpotByid" resultType="CMesDeviceSpotT">
+		select * from C_MES_DEVICE_SPOT_T where id=#{id}
+	</select>
+
+	<!-- 添加 -->
+	<insert id="addSpot">
+		INSERT INTO C_MES_DEVICE_SPOT_T(DEVICE_NAME,LINE_ID,DT,STATUS,EMP)
+  		values(#{deviceName},#{lineId},NOW(),#{status},#{emp})
+	</insert>
+
+	<!-- 修改 -->
+	<update id="updateSpot">
+		UPDATE C_MES_DEVICE_SPOT_T SET
+			DEVICE_NAME=#{deviceName},LINE_ID=#{lineId},DT=NOW(),STATUS=#{status},EMP=#{emp}
+      	WHERE ID = #{id}
+	</update>
+
+	<!-- 删除 -->
+	<delete id="delSppot">
+		DELETE FROM C_MES_DEVICE_SPOT_T WHERE ID = #{id}
+	</delete>
+
+	<!-- 查询设备维修列表 -->
+	<select id="findAllRepair" resultType="CMesDeviceRepairT">
+		select t.*,l.name as lineName
+			    from C_MES_DEVICE_REPAIR t,c_mes_line_t l
+				where t.line_id=l.id
+			<if test="deviceName!=null and deviceName!=''">
+				and t.device_name like '%${deviceName}%'
+			</if>
+			<if test="lineId!=0 ">
+				and l.id=#{lineId}
+			</if>
+			order by t.id
+	</select>
+
+	<!-- 根据id查询维修列表 -->
+	<select id="findRepairByid" resultType="CMesDeviceRepairT">
+		select * from C_MES_DEVICE_REPAIR where id=#{id}
+	</select>
+
+	<!-- 添加维修列表 -->
+	<insert id="addRepair">
+			insert into C_MES_DEVICE_REPAIR(DT,DEVICE_NAME,REPAIR_PERSON,EMP,REASON,NOTE,LINE_ID)
+		values(NOW(),#{deviceName},#{repairPerson},#{emp},#{reason},#{note,jdbcType=VARCHAR},#{lineId})
+	</insert>
+
+	<!-- 修改设备维修 -->
+	<update id="updateRepair">
+		update C_MES_DEVICE_REPAIR set DT = NOW(),
+									   DEVICE_NAME=#{deviceName},
+									   REPAIR_PERSON=#{repairPerson},
+									   EMP=#{emp},
+									   REASON=#{reason},
+									   NOTE=#{note,jdbcType=VARCHAR},
+									   LINE_ID=#{lineId}
+								where id=#{id}
+	</update>
+
+	<!-- 删除设备维修 -->
+	<delete id="delRepair">
+			delete from C_MES_DEVICE_REPAIR where id=#{id}
+	</delete>
+
+	<!-- 查询设备保养列表 -->
+	<select id="findAllKeep" resultType="CMesDeviceUpkeep">
+			select t.*,l.name as lineName
+				from C_MES_DEVICE_UPKEEP t,c_mes_line_t l
+				where l.id=t.line_id
+			<if test="deviceName!=null and deviceName!=''">
+				and t.device_name like '%${deviceName}%'
+			</if>
+			<if test="lineId!=0 ">
+				and l.id=#{lineId}
+			</if>
+	</select>
+
+	<!-- 根据id查询保养列表 -->
+	<select id="findKeepByid" resultType="CMesDeviceUpkeep">
+		select * from C_MES_DEVICE_UPKEEP where id=#{id}
+	</select>
+
+	<!-- 查询剩余寿命 -->
+	<select id="findSurplusTime" resultType="Integer">
+		SELECT to_days(endtime)-to_days(now()) from C_MES_DEVICE_UPKEEP where id=#{id}
+	</select>
+
+	<!-- 添加 -->
+	<insert id="addKeep">
+			insert into C_MES_DEVICE_UPKEEP(DT,DEVICE_NAME,LINE_ID,EMP,UPKEEP_PERSON,NOTE,MAINTAIN_CYCLE,ENDTIME)
+		values(NOW(),#{deviceName},#{lineId},#{emp},#{upkeepPerson},#{note,jdbcType=VARCHAR},${maintainCycle},date_add(now(),interval  ${maintainCycle} day))
+	</insert>
+
+	<!-- 修改 -->
+	<update id="updateKeep">
+				update C_MES_DEVICE_UPKEEP set dt=NOW(),
+									   DEVICE_NAME=#{deviceName},
+									   LINE_ID=#{lineId},
+									   EMP=#{emp},
+									   UPKEEP_PERSON=#{upkeepPerson},
+									   NOTE=#{note,jdbcType=VARCHAR},
+									   MAINTAIN_CYCLE=#{maintainCycle}
+							where    id=#{id}
+	</update>
+
+	<!-- 修改时间 -->
+	<update id="updateKeppDate">
+			update C_MES_DEVICE_UPKEEP set dt=NOW(),
+										ENDTIME=date_add(now(),interval ${value} day)
+											where id=#{id}
+	</update>
+</mapper>

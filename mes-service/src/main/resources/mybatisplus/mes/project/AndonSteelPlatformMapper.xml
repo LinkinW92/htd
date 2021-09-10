@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.project.AndonSteelPlatformDao">
+
+	<select id="findRAndonSteelPlatform" resultType="AndonSteelPlatform">
+		select * from r_andon_steel_platform
+		ORDER BY id desc
+		<if test="limit == true">
+			LIMIT 10,20
+		</if>
+	</select>
+
+	<select id="findPAndonSteelPlatform" resultType="AndonSteelPlatform">
+		select * from p_andon_steel_platform
+		where 1 = 1
+		<if test="sn != null and sn != ''">
+			and sn LIKE '%${sn}%'
+		</if>
+		<if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+			and dt between #{startTime} and #{endTime}
+		</if>
+		<if test="productName != null and productName != ''">
+			and productName LIKE '%${productName}%'
+		</if>
+		<if test="productNo != null and productNo != ''">
+			and productNo LIKE '%${productNo}%'
+		</if>
+		ORDER BY id
+	</select>
+
+	<insert id="addRAndonSteelPlatform">
+		insert into r_andon_steel_platform(dt,sn,productId,productName,productNo,productModel,productAbbreviation)
+		VALUE(now(),#{sn},#{productId},#{productName},#{productNo},#{productModel},#{productAbbreviation})
+	</insert>
+
+	<insert id="addPAndonSteelPlatform">
+		insert into p_andon_steel_platform(id,dt,sn,productId,productName,productNo,productModel,productAbbreviation)
+		VALUE(#{id},#{dt},#{sn},#{productId},#{productName},#{productNo},#{productModel},#{productAbbreviation})
+	</insert>
+
+	<delete id="deletePAndonSteelPlatform">
+		delete from r_andon_steel_platform
+		where id = #{id}
+	</delete>
+
+	<select id="findProductByProductNo" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			id AS productId,
+			PRODUCTION_NAME AS productName,
+			PRODUCTION_TYPE AS productNo,
+			PRODUCTION_SERIES AS productModel,
+			PRODUCTION_TRADEMARK AS productAbbreviation
+		FROM
+			c_mes_production_t
+		WHERE
+			id = ( SELECT max( id ) FROM c_mes_production_t WHERE PRODUCTION_TYPE = #{productNo} )
+	</select>
+
+
+</mapper>

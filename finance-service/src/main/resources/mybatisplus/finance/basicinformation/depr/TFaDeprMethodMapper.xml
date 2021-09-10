@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.TFaDeprMethodMapper">
+
+    <resultMap type="com.skeqi.finance.domain.TFaDeprMethod" id="TFaDeprMethodResult">
+        <result property="fId" column="f_id"/>
+        <result property="fNumber" column="f_number"/>
+        <result property="fDeprOption" column="f_depr_option"/>
+        <result property="fCalcWay" column="f_calc_way"/>
+        <result property="fCreateOrgid" column="f_create_orgid"/>
+        <result property="fCreatorid" column="f_creatorid"/>
+        <result property="fCreateDate" column="f_create_date"/>
+        <result property="fUseOrgid" column="f_use_orgid"/>
+        <result property="fModifierid" column="f_modifierid"/>
+        <result property="fModifyDate" column="f_modify_date"/>
+        <result property="fDocumentStatus" column="f_document_status"/>
+        <result property="fAuditorid" column="f_auditorid"/>
+        <result property="fAuditDate" column="f_audit_date"/>
+        <result property="fForbidStatus" column="f_forbid_status"/>
+        <result property="fForbidderid" column="f_forbidderid"/>
+        <result property="fForbidDate" column="f_forbid_date"/>
+        <result property="fIssysPreset" column="f_issys_preset"/>
+        <result property="fMasterId" column="f_master_id"/>
+    </resultMap>
+
+
+</mapper>

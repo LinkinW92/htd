@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.skeqi.mes.mapper.qh.CMesQhReportTDao">
+
+    <select id="findMonthSum" resultType="java.util.Map">
+        select month(OFFLINE_DT) months,count(id) nums from p_mes_tracking_t where year(OFFLINE_DT)=#{year} and LINE_ID=#{lineId} GROUP BY month(OFFLINE_DT)
+    </select>
+
+    <select id="findDaySum" resultType="java.util.Map">
+       select day(OFFLINE_DT) days,count(id) nums from p_mes_tracking_t where year(OFFLINE_DT)=#{year} and MONTH(OFFLINE_DT)=#{month}  and LINE_ID=#{lineId}  GROUP BY DAY(OFFLINE_DT)
+    </select>
+
+    <select id="tightenPass" resultType="java.util.Map">
+        SELECT st,count(sn) nums FROM `p_mes_bolt_t` where  dt&gt;=#{startDt} and dt&lt; #{endDt} GROUP BY st
+    </select>
+
+    <select id="findNgNums" resultType="java.lang.Integer">
+        SELECT count(sn) FROM `p_mes_bolt_t` where r='OK' and dt&gt;=#{startDt} and dt&lt;#{endDt} and st=#{st}
+    </select>
+</mapper>

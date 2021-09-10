@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.dzb.report.OnePassRateDao">
+
+    <!-- 查询全部产线 -->
+    <select id="listLine" resultType="java.util.Map">
+        select id, name
+        from c_mes_line_t
+    </select>
+
+    <select id="getNormalByDay" resultType="java.util.Map">
+        select (SELECT count(sn)
+                FROM P_MES_TRACKING_T
+                where to_days(OFFLINE_DT) = to_days(#{date})
+                  and enginesn = 0
+                  and line_id = #{lineId}) onePassCount,
+               (SELECT count(sn)
+                FROM P_MES_TRACKING_T
+                where to_days(OFFLINE_DT) = to_days(#{date})
+                  and line_id = #{lineId}) sumCount
+    </select>
+
+
+</mapper>
+
+

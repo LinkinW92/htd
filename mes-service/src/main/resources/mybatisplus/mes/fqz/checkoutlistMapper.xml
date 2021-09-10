@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.fqz.CheckoutlistDAO">
+
+	<select id="findAll" resultType="CMesCheckoutListT">
+		select list.*,p.PRODUCTION_NAME as productionName,m.METHOD_NAME as methodName from C_MES_CHECKOUT_LIST_T list,
+																						   C_MES_PRODUCTION_T p,
+																						   C_MES_CHECKOUT_METHOD_T m
+		 WHERE list.PRODUCTION_ID=p.id and m.METHOD_NO=list.method_Id
+		<if test="projectName!=null and projectName!=''">
+			and PROJECT_NAME like '%${projectName}%'
+		</if>
+		<if test="pid!=null and pid!='' and pid!=0">
+			and list.production_id=#{pid}
+		</if>
+		order by ORDER_NUMBER
+	</select>
+
+	<insert id="insertcheckout">
+		insert into C_MES_CHECKOUT_LIST_T(ORDER_NUMBER,PROJECT_NAME,QUAILTY,METHOD_ID,PRODUCTION_ID,PRODUCTION_CODE)
+		values(#{orderNumber},#{projectName},#{quailty},#{methodId},#{productionId},#{productionCode})
+	</insert>
+
+	<update id="updatecheckout">
+		update C_MES_CHECKOUT_LIST_T set ORDER_NUMBER=#{orderNumber},
+											    PROJECT_NAME=#{projectName},
+											    QUAILTY=#{quailty},
+											    METHOD_ID=#{methodId}
+<!-- 											    PRODUCTION_ID=#{productionId} -->
+										where id=#{id}
+	</update>
+
+	<delete id="deletecheckout">
+		delete from C_MES_CHECKOUT_LIST_T where id=#{id}
+	</delete>
+
+	<select id="findByid" resultType="CMesCheckoutListT">
+		select list.* from C_MES_CHECKOUT_LIST_T list
+					WHERE  list.id=#{id}
+	</select>
+
+	<select id="findPro" resultType="CMesProductionT">
+		select p.id,p.PRODUCTION_NAME as productionName from C_MES_PRODUCTION_T p
+	</select>
+
+	<select id="findOrdernumber" resultType="Integer">
+		select count(*) from C_MES_CHECKOUT_LIST_T  where ORDER_NUMBER=#{ordernumber} and PRODUCTION_ID=#{pid}
+	</select>
+
+	<select id="findCode" resultType="String" >
+		select PRODUCTION_CODE from C_MES_PRODUCTION_T where id=#{id}
+	</select>
+
+	<select id="findMethod" resultType="CMesCheckoutMethodT">
+		select * from C_MES_CHECKOUT_METHOD_T
+	</select>
+
+	<select id="findMethodId" resultType="Integer">
+		select count(*) from C_MES_CHECKOUT_LIST_T  where METHOD_ID=#{mid} and PRODUCTION_ID=#{pid}
+	</select>
+</mapper>

@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.rate.TBdRateMapper">
+
+    <resultMap type="com.skeqi.finance.domain.rate.TBdRate" id="TBdRateResult">
+        <result property="fRateId" column="f_rate_id"/>
+        <result property="fRateTypeId" column="f_rate_typeId"/>
+        <result property="fCyforid" column="f_cyforid"/>
+        <result property="fCytoid" column="f_cytoid"/>
+        <result property="fExchangeRate" column="f_exchange_rate"/>
+        <result property="fReverseexRate" column="f_reverseex_rate"/>
+        <result property="fBegDate" column="f_beg_date"/>
+        <result property="fEndDate" column="f_end_date"/>
+        <result property="fNumber" column="f_number"/>
+        <result property="fMasterId" column="f_master_id"/>
+        <result property="fCreateOrgid" column="f_create_orgid"/>
+        <result property="fCreatorid" column="f_creatorid"/>
+        <result property="fCreateDate" column="f_create_date"/>
+        <result property="fUseOrgid" column="f_use_orgid"/>
+        <result property="fModifierid" column="f_modifierid"/>
+        <result property="fModifyDate" column="f_modify_date"/>
+        <result property="fDocumentStatus" column="f_document_status"/>
+        <result property="fAuditorid" column="f_auditorid"/>
+        <result property="fAuditDate" column="f_audit_date"/>
+        <result property="fForbidStatus" column="f_forbid_status"/>
+        <result property="fForbidderid" column="f_forbidderid"/>
+        <result property="fForbidDate" column="f_forbid_date"/>
+        <result property="fIssysPreset" column="f_issys_preset"/>
+    </resultMap>
+
+
+    <select id="getRatePage" parameterType="com.skeqi.finance.pojo.bo.rate.TBdRateQueryBo" resultType="com.skeqi.finance.pojo.vo.basicinformation.rate.TBdRateVo">
+        SELECT
+          r.f_rate_id as fRateId,
+          r.f_exchange_rate as fExchangeRate,
+            r.f_reverseex_rate as fReverseexRate,
+            rt.f_name as fRateTypeName,
+            c1.f_name as fCyforName,
+            c2.f_name as fCytoName,
+            r.f_beg_date as fBegDate,
+            r.f_end_date as fEndDate,
+            r.f_issys_preset as fIssysPreset,
+            r.f_document_status as fDocumentStatus,
+            r.f_forbid_status as fForbidStatus,
+            r.f_number as fNumber
+        FROM
+            t_bd_rate r
+        LEFT JOIN t_bd_currency c1 on r.f_cyforid=c1.f_currency_id
+        LEFT JOIN t_bd_currency c2 on r.f_cytoid=c2.f_currency_id
+        LEFT JOIN t_bd_rate_type rt on r.f_rate_type_id=rt.f_rate_type_id
+        <where>
+            <if test="bo.fRateTypeName !=null and bo.fRateTypeName !=''">
+                and rt.f_name = #{bo.fRateTypeName}
+            </if>
+            <if test="bo.fRateTypeId !=null ">
+                and rt.f_rate_type_id = #{bo.fRateTypeId}
+            </if>
+            <if test="bo.fCyforName !=null and bo.fCyforName !=''">
+                and c1.f_name = #{bo.fCyforName}
+            </if>
+            <if test="bo.fCytoName !=null and bo.fCytoName !=''">
+                and c2.f_name = #{bo.fCytoName}
+            </if>
+
+            <if test="bo.fExchangeRate !=null and bo.fExchangeRate !=''">
+                and r.f_exchange_rate = #{bo.fExchangeRate}
+            </if>
+
+            <if test="bo.fReverseexRate !=null and bo.fReverseexRate !=''">
+                and r.f_reverseex_rate = #{bo.fReverseexRate}
+            </if>
+            <if test="bo.fDocumentStatus !=null and bo.fDocumentStatus !=''">
+                and r.f_document_status = #{bo.fDocumentStatus}
+            </if>
+
+            <if test="bo.fForbidStatus !=null and bo.fForbidStatus !=''">
+                and r.f_forbid_status = #{bo.fForbidStatus}
+            </if>
+
+            <if test="bo.fIssysPreset !=null and bo.fIssysPreset !=''">
+                and r.f_issys_preset = #{bo.fIssysPreset}
+            </if>
+            <if test="bo.fUseOrgid !=null ">
+                and r.f_use_orgid = #{bo.fUseOrgid}
+            </if>
+            <if test="bo.fCyforid !=null ">
+                and r.f_cyforid = #{bo.fCyforid}
+            </if>
+            <if test="bo.fCytoid !=null ">
+                and r.f_cytoid = #{bo.fCytoid}
+            </if>
+
+        </where>
+        order by  r.f_create_date desc
+    </select>
+
+    <select id="getRateList" parameterType="com.skeqi.finance.pojo.bo.rate.TBdRateQueryBo" resultType="com.skeqi.finance.pojo.vo.basicinformation.rate.TBdRateVo">
+        SELECT
+        r.f_rate_id as fRateId,
+        r.f_beg_date as fBegDate,
+        r.f_end_date as fEndDate,
+        r.f_issys_preset as fIssysPreset,
+        r.f_document_status as fDocumentStatus,
+        r.f_forbid_status as fForbidStatus,
+        r.f_number as fNumber,
+        c1.f_name as fCyforName,
+        c1.f_number as fCyforNumber
+        FROM
+        t_bd_rate r
+        LEFT JOIN t_bd_currency c1 on r.f_cyforid=c1.f_currency_id
+        <where>
+            <if test="bo.fUseOrgid !=null ">
+                and r.f_use_orgid = #{bo.fUseOrgid}
+            </if>
+            <if test="bo.fCyforid !=null ">
+                and r.f_cyforid = #{bo.fCyforid}
+            </if>
+            <if test="bo.fCytoid !=null ">
+                and r.f_cytoid = #{bo.fCytoid}
+            </if>
+            <if test="bo.fRateTypeId !=null ">
+                and r.f_rate_type_id = #{bo.fRateTypeId}
+            </if>
+            and r.f_document_status='1'
+        </where>
+        group by r.f_rate_type_id,r.f_cyforid,r.f_cytoid,r.f_use_orgid
+    </select>
+
+    <select id="getRateCount" resultType="java.lang.Integer">
+        SELECT
+        count(1)
+        FROM
+        t_bd_rate r
+        LEFT JOIN t_bd_currency c1 on r.f_cyforid=c1.f_currency_id
+        LEFT JOIN t_bd_currency c2 on r.f_cytoid=c2.f_currency_id
+        LEFT JOIN t_bd_rate_type rt on r.f_rate_type_id=rt.f_rate_type_id
+        <where>
+            <if test="fRateTypeName !=null and fRateTypeName !=''">
+                and rt.f_name = #{fRateTypeName}
+            </if>
+            <if test="fCyforName !=null and fCyforName !=''">
+                and c1.f_name = #{fCyforName}
+            </if>
+            <if test="fCytoName !=null and fCytoName !=''">
+                and c2.f_name = #{fCytoName}
+            </if>
+
+            <if test="fExchangeRate !=null and fExchangeRate !=''">
+                and r.f_exchange_rate = #{fExchangeRate}
+            </if>
+
+            <if test="fReverseexRate !=null and fReverseexRate !=''">
+                and r.f_reverseex_rate = #{fReverseexRate}
+            </if>
+            <if test="fDocumentStatus !=null and fDocumentStatus !=''">
+                and r.f_document_status = #{fDocumentStatus}
+            </if>
+
+            <if test="fForbidStatus !=null and fForbidStatus !=''">
+                and r.f_forbid_status = #{fForbidStatus}
+            </if>
+
+            <if test="fIssysPreset !=null and fIssysPreset !=''">
+                and r.f_issys_preset = #{fIssysPreset}
+            </if>
+        </where>
+    </select>
+
+    <select id="findRateByDateAndType" resultMap="TBdRateResult">
+        SELECT  * FROM t_bd_rate
+        <where>
+            <if test="date !=null ">
+                and  <![CDATA[   #{date}  <=f_end_date ]]>
+            </if>
+            <if test="date !=null" >
+                and  <![CDATA[  f_beg_date <= #{date}  ]]>
+            </if>
+            <if test="type !=null ">
+                and  f_rate_type_id=#{type}
+            </if>
+            <if test="fCytoid !=null ">
+                and  f_cytoid=#{fCytoid}
+            </if>
+            <if test="fCyforid !=null ">
+                and  f_cyforid=#{fCyforid}
+            </if>
+        </where>
+        order by f_end_date desc limit 1
+    </select>
+</mapper>

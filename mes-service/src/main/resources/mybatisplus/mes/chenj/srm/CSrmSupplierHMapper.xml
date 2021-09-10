@@ -1,0 +1,620 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.chenj.srm.CSrmSupplierHMapper">
+    <resultMap id="BaseResultMap" type="com.skeqi.mes.pojo.chenj.srm.CSrmSupplierH">
+        <!--@mbg.generated-->
+        <!--@Table c_srm_supplier_h-->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="request_code" jdbcType="VARCHAR" property="requestCode"/>
+        <result column="supplier_code" jdbcType="VARCHAR" property="supplierCode"/>
+        <result column="current_generation" jdbcType="VARCHAR" property="currentGeneration"/>
+        <result column="target_phase" jdbcType="VARCHAR" property="targetPhase"/>
+        <result column="creator" jdbcType="VARCHAR" property="creator"/>
+        <result column="status" jdbcType="VARCHAR" property="status"/>
+        <result column="remark" jdbcType="VARCHAR" property="remark"/>
+        <result column="blacklist_mark" jdbcType="VARCHAR" property="blacklistMark"/>
+        <result column="attachment" jdbcType="VARCHAR" property="attachment"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="sum_score" jdbcType="VARCHAR" property="sumScore"/>
+        <result column="grade" jdbcType="VARCHAR" property="grade"/>
+        <result column="request_status" jdbcType="VARCHAR" property="requestStatus"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        id, request_code, supplier_code, current_generation, target_phase, creator, `status`,
+        remark, blacklist_mark, attachment, create_time, update_time,sum_score,grade,request_status
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmSupplierH" resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        select
+        <include refid="Base_Column_List"/>
+        from c_srm_supplier_h
+        <where>
+            <if test="requestCode != null and requestCode != ''">
+                request_code=#{requestCode,jdbcType=VARCHAR}
+            </if>
+            <if test="id != null">
+                and id=#{id,jdbcType=INTEGER}
+            </if>
+        </where>
+    </select>
+
+    <!--根据供应商代码查询信息-->
+    <select id="selectSupplierCode" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmSupplierH" resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        select
+        <include refid="Base_Column_List"/>
+        from c_srm_supplier_h
+        where supplier_code = #{supplierCode,jdbcType=VARCHAR} and `request_status`=#{status,jdbcType=VARCHAR}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        <!--@mbg.generated-->
+        delete from c_srm_supplier_h
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <update id="deleteByPrimaryData">
+        update c_srm_supplier_h set is_delete=1 where request_code=#{requestCode,jdbcType=VARCHAR}
+    </update>
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmSupplierH"
+            useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_supplier_h (request_code, supplier_code, current_generation,
+        target_phase, creator, `status`,
+        remark, blacklist_mark, attachment,
+        create_time, update_time)
+        values (#{requestCode,jdbcType=VARCHAR}, #{supplierCode,jdbcType=VARCHAR},
+        #{currentGeneration,jdbcType=VARCHAR},
+        #{targetPhase,jdbcType=VARCHAR}, #{creator,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR},
+        #{remark,jdbcType=VARCHAR}, #{blacklistMark,jdbcType=VARCHAR}, #{attachment,jdbcType=VARCHAR},
+        #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+    </insert>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmSupplierH"
+            useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_supplier_h
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="requestCode != null">
+                request_code,
+            </if>
+            <if test="supplierCode != null">
+                supplier_code,
+            </if>
+            <if test="currentGeneration != null">
+                current_generation,
+            </if>
+            <if test="targetPhase != null">
+                target_phase,
+            </if>
+            <if test="creator != null">
+                creator,
+            </if>
+            <if test="status != null">
+                `status`,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+            <if test="blacklistMark != null">
+                blacklist_mark,
+            </if>
+            <if test="attachment != null">
+                attachment,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="requestStatus != null and requestStatus != ''">
+                request_status,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="requestCode != null">
+                #{requestCode,jdbcType=VARCHAR},
+            </if>
+            <if test="supplierCode != null">
+                #{supplierCode,jdbcType=VARCHAR},
+            </if>
+            <if test="currentGeneration != null">
+                #{currentGeneration,jdbcType=VARCHAR},
+            </if>
+            <if test="targetPhase != null">
+                #{targetPhase,jdbcType=VARCHAR},
+            </if>
+            <if test="creator != null">
+                #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null">
+                #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="blacklistMark != null">
+                #{blacklistMark,jdbcType=VARCHAR},
+            </if>
+            <if test="attachment != null">
+                #{attachment,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="requestStatus != null and requestStatus != ''">
+                #{requestStatus,jdbcType=VARCHAR}
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmSupplierH">
+        <!--@mbg.generated-->
+        update c_srm_supplier_h
+        <set>
+            <if test="requestCode != null">
+                request_code = #{requestCode,jdbcType=VARCHAR},
+            </if>
+            <if test="supplierCode != null">
+                supplier_code = #{supplierCode,jdbcType=VARCHAR},
+            </if>
+            <if test="currentGeneration != null">
+                current_generation = #{currentGeneration,jdbcType=VARCHAR},
+            </if>
+            <if test="targetPhase != null">
+                target_phase = #{targetPhase,jdbcType=VARCHAR},
+            </if>
+            <if test="creator != null">
+                creator = #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                `status` = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null">
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="blacklistMark != null">
+                blacklist_mark = #{blacklistMark,jdbcType=VARCHAR},
+            </if>
+            <if test="attachment != null">
+                attachment = #{attachment,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="sumScore != null">
+                sum_score = #{sumScore,jdbcType=VARCHAR},
+            </if>
+            <if test="grade != null">
+                grade = #{grade,jdbcType=VARCHAR},
+            </if>
+            <if test="requestStatus != null">
+                request_status = #{requestStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="isDelete != null">
+                is_delete=#{isDelete,jdbcType=BOOLEAN}
+            </if>
+        </set>
+        <where>
+            <if test="requestCode!=null and requestCode!=''">
+                request_code=#{requestCode,jdbcType=VARCHAR}
+            </if>
+            <if test="id>0">
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+        </where>
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmSupplierH">
+        <!--@mbg.generated-->
+        update c_srm_supplier_h
+        set request_code = #{requestCode,jdbcType=VARCHAR},
+        supplier_code = #{supplierCode,jdbcType=VARCHAR},
+        current_generation = #{currentGeneration,jdbcType=VARCHAR},
+        target_phase = #{targetPhase,jdbcType=VARCHAR},
+        creator = #{creator,jdbcType=VARCHAR},
+        `status` = #{status,jdbcType=VARCHAR},
+        remark = #{remark,jdbcType=VARCHAR},
+        blacklist_mark = #{blacklistMark,jdbcType=VARCHAR},
+        attachment = #{attachment,jdbcType=VARCHAR},
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+        update_time = #{updateTime,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateBatch" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update c_srm_supplier_h
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="request_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.requestCode,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="supplier_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.supplierCode,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="current_generation = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.currentGeneration,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="target_phase = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.targetPhase,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="creator = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.creator,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="`status` = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.status,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="remark = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.remark,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="blacklist_mark = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.blacklistMark,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="attachment = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.attachment,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.createTime,jdbcType=TIMESTAMP}
+                </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.updateTime,jdbcType=TIMESTAMP}
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    <update id="updateBatchSelective" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update c_srm_supplier_h
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="request_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.requestCode != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.requestCode,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="supplier_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.supplierCode != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.supplierCode,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="current_generation = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.currentGeneration != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.currentGeneration,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="target_phase = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.targetPhase != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.targetPhase,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="creator = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.creator != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.creator,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="`status` = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.status != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.status,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="remark = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.remark != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.remark,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="blacklist_mark = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.blacklistMark != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.blacklistMark,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="attachment = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.attachment != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.attachment,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.createTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.createTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.updateTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.updateTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_supplier_h
+        (request_code, supplier_code, current_generation, target_phase, creator, `status`,
+        remark, blacklist_mark, attachment, create_time, update_time)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.requestCode,jdbcType=VARCHAR}, #{item.supplierCode,jdbcType=VARCHAR},
+            #{item.currentGeneration,jdbcType=VARCHAR},
+            #{item.targetPhase,jdbcType=VARCHAR}, #{item.creator,jdbcType=VARCHAR}, #{item.status,jdbcType=VARCHAR},
+            #{item.remark,jdbcType=VARCHAR}, #{item.blacklistMark,jdbcType=VARCHAR},
+            #{item.attachment,jdbcType=VARCHAR},
+            #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
+    <insert id="insertOrUpdate" keyColumn="id" keyProperty="id" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmSupplierH"
+            useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_supplier_h
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            request_code,
+            supplier_code,
+            current_generation,
+            target_phase,
+            creator,
+            `status`,
+            remark,
+            blacklist_mark,
+            attachment,
+            create_time,
+            update_time,
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            #{requestCode,jdbcType=VARCHAR},
+            #{supplierCode,jdbcType=VARCHAR},
+            #{currentGeneration,jdbcType=VARCHAR},
+            #{targetPhase,jdbcType=VARCHAR},
+            #{creator,jdbcType=VARCHAR},
+            #{status,jdbcType=VARCHAR},
+            #{remark,jdbcType=VARCHAR},
+            #{blacklistMark,jdbcType=VARCHAR},
+            #{attachment,jdbcType=VARCHAR},
+            #{createTime,jdbcType=TIMESTAMP},
+            #{updateTime,jdbcType=TIMESTAMP},
+        </trim>
+        on duplicate key update
+        <trim suffixOverrides=",">
+            <if test="id != null">
+                id = #{id,jdbcType=INTEGER},
+            </if>
+            request_code = #{requestCode,jdbcType=VARCHAR},
+            supplier_code = #{supplierCode,jdbcType=VARCHAR},
+            current_generation = #{currentGeneration,jdbcType=VARCHAR},
+            target_phase = #{targetPhase,jdbcType=VARCHAR},
+            creator = #{creator,jdbcType=VARCHAR},
+            `status` = #{status,jdbcType=VARCHAR},
+            remark = #{remark,jdbcType=VARCHAR},
+            blacklist_mark = #{blacklistMark,jdbcType=VARCHAR},
+            attachment = #{attachment,jdbcType=VARCHAR},
+            create_time = #{createTime,jdbcType=TIMESTAMP},
+            update_time = #{updateTime,jdbcType=TIMESTAMP},
+        </trim>
+    </insert>
+    <insert id="insertOrUpdateSelective" keyColumn="id" keyProperty="id"
+            parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmSupplierH" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_supplier_h
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="requestCode != null">
+                request_code,
+            </if>
+            <if test="supplierCode != null">
+                supplier_code,
+            </if>
+            <if test="currentGeneration != null">
+                current_generation,
+            </if>
+            <if test="targetPhase != null">
+                target_phase,
+            </if>
+            <if test="creator != null">
+                creator,
+            </if>
+            <if test="status != null">
+                `status`,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+            <if test="blacklistMark != null">
+                blacklist_mark,
+            </if>
+            <if test="attachment != null">
+                attachment,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="sumScore != null and sumScore != ''">
+                sum_score,
+            </if>
+            <if test="grade != null and grade != ''">
+                grade,
+            </if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="requestCode != null">
+                #{requestCode,jdbcType=VARCHAR},
+            </if>
+            <if test="supplierCode != null">
+                #{supplierCode,jdbcType=VARCHAR},
+            </if>
+            <if test="currentGeneration != null">
+                #{currentGeneration,jdbcType=VARCHAR},
+            </if>
+            <if test="targetPhase != null">
+                #{targetPhase,jdbcType=VARCHAR},
+            </if>
+            <if test="creator != null">
+                #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null">
+                #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="blacklistMark != null">
+                #{blacklistMark,jdbcType=VARCHAR},
+            </if>
+            <if test="attachment != null">
+                #{attachment,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="sumScore != null and sumScore != ''">
+                #{sumScore,jdbcType=VARCHAR},
+            </if>
+            <if test="grade != null and grade != ''">
+                #{grade,jdbcType=VARCHAR},
+            </if>
+        </trim>
+        on duplicate key update
+        <trim suffixOverrides=",">
+            <if test="id != null">
+                id = #{id,jdbcType=INTEGER},
+            </if>
+            <if test="requestCode != null">
+                request_code = #{requestCode,jdbcType=VARCHAR},
+            </if>
+            <if test="supplierCode != null">
+                supplier_code = #{supplierCode,jdbcType=VARCHAR},
+            </if>
+            <if test="currentGeneration != null">
+                current_generation = #{currentGeneration,jdbcType=VARCHAR},
+            </if>
+            <if test="targetPhase != null">
+                target_phase = #{targetPhase,jdbcType=VARCHAR},
+            </if>
+            <if test="creator != null">
+                creator = #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                `status` = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null">
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="blacklistMark != null">
+                blacklist_mark = #{blacklistMark,jdbcType=VARCHAR},
+            </if>
+            <if test="attachment != null">
+                attachment = #{attachment,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="sumScore != null and sumScore != ''">
+                sum_score = #{sumScore,jdbcType=VARCHAR},
+            </if>
+            <if test="grade != null and grade != ''">
+                grade = #{grade,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <!--获取最后一条数据-->
+    <select id="selectFinallyData" resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        SELECT
+        request_code
+        FROM
+        c_srm_supplier_h
+        where request_code like concat('SUP2','%')
+        ORDER BY
+        id DESC
+        LIMIT 1
+    </select>
+    <select id="selectByPrimaryHList" resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CSrmSupplierHRRsp">
+        select
+        h.request_code, h.supplier_code,h.request_status, s.name , h.current_generation,
+        h.target_phase,h.create_time,c.company_code,c.company_name,h.sum_score, h.grade,h.request_status
+        from c_srm_supplier_h h
+        left join c_srm_supplier s ON s.supplier_code=h.supplier_code
+        left join c_srm_company c ON c.supplier_code=h.supplier_code
+        <where>
+            <if test="requestCode != null and requestCode != ''">
+                h.request_code like concat('%',#{requestCode,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="supplierCode != null and supplierCode != ''">
+                and h.supplier_code like concat('%',#{supplierCode,jdbcType=VARCHAR},'%')
+            </if>
+            and h.is_delete=0
+        </where>
+
+    </select>
+</mapper>

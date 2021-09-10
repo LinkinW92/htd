@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.fqz.MaterialRepairDAO">
+	<select id="findAll" resultType="CMESMaterialRepairT">
+		select t.*,s.station_name as stationName,m.material_name as materialName
+		    from C_MES_MATERIAL_REPAIR_T t,c_mes_station_t s,C_MES_JL_MATERIAL_T m
+			where t.material_id=m.id and t.station_id=s.id
+			<if test="stationId!=null and stationId!='' and stationId != 0">
+				and s.id=#{stationId}
+			</if>
+			<if test="materialName!=null and materialName!=''">
+				and m.MATERIAL_NAME like '%${materialName}%'
+			</if>
+			<if test="status!=null and status!='' and status!=0">
+				and status=#{status}
+			</if>
+	</select>
+
+	<select id="findStation" resultType="CMesStationT">
+		select id,station_name as stationName from C_MES_STATION_T
+	</select>
+
+	<select id="findMateial" resultType="CMesMaterialT">
+		select id,material_Name as materialName from c_mes_material_t
+	</select>
+
+
+	<insert id="insertM">
+		insert into c_mes_material_repair_t(MATERIAL_ID,STATION_ID,DT,EMP,NOTE,STATUS)
+		values(#{materialId},#{stationId},NOW(),#{emp},#{note},1)
+	</insert>
+
+	<update id="updatestatus">
+		update c_mes_material_repair_t set status=2,ENDDT=NOW(),REPAIR_EMP=#{repairEmp},reason=#{reason} where id=#{id}
+	</update>
+
+	<delete id="delmaterial">
+		delete from c_mes_material_repair_t where id=#{id}
+	</delete>
+</mapper>
+
+

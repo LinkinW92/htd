@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wf.linesidelibrary.returnMaterial.LslMaterialReturnDetailedDetailTMapper">
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, `number`, detailed_number, cdt, udt, material_sn, quantity, stock_quantity
+  </sql>
+    <delete id="deleteDetailedDetailByReturnNumber">
+      delete from c_lsl_material_return_detailed_detail_t where detailed_number in (
+      (
+      select
+      number
+      from
+      c_lsl_material_return_detailed_t
+      where
+      return_number = #{number,jdbcType=VARCHAR}
+      )
+      )
+    </delete>
+    <select id="selectByPrimaryKey" resultType="com.skeqi.mes.pojo.wf.linesidelibrary.returnMaterial.LslMaterialReturnDetailedDetailT">
+    <!--@mbg.generated-->
+    select
+    <include refid="Base_Column_List" />
+    from c_lsl_material_return_detailed_detail_t
+    where `number` = #{number,jdbcType=VARCHAR}
+  </select>
+    <select id="selectAll" resultType="com.skeqi.mes.pojo.wf.linesidelibrary.returnMaterial.LslMaterialReturnDetailedDetailT">
+      select
+      <include refid="Base_Column_List" />
+      from c_lsl_material_return_detailed_detail_t
+      <where>
+        <if test="detailedNumber != null and detailedNumber != ''">
+          detailed_number = #{detailedNumber,jdbcType=VARCHAR}
+        </if>
+      </where>
+    </select>
+
+  <insert id="insertSelective">
+    <!--@mbg.generated-->
+    insert into c_lsl_material_return_detailed_detail_t
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="number != null">
+        `number`,
+      </if>
+      <if test="detailedNumber != null">
+        detailed_number,
+      </if>
+      <if test="cdt != null">
+        cdt,
+      </if>
+      <if test="udt != null">
+        udt,
+      </if>
+      <if test="materialSn != null">
+        material_sn,
+      </if>
+      <if test="quantity != null">
+        quantity,
+      </if>
+      <if test="stockQuantity != null">
+        stock_quantity,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="number != null">
+        #{number,jdbcType=VARCHAR},
+      </if>
+      <if test="detailedNumber != null">
+        #{detailedNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="cdt != null">
+        #{cdt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="udt != null">
+        #{udt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="materialSn != null">
+        #{materialSn,jdbcType=VARCHAR},
+      </if>
+      <if test="quantity != null">
+        #{quantity,jdbcType=INTEGER},
+      </if>
+      <if test="stockQuantity != null">
+        #{stockQuantity,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <insert id="addDetailedDetailByList">
+    insert into c_lsl_material_return_detailed_detail_t
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+        `number`,
+        detailed_number,
+        cdt,
+        udt,
+        material_sn,
+        quantity,
+        stock_quantity
+    </trim>
+    <foreach collection="list" item="item" open="values" separator=",">
+      (
+        #{item.number,jdbcType=VARCHAR},
+        #{item.detailedNumber,jdbcType=VARCHAR},
+        #{item.cdt,jdbcType=TIMESTAMP},
+        #{item.udt,jdbcType=TIMESTAMP},
+        #{item.materialSn,jdbcType=VARCHAR},
+        #{item.quantity,jdbcType=INTEGER},
+        #{item.stockQuantity,jdbcType=INTEGER}
+      )
+    </foreach>
+  </insert>
+</mapper>

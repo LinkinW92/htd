@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.yp.wms.WmsProductionWarehousingDao">
+
+	<!-- 查询 -->
+	<select id="list" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			a.number,
+			a.type,
+			a.`status`,
+			a.creator,
+			a.mender,
+			a.remarks,
+			a.batch,
+			a.offline_line AS offlineLine,
+			DATE_FORMAT( a.cdt, '%Y-%m-%d %H:%i:%s' ) AS cdt,
+			DATE_FORMAT( a.udt, '%Y-%m-%d %H:%i:%s' ) AS udt,
+			DATE_FORMAT( a.receivingGoodsDt, '%Y-%m-%d %H:%i:%s' ) AS receivingGoodsDt,
+			a.creatorUserId,
+			a.menderUserId,
+			b.USER_NAME AS creatorUserName,
+			b.`name` AS creatorFullName,
+			c.USER_NAME AS menderUserName,
+			c.`name` AS menderFullName,
+			d.USER_NAME AS receivingGoodsUserName,
+			d.`name` AS receivingGoodsFullName,
+			a.factoryId,
+			e.factoryName,
+			a.locationId,
+			f.LOCATION_NAME AS locationName
+		FROM
+			c_lsl_product_offline_t a
+			LEFT JOIN c_mes_user_t b ON a.creatorUserId = b.id
+			LEFT JOIN c_mes_user_t c ON a.menderUserId = c.id
+			LEFT JOIN c_mes_user_t d ON a.receivingGoodsUserId = d.id
+			LEFT JOIN c_mes_factory_t e ON a.factoryId = e.id
+			LEFT JOIN c_wms_location_t f ON a.locationId = f.id
+		WHERE
+			1 = 1
+		<if test="listNo != null and listNo != ''">
+		and a.number like '%${listNo}%'
+		</if>
+		<if test="status != null and status != ''">
+		and a.status = #{status}
+		</if>
+		<if test="lineName != null and lineName != ''">
+		and a.offline_line = #{lineName}
+		</if>
+		<if test="creatorUserName != null and creatorUserName != ''">
+		and b.USER_NAME like '%${creatorUserName}%' or b.`name` like '%${creatorUserName}%'
+		</if>
+		<if test="startReceivingGoodsDt != null and startReceivingGoodsDt != '' and endReceivingGoodsDt != null and endReceivingGoodsDt != ''">
+		and DATE_FORMAT(a.receivingGoodsDt,'%Y-%m-%d') between #{startReceivingGoodsDt} and #{endReceivingGoodsDt}
+		</if>
+	</select>
+
+	<!-- 更新 -->
+	<update id="update">
+		update c_lsl_product_offline_t
+		set
+		remarks = #{remarks},
+		factoryId = #{factoryId},
+		locationId = #{locationId}
+		where number = #{listNo}
+	</update>
+
+	<!-- 查询R -->
+	<select id="listR" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			a.number,
+			a.offline_number AS offlineNumber,
+			a.quantity,
+			a.material_code AS materialCode,
+			a.cdt,
+			a.udt,
+			b.id as materialId,
+			a.unit,
+			b.MATERIAL_NAME AS materialName,
+			b.BOM_ID AS materialNo 
+		FROM
+			c_lsl_product_offline_detailed_t a
+			LEFT JOIN c_mes_jl_material_t b ON a.material_code = b.BOM_ID
+		where offline_number = #{listNo}
+	</select>
+
+	<!-- 查询D -->
+	<select id="listD" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			a.number,
+			a.detailed_number AS detailedNumber,
+			a.quantity,
+			a.pack_no AS packNo,
+			a.material_sn AS materialSn,
+			a.cdt,
+			a.udt
+		FROM
+			c_lsl_product_offline_detailed_detail_t a
+		where number = #{listNo}
+	</select>
+
+	<!-- 通过单号查询线边库产品下线明细 -->
+	<select id="findListDByListNo" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			a.number,
+			a.detailed_number AS detailedNumber,
+			a.quantity,
+			a.pack_no AS packNo,
+			a.material_sn AS materialSn,
+			a.cdt,
+			a.udt,
+			d.id AS materialId,
+			b.unit,
+			c.factoryId,
+			c.locationId,
+			d.MATERIAL_NAME AS materialName,
+			d.BOM_ID AS materialNo 
+		FROM
+			c_lsl_product_offline_detailed_detail_t a
+			JOIN c_lsl_product_offline_detailed_t b ON a.number = b.number
+			JOIN c_lsl_product_offline_t c ON b.offline_number = c.number
+			JOIN c_mes_jl_material_t d ON b.material_code = d.BOM_ID
+		WHERE
+			c.number = #{listNo}
+	</select>
+
+	<!-- 查询线边库库存表 -->
+	<select id="findLineSideLibraryStockByBatchCodeAndMaterialCode" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			id,
+			quantity
+		FROM c_lsl_material_inventory_t
+		where
+		<if test="packNo != null and packNo != ''">
+		batchCode = #{packNo}
+		</if>
+		<if test="materialSn != null and materialSn != ''">
+		materialCode = #{materialSn}
+		</if>
+	</select>
+
+	<!-- 更新线边库库存表 -->
+	<update id="updateLineSideLibraryStock">
+		update c_lsl_material_inventory_t
+		set
+		quantity = #{quantity}
+		where id = #{id}
+	</update>
+
+	<!-- 查询库存表 -->
+	<select id="findStockByCode" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			id,
+			dt,
+			factoryId,
+			packageId,
+			unitCode,
+			ItemNo,
+			batchNumber,
+			number,
+			numberOfPackages,
+			locationId,
+			shelfNumber,
+			toBeInspectedNumber,
+			frozenNumber,
+			pickingLockNumber,
+			shipmentLockingNumber,
+			unit,
+			supplierBatchNumber,
+			dateOfManufacture,
+			expiryDate
+		FROM
+			c_qh_wms_stock_t
+		where
+		<if test="packageId != null and packageId != ''">
+		packageId = #{packageId}
+		</if>
+		<if test="unitCode != null and unitCode != ''">
+		unitCode = #{unitCode}
+		</if>
+	</select>
+
+	<!-- 更新线边库产品下线表状态 -->
+	<update id="updateStatus">
+		update c_lsl_product_offline_t
+		set
+		status = #{status}
+		where id = #{id}
+	</update>
+
+	<!-- type：实体类 id：在resultMap引用-->
+	<resultMap type="com.alibaba.fastjson.JSONObject" id="rdMap">
+		<!-- column：数据库查询出来的列  property：实体类属性的值 -->
+		<result column="id" property="id"/>
+		<result column="listNo" property="listNo"/>
+		<result column="materialId" property="materialId"/>
+		<result column="number" property="number"/>
+		<result column="unit" property="unit"/>
+		<result column="materialName" property="materialName"/>
+		<result column="materialNo" property="materialNo"/>
+		<!-- collection：一对多  property：实体类里的 ofType：实体类 -->
+		<collection property="d" javaType="list" ofType="com.alibaba.fastjson.JSONObject">
+			<result column="dId" property="id"/>
+			<result column="packingId" property="packingId"/>
+			<result column="code" property="code"/>
+			<result column="packingNumber" property="packingNumber"/>
+			<result column="num" property="number"/>
+		</collection>
+	</resultMap>
+	<!-- 查询R跟D表数据 -->
+	<select id="findRAndD" resultMap="rdMap">
+		SELECT
+			a.id,
+			a.offline_number AS listNo,
+			c.id AS materialId,
+			a.quantity AS number,
+			a.unit,
+			b.id AS dId,
+			b.pack_no AS packingId,
+			b.material_sn AS `code`,
+			b.quantity AS num,
+			c.MATERIAL_NAME AS materialName,
+			c.BOM_ID AS materialNo 
+		FROM
+			c_lsl_product_offline_detailed_t a
+			LEFT JOIN c_lsl_product_offline_detailed_detail_t b ON a.number = b.number
+			JOIN c_mes_jl_material_t c ON a.material_code = c.BOM_ID
+		WHERE
+			a.offline_number = #{listNo}
+	</select>
+	
+	<!-- 查询所有产线 -->
+	<select id="findLineAll" resultType="com.alibaba.fastjson.JSONObject">
+		select id,`name` as lineName from c_mes_line_t
+	</select>
+
+</mapper>

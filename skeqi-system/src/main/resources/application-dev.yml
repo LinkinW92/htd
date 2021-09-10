@@ -1,0 +1,171 @@
+server:
+  # 服务器的HTTP端口，默认为8080
+  port: 8099
+# 数据源配置
+spring:
+  autoconfigure:
+    exclude: com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    dynamic:
+      #设置默认的数据源或者数据源组,默认值即为 master
+      primary: master
+      datasource:
+        # 主库数据源
+        master:
+          driverClassName: com.mysql.cj.jdbc.Driver
+          url: jdbc:mysql://localhost:3306/skq?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&autoReconnect=true
+          username: root
+          password: 123456
+        # 从库数据源
+        slave:
+          driverClassName: com.mysql.cj.jdbc.Driver
+          url:
+          username:
+          password:
+    druid:
+      # 初始连接数
+      initialSize: 5
+      # 最小连接池数量
+      minIdle: 10
+      # 最大连接池数量
+      maxActive: 20
+      # 配置获取连接等待超时的时间
+      maxWait: 60000
+      # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      timeBetweenEvictionRunsMillis: 60000
+      # 配置一个连接在池中最小生存的时间，单位是毫秒
+      minEvictableIdleTimeMillis: 300000
+      # 配置一个连接在池中最大生存的时间，单位是毫秒
+      maxEvictableIdleTimeMillis: 900000
+      # 配置检测连接是否有效
+      validationQuery: SELECT 1 FROM DUAL
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+      # 注意这个值和druid原生不一致，默认启动了stat
+      filters: stat,wall,log4j,config
+      webStatFilter:
+        enabled: true
+      statViewServlet:
+        enabled: true
+        # 设置白名单，不填则允许所有访问
+        allow:
+        url-pattern: /druid/*
+        # 控制台管理用户名和密码
+        login-username: skeqi
+        login-password: 123456
+      filter:
+        stat:
+          enabled: true
+          # 慢SQL记录
+          log-slow-sql: true
+          slow-sql-millis: 1000
+          merge-sql: true
+        wall:
+          config:
+            multi-statement-allow: true
+        slf4j:
+          enabled: true
+          statement-log-error-enabled: true
+          statement-create-after-log-enabled: false
+          statement-close-after-log-enabled: false
+          result-set-open-after-log-enabled: false
+          result-set-close-after-log-enabled: false
+  # redis 配置
+  redis:
+    # 地址
+    host: localhost
+    # 端口，默认为6379
+    port: 6379
+    # 数据库索引
+    database: 0
+    # 密码
+    #password: 123456789
+    password:
+    # 连接超时时间
+    timeout: 10s
+    # 是否开启ssl
+    ssl: false
+
+--- # redisson 客户端配置
+redisson:
+  # 线程池数量
+  threads: 16
+  # Netty线程池数量
+  nettyThreads: 32
+  # 传输模式
+  transportMode: "NIO"
+  # 单节点配置
+  singleServerConfig:
+    # 客户端名称
+    clientName: ${skeqi.name}
+    # 最小空闲连接数
+    connectionMinimumIdleSize: 32
+    # 连接池大小
+    connectionPoolSize: 64
+    # 连接空闲超时，单位：毫秒
+    idleConnectionTimeout: 10000
+    # 命令等待超时，单位：毫秒
+    timeout: 3000
+    # 如果尝试在此限制之内发送成功，则开始启用 timeout 计时。
+    retryAttempts: 3
+    # 命令重试发送时间间隔，单位：毫秒
+    retryInterval: 1500
+    # 发布和订阅连接的最小空闲连接数
+    subscriptionConnectionMinimumIdleSize: 1
+    # 发布和订阅连接池大小
+    subscriptionConnectionPoolSize: 50
+    # 单个连接最大订阅数量
+    subscriptionsPerConnection: 5
+    # DNS监测时间间隔，单位：毫秒
+    dnsMonitoringInterval: 5000
+
+
+# 看板文件上传
+filepath:
+  upload: F://qhImg
+spring:
+  web:
+    resources:
+      static-locations: file:${filepath.upload}
+  mvc:
+    static-path-pattern: /**
+
+# 日志配置
+logging:
+  level:
+    com.skeqi: info
+    org.springframework: warn
+  config: classpath:logback.xml
+
+system:
+  version: 7.0.0-20210823-0235de1
+
+fileName:
+  pdfPath: D:\\\\image  #pdf文件存储
+  clearPDF: D:\\\\image\\\\clear  #pdf文件删除
+  QRCode: D:\\\\code\\\\codeImg\\\\1.jp  #二维码生成
+  CRMFile: D:\\\\CRMFile\\\\file  #CRM文件路径
+  CRMClear: D:\\\\CRMFile\\\\file\\\\clearFile  #CRM文件清除路径
+  FileIP: 192.168.8.203  #pdf文件展示IP地址
+  pdfFile: D:\\\\image\\\\  #pdf文件展示
+  # SRM文件存放位置
+  srmName: D:\\\\SRMFile
+  ## OA文件管理模块文件所存放位置 末尾不需要加\\
+  OAFilePath: D:/MES_file\\OAFile
+  ## OA审批单的附件以及图片存放位置 末尾不需要加\\
+  ApprovalFilePath: D:/MES_file
+
+#第三方服务推送开关
+servicePush:
+  push: false
+
+#数据库升级配置
+initdb:
+  #上传更新的版本号
+  version: 7.0.1
+  #更新的数据库版本 ，sql文件格式 update-1.0.1.sql update-后面跟的版本号
+  update-version: 7.0.1
+  #是否初始化 第一次启动项目设置 true,启动成功后修改配置为false
+  init-status: false

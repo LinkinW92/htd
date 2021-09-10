@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.endhandle.TGlAmortInacctMapper">
+
+    <resultMap type="com.skeqi.finance.domain.endhandle.amortization.TGlAmortInacct" id="TGlAmortInacctResult">
+        <result property="fId" column="f_id"/>
+        <result property="fSchemeId" column="f_scheme_id"/>
+        <result property="fEnterAccountId" column="f_enter_account_id"/>
+        <result property="fEnterRatio" column="f_enter_ratio"/>
+        <result property="fDetailId" column="f_detail_id"/>
+        <result property="fEnterRatioFixed" column="f_enter_ratio_fixed"/>
+    </resultMap>
+
+    <select id="queryList" resultType="com.skeqi.finance.pojo.vo.endhandle.TGlAmortInacctVo">
+         select a.*,concat(d.ds_code,'/',d.ds_name) as f_detail,ac.f_name as f_account_name  from t_gl_amort_inacct a
+         LEFT JOIN t_gl_amort_inacct_dimension d ON d.amort_entry_id=a.f_id
+         LEFT JOIN t_bd_account ac ON ac.f_acct_id= a.f_enter_account_id
+         where  f_scheme_id=#{fSchemeId}
+    </select>
+
+</mapper>

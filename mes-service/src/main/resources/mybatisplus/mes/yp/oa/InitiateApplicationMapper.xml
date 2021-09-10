@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.yp.oa.InitiateApplicationDao">
+
+	<resultMap type="com.alibaba.fastjson.JSONObject" id="approvalProcessMap">
+		<result column="typeName" property="typeName" />
+		<!-- collection：一对多 property：实体类里的 ofType：实体类 -->
+		<collection property="list" javaType="list" ofType="com.alibaba.fastjson.JSONObject">
+			<result column="id" property="id" />
+			<result column="activitiKey" property="activitiKey" />
+			<result column="formTemplateId" property="formTemplateId" />
+			<result column="name" property="name" />
+			<result column="organizationalPath" property="organizationalPath" />
+			<result column="positionId" property="positionId" />
+		</collection>
+	</resultMap>
+	<!-- 查询审批流程 -->
+	<select id="queryApprovalProcess" resultMap="approvalProcessMap">
+		SELECT a.*,b.`name` as typeName FROM `c_oa_form_template_t` a
+		join c_oa_form_template_type_t b on a.typeId = b.id
+		where a.state = '启用'
+		ORDER BY b.id
+	</select>
+
+	<!-- 通过Id查询表单 -->
+	<select id="findFormById" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT * FROM `c_oa_form_template_t`
+		where id = #{id}
+	</select>
+
+	<!-- 查询部门 -->
+	<select id="findDepartment" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT id,DM_NAME as `name` FROM c_wms_department_t
+		where superiorId = #{superiorDepartmentId}
+	</select>
+
+	<!-- 通过部门id查询用户 -->
+	<select id="findUserByDepartmentId" resultType="com.alibaba.fastjson.JSONObject">
+		select id,USER_NAME as `name`,`name` as fullName from c_mes_user_t
+		where viewMode = 1 and DEPARTMENT = #{departmentId}
+	</select>
+
+
+	<resultMap type="com.alibaba.fastjson.JSONObject" id="placesMap">
+		<result column="name1" property="value" />
+		<result column="name1" property="label" />
+		<!-- collection：一对多 property：实体类里的 ofType：实体类 -->
+		<collection property="children" javaType="list" ofType="com.alibaba.fastjson.JSONObject">
+			<result column="name2" property="value" />
+			<result column="name2" property="label" />
+			<collection property="children" javaType="list" ofType="com.alibaba.fastjson.JSONObject">
+				<result column="name3" property="value" />
+				<result column="name3" property="label" />
+			</collection>
+		</collection>
+	</resultMap>
+	<!-- 获取地点 -->
+	<select id="findPlaces" resultMap="placesMap">
+		SELECT
+		a.id as id1,a.cname as name1,
+		b.id as id2,b.cname as name2,
+		c.id as id3,c.cname as name3
+		FROM `dgtx_places` a
+		join dgtx_places b on a.id = b.parent_id
+		join dgtx_places c on b.id = c.parent_id
+		where a.parent_id = 1
+		ORDER BY a.id
+	</select>
+
+	<!-- 获取外部联系人 -->
+	<select id="findExternalContacts" resultType="com.alibaba.fastjson.JSONObject">
+		select * from c_qh_external_contacts_t
+		ORDER BY id
+	</select>
+
+	<!-- 保存草稿 -->
+	<insert id="saveDraft" useGeneratedKeys="true" keyProperty="id"  keyColumn="id">
+		insert into c_oa_approval_record_draft_t(dt,userId,formTemplateId,details)
+		value(now(),#{userId},#{formTemplateId},#{details})
+	</insert>
+
+	<!-- 更新草稿 -->
+	<update id="updateDraft">
+		update c_oa_approval_record_draft_t
+		set
+		dt = now(),
+		details = #{details}
+		where id = #{id}
+	</update>
+
+	<!-- 查询草稿 -->
+	<select id="findDraft" resultType="com.alibaba.fastjson.JSONObject">
+		select * from c_oa_approval_record_draft_t
+		where userId = #{userId}
+		and formTemplateId = #{formTemplateId}
+	</select>
+
+	<!-- 查询部门主管信息 -->
+	<select id="findHeadOfDepartment" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.*,
+			a.id as userId,
+			b.`name` AS fullName,
+			b.USER_NAME AS userName,
+			b.ROLE_ID AS roleId
+		FROM
+			c_wms_department_t a
+			JOIN c_mes_user_t b ON b.id = a.executive
+		where a.id = #{departmentId}
+		<if test="roleId != null and roleId != ''">
+		and b.ROLE_ID = #{roleId}
+		</if>
+	</select>
+
+	<!-- 通过用户id查询用户 -->
+	<select id="findUserById" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			a.USER_NAME AS userName,
+			a.`name` as fullName,
+			a.department,
+			a.ROLE_ID AS roleId,
+			a.reportsTo,
+			b.superiorId,
+			c.id as rankId,
+			c.grade as rankGrade
+		FROM
+			c_mes_user_t a
+			JOIN c_wms_department_t b ON a.DEPARTMENT = b.id
+			left join c_qh_rank_t c on a.rankId = c.id
+		WHERE
+		a.viewMode = 1
+		and a.id = #{id}
+	</select>
+
+	<!-- 通过角色查询用户 -->
+	<select id="findUserByRole" resultType="com.alibaba.fastjson.JSONObject">
+		select id,USER_NAME as userName,`name` as fullName,department,reportsTo from c_mes_user_t
+		where viewMode = 1 and ROLE_ID = #{roleId}
+	</select>
+
+	<!-- 查询用户 -->
+	<select id="findUser" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT id,USER_NAME as userName,`name` as fullName FROM c_mes_user_t
+		where viewMode = 1
+		<if test="departmentId != null and departmentId != ''">
+		and DEPARTMENT = #{departmentId}
+		</if>
+		<if test="roleId != null and roleId != ''">
+		and ROLE_ID = #{roleId}
+		</if>
+		ORDER BY id
+	</select>
+
+	<!-- 查询今天表单发布的数量 -->
+	<select id="queryTheNumberOfFormsPublishedToday" resultType="int">
+		select count(*) from c_oa_approval_record_t
+		where DATE_FORMAT( now(), '%Y-%m-%d' )  = DATE_FORMAT( dt, '%Y-%m-%d' )
+	</select>
+
+	<!-- 新增审批记录表 -->
+	<insert id="addApprovalRecord" useGeneratedKeys="true" keyProperty="id"  keyColumn="id">
+		insert into c_oa_approval_record_t(dt,userId,name,state,listNo,url,parameter,callbackUrl,urgent,overtime,timedOut,overtimeType)
+		value(now(),#{userId},#{name},#{state},#{listNo},#{url},#{parameter},#{callbackUrl},#{urgent},#{overtime},#{timedOut},#{overtimeType})
+	</insert>
+
+	<!-- 新增审批记录详情表 -->
+	<insert id="addApprovalRecordDetailed">
+		insert into c_oa_approval_record_detailed_t(step,formData,listNo)
+		value(#{step},#{formData},#{listNo})
+	</insert>
+
+	<!-- 新增审批流程记录表 -->
+	<insert id="addApprovalRecordStep">
+		insert into c_oa_approval_record_step_t(step,content,title,type,properties,listNo)
+		value(#{step},#{content},#{title},#{type},#{properties},#{listNo})
+	</insert>
+
+	<!-- 新增待审批流程记录表 -->
+	<insert id="addApprovalRecordWith">
+		insert into c_oa_approval_record_with_t(dt,userId,listNo,overtime,timedOut,overtimeType)
+		value(now(),#{userId},#{listNo},#{overtime},#{timedOut},#{overtimeType})
+	</insert>
+
+	<!-- 删除草稿 -->
+	<delete id="deleteDraft">
+		delete from c_oa_approval_record_draft_t
+		where userId = #{userId}
+		and formTemplateId = #{formTemplateId}
+	</delete>
+
+	<!-- 新增审批记录表 -->
+	<insert id="addApprovalNote">
+		insert into c_oa_approval_record_note_t(dt,dis,listNo,userId,state,type,step,list)
+		value(now(),#{dis},#{listNo},#{userId},#{state},#{type},#{step},#{list})
+	</insert>
+
+	<!-- 查询部门 -->
+	<select id="findDepartmentById" resultType="com.alibaba.fastjson.JSONObject">
+		select * from c_wms_department_t
+		where id = #{id}
+	</select>
+
+	<!-- 通过职级id查询职级 -->
+	<select id="findRankById" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT * FROM `c_qh_rank_t`
+		where id = #{id}
+	</select>
+
+</mapper>

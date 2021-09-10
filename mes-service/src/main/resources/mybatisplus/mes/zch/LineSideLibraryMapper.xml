@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.zch.LineSideLibraryDao">
+	<select id="findRockList" resultType="java.util.Map">
+		select * from c_lsl_rock_t
+		where 1=1
+		<if test="rockNo != null and rockNo != ''">
+			and rockNo like concat('%',#{rockNo,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="rackNo != null and rackNo != ''">
+			and rackNo like concat('%',#{rackNo,jdbcType=VARCHAR},'%')
+		</if>
+	</select>
+
+	<select id="getRock" resultType="java.util.Map">
+		select * from c_lsl_rock_t where rockNo = #{rockNo}
+		and rackNo = #{rackNo}
+		<if test="ID != null and ID != ''">
+			and ID != #{ID}
+		</if>
+	</select>
+
+	<insert id="insertRock">
+		insert into c_lsl_rock_t (cdt, udt, rockNo, `describe`, ptlNo, rackNo)
+		values(now(), now(), #{rockNo}, #{describe}, #{ptlNo}, #{rackNo})
+	</insert>
+
+	<update id="editRock">
+		update c_lsl_rock_t
+		set rockNo = #{rockNo}, `describe` = #{describe}, ptlNo = #{ptlNo}, rackNo = #{rackNo}
+		where ID = #{ID}
+	</update>
+
+	<delete id="deleteRock">
+		delete from c_lsl_rock_t where ID=#{ID}
+	</delete>
+
+	<select id="findRockConfigList" resultType="java.util.Map">
+		select rc.*,s.STATION_NAME as stationName,CONCAT(r.rackNo, '-', r.rockNo) as rockNo
+		from c_lsl_rock_config_t rc
+		left join c_mes_station_t s on s.ID=rc.stationId
+		left join c_lsl_rock_t r on r.ID=rc.rockId
+		where versionId = #{versionId}
+		<if test="stationId != null and stationId != ''">
+			and stationId = #{stationId}
+		</if>
+	</select>
+
+	<select id="getRockConfig" resultType="java.util.Map">
+		select * from c_lsl_rock_config_t
+		where stationId = #{stationId}
+		and rockId=#{rockId} and materialNo=#{materialNo}
+		and versionId = #{versionId}
+		<if test="ID != null and ID != ''">
+			and ID != #{ID}
+		</if>
+		limit 1
+	</select>
+
+	<update id="updateRockConfig">
+		update c_lsl_rock_config_t
+		set materialNo=#{materialNo},materialName=#{materialName},capacity=#{capacity},safetyLevel=#{safetyLevel}
+		where ID=#{ID}
+	</update>
+
+	<insert id="insertRockConfig">
+		insert into c_lsl_rock_config_t (cdt, udt,versionId,stationId,rockId,materialNo,materialName,capacity,safetyLevel)
+		values(now(),now(), #{versionId},#{stationId},#{rockId},#{materialNo},#{materialName},#{capacity},#{safetyLevel})
+	</insert>
+
+	<update id="editRockConfig">
+		update c_lsl_rock_config_t
+		set stationId=#{stationId},rockId=#{rockId},materialNo=#{materialNo},
+		materialName=#{materialName},capacity=#{capacity},safetyLevel=#{safetyLevel}
+		where ID=#{ID}
+	</update>
+
+	<delete id="deleteRockConfig">
+		delete from c_lsl_rock_config_t where ID=#{ID}
+	</delete>
+
+	<select id="findInventoryList" resultType="java.util.Map">
+		select rc.*,p.PRODUCTION_NAME as productName,l.NAME as lineName,s.STATION_NAME as stationName,
+		CONCAT(r.rackNo, '-', r.rockNo) as rockNo
+		from c_lsl_material_inventory_t rc
+		left join c_mes_production_t p on p.ID=rc.productId
+		left join c_mes_line_t l on l.ID=rc.lineId
+		left join c_mes_station_t s on s.ID=rc.stationId
+		left join c_lsl_rock_t r on r.ID = rc.rockId
+		where quantity > 0
+		<if test="lineId != null and lineId != ''">
+			and rc.lineId = #{lineId}
+		</if>
+		<if test="productId != null and productId != ''">
+			and rc.productId = #{productId}
+		</if>
+		<if test="stationId != null and stationId != ''">
+			and rc.stationId = #{stationId}
+		</if>
+	</select>
+
+	<insert id="insertInventory">
+		insert into c_lsl_material_inventory_t (cdt, udt, productId, lineId, stationId, rockId, batchCode, materialCode, materialNo, materialName, type, quantity, status)
+		values(now(),now(), #{productId},#{lineId},#{stationId},#{rockId},#{batchCode},#{materialCode},#{materialNo},#{materialName},#{type},#{quantity},1)
+	</insert>
+
+	<update id="editInventory">
+		update c_lsl_material_inventory_t
+		set quantity=#{quantity}
+		where ID=#{ID}
+	</update>
+
+	<select id="findRockConfigVersionList" resultType="java.util.Map">
+		select rv.*,p.PRODUCTION_NAME as productName,l.NAME as lineName
+		from c_lsl_rock_version_t rv
+		left join c_mes_production_t p on p.ID=rv.productId
+		left join c_mes_line_t l on l.ID=rv.lineId
+		where 1=1
+		<if test="lineId != null and lineId != ''">
+			and rv.lineId = #{lineId}
+		</if>
+		<if test="productId != null and productId != ''">
+			and rv.productId = #{productId}
+		</if>
+		order by cdt desc
+	</select>
+
+	<select id="getRockConfigVersionByVersion" resultType="java.util.Map">
+		select * from c_lsl_rock_version_t where version = #{version} and lineId=#{lineId} and productId=#{productId}
+		<if test="ID != null and ID != ''">
+			and ID != #{ID}
+		</if>
+	</select>
+
+	<insert id="insertRockConfigVersion">
+		insert into c_lsl_rock_version_t (cdt, udt, lineId, productId, version, creator, `describe`, status)
+		values(now(), now(), #{lineId}, #{productId}, #{version}, #{creator}, #{describe}, 0)
+	</insert>
+
+	<update id="editRockConfigVersion">
+		update c_lsl_rock_version_t
+		set lineId = #{lineId}, productId = #{productId}, version = #{version}, reviser = #{reviser}, `describe` = #{describe}
+		where ID = #{ID}
+	</update>
+
+	<delete id="deleteRockConfigVersion">
+		delete from c_lsl_rock_version_t where ID=#{ID}
+	</delete>
+
+	<select id="getRockConfigVersion" resultType="java.util.Map">
+		select * from c_lsl_rock_version_t where ID= #{ID}
+	</select>
+
+	<update id="disableRockConfigVersion">
+		update c_lsl_rock_version_t set status = 0 where lineId = #{lineId} and productId = #{productId}
+	</update>
+
+	<update id="enableRockConfigVersion">
+		update c_lsl_rock_version_t set status = 1 where ID= #{ID}
+	</update>
+
+	<delete id="deleteRockConfigByVersionId">
+		delete from c_lsl_rock_config_t where versionId = #{ID}
+	</delete>
+
+	<select id="findMaterialFuzzy" resultType="java.util.Map">
+		select BOM_ID as materialNo, MATERIAL_NAME as value
+		from c_mes_jl_material_t
+		where 1=1
+		<if test="materialName != null and materialName != ''">
+			and MATERIAL_NAME like concat('%',#{materialName,jdbcType=VARCHAR},'%')
+		</if>
+	</select>
+
+	<select id="findMaterialQuestKanban" resultType="java.util.Map">
+		select *
+		from c_lsl_material_request_detail_t mrd
+		left join r_lsl_material_request_t mr on mr.billNo=mrd.billNo
+		left join c_mes_line_t l on l.ID=mr.lineId
+		left join c_mes_station_t s on s.ID=mr.stationId
+		where mr.`status` <![CDATA[<]]> 3
+		order by mr.lineId
+	</select>
+
+	<select id="findInventoryListOrderByQuantity" resultType="java.util.Map">
+		select sum(mi.NUMBER_REMAINING) as remaindNum, l.PTL_NO
+		from c_mes_material_instance_t mi
+		left join c_wms_location_t l on l.ID=mi.LOCATION_ID
+		where mi.LOCATION_ID is not null
+		and mi.NUMBER_REMAINING > 0
+		and mi.MATERIAL_CODE = #{materialNo}
+		and mi.DELETED = 0
+		GROUP BY mi.LOCATION_ID
+		ORDER BY remaindNum
+	</select>
+
+	<select id="findMaterialRequestListByBillNo" resultType="java.util.Map">
+		select materialNo,sum(requiredQuantity) as requiredQuantity
+		from c_lsl_material_request_detail_t
+		where billNo = #{billNo}
+		GROUP BY materialNo
+	</select>
+
+	<update id="updateRequestPicker">
+		update r_lsl_material_request_t set picker = #{emp}, pickTime = now(), `status` = 1
+		where billNo = #{billNo} and `status` = 0
+	</update>
+
+	<select id="getRockByPtlNo" resultType="java.util.Map">
+		select * from c_lsl_rock_t where ptlNo = #{ptlNo}
+		<if test="ID != null and ID != ''">
+			and ID != #{ID}
+		</if>
+	</select>
+
+	<select id="findRockListFuzzy" resultType="java.util.Map">
+		select ID, CONCAT(rackNo, '-', rockNo) as rockNo from c_lsl_rock_t
+		where 1=1
+		<if test="rockNo != null and rockNo != ''">
+			and rockNo like concat('%',#{rockNo,jdbcType=VARCHAR},'%')
+		</if>
+	</select>
+
+	<select id="findMateriaInstanceBatchByMaterialNo" resultType="java.util.Map">
+		select MATERIAL_BATCH, SUM(NUMBER_REMAINING) as NUMBER_REMAINING from c_mes_material_instance_t where MATERIAL_CODE = #{materialNo}
+		and NUMBER_REMAINING > 0 and DELETED = 0 and MATERIAL_BATCH is not null group by MATERIAL_BATCH
+	</select>
+
+	<select id="findMateriaInstanceSingleByMaterialNo" resultType="java.util.Map">
+		select MATERIAL_SN, SUM(NUMBER_REMAINING) as NUMBER_REMAINING from c_mes_material_instance_t where MATERIAL_CODE = #{materialNo}
+		and NUMBER_REMAINING > 0 and DELETED = 0 and MATERIAL_SN is not null group by MATERIAL_SN
+	</select>
+
+	<select id="getRockConfigByRockId" resultType="java.util.Map">
+		select * from c_lsl_rock_config_t where rockId = #{rockId} limit 1
+	</select>
+</mapper>

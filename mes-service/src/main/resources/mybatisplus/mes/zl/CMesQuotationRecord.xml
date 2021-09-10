@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.zl.CMesQuotationRecordDao">
+	<!-- 查询全部 -->
+	<select id="findAllQuotationRecord" resultType="CMesQuotationRecord">
+	SELECT * FROM c_mes_quotation_record where 1=1
+	</select>
+	<select id="countQuotationRecord" resultType="int">
+		SELECT COUNT(*) FROM
+		c_mes_quotation_record WHERE QUOTATION_NUMBER = #{quotationNumber}
+	</select>
+		<insert id="addQuotationRecord">
+		INSERT INTO c_mes_quotation_record(
+		QUOTATION_NUMBER,QUOTATION_DATE,SERIAL_NUMBER,NAME_GOODS,
+		C_NUMBER,COMPANY,MONEY,DELIVERY_DATE,NOTE)
+		VALUES(
+		#{quotationNumber},#{quotationDate},#{serialNumber},#{nameGoods},#{cNumber},#{company},#{money},
+		#{deliveryDate},#{note})
+	</insert>
+		<select id="findQuotationRecordId" resultType="CMesQuotationRecord">
+			select * from c_mes_quotation_record where id=#{id}
+	</select>
+		<update id="editQuotationRecord">
+		UPDATE c_mes_quotation_record SET
+		QUOTATION_NUMBER =#{quotationNumber},QUOTATION_DATE=#{quotationDate},SERIAL_NUMBER=#{serialNumber},
+		NAME_GOODS=#{nameGoods},C_NUMBER=#{cNumber},COMPANY=#{company},MONEY=#{money}
+		,DELIVERY_DATE=#{deliveryDate},NOTE=#{note}
+		WHERE ID = #{id}
+	</update>
+	<delete id="delQuotationRecord">
+		DELETE FROM c_mes_quotation_record WHERE ID = #{id}
+	</delete>
+
+</mapper>

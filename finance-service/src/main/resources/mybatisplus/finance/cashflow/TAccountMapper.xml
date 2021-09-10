@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.cashflow.TAccountMapper">
+    <update id="updateByList">
+        update t_gl_voucher_entry_cash
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="main_table_id = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.mainTableId != null">
+                        when id = #{item.id,jdbcType=INTEGER}
+                        then #{item.mainTableId,jdbcType=INTEGER}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach  collection="list" item="item" open="(" separator=", " close=")">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+
+    <select id="selectFlowProject" resultType="com.skeqi.finance.pojo.vo.cashflow.TGlVoucherEntryCashVo">
+        SELECT
+        ec.*,
+        ve.f_dc,
+        cf.f_name mainTableName
+        from t_gl_voucher_entry_cash ec
+        LEFT JOIN t_gl_voucher_entry ve ON ve.f_entry_id = ec.voucher_entry_id
+        LEFT JOIN t_gl_cash_flow cf ON cf.f_id = ec.main_table_id
+        <where>
+            <foreach collection="list" open="ec.cash_account_id in (" close=")" separator="," item="item">
+                #{item,jdbcType=INTEGER}
+            </foreach>
+        </where>
+    </select>
+
+    <select id="selectAccount" resultType="com.skeqi.finance.pojo.vo.TBdAccount.TBdAccountVo">
+        SELECT
+        ba.f_acct_id,
+        ba.f_name,
+        gv.f_voucher_id,
+        ve.f_entry_id
+        FROM
+        t_gl_voucher_entry ve
+        LEFT JOIN t_gl_voucher gv ON ve.f_voucher_id = gv.f_voucher_id
+        LEFT JOIN t_bd_account ba ON ve.f_account_id = ba.f_acct_id
+        WHERE ba.f_iscash = '1' AND gv.f_document_status = '1'
+            <if test="fDate !=null and fDate !=''">
+                and gv.f_date = #{fDate,jdbcType=TIMESTAMP}
+            </if>
+            <if test="fAccountBookId != null and fAccountBookId !=''">
+                and gv.f_account_book_id = #{fAccountBookId,jdbcType=INTEGER}
+            </if>
+            <if test="fIscashFlow !=null and fIscashFlow != ''">
+                and gv.f_iscash_flow = #{fIscashFlow,jdbcType=INTEGER}
+            </if>
+            <if test="fCurrencyId != null and fCurrencyId !=''">
+                and ve.f_currency_id = #{fCurrencyId,jdbcType = INTEGER}
+            </if>
+        GROUP BY ba.f_acct_id
+    </select>
+</mapper>
+
+

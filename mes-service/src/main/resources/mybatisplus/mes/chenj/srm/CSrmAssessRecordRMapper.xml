@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.chenj.srm.CSrmAssessRecordRMapper">
+    <resultMap id="BaseResultMap" type="com.skeqi.mes.pojo.chenj.srm.CSrmAssessRecordR">
+        <!--@mbg.generated-->
+        <!--@Table c_srm_assess_record_r-->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="file_number" jdbcType="VARCHAR" property="fileNumber"/>
+        <result column="index" jdbcType="VARCHAR" property="index"/>
+        <result column="index_value" jdbcType="VARCHAR" property="indexValue"/>
+        <result column="supplier_code" jdbcType="VARCHAR" property="supplierCode"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="assess_id" jdbcType="INTEGER" property="assessId"/>
+        <result column="is_delete" jdbcType="BIT" property="isDelete"/>
+        <result column="scoring_items" jdbcType="VARCHAR" property="scoringItems"/>
+        <result column="score" jdbcType="VARCHAR" property="score"/>
+        <result column="grading_staff" jdbcType="VARCHAR" property="gradingStaff"/>
+        <result column="line_number" jdbcType="VARCHAR" property="lineNumber"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        id, file_number, `index`, index_value, supplier_code, create_time, update_time, assess_id,
+        is_delete, scoring_items, score, grading_staff, line_number
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmAssessRecordR"
+            resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        select
+        <include refid="Base_Column_List"/>
+        from c_srm_assess_record_r
+        <where>
+            <if test="fileNumber != null and fileNumber != ''">
+                file_number=#{fileNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="id != null">
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+        </where>
+
+    </select>
+    <select id="selectFinallyData" resultType="com.skeqi.mes.pojo.chenj.srm.CSrmAssessRecordR">
+        SELECT line_number
+        FROM c_srm_assess_record_r
+        where file_number=#{fileNumber,jdbcType=VARCHAR}
+        ORDER BY id DESC
+        LIMIT 1
+    </select>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id"
+            parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmAssessRecordR"
+            useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_assess_record_r
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="fileNumber != null">
+                file_number,
+            </if>
+            <if test="index != null">
+                `index`,
+            </if>
+            <if test="indexValue != null">
+                index_value,
+            </if>
+            <if test="supplierCode != null">
+                supplier_code,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="assessId != null">
+                assess_id,
+            </if>
+            <if test="isDelete != null">
+                is_delete,
+            </if>
+            <if test="scoringItems != null">
+                scoring_items,
+            </if>
+            <if test="score != null">
+                score,
+            </if>
+            <if test="gradingStaff != null">
+                grading_staff,
+            </if>
+            <if test="lineNumber != null">
+                line_number,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="fileNumber != null">
+                #{fileNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="index != null">
+                #{index,jdbcType=VARCHAR},
+            </if>
+            <if test="indexValue != null">
+                #{indexValue,jdbcType=VARCHAR},
+            </if>
+            <if test="supplierCode != null">
+                #{supplierCode,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="assessId != null">
+                #{assessId,jdbcType=INTEGER},
+            </if>
+            <if test="isDelete != null">
+                #{isDelete,jdbcType=BIT},
+            </if>
+            <if test="scoringItems != null">
+                #{scoringItems,jdbcType=VARCHAR},
+            </if>
+            <if test="score != null">
+                #{score,jdbcType=VARCHAR},
+            </if>
+            <if test="gradingStaff != null">
+                #{gradingStaff,jdbcType=VARCHAR},
+            </if>
+            <if test="lineNumber != null">
+                #{lineNumber,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmAssessRecordR">
+        <!--@mbg.generated-->
+        update c_srm_assess_record_r
+        <set>
+            <if test="fileNumber != null">
+                file_number = #{fileNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="index != null">
+                `index` = #{index,jdbcType=VARCHAR},
+            </if>
+            <if test="indexValue != null">
+                index_value = #{indexValue,jdbcType=VARCHAR},
+            </if>
+            <if test="supplierCode != null">
+                supplier_code = #{supplierCode,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="assessId != null">
+                assess_id = #{assessId,jdbcType=INTEGER},
+            </if>
+            <if test="isDelete != null">
+                is_delete = #{isDelete,jdbcType=BIT},
+            </if>
+            <if test="scoringItems != null">
+                scoring_items = #{scoringItems,jdbcType=VARCHAR},
+            </if>
+            <if test="score != null">
+                score = #{score,jdbcType=VARCHAR},
+            </if>
+            <if test="gradingStaff != null">
+                grading_staff = #{gradingStaff,jdbcType=VARCHAR},
+            </if>
+        </set>
+        <where>
+            <if test="fileNumber != null and fileNumber != ''">
+                file_number=#{fileNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="id != null">
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+        </where>
+
+    </update>
+    <update id="updateBatchSelective" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update c_srm_assess_record_r
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="file_number = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.fileNumber != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.fileNumber,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="`index` = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.index != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.index,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="index_value = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.indexValue != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.indexValue,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="supplier_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.supplierCode != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.supplierCode,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.createTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.createTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.updateTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.updateTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="assess_id = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.assessId != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.assessId,jdbcType=INTEGER}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="is_delete = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.isDelete != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.isDelete,jdbcType=BIT}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="scoring_items = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.scoringItems != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.scoringItems,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="score = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.score != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.score,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="grading_staff = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.gradingStaff != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.gradingStaff,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="line_number = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.lineNumber != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.lineNumber,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_assess_record_r
+        (file_number, `index`, index_value, supplier_code, create_time, update_time, assess_id,
+        is_delete, scoring_items, score, grading_staff, line_number)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.fileNumber,jdbcType=VARCHAR}, #{item.index,jdbcType=VARCHAR}, #{item.indexValue,jdbcType=VARCHAR},
+            #{item.supplierCode,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP},
+            #{item.updateTime,jdbcType=TIMESTAMP},
+            #{item.assessId,jdbcType=INTEGER}, #{item.isDelete,jdbcType=BIT}, #{item.scoringItems,jdbcType=VARCHAR},
+            #{item.score,jdbcType=VARCHAR}, #{item.gradingStaff,jdbcType=VARCHAR}, #{item.lineNumber,jdbcType=VARCHAR}
+            )
+        </foreach>
+    </insert>
+    <select id="selectByPrimaryKeyListR" resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CSrmAssessRecordRRsp">
+        select
+        <include refid="Base_Column_List"/>
+        from c_srm_assess_record_r
+        <where>
+            <if test="fileNumber != null and fileNumber != ''">
+                file_number like concat('%',#{fileNumber,jdbcType=VARCHAR},'%')
+            </if>
+            and is_delete=0
+        </where>
+    </select>
+</mapper>

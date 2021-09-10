@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wms.LeadOutDao">
+
+	<!-- 查询 -->
+	<select id="list" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			a.LIST_NO as listNo,
+			DATE_FORMAT( a.dt, '%Y-%m-%d %H:%i:%s' ) AS dt,
+			b.USER_NAME as userName
+		FROM
+			c_wms_approval_t a
+			JOIN c_mes_user_t b
+			where a.PROCESS_ID = 31
+			GROUP BY a.id desc
+	</select>
+
+	<!-- 查询所有物料 -->
+	<select id="findMaterialByName" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT id,MATERIAL_NAME as materialName
+		FROM c_mes_jl_material_t
+		where VIEW_MODE = 1
+		and MATERIAL_NAME like '%${materialName}%'
+		ORDER BY id
+		limit 0,100
+	</select>
+
+	<!-- 查询所有项目 -->
+	<select id="findProjectByName" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT id,PROJECT_NAME as projectName
+		FROM c_wms_project_t
+		where PROJECT_NAME like '%${projectName}%'
+		ORDER BY id
+		limit 0,100
+	</select>
+
+	<!-- 通过名称查询库位id、NAME -->
+	<select id="findLocationAll" resultType="com.alibaba.fastjson.JSONObject">
+		select id,LOCATION_NAME as locationName from c_wms_location_t
+		WHERE VIEW_MODE = 1
+		ORDER BY id
+	</select>
+
+	<!-- 通过物料、项目查询库存 -->
+	<select id="findStock" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			a.tray,
+			a.MATERIAL_NUMBER AS materialNumber,
+			a.LMMINENT_RELEASE lmminentRelease,
+			b.id AS materialId,
+			b.MATERIAL_NAME AS materialName,
+			c.id AS projectId,
+			c.PROJECT_NAME AS projectName,
+			d.id AS locationId,
+			d.LOCATION_NAME AS locationName,
+			0 as selectedNumber
+		FROM
+			c_wms_material_number_t a
+			JOIN c_mes_jl_material_t b ON a.MATERIAL_ID = b.id
+			JOIN c_wms_project_t c ON a.PROJECT_ID = c.id
+			JOIN c_wms_location_t d ON a.LOCATION_ID = d.id
+		where 1 = 1
+		<if test="materialId != null and materialId != ''">
+			and b.id = #{materialId}
+		</if>
+		<if test="projectId != null and projectId != ''">
+			and c.id = #{projectId}
+		</if>
+		<if test="locationId != null and locationId != ''">
+			and d.id = #{locationId}
+		</if>
+		ORDER BY a.LOCATION_ID
+	</select>
+
+	<!-- 新增临时库存详情表记录 -->
+	<insert id="addRStorageDetail">
+		insert into r_wms_storage_detail_t(DT,MATERIAL_ID,MATERIAL_NUMBER,LOCATION_ID,LIST_NO,PROJECT_ID,TRAY,YN_SHIFT,ISSUE_OR_RECEIPT,materialNumberId)
+		value ${sql}
+	</insert>
+
+	<!-- 更新物料库存待出库字段 -->
+	<update id="updateStockNumber">
+		update c_wms_material_number_t
+		set LMMINENT_RELEASE = LMMINENT_RELEASE + #{selectedNumber}
+		where id = #{id}
+	</update>
+
+	<!-- 新增临时出库队列 -->
+	<insert id="addROutTaskqueue">
+		insert into r_wms_out_taskqueue_t(dt,LIST_NO,TRAY,FLAG,LOCATION_ID)
+		value ${sql}
+	</insert>
+
+	<!-- 新增审批表 -->
+	<insert id="addApproval">
+		insert into c_wms_approval_t(LIST_NO,DT,PROCESS_ID,USER_ID,STATE)
+		value(#{listNo},now(),#{processId},#{userId},#{state})
+	</insert>
+
+</mapper>

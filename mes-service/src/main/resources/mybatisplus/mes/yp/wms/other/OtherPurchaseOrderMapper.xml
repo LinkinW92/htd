@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.yp.wms.other.OtherPurchaseOrderDao">
+
+	<!-- 查询 -->
+	<select id="list" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			id,
+			order_number,
+			order_type,
+			creator,
+			buyer,
+			company,
+			supplier_name as supplierName,
+			currency,
+			`status`,
+			payment_method,
+			create_time,
+			update_time
+		FROM
+			c_srm_purchase_order_h
+		where 1 = 1
+		<if test="listNo != null and listNo != ''">
+		and order_number like '%${listNo}%'
+		</if>
+		limit 0,10
+	</select>
+
+	<!-- 查询行 -->
+	<select id="listR" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			a.order_number,
+			a.line_item_no as lineItemNo,
+			a.material_code as materialCode,
+			sum(a.count) as count,
+			a.unit,
+			a.unit_price,
+			a.tax_rate,
+			a.shipping_address,
+			a.expected_date_of_arrival,
+			a.purchase_request_no,
+			a.create_time,
+			a.update_time,
+			a.purchase_order_id,
+			a.is_delete,
+			a.department,
+			a.remark,
+			a.accessory_address,
+			b.BOM_ID AS materialNo,
+			b.MATERIAL_NAME AS materialName,
+			b.id as materialId
+		FROM
+			c_srm_purchase_order_r a
+			JOIN c_mes_jl_material_t b ON a.material_code = b.BOM_ID
+		where a.order_number = #{listNo}
+		GROUP BY b.id
+	</select>
+
+</mapper>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.yp.alarm.serviceConfig.EmailDao">
+
+	<!-- 查询邮箱配置 -->
+	<select id="find" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			id,
+			sender_email as senderEmail,
+			the_server as theServer,
+			authorization_code as authorizationCode
+		FROM
+			c_alarm_email_config
+		where id = 1
+	</select>
+
+	<!-- 更新邮箱配置 -->
+	<update id="update">
+		update c_alarm_email_config
+		set
+		sender_email = #{senderEmail},
+		the_server = #{theServer},
+		authorization_code = #{authorizationCode}
+		where id = 1
+	</update>
+
+</mapper>

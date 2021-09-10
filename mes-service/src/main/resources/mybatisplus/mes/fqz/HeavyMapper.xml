@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.fqz.HeavyDAO">
+	<!-- 查询所有重工 -->
+	<select id="findAll" resultType="RMesNewSn">
+		select * from r_mes_new_sn
+	</select>
+	<!-- 查询所有计划 -->
+	<select id="findRmesPlanT" resultType="RMesPlanT">
+		select * from R_MES_PLAN_T t order by id
+	</select>
+	<!-- 判断总成号是否可用 -->
+	<select id="jugdeSN" resultType="Integer">
+		select count(*) from R_MES_PLAN_PRINT_T t where sn=#{sn}
+	</select>
+	<!-- 根据工单查询明细 -->
+	<select id="findDetil" resultType="RMesWorkorderDetailT">
+		select * from  t where t.plan_id=#{id}
+	</select>
+	<!-- 判断是否生成条码 -->
+	<select id="findPrint" resultType="Integer">
+		select count(*) from R_MES_PLAN_PRINT_T t where t.work_order_id=#{id}
+	</select>
+	<!-- 获取生成的条码 -->
+	<select id="findSn" resultType="RMesPlanPrintT">
+		select * from R_MES_PLAN_PRINT_T t where t.work_order_id=#{id}
+	</select>
+	<!-- 添加新旧总成的关系表 -->
+	<insert id="insertnewsn">
+		insert into r_mes_new_sn(DT,OLD_SN,NEW_SN)
+		values(NOW(),#{oldsn},#{newsn})
+	</insert>
+	<!-- 根据id查询sn -->
+	<select id="findNewSN" resultType="String">
+		select t.sn from R_MES_PLAN_PRINT_T t where t.id=#{id}
+	</select>
+	<!-- 判断旧的sn是否存在 -->
+	<select id="jugdeoldSN" resultType="Integer">
+		select count(*) from r_mes_new_sn where old_sn=#{sn}
+	</select>
+	<select id="jugdeoldSN_New" resultType="Integer">
+		select count(*) from r_mes_new_sn where new_sn=#{sn}
+	</select>
+	<!-- 判断新的sn是否存在 -->
+	<select id="jugdenewSN" resultType="Integer">
+		select count(*) from r_mes_new_sn where new_sn=#{sn}
+	</select>
+</mapper>

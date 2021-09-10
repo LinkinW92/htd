@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.fqz.DeviceRepairDAO">
+
+	<select id="findAll" resultType="CMesDeviceRepairT">
+		select t.*,l.name as lineName
+			    from C_MES_DEVICE_REPAIR t,c_mes_line_t l
+				where t.line_id=l.id
+			<if test="deviceName!=null and deviceName!=''">
+				and t.device_name like '%${deviceName}%'
+			</if>
+			<if test="lineId!=0 ">
+				and l.id=#{lineId}
+			</if>
+			order by t.id
+	</select>
+
+	<select id="findByid" resultType="CMesDeviceRepairT">
+		select * from C_MES_DEVICE_REPAIR where id=#{id}
+	</select>
+
+	<select id="findDevices" resultType="CMesDeviceT">
+		select t.id,t.device_name from C_MES_DEVICE_T t where DEVICE_LINE=#{id}
+	</select>
+
+	<insert id="insertRepair">
+		insert into C_MES_DEVICE_REPAIR(DT,DEVICE_NAME,REPAIR_PERSON,EMP,REASON,NOTE,LINE_ID)
+		values(NOW(),#{deviceName},#{repairPerson},#{emp},#{reason},#{note,jdbcType=VARCHAR},#{lineId})
+	</insert>
+
+	<update id="updateRepair">
+		update C_MES_DEVICE_REPAIR set DT = NOW(),
+									   DEVICE_NAME=#{deviceName},
+									   REPAIR_PERSON=#{repairPerson},
+									   EMP=#{emp},
+									   REASON=#{reason},
+									   NOTE=#{note,jdbcType=VARCHAR},
+									   LINE_ID=#{lineId}
+								where id=#{id}
+	</update>
+
+	<delete id="deleteRepair">
+		delete from C_MES_DEVICE_REPAIR where id=#{id}
+	</delete>
+
+	<select id="findLine" resultType="CMesLineT">
+		select id,name from c_mes_line_t
+	</select>
+
+	<select id="findDevice" resultType="CMesDeviceT">
+		select id,device_name as deviceName from c_mes_device_t
+	</select>
+</mapper>

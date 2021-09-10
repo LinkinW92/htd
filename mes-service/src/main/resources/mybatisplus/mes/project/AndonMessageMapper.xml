@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.project.AndonMessageDao">
+
+	<select id="findAndonMessageList" resultType="com.skeqi.mes.pojo.project.AndonMessage">
+		select * from c_andon_message
+		ORDER BY dt
+	</select>
+
+	<select id="findAndonMessage" resultType="com.skeqi.mes.pojo.project.AndonMessage">
+		select * from c_andon_message
+		ORDER BY id
+	</select>
+
+	<update id="updateAndonMessage">
+		update c_andon_message
+		set dt = #{dt},
+		phone = #{phone}
+	</update>
+
+	<delete id="deleteAndonMessage">
+		delete from c_andon_message
+		where id = #{id}
+	</delete>
+
+	<insert id="addAndonMessage">
+		insert into c_andon_message(dt,phone)
+		value(#{dt},#{phone})
+	</insert>
+
+	<select id="findFaultList" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			id,
+			LINE_NAME as lineName,
+			STATION_NAME as stationName,
+			ESTABLISH_DT as establishDt,
+			LOSS_TYPE as lossType
+		FROM
+			c_mes_andon_fault_t
+		WHERE
+			`STATUS` = 0
+	</select>
+
+	<select id="findIssuedMessage" resultType="com.skeqi.mes.pojo.project.CAndonIssuedMessage">
+		select * from r_andon_issued_message
+		where DATE_SUB(CURDATE(), INTERVAL 7 DAY) &lt;= date(dt);
+	</select>
+
+	<insert id="addIssuedMessage">
+		insert into r_andon_issued_message(fault_id,message_id,dt)
+		VALUE(#{faultId},#{messageId},now())
+	</insert>
+
+	<insert id="addMessageLog">
+		insert into c_andon_message_logs
+		(lineName,stationName,lossType,phone,fault_id,dt)
+		VALUE
+		(#{lineName},#{stationName},#{lossType},#{phone},#{faultId},now())
+	</insert>
+
+</mapper>
+
+

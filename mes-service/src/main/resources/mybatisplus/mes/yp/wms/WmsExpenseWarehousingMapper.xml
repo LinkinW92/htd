@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.yp.wms.WmsExpenseWarehousingDao">
+
+	<!-- 查询 -->
+	<select id="list" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			a.listNo,
+			a.receivingFactoryId,
+			a.receivingLocationId,
+			a.departmentId,
+			a.projectId,
+			a.establishUserId,
+			DATE_FORMAT( a.establishDt, '%Y-%m-%d %H:%i:%s' ) AS establishDt,
+			a.receivingUserId,
+			DATE_FORMAT( a.receivingDt, '%Y-%m-%d %H:%i:%s' ) AS receivingDt,
+			a.`status`,
+			a.dis,
+			b.DM_NAME AS departmentName,
+			c.PROJECT_NAME AS projectName,
+			d.USER_NAME AS establishUserName,
+			d.`name` AS establishUserFullName,
+			e.USER_NAME AS receivingUserName,
+			e.`name` AS receivingUserFullName,
+			f.factoryName as receivingFactoryName,
+			g.LOCATION_NAME as receivingLocationName
+		FROM
+			c_qh_wms_expense_warehousing_h_t a
+			LEFT JOIN c_wms_department_t b ON a.departmentId = b.id
+			LEFT JOIN c_crm_project_basic_info c ON a.projectId = c.id
+			LEFT JOIN c_mes_user_t d ON a.establishUserId = d.id
+			LEFT JOIN c_mes_user_t e ON a.receivingUserId = e.id
+			LEFT JOIN c_mes_factory_t f ON a.receivingFactoryId = f.id
+			LEFT JOIN c_wms_location_t g ON a.receivingLocationId = g.ID
+		WHERE a.viewMode = 1
+		<if test="listNo != null and listNo != ''">
+			and a.listNo like '%${listNo}%'
+		</if>
+		<if test="departmentId != null and departmentId != ''">
+			and a.departmentId = #{departmentId}
+		</if>
+		<if test="establishUserName != null and establishUserName != ''">
+			and d.USER_NAME like '%${establishUserName}%' or d.`name` like '%${establishUserName}%'
+		</if>
+		<if test="receivingUserName != null and receivingUserName != ''">
+			and e.USER_NAME like '%${receivingUserName}%' or e.`name` like '%${receivingUserName}%'
+		</if>
+		<if test="projectId != null and projectId != ''">
+			and a.projectId = #{projectId}
+		</if>
+		<if test="startReceivingDt != null and startReceivingDt != '' and endReceivingDt != null and endReceivingDt != ''">
+			and DATE_FORMAT(a.receivingDt,'%Y-%m-%d') between #{startReceivingDt} and #{endReceivingDt}
+		</if>
+		ORDER BY a.establishDt desc
+	</select>
+
+	<!-- 新增 -->
+	<insert id="add">
+		insert into c_qh_wms_expense_warehousing_h_t(listNo,receivingFactoryId,receivingLocationId,departmentId,projectId,establishUserId,establishDt,`status`,dis,viewMode)
+		value(#{listNo},#{receivingFactoryId},#{receivingLocationId},#{departmentId},#{projectId},#{establishUserId},now(),#{status},#{dis},#{viewMode})
+	</insert>
+
+	<!-- 更新 -->
+	<update id="update">
+		update c_qh_wms_expense_warehousing_h_t
+		<trim prefix="set" suffixOverrides=",">
+			receivingFactoryId = #{receivingFactoryId},
+			receivingLocationId = #{receivingLocationId},
+			dis = #{dis},
+			<if test="departmentId != null and departmentId != ''">
+				departmentId = #{departmentId},
+			</if>
+			<if test="projectId != null and projectId != ''">
+				projectId = #{projectId},
+			</if>
+			<if test="establishUserId != null and establishUserId != ''">
+				establishUserId = #{establishUserId},
+			</if>
+			<if test="establishDt != null and establishDt != ''">
+				establishDt = now(),
+			</if>
+			<if test="receivingUserId != null and receivingUserId != ''">
+				receivingUserId = #{receivingUserId},
+			</if>
+			<if test="receivingDt != null and receivingDt != ''">
+				receivingDt = now(),
+			</if>
+			<if test="status != null and status != ''">
+				status = #{status},
+			</if>
+			<if test="viewMode != null and viewMode != ''">
+				viewMode = #{viewMode},
+			</if>
+		</trim>
+		where listNo = #{listNo}
+	</update>
+
+	<!-- 查询R -->
+	<select id="listR" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.*,
+			b.MATERIAL_NAME AS materialName,
+			b.BOM_ID AS materialNo,
+			b.id AS materialId
+		FROM
+			c_qh_wms_expense_warehousing_r_t a
+			JOIN c_mes_jl_material_t b ON a.materialNo = b.BOM_ID 
+		WHERE
+			1 = 1
+		<if test="id != null and id != ''">
+			and a.id = #{id}
+		</if>
+		<if test="listNo != null and listNo != ''">
+			and a.listNo = #{listNo}
+		</if>
+	</select>
+
+	<!-- 新增R -->
+	<insert id="addR">
+		insert into c_qh_wms_expense_warehousing_r_t(listNo,materialNo,number,unit)
+		value(#{listNo},#{materialNo},#{number},#{unit})
+	</insert>
+
+	<!-- 更新R -->
+	<update id="updateR">
+		update c_qh_wms_expense_warehousing_r_t
+		<trim prefix="set" suffixOverrides=",">
+			<if test="listNo != null and listNo != ''">
+				listNo = #{listNo},
+			</if>
+			<if test="materialNo != null and materialNo != ''">
+				materialNo = #{materialNo},
+			</if>
+			<if test="number != null">
+				number = #{number},
+			</if>
+			<if test="unit != null and unit != ''">
+				unit = #{unit},
+			</if>
+		</trim>
+		where id = #{id}
+	</update>
+
+	<!-- 删除R -->
+	<delete id="deleteR">
+		delete from c_qh_wms_expense_warehousing_r_t
+		where id = #{id}
+	</delete>
+
+	<!-- 查询D -->
+	<select id="listD" resultType="com.alibaba.fastjson.JSONObject">
+		select a.*  from c_qh_wms_expense_warehousing_d_t a
+		JOIN c_qh_wms_expense_warehousing_r_t b ON a.rId = b.id 
+		where 1 = 1
+		<if test="rId != null and rId != ''">
+			and a.rId = #{rId}
+		</if>
+		<if test="id != null and id != ''">
+			and a.id = #{id}
+		</if>
+		<if test="listNo != null and listNo != ''">
+			and b.listNo = #{listNo}
+		</if>
+	</select>
+
+	<!-- 新增D -->
+	<insert id="addD">
+		insert into c_qh_wms_expense_warehousing_d_t(packingId,code,packingNumber,number,rId)
+		value(#{packingId},#{code},#{packingNumber},#{number},#{rId})
+	</insert>
+
+	<!-- 更新D -->
+	<update id="updateD">
+		update c_qh_wms_expense_warehousing_d_t
+		set
+		packingNumber = #{packingNumber},
+		number = #{number}
+		where id = #{id}
+	</update>
+
+	<!-- 删除D -->
+	<delete id="deleteD">
+		delete from c_qh_wms_expense_warehousing_d_t
+		where id = #{id}
+	</delete>
+
+	<!-- 通过行id删除D -->
+	<delete id="deleteDByRId">
+		delete from c_qh_wms_expense_warehousing_d_t
+		where rId = #{rId}
+	</delete>
+
+	<!-- 查询需要过账的信息 -->
+	<select id="queryTheInformationToBePosted" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			b.*,
+			a.unit,
+			c.MATERIAL_NAME AS materialName,
+			c.BOM_ID AS materialNo,
+			c.id AS materialId 
+		FROM
+			c_qh_wms_expense_warehousing_r_t a
+			LEFT JOIN c_qh_wms_expense_warehousing_d_t b ON b.rId = a.id
+			JOIN c_mes_jl_material_t c ON a.materialNo = c.BOM_ID
+		WHERE
+			a.listNo = #{listNo}
+	</select>
+
+	<!-- type：实体类 id：在resultMap引用-->
+	<resultMap type="com.alibaba.fastjson.JSONObject" id="rdMap">
+		<!-- column：数据库查询出来的列  property：实体类属性的值 -->
+		<result column="id" property="id"/>
+		<result column="listNo" property="listNo"/>
+		<result column="materialId" property="materialId"/>
+		<result column="number" property="number"/>
+		<result column="unit" property="unit"/>
+		<result column="materialName" property="materialName"/>
+		<result column="materialNo" property="materialNo"/>
+		<!-- collection：一对多  property：实体类里的 ofType：实体类 -->
+		<collection property="d" javaType="list" ofType="com.alibaba.fastjson.JSONObject">
+			<result column="dId" property="id"/>
+			<result column="packingId" property="packingId"/>
+			<result column="code" property="code"/>
+			<result column="packingNumber" property="packingNumber"/>
+			<result column="num" property="number"/>
+		</collection>
+	</resultMap>
+	<!-- 查询R跟D表数据 -->
+	<select id="findRAndD" resultMap="rdMap">
+		SELECT
+			a.id,
+			a.listNo,
+			a.number,
+			a.unit,
+			b.id AS dId,
+			b.packingId,
+			b.`code`,
+			b.packingNumber,
+			b.number AS num,
+			b.rId,
+			c.MATERIAL_NAME AS materialName,
+			c.BOM_ID AS materialNo,
+			a.id as materialId
+		FROM
+			c_qh_wms_expense_warehousing_r_t a
+			LEFT JOIN c_qh_wms_expense_warehousing_d_t b ON a.id = b.rId
+			JOIN c_mes_jl_material_t c ON a.materialNo = c.BOM_ID
+		WHERE
+			a.listNo = #{listNo}
+	</select>
+
+</mapper>

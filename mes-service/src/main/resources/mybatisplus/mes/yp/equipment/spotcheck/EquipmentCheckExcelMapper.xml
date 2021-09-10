@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.skeqi.mes.mapper.yp.equipment.spotcheck.EquipmentCheckExcelDao">
+
+	<!-- 导出查询 -->
+	<select id="configList"
+		resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+		a.id,
+		a.`name`,
+		a.`code`,
+		a.`explain`,
+		a.equipmentId,
+		DATE_FORMAT( a.dt, '%Y-%m-%d %H:%i:%s' ) AS dt,
+		b.`name` AS equipmentName,
+		c.`name` AS lineName,
+		d.id AS editionId,
+		d.edition,
+		( SELECT count(*) FROM c_qh_equipment_check_edition_t a2 WHERE
+		a2.equipmentId = a.equipmentId ) AS number
+		FROM
+		c_qh_equipment_check_config_t a
+		JOIN c_qh_equipment_information b ON a.equipmentId = b.id
+		JOIN c_mes_line_t c ON b.lineId = c.id
+		LEFT JOIN ( SELECT * FROM c_qh_equipment_check_edition_t a1 WHERE a1.state
+		= 1 ) d ON d.equipmentId = a.equipmentId
+		ORDER BY
+		id
+	</select>
+
+	<!-- 导出点检版本 -->
+	<select id="editionList"
+		resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+		b.`name` as configName,
+		d.`name` as lineName,
+		c.`name` as equipmentName,
+		a.edition,
+		DATE_FORMAT( a.dt, '%Y-%m-%d %H:%i:%s' ) AS dt
+		FROM
+		c_qh_equipment_check_edition_t a
+		JOIN c_qh_equipment_check_config_t b ON a.equipmentId = b.equipmentId
+		join c_qh_equipment_information c on b.equipmentId = c.id
+		join c_mes_line_t d on c.lineId = d.id
+		ORDER BY b.id,a.id
+	</select>
+
+	<!-- 导出点检项 -->
+	<select id="itemList"
+		resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+		a.id,
+		a.checkItems,
+		a.`explain` AS itemExplain,
+		b.edition AS editionName,
+		if(b.state=1,'启用','停用') as editionState,
+		c.`name` configName,
+		c.`code` AS configCode,
+		d.`name` AS equipmentName,
+		e.`name` AS lineName
+		FROM
+		c_qh_equipment_check_items_t a
+		JOIN c_qh_equipment_check_edition_t b ON a.editionId = b.id
+		JOIN c_qh_equipment_check_config_t c ON b.equipmentId = c.equipmentId
+		JOIN c_qh_equipment_information d ON c.equipmentId = d.id
+		JOIN c_mes_line_t e ON d.lineId = e.id
+		ORDER BY c.id,b.id
+	</select>
+
+	<!-- 新增点检配置 -->
+	<insert id="addConfig">
+		INSERT INTO
+		c_qh_equipment_check_config_t(dt,`name`,`code`,equipmentId,`explain`)
+		value(now(),#{name},#{code},#{equipmentId},#{explain})
+	</insert>
+
+	<!-- 查询点检配置名是否存在 -->
+	<select id="findConfigCountName" resultType="int">
+		select count(*) from
+		c_qh_equipment_check_config_t
+		where `name` = #{name}
+	</select>
+
+	<!-- 查询点检配置编号是否存在 -->
+	<select id="findConfigCountCode" resultType="int">
+		select count(*) from
+		c_qh_equipment_check_config_t
+		where `code` = #{code}
+	</select>
+
+	<resultMap type="com.alibaba.fastjson.JSONObject"
+		id="lineMap">
+		<result column="lineId" property="lineId" />
+		<result column="lineName" property="lineName" />
+		<!-- collection：一对多 property：实体类里的 ofType：实体类 -->
+		<collection property="equipment" javaType="list"
+			ofType="com.alibaba.fastjson.JSONObject">
+			<result column="equipmentId" property="equipmentId" />
+			<result column="equipmentName" property="equipmentName" />
+		</collection>
+	</resultMap>
+	<!-- 查询所有产线跟设备 -->
+	<select id="findLineAndEquipment" resultMap="lineMap">
+		SELECT
+		a.id AS lineId,
+		a.`NAME` AS lineName,
+		b.id AS equipmentId,
+		b.`NAME` AS equipmentName
+		FROM
+		c_mes_line_t a
+		JOIN c_qh_equipment_information b ON a.id = b.lineId
+		ORDER BY a.id,b.id
+	</select>
+
+	<!-- 通过设备id查询设备存在配置的数量 -->
+	<select id="findConfigByEquipmentId" resultType="int">
+		select count(*)
+		from c_qh_equipment_check_config_t
+		where equipmentId = #{equipmentId}
+	</select>
+
+	<!-- 新增版本 -->
+	<insert id="addEdition">
+		INSERT INTO
+		c_qh_equipment_check_edition_t(edition,dt,state,equipmentId)
+		value(#{edition},now(),#{state},#{equipmentId})
+	</insert>
+
+	<!-- 查询是否存在重复版本号 -->
+	<select id="findEditionCount" resultType="int">
+		select count(*) from c_qh_equipment_check_edition_t
+		where edition = #{edition}
+		and equipmentId = #{equipmentId}
+	</select>
+
+	<resultMap type="com.alibaba.fastjson.JSONObject" id="configMap">
+		<result column="configId" property="configId" />
+		<result column="configName" property="configName" />
+		<!-- collection：一对多 property：实体类里的 ofType：实体类 -->
+		<collection property="edition" javaType="list" ofType="com.alibaba.fastjson.JSONObject">
+			<result column="editionId" property="editionId" />
+			<result column="editionName" property="editionName" />
+		</collection>
+	</resultMap>
+	<!-- 查询所有配置项跟版本号 -->
+	<select id="findConfigAndeditionAll" resultMap="configMap">
+		SELECT
+			a.id as configId,
+			a.`name` as configName,
+			b.id as editionId,
+			b.edition as editionName
+		FROM
+			c_qh_equipment_check_config_t a
+			JOIN c_qh_equipment_check_edition_t b ON a.equipmentId = b.equipmentId
+			ORDER BY a.id,b.id
+	</select>
+
+	<!-- 新增点检项 -->
+	<insert id="addItem">
+		INSERT INTO c_qh_equipment_check_items_t(checkItems,`explain`,editionId)
+		value(#{item},#{explain},#{editionId})
+	</insert>
+
+</mapper>

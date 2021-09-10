@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.wll.NoticeTDao">
+	<select id="noticeList" resultType="CMesNoticeT">
+		select *
+		from C_MES_NOTICE_T c
+		order by dt desc
+		<!-- <if test="id!=null"> and c.id=#{id} </if> -->
+	</select>
+
+	<insert id="addNotice" keyProperty="id" useGeneratedKeys="false">
+		INSERT INTO C_MES_NOTICE_T
+		(DT,HEAD,NOTICE_CONTENT,CONTACTS,PULL_TIME) VALUES (STR_TO_DATE(#{getDate},'%Y-%m-%d %H:%i:%s'),#{head},#{noticeContent},#{s},STR_TO_DATE(#{getDate},'%Y-%m-%d %H:%i:%s')
+		)
+	</insert>
+
+	 <select id="getinItNoticeName" resultType="string">
+		select EMP_NAME
+		from
+		C_MES_EMP_T
+		where 1=1
+		and
+		EMP_TEAM_ID=#{getShiftTeam}
+		and EMP_TYPE='1'
+	</select>
+
+
+	<!-- 	<select id="getinItNoticeName" resultType="string">
+				select EMP_NAME
+				from
+				C_MES_EMP_T
+				where  id=#{id} and
+				name=#{name}
+		</select>
+ -->
+
+
+	<select id="getShiftsNameList" resultType="CMesEmpTeamT">
+		select t.id,
+		t.name,t.dis,t.line_id,t.emps from C_MES_EMP_TEAM_T t
+
+	</select>
+
+
+</mapper>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.skeqi.mes.mapper.dzb.market.TableRoleDao">
+    <insert id="batchSaveTableRole">
+        insert into mk_table_role(role_id,col_id,auth_id)
+        select id,#{colId},1 from c_qh_role
+        where id != 1
+    </insert>
+    <delete id="deleteTableRole">
+        delete from mk_table_role where col_id =#{colId}
+    </delete>
+</mapper>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.project.CMesReportDAO">
+
+	<resultMap type="java.util.Map" id="aaa">
+		<result column="lineName" property="lineName" />
+				<result column="dt" property="dt" />
+		<collection property="pro" javaType="list" ofType="java.util.Map">
+			<result column="wid"   property="wid" />
+			<result column="series"  property="series" />
+			<result column="actualNumber" property="actualNumber" />
+		</collection>
+	</resultMap>
+
+
+	<!-- 查询全部 -->
+	<select id="ProductionNUmberByLine" resultMap="aaa">
+		SELECT
+ line.NAME AS lineName,
+ ifnull( pro.PRODUCTION_SERIES, "" ) AS series,
+ sum(
+ ifnull( wo.COMPLETE_NUMBER, 0 )) AS actualNumber
+FROM
+ c_mes_scheduling_t sche
+ LEFT JOIN c_mes_line_t line ON sche.LINE_ID = line.ID
+ LEFT JOIN c_mes_workorder_t wo ON sche.id = wo.SCHE_ID
+ LEFT JOIN r_mes_plan_t plan ON wo.PLAN_ID = plan.id
+ LEFT JOIN c_mes_production_t pro ON pro.id = plan.PRODUCTION_ID
+WHERE
+ pro.PRODUCTION_SERIES IS NOT NULL
+ <if
+			test="startTime!=null  and startTime!=''  and endTime!=null and endTime!=''">
+			AND sche.dt BETWEEN #{startTime} and #{endTime}
+		</if>
+GROUP BY
+ line.NAME,pro.PRODUCTION_SERIES
+
+	</select>
+
+
+
+</mapper>

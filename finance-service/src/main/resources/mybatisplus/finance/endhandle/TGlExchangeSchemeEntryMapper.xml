@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.endhandle.TGlExchangeSchemeEntryMapper">
+
+    <resultMap type="com.skeqi.finance.domain.endhandle.TGlExchangeSchemeEntry" id="TGlExchangeSchemeEntryResult">
+        <result property="fEntryId" column="f_entry_id"/>
+        <result property="fId" column="f_id"/>
+        <result property="fAcctId" column="f_acct_id"/>
+        <result property="fIsSelected" column="f_is_selected"/>
+        <result property="fseq" column="fseq"/>
+    </resultMap>
+
+
+    <delete id="deleteByFid">
+        delete from t_gl_exchange_scheme_entry where f_id=#{fid}
+    </delete>
+    <select id="queryList" resultType="com.skeqi.finance.pojo.vo.endhandle.TGlExchangeSchemeEntryVo">
+        select e.*,a.f_number as acct_number,a.f_name as acct_name from t_gl_exchange_scheme_entry e
+        LEFT JOIN t_bd_account a ON a.f_acct_id = e.f_acct_id
+        where f_id=#{fid}
+    </select>
+</mapper>

@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.chenj.srm.CSrmContractTemplateMapper">
+    <resultMap id="BaseResultMap" type="com.skeqi.mes.pojo.chenj.srm.CSrmContractTemplate">
+        <!--@mbg.generated-->
+        <!--@Table c_srm_contract_template-->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="template_number" jdbcType="VARCHAR" property="templateNumber"/>
+        <result column="template_name" jdbcType="VARCHAR" property="templateName"/>
+        <result column="adapter_company" jdbcType="VARCHAR" property="adapterCompany"/>
+        <result column="form_work_accessory" jdbcType="VARCHAR" property="formWorkAccessory"/>
+        <result column="is_start" jdbcType="VARCHAR" property="isStart"/>
+        <result column="template_type" jdbcType="VARCHAR" property="templateType"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="is_delete" jdbcType="BIT" property="isDelete"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        id, template_number, template_name, adapter_company, form_work_accessory, is_start,
+        template_type, create_time, update_time, is_delete
+    </sql>
+    <select id="selectByPrimaryList" resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CSrmContractTemplateRsp">
+        <!--@mbg.generated-->
+        select
+        <include refid="Base_Column_List"/>
+        from c_srm_contract_template
+        <where>
+            <if test="templateNumber != null and templateNumber != ''">
+                template_number like concat('%',#{templateNumber,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="templateName != null and templateName != ''">
+                and template_name like concat('%',#{templateName,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="isStart != null and isStart != ''">
+                and is_start=#{isStart,jdbcType=VARCHAR}
+            </if>
+            <if test="templateType != null and templateType != ''">
+                and template_type=#{templateType,jdbcType=VARCHAR}
+            </if>
+            and is_delete=0
+        </where>
+        order by create_time desc
+    </select>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id"
+            parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmContractTemplate" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_contract_template
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="templateNumber != null">
+                template_number,
+            </if>
+            <if test="templateName != null">
+                template_name,
+            </if>
+            <if test="adapterCompany != null">
+                adapter_company,
+            </if>
+            <if test="formWorkAccessory != null">
+                form_work_accessory,
+            </if>
+            <if test="isStart != null">
+                is_start,
+            </if>
+            <if test="templateType != null">
+                template_type,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="isDelete != null">
+                is_delete,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="templateNumber != null">
+                #{templateNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="templateName != null">
+                #{templateName,jdbcType=VARCHAR},
+            </if>
+            <if test="adapterCompany != null">
+                #{adapterCompany,jdbcType=VARCHAR},
+            </if>
+            <if test="formWorkAccessory != null">
+                #{formWorkAccessory,jdbcType=VARCHAR},
+            </if>
+            <if test="isStart != null">
+                #{isStart,jdbcType=VARCHAR},
+            </if>
+            <if test="templateType != null">
+                #{templateType,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isDelete != null">
+                #{isDelete,jdbcType=BIT},
+            </if>
+        </trim>
+    </insert>
+    <insert id="insertSelectiveReq" keyColumn="id" keyProperty="id"
+            parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmContractTemplate" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_contract_template
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="templateNumber != null">
+                template_number,
+            </if>
+            <if test="templateName != null">
+                template_name,
+            </if>
+            <if test="adapterCompany != null">
+                adapter_company,
+            </if>
+            <if test="formWorkAccessory != null">
+                form_work_accessory,
+            </if>
+            <if test="isStart != null">
+                is_start,
+            </if>
+            <if test="templateType != null">
+                template_type,
+            </if>
+            create_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="templateNumber != null">
+                #{templateNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="templateName != null">
+                #{templateName,jdbcType=VARCHAR},
+            </if>
+            <if test="adapterCompany != null">
+                #{adapterCompany,jdbcType=VARCHAR},
+            </if>
+            <if test="formWorkAccessory != null">
+                #{formWorkAccessory,jdbcType=VARCHAR},
+            </if>
+            <if test="isStart != null">
+                #{isStart,jdbcType=VARCHAR},
+            </if>
+            <if test="templateType != null">
+                #{templateType,jdbcType=VARCHAR},
+            </if>
+            NOW()
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmContractTemplate">
+        <!--@mbg.generated-->
+        update c_srm_contract_template
+        <set>
+            <if test="templateNumber != null">
+                template_number = #{templateNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="templateName != null">
+                template_name = #{templateName,jdbcType=VARCHAR},
+            </if>
+            <if test="adapterCompany != null">
+                adapter_company = #{adapterCompany,jdbcType=VARCHAR},
+            </if>
+            <if test="formWorkAccessory != null">
+                form_work_accessory = #{formWorkAccessory,jdbcType=VARCHAR},
+            </if>
+            <if test="isStart != null">
+                is_start = #{isStart,jdbcType=VARCHAR},
+            </if>
+            <if test="templateType != null">
+                template_type = #{templateType,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isDelete != null">
+                is_delete = #{isDelete,jdbcType=BIT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateBatchSelective" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update c_srm_contract_template
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="template_number = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.templateNumber != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.templateNumber,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="template_name = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.templateName != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.templateName,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="adapter_company = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.adapterCompany != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.adapterCompany,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="form_work_accessory = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.formWorkAccessory != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.formWorkAccessory,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="is_start = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.isStart != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.isStart,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="template_type = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.templateType != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.templateType,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.createTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.createTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.updateTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.updateTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="is_delete = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.isDelete != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.isDelete,jdbcType=BIT}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    <update id="updateBatchSelectiveReq" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update c_srm_contract_template
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="template_number = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.templateNumber != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.templateNumber,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="template_name = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.templateName != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.templateName,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="adapter_company = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.adapterCompany != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.adapterCompany,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="form_work_accessory = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.formWorkAccessory != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.formWorkAccessory,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="is_start = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.isStart != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.isStart,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="template_type = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.templateType != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.templateType,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then NOW()
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_contract_template
+        (template_number, template_name, adapter_company, form_work_accessory, is_start,
+        template_type, create_time, update_time, is_delete)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.templateNumber,jdbcType=VARCHAR}, #{item.templateName,jdbcType=VARCHAR},
+            #{item.adapterCompany,jdbcType=VARCHAR}, #{item.formWorkAccessory,jdbcType=VARCHAR},
+            #{item.isStart,jdbcType=VARCHAR}, #{item.templateType,jdbcType=VARCHAR},
+            #{item.createTime,jdbcType=TIMESTAMP},
+            #{item.updateTime,jdbcType=TIMESTAMP}, #{item.isDelete,jdbcType=BIT})
+        </foreach>
+    </insert>
+    <insert id="batchInsertReq" parameterType="map" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_contract_template
+        (template_number, template_name, adapter_company, form_work_accessory, is_start,
+        template_type, create_time, update_time, is_delete)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.templateNumber,jdbcType=VARCHAR}, #{item.templateName,jdbcType=VARCHAR},
+            #{item.adapterCompany,jdbcType=VARCHAR}, #{item.formWorkAccessory,jdbcType=VARCHAR},
+            #{item.isStart,jdbcType=VARCHAR}, #{item.templateType,jdbcType=VARCHAR},NOW(),
+            null, 0)
+        </foreach>
+    </insert>
+    <select id="selectFinallyData" resultMap="BaseResultMap">
+        SELECT template_number
+        FROM c_srm_contract_template
+        where template_number like concat('CB2', '%')
+        ORDER BY id DESC
+        LIMIT 1
+    </select>
+    <update id="delContractTemplate">
+        update c_srm_contract_template set is_delete=1 where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    <select id="selectNumberOrCodeList" resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CSrmContractTemplateRsp">
+        select
+        template_number, template_name
+        from c_srm_contract_template
+        <where>
+            <if test="templateNumber != null and templateNumber != ''">
+                template_number like concat('%',#{templateNumber,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="templateName != null and templateName != ''">
+                and template_name like concat('%',#{templateName,jdbcType=VARCHAR},'%')
+            </if>
+            and is_delete=0
+        </where>
+        order by create_time desc
+    </select>
+</mapper>

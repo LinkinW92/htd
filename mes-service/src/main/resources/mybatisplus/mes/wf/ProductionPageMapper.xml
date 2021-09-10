@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wf.ProductionPageDao">
+
+    <select id="findProduction" resultType="java.util.Map">
+        select l.ID,l.`NAME`,t.areaName,t.factoryName,w.WORKORDER_ID,w.`STATUS`,
+               (
+                   SELECT COUNT(*) num
+                   FROM
+                       p_mes_tracking_t track
+                   WHERE
+                       track.LINE_ID = l.ID
+                     AND track.DT
+                       between DATE_FORMAT('2020-08-11','%Y-%m-%d 00:00:00')
+                       AND DATE_FORMAT('2020-08-11','%Y-%m-%d 23:59:59')
+               ) num,
+               (
+                   SELECT COUNT(*) percentage
+                   FROM
+                       p_mes_tracking_t track
+                   WHERE
+                       track.LINE_ID = l.ID
+                     AND track.DT
+                       between DATE_FORMAT('2020-08-11','%Y-%m-%d 00:00:00')
+                       AND DATE_FORMAT('2020-08-11','%Y-%m-%d 23:59:59')
+                     AND
+                       `STATUS`='ok'
+               ) percentage
+
+        from
+            c_mes_line_t l,
+            (
+                SELECT a.id,a.areaCode,a.areaName,f.factoryCode,f.factoryName
+                FROM
+                    c_mes_area_t a,c_mes_factory_t f
+                WHERE a.factoryCode = f.factoryCode
+
+            ) t,
+            (
+                select WORKORDER_ID,`STATUS`
+                FROM
+                    r_mes_workorder_detail_t
+                where
+                    (`STATUS` = 1 or `STATUS` = 2) AND LEVEL_NO = 1
+
+            ) w
+        WHERE
+            l.REGION = t.id
+
+    </select>
+
+    <!--在线生产工单-->
+    <select id="findOnlineWorkOrder" resultType="java.util.Map">
+        select
+            w.*,
+            w.WORKORDER_ID,
+            IFNULL(w.ORDER_NUMBER,0) ORDER_NUMBER ,
+            IFNULL(w.OK_NUMBER,0) OK_NUMBER ,
+            IFNULL(w.OFFLINE_NUMBER,0) OFFLINE_NUMBER,
+            w.`STATUS`,
+            (select p.PRODUCTION_NAME from c_mes_production_t p where p.ID=w.PRODUCT_ID) as PRODUCTION_NAME,
+            (select t.NAME from c_mes_shifts_team_t t where t.ID=w.TEAM_ID) as TEAM_NAME,
+            (select l.NAME from c_mes_line_t l where l.ID=w.LINE_ID)  as LINE_NAME
+        from r_mes_workorder_detail_t w
+        WHERE w.`STATUS` =1 or w.`STATUS`=2
+        order by w.LEVEL_NO
+    </select>
+
+    <!--事件-->
+    <select id="findEvent" resultType="java.util.Map">
+        select * from c_mes_event_t
+        where
+            OBJECT_TYPE = '成品'
+          and
+            DT between
+                DATE_FORMAT(NOW(),'%Y-%m-%d 00:00:00')
+                AND
+                DATE_FORMAT(NOW(),'%Y-%m-%d 23:59:59')
+        order by DT desc
+    </select>
+
+    <!--在线班次-->
+    <select id="findOnlineShiftTeam" resultType="java.util.Map">
+        SELECT
+                ( SELECT l.NAME FROM c_mes_line_t l WHERE l.ID = w.LINE_ID ) AS LINE_NAME,
+                ifnull( st.NAME, '' ) stName,
+                ifnull( mt.`NAME`, '' ) mtName,
+                ifnull( met.countNumber, 0 ) countNumber
+        FROM
+            r_mes_workorder_detail_t w
+                LEFT JOIN c_mes_shifts_team_t st ON st.ID = w.TEAM_ID
+                LEFT JOIN c_mes_team_t mt ON mt.SHIFT_ID = st.ID
+                LEFT JOIN ( SELECT et.*, count( et.EMP_TEAM_ID ) countNumber FROM c_mes_emp_t et GROUP BY et.EMP_TEAM_ID ) met ON met.EMP_TEAM_ID = mt.ID
+        WHERE
+            w.`STATUS` =1
+    </select>
+
+
+    <select id="finishedProduct" resultType="java.util.Map">
+        SELECT
+            p.*,
+            (
+                SELECT
+                    count(t.PRODUCTION_ID)
+                FROM
+                    p_mes_tracking_t t
+                WHERE
+                    t.PRODUCTION_ID = p.ID
+                  and
+                    t.OFFLINE_DT
+                        between
+                        DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 7 DAY),'%Y-%m-%d 00:00:00')
+                        AND
+                        DATE_FORMAT(NOW(),'%Y-%m-%d 23:59:59')
+            ) countNumber
+        FROM c_mes_production_t p
+    </select>
+</mapper>

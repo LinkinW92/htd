@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wms.ProjectDao">
+
+	<resultMap type="com.skeqi.mes.pojo.wms.CWmsProject" id="projectMap">
+		<result column="ID" property="id"/>
+		<result column="MANAGEMENT_NO" property="managementNo"/>
+		<result column="CONTRACT_NO" property="contractNo"/>
+		<result column="PROJECT_NAME" property="projectName"/>
+		<result column="PRODUCT_NUMBER" property="productNumber"/>
+		<result column="START_DATE" property="startDate"/>
+		<result column="END_DATE" property="endDate"/>
+		<result column="PROJECT_NATURE" property="projectNature"/>
+		<result column="PROJECT_LEADER" property="projectLeader"/>
+		<result column="PROJECT_TYPE" property="projectType"/>
+		<result column="INTERNAL_PROJECT_NO" property="internalProjectNo"/>
+		<result column="UPDATE_DATE" property="updateDate"/>
+		<result column="DIS" property="dis"/>
+		<association  property="projectTypeT" javaType="com.skeqi.mes.pojo.wms.CWmsProjectType">
+			<result column="PROJECT_TYPE_NAME" property="projectType" />
+		</association>
+	</resultMap>
+
+	<!-- 查询 -->
+	<select id="findProjectList" resultMap="projectMap">
+		select PROJECT.*,TYPE.PROJECT_TYPE AS PROJECT_TYPE_NAME from c_wms_project_t PROJECT
+		JOIN c_wms_project_type_t TYPE ON PROJECT.PROJECT_TYPE = TYPE.ID
+		where PROJECT.VIEW_MODE = 1
+		<if test="id != null and id != ''">
+			AND PROJECT.ID = #{id}
+		</if>
+		<if test="managementNo != null and managementNo != ''">
+			AND PROJECT.MANAGEMENT_NO = #{managementNo}
+		</if>
+		<if test="projectName != null and projectName != ''">
+			AND PROJECT.PROJECT_NAME like '%${projectName}%'
+		</if>
+		<if test="projectType != null and projectType != ''">
+			AND PROJECT.PROJECT_TYPE = #{projectType}
+		</if>
+		ORDER BY PROJECT.ID
+	</select>
+
+	<!-- 通过name查询产品数量 -->
+	<select id="findCountByName" resultType="int">
+		select count(*) from c_wms_project_t
+		where VIEW_MODE = 1
+		and PROJECT_NAME = #{projectName}
+		and id != #{id}
+	</select>
+
+	<!-- 通过管理编号查询产品数量 -->
+	<select id="findCountByNo" resultType="int">
+		select count(*) from c_wms_project_t
+		where VIEW_MODE = 1
+		and MANAGEMENT_NO = #{no}
+		and id != #{id}
+	</select>
+
+	<!-- 新增 -->
+	<insert id="addProject">
+		insert into c_wms_project_t(
+		MANAGEMENT_NO,CONTRACT_NO,PROJECT_NAME,PRODUCT_NUMBER,
+		<if test="startDate != null and startDate != ''">
+			START_DATE,
+		</if>
+		<if test="endDate != null and endDate != ''">
+			END_DATE,
+		</if>
+		PROJECT_NATURE,PROJECT_LEADER,
+		PROJECT_TYPE,INTERNAL_PROJECT_NO,UPDATE_DATE,DIS)
+		values(
+		#{managementNo},#{contractNo},#{projectName},#{productNumber},
+		<if test="startDate != null and startDate != ''">
+			#{startDate},
+		</if>
+		<if test="endDate != null and endDate != ''">
+			#{endDate},
+		</if>
+		#{projectNature},#{projectLeader},
+		#{projectType},#{internalProjectNo},now(),#{dis})
+	</insert>
+
+	<!-- 删除 -->
+	<delete id="deleteProject">
+		delete from c_wms_project_t
+		where id = #{projectId}
+	</delete>
+
+	<!-- 更新 -->
+	<update id="updateProject">
+		update c_wms_project_t
+			<trim prefix="SET" suffixOverrides=",">
+				<if test="managementNo != null">MANAGEMENT_NO = #{managementNo},</if>
+				<if test="contractNo != null">CONTRACT_NO = #{contractNo},</if>
+				<if test="projectName != null">PROJECT_NAME = #{projectName},</if>
+				<if test="productNumber != null">PRODUCT_NUMBER = #{productNumber},</if>
+				<if test="startDate != null and startDate != ''">START_DATE = #{startDate},</if>
+				<if test="endDate != null and endDate != ''">END_DATE = #{endDate},</if>
+				<if test="projectNature != null">PROJECT_NATURE = #{projectNature},</if>
+				<if test="projectLeader != null">PROJECT_LEADER = #{projectLeader},</if>
+				<if test="projectType != null">PROJECT_TYPE = #{projectType},</if>
+				<if test="internalProjectNo != null">INTERNAL_PROJECT_NO = #{internalProjectNo},</if>
+				<if test="dis != null">DIS = #{dis},</if>
+				<if test="viewMode != null">VIEW_MODE = #{viewMode},</if>
+				UPDATE_DATE = now()
+			</trim>
+		where ID = #{id}
+	</update>
+
+	<!-- 查询产品类别 -->
+	<select id="findProjectTypeAllIdAndName" resultType="com.alibaba.fastjson.JSONObject">
+		select id,PROJECT_TYPE as projectTypeName from c_wms_project_type_t
+		where VIEW_MODE = 1
+		ORDER BY id
+	</select>
+
+	<!-- 修改可视状态 -->
+	<update id="updateViewMode">
+		update c_wms_project_t
+		set VIEW_MODE = 0
+		where id = #{id}
+	</update>
+
+</mapper>

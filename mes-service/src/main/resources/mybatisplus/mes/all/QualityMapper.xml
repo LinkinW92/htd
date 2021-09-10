@@ -1,0 +1,578 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.all.QualityDAO">
+	<!-- 缺陷录入列表 -->
+	<select id="findAllDefectEntry" resultType="CMesDefectEntryT">
+			select t.*,p.production_name as productionName from C_MES_DEFECT_ENTRY_T t,c_mes_production_t p
+			where t.production_id=p.id
+		<if test="productionName!=null and productionName!=''">
+			and p.production_name like  '%${productionName}%'
+		</if>
+		<if test="sn!=null and sn!=''">
+			and t.sn = #{sn}
+		</if>
+		<if test="starttime!=null and starttime!='' and endtime!=null and endtime!=''">
+			and dt between #{starttime} and #{endtime}
+		</if>
+		order by t.id
+	</select>
+
+	<!-- 根据ID查询 -->
+	<select id="findDefectEntryByid" resultType="CMesDefectEntryT">
+		select * from C_MES_DEFECT_ENTRY_T where id=#{id}
+	</select>
+
+	<!-- 添加 -->
+	<insert id="addDefectEntry">
+		insert into C_MES_DEFECT_ENTRY_T(DT,SN,PRODUCTION_ID,REASON,EMP)  value(now(),#{sn},#{productionId},#{reason},#{emp})
+	</insert>
+
+	<!-- 修改 -->
+	<update id="updateDefectEntry">
+		update C_MES_DEFECT_ENTRY_T set dt=NOW(),
+											   sn=#{sn},
+											   production_id=#{productionId},
+											   reason=#{reason},
+											   emp=#{emp}
+										where id=#{id}
+	</update>
+
+	<!-- 删除 -->
+	<delete id="delDefectEntry">
+			delete from C_MES_DEFECT_ENTRY_T where id=#{id}
+	</delete>
+
+	<!-- 巡检记录列表 -->
+	<select id="findAllPatrol" resultType="CMesPatrolT">
+				select t.*,s.station_name as stationName,p.production_name as productionName
+		from C_MES_PATROL_T t,c_mes_production_t p,c_mes_station_t s
+			where t.production_id=p.id and t.station_id=s.id
+			<if test="sn!=null and sn!=''">
+				and t.sn=#{sn}
+			</if>
+			<if test="productionId!=null and productionId!='' and productionId!=0">
+				and p.id=#{productionId}
+			</if>
+			<if test="stationId!=null and stationId!='' and stationId!=0">
+				and s.id=#{stationId}
+			</if>
+			order by t.id desc
+	</select>
+
+	<!-- 根据ID查询 -->
+	<select id="findPatrolByid" resultType="CMesPatrolT">
+		select * from C_MES_PATROL_T where id=#{id}
+	</select>
+
+	<!-- 添加 -->
+	<insert id="addPatrol">
+		insert into C_MES_PATROL_T(PRODUCTION_ID,SN,STATION_ID,EMP,REASON,DT)
+		values(#{productionId},#{sn},#{stationId},#{emp},#{reason,jdbcType=VARCHAR},NOW())
+	</insert>
+
+	<!-- 修改 -->
+	<update id="updatePatrol">
+		update C_MES_PATROL_T set PRODUCTION_ID=#{productionId},
+										 sn=#{sn},
+										 STATION_ID=#{stationId},
+										 emp=#{emp},
+										 reason=#{reason},
+										 dt=NOW()
+								where id=#{id}
+	</update>
+
+	<!-- 删除 -->
+	<delete id="delPatrol">
+		delete from C_MES_PATROL_T where id=#{id}
+	</delete>
+
+	<!-- 返厂维修列表 -->
+	<select id="findAllReturnRepair" resultType="CMesReturnRepairT">
+				select t.*,p.production_name as productionName,l.name as lineName from C_MES_RETURN_REPAIR_T t,c_mes_production_t p,c_mes_line_t l
+			where t.production_id=p.id and t.line_id=l.id
+			<if test="sn!=null and sn!=''">
+				and t.sn=#{sn}
+			</if>
+			<if test="lineId!=null and lineId!='' and lineId!=0">
+				and l.id=#{lineId}
+			</if>
+			<if test="productionId!=null and productionId!='' and productionId!=0">
+				and p.id=#{productionId}
+			</if>
+			<if test="status!=null and status!='' and status!=2">
+				and status=#{status}
+			</if>
+			order by t.id
+	</select>
+
+	<!-- 根据ID查询 -->
+	<select id="findReturnRepairByid" resultType="CMesReturnRepairT">
+		select * from C_MES_RETURN_REPAIR_T where id=#{id}
+	</select>
+
+	<!-- 添加 -->
+	<insert id="addReturnRepair">
+				insert into C_MES_RETURN_REPAIR_T(DT,PRODUCTION_ID,REASON,SN,LINE_ID,STATUS)
+		values(NOW(),#{productionId},#{reason},#{sn},#{lineId},0)
+	</insert>
+
+	<!-- 修改状态 -->
+	<update id="updateReturnRepair">
+				update C_MES_RETURN_REPAIR_T set  ENDTIME=NOW(),
+												status=1
+										where id=#{id}
+	</update>
+
+	<!-- 删除 -->
+	<delete id="delReturnRepair">
+		delete from C_MES_RETURN_REPAIR_T where id=#{id}
+	</delete>
+
+	<!-- 缺陷等级列表 -->
+	<select id="findAllDefectGrade" resultType="CMesDefectGradeManagerT">
+		select *   from C_MES_DEFECT_GRADE_MANAGER_T
+	</select>
+
+	<!-- 根据ID查询 -->
+	<select id="findDefectGradeByid" resultType="CMesDefectGradeManagerT">
+		select * from C_MES_DEFECT_GRADE_MANAGER_T where id=#{id}
+	</select>
+
+	<!-- 添加 -->
+	<insert id="addDefectGrade">
+				insert into C_MES_DEFECT_GRADE_MANAGER_T (dt,defect_grade_id,
+        		defect_grade_name,defect_grade_dis)values(NOW(),
+				#{defectGradeId},#{defectGradeName},#{defectGradeDis})
+	</insert>
+
+	<!-- 修改 -->
+	<update id="updateDefectGrade">
+					 update C_MES_DEFECT_GRADE_MANAGER_T  set dt = NOW(),
+             defect_grade_id=#{defectGradeId},defect_grade_name=#{defectGradeName}
+       		where id = #{id}
+	</update>
+
+	<!-- 删除 -->
+	<delete id="delDefectGrade">
+		delete from C_MES_DEFECT_GRADE_MANAGER_T where id=#{id}
+	</delete>
+
+	<resultMap type="com.skeqi.mes.pojo.CMesDefectManager" id="defectMap">
+		<id property="id" column="id"/>
+		<result property="dt" column="dt"/>
+		<result property="defectId" column="defect_id"/>
+		<result property="defectName" column="defect_name"/>
+		<result property="defectDis" column="defect_dis"/>
+		<collection property="defectGrade" ofType="com.skeqi.mes.pojo.CMesDefectGradeManagerT">
+			<id property="id" column="did"/>
+			<result property="dt" column="ddt"/>
+			<result property="defectGradeId" column="defect_grade_id"/>
+			<result property="defectGradeName" column="defect_grade_name"/>
+			<result property="defectGradeDis" column="defect_grade_dis"/>
+		</collection>
+	</resultMap>
+
+	<sql id="queryDefectGrade">
+			select t.id,t.dt,t.defect_id,t.defect_name,t.defect_dis,
+			m.id did,t.defect_grade,m.dt ddt,m.defect_grade_id,m.defect_grade_name,m.defect_grade_dis
+			from C_MES_DEFECT_MANAGER_T t
+			left join C_MES_DEFECT_GRADE_MANAGER_T m
+			on t.defect_grade = m.id
+	</sql>
+
+		<!-- 缺陷列表 -->
+	<select id="findAllDefectManager" resultMap="defectMap">
+		<include refid="queryDefectGrade"/>
+	</select>
+
+	<!-- 根据ID查询缺陷列表 -->
+	<select id="findDefectManagerByid" resultMap="defectMap">
+		<include refid="queryDefectGrade"/>
+		 where t.id=#{id}
+	</select>
+
+	<!-- 添加 -->
+	<insert id="addDefectManager">
+						insert into C_MES_DEFECT_MANAGER_T (dt,defect_id,
+				defect_name,defect_grade,defect_dis)values(now(),
+				#{defectId,jdbcType=VARCHAR},#{defectName,jdbcType=VARCHAR},#{dengji,jdbcType=BIGINT},#{defectDis,jdbcType=VARCHAR})
+
+	</insert>
+
+	<!-- 修改 -->
+	<update id="updateDefectManager">
+					update C_MES_DEFECT_MANAGER_T set dt =now(),
+              defect_id=#{defectId,jdbcType=VARCHAR},defect_name=#{defectName,jdbcType=VARCHAR},defect_grade=#{dengji,jdbcType=BIGINT}
+       		where id = #{id}
+	</update>
+
+	<!-- 删除 -->
+	<delete id="delDefectManager">
+		delete from C_MES_DEFECT_MANAGER_T where id=#{id}
+	</delete>
+
+	<!-- 原因列表 -->
+	<select id="findAllReason" resultType="CMesDefectResionT">
+				SELECT ID,RESION_NUMBER,DIS,DT FROM C_MES_DEFECT_RESION_T ORDER BY RESION_NUMBER
+	</select>
+
+	<!-- 根据ID查询 -->
+	<select id="findReasonByid" resultType="CMesDefectResionT">
+		select * from C_MES_DEFECT_RESION_T where id=#{id}
+	 </select>
+
+	 <!-- 添加 -->
+	 <insert id="addReason">
+	 	INSERT INTO C_MES_DEFECT_RESION_T(RESION_NUMBER,DIS,DT) VALUES(#{resionNumber},#{dis},now())
+	 </insert>
+
+	 <!-- 修改 -->
+	 <update id="updateReason">
+	 	UPDATE C_MES_DEFECT_RESION_T SET RESION_NUMBER=#{resionNumber} ,DIS=#{dis},DT=now() WHERE ID=#{id}
+	 </update>
+
+	 <!-- 删除 -->
+	 <delete id="delReason">
+	 	delete from C_MES_DEFECT_RESION_T where id=#{id}
+	 </delete>
+
+	 <!-- 责任类型列表 -->
+	 <select id="findAllDutyType" resultType="CMesDutyTypeManagerT">
+	 				select t.id,t.dt,t.duty_type_id,t.duty_type_name,
+			t.duty_type_dis from C_MES_DUTY_TYPE_MANAGER_T t
+	 </select>
+
+	 <!-- 根据ID查询测人类型 -->
+	 <select id="findDutyTypeByid" resultType="CMesDutyTypeManagerT">
+	 	select * from C_MES_DUTY_TYPE_MANAGER_T where id=#{id}
+	 </select>
+
+	 <!-- 添加 -->
+	 <insert id="addDutyType">
+	 					insert into C_MES_DUTY_TYPE_MANAGER_T (dt,duty_type_id,
+           		duty_type_name,duty_type_dis)values(now(),
+				#{dutyTypeId},#{dutyTypeName},#{dutyTypeDis})
+	 </insert>
+
+	 <!-- 修改 -->
+	 <update id="updateDutyType">
+	 				 UPDATE C_MES_DUTY_TYPE_MANAGER_T SET DT = now(),
+             DUTY_TYPE_ID=#{dutyTypeId},DUTY_TYPE_NAME=#{dutyTypeName},DUTY_TYPE_DIS=#{dutyTypeDis}
+       		where ID = #{id}
+	 </update>
+
+	 <!-- 删除 -->
+	 <delete id="delDutyType">
+	 	delete from C_MES_DUTY_TYPE_MANAGER_T where id=#{id}
+	 </delete>
+
+	 	<resultMap type="com.skeqi.mes.pojo.CMesDutyManagerT" id="dutyMap">
+		<id property="id" column="id"/>
+		<result property="dt" column="dt"/>
+		<result property="dutyId" column="duty_id"/>
+		<result property="dutyName" column="duty_name"/>
+		<result property="dutyDis" column="duty_dis"/>
+		<collection property="dutyType" ofType="com.skeqi.mes.pojo.CMesDutyTypeManagerT">
+			<id property="id" column="did"/>
+			<result property="dt" column="ddt"/>
+			<result property="dutyTypeId" column="duty_type_id"/>
+			<result property="dutyTypeName" column="duty_type_name"/>
+			<result property="dutyTypeDis" column="duty_type_dis"/>
+		</collection>
+	</resultMap>
+
+	<select id="findAllDutyManager" resultMap="dutyMap">
+		<include refid="queryDutyType"/>
+	</select>
+
+	<sql id="queryDutyType">
+		select t.id,t.dt,t.duty_id,t.duty_name,t.duty_dis,
+		m.id did,m.dt ddt,m.duty_type_id,m.duty_type_name,m.duty_type_dis
+		from C_MES_DUTY_MANAGER_T t
+		left join C_MES_DUTY_TYPE_MANAGER_T m
+		on t.duty_type = m.id
+	</sql>
+
+	<!-- 根据id查询 -->
+	<select id="findDutyManagerByid" resultType="CMesDutyManagerT">
+		select * from C_MES_DUTY_MANAGER_T where id=#{id}
+	</select>
+
+	<!-- 添加 -->
+	<insert id="addDutyManager">
+						insert into C_MES_DUTY_MANAGER_T (dt,duty_id,duty_name,
+            	duty_type,duty_dis)values(now(),
+				#{dutyId},#{dutyName},#{dutyTypeId},#{dutyDis})
+	</insert>
+
+	<!-- 修改 -->
+	<update id="updateDutyManager">
+					update C_MES_DUTY_MANAGER_T set dt = now(),
+            duty_id=#{dutyId},duty_name=#{dutyName},duty_type=#{dutyTypeId},duty_dis=#{dutyDis}
+       		where id = #{id}
+	</update>
+
+	<!-- 删除 -->
+	<delete id="delDutyManager">
+		delete from C_MES_DUTY_MANAGER_T where id=#{id}
+	</delete>
+
+	<!-- IQC列表 -->
+	<select id="findAllIQC" resultType="CMesIqcCheckT">
+		select * from C_MES_IQC_CHECK_T where 1=1
+		<if test="factoryNo!=null and factoryNo!='' ">
+			and FACTORY_NO = #{factoryNo}
+		</if>
+		<if test="materialVoucher !=null and materialVoucher!=''">
+			and MATERIAL_VOUCHER=#{materialVoucher}
+		</if>
+		<if test="checkBatch!=null and checkBatch!='' ">
+			and CHECK_BATCH=#{checkBatch}
+		</if>
+		<if test="otigin!=null and otigin!=''">
+			and OTIGIN=#{otigin}
+		</if>
+		<if test="materialNo!=null and materialNo!=''">
+			and MATERIAL_NO=#{materialNo}
+		</if>
+		<if test="supplierName!=null and supplierName!='' ">
+			and SUPPLIER_NAME=#{supplierName}
+		</if>
+		<if test="emp!=null and emp!='' ">
+			and EMP=#{emp}
+		</if>
+		<if test="checkPerson!=null and checkPerson!='' ">
+			and "CHECK_PERSON"=#{checkPerson}
+		</if>
+		<if test="status!=null and status!=''">
+			and STATUS=#{status}
+		</if>
+		<if test="productionHandie!=null and productionHandie!='' ">
+			and PRODUCTION_HANDIE=#{productionHandie}
+		</if>
+		<if test="starttime!=null and starttime!='' and endtime!=null and endtime!=''">
+			and dt between #{starttime}
+                          and #{endtime}
+		</if>
+		<if test="starttimes!=null and starttimes!='' and endtimes!=null and endtimes!=''">
+			and CHECK_DT between #{starttime}
+                          and #{endtime}
+		</if>
+		<if test="materialName!=null and materialName!=''">
+			and MATERIAL_NAME like '%${materialName}%'
+		</if>
+		order by id
+	</select>
+
+	<!-- 根据ID查询 -->
+	<select id="findIQCByid" resultType="CMesIqcCheckT">
+		select * from C_MES_IQC_CHECK_T where id=#{id}
+	</select>
+
+	<!-- 添加 -->
+	<insert id="addIQC">
+		insert into C_MES_IQC_CHECK_T(FACTORY_NO,MATERIAL_VOUCHER,CHECK_BATCH,
+		OTIGIN,MATERIAL_NO,MATERIAL_DESCRIBE,CHECK_NUM,NG_NUM,SEQ_NG_NUM,CALCULATE_UNIT,
+		SUPPLIER_NAME,EMP,DT,CHECK_PERSON,PRODUCTION_HANDIE,STATUS,MATERIAL_NAME,FREEZE)
+		values(#{factoryNo},#{materialVoucher},#{checkBatch},#{otigin},#{materialNo},#{materialDescribe,jdbcType=VARCHAR},#{checkNum},
+		#{ngNum},#{seqNgNum},#{calculateUnit},#{supplierName},#{emp},NOW(),#{checkPerson},1,1,#{materialName},1)
+	</insert>
+
+	<!-- 修改 -->
+	<update id="updateIQC">
+		update C_MES_IQC_CHECK_T set FACTORY_NO=#{factoryNo},
+										    MATERIAL_VOUCHER=#{materialVoucher},
+										    CHECK_BATCH=#{checkBatch},
+										    OTIGIN=#{otigin},
+										    MATERIAL_NO=#{materialNo},
+										    MATERIAL_DESCRIBE=#{materialDescribe,jdbcType=VARCHAR},
+										    CHECK_NUM=#{checkNum},
+										    NG_NUM=#{ngNum},
+										    SEQ_NG_NUM=#{seqNgNum},
+										    CALCULATE_UNIT=#{calculateUnit},
+										    SUPPLIER_NAME=#{supplierName},
+										    CHECK_PERSON=#{checkPerson},
+										    EMP = #{emp},
+										    dt= NOW(),
+										    MATERIAL_NAME=#{materialName}
+										 where id=#{id}
+	</update>
+
+	<!-- 复核 -->
+	<update id="updateStatus">
+		update C_MES_IQC_CHECK_T set STATUS=2,PRODUCTION_HANDIE=#{productionHandie},
+									        CHECK_DT=NOW()
+									    where id=#{id}
+	</update>
+
+	<!-- 冻结/解冻 -->
+	<update id="updateFreeze">
+				update C_MES_IQC_CHECK_T set FREEZE=#{freeze}
+										where id=#{id}
+	</update>
+
+	<!-- 查询气密性表（R） -->
+	<select id="findRLeakage" resultType="RMesLeakage">
+		select * from r_mes_leakage_t where sn=#{sn}
+	</select>
+
+	<!-- =查询气密性表(P ) -->
+	<select id="findPLeakage" resultType="PMesLeakageT">
+		select * from p_mes_leakage_t where sn=#{sn}
+	</select>
+
+	<!-- 查询关键件表(R) -->
+	<select id="findRKeypart" resultType="RMesKeypart">
+		select * from r_mes_keypart_t where sn=#{sn}
+	</select>
+
+	<!-- 查询关键表(P) -->
+	<select id="findPKeypart" resultType="PMesKeypartT">
+		select * from p_mes_keypart_t where sn=#{sn}
+	</select>
+
+	<!-- 查询螺栓表 (R)-->
+	<select id="findRbolt" resultType="RMesBolt">
+		select * from r_mes_bolt_t where sn=#{sn}
+	</select>
+
+	<!-- 查询螺栓表(P) -->
+	<select id="findPBolt" resultType="PMesBoltT">
+		select * from p_mes_bolt_t where sn=#{sn}
+	</select>
+
+	<!-- 查询总成表 -->
+	<select id="findRTrack" resultType="RTrackingT">
+		select * from r_mes_tracking_t where sn=#{sn}
+	</select>
+
+	<!-- 查询总成表 -->
+	<select id="findPTrack" resultType="PTrackingT">
+		select * from p_mes_tracking_t where sn=#{sn}
+	</select>
+
+	<!-- 拆解关键件 -->
+	<update id="updateKeypartR">
+				update r_mes_keypart_t set KEYPART_NUM=null,
+										  WID=null,
+										  REASONS=#{reasons}
+									where id=#{id}
+	</update>
+
+	<update id="updateKeypartP">
+		update p_mes_keypart_t set KEYPART_NUM=null,
+										  WID=null,
+										  REASONS=#{reasons}
+									where id=#{id}
+	</update>
+
+	<!-- 拆解螺栓表 -->
+	<update id="updateBoltR">
+		update R_MES_BOLT_T SET T=null,
+									   R=null,
+									   A=null,
+									   WID=null,
+									   REASONS=#{reasons}
+									where id=#{id}
+	</update>
+
+	<update id="updateBoltP">
+		update P_MES_BOLT_T SET T=null,
+									   R=null,
+									   A=null,
+									   WID=null,
+									   REASONS=#{reasons}
+									where id=#{id}
+	</update>
+
+	<!-- 拆解气密性表 -->
+	<update id="updateLeakageR">
+		update R_MES_LEAKAGE_T set LEAKAGE_PV=null,
+										  LEAKAGE_LV=null,
+										  LEAKAGE_R=null,
+										  WID=null,
+										  REASONS=#{reasons}
+									where id=#{id}
+	</update>
+
+	<update id="updateLeakageP">
+		update P_MES_LEAKAGE_T set LEAKAGE_PV=null,
+										  LEAKAGE_LV=null,
+										  LEAKAGE_R=null,
+										  WID=null,
+										  REASONS=#{reasons}
+									where id=#{id}
+	</update>
+	<select id="findAllDefectManagerL" resultType="com.skeqi.mes.pojo.qh.CMesDefectManagerL">
+		SELECT
+		t.dt dt,
+		t.id tid,
+		t.defect_id defectId,
+		t.defect_name defectName,
+		t.defect_grade defectGrade,
+		m.defect_grade_name gradeName,
+		m.DEFECT_GRADE_DIS mdis
+		FROM
+			C_MES_DEFECT_MANAGER_T t
+			LEFT JOIN C_MES_DEFECT_GRADE_MANAGER_T m ON t.defect_grade = m.id
+		WHERE
+			t.defect_grade IS NOT NULL
+	</select>
+
+
+
+
+
+	<insert id="insertPKeypart">
+		insert into p_mes_keypart_t(DT,TRANSFER,KEYPART_MODE,ST,SN,WID,TID,SECOND_NUM,KEYPART_ID,KEYPART_NAME,KEYPART_PN,KEYPART_NUM,KEYPART_MODULE,KEYPART_REWORK_FG,KEYPART_REWORK_ST,MATERIAL_ID,MATERIAL_NUMBER,REASONS,MATERIAL_INSTANCE_ID)
+		select DT,TRANSFER,KEYPART_MODE,ST,SN,WID,TID,SECOND_NUM,KEYPART_ID,KEYPART_NAME,KEYPART_PN,KEYPART_NUM,KEYPART_MODULE,1,KEYPART_REWORK_ST,MATERIAL_ID,MATERIAL_NUMBER,REASONS,MATERIAL_INSTANCE_ID
+		from p_mes_keypart_t where id=#{id}
+	</insert>
+	<insert id="insertPBolt">
+		insert into p_mes_bolt_t(A,A_LIMIT,BOLT_MODE,BOLT_NAME,BOLT_NUM,C,DT,EQS,GUN_NO,MATERIAL_INSTANCE_ID,P,R,REASONS,REWORK_FLAG,REWORK_ST,SN,ST,step,T,T_LIMIT,TID,TRANSFER,WID,Y)
+	 	select A,A_LIMIT,BOLT_MODE,BOLT_NAME,BOLT_NUM,C,DT,EQS,GUN_NO,MATERIAL_INSTANCE_ID,P,R,REASONS,1,REWORK_ST,SN,ST,step,T,T_LIMIT,TID,TRANSFER,WID,Y
+	 	from p_mes_bolt_t where id=#{id}
+	</insert>
+	<insert id="insertLeakage">
+		insert into p_mes_leakage_t(DT,LEAKAGE_LV,LEAKAGE_MODE,LEAKAGE_NAME,LEAKAGE_PV,LEAKAGE_R,REASON,REWORK_FLAG,SN,ST,step,TRANSFER,WID)
+		select DT,LEAKAGE_LV,LEAKAGE_MODE,LEAKAGE_NAME,LEAKAGE_PV,LEAKAGE_R,REASON,1,SN,ST,step,TRANSFER,WID
+		from p_mes_leakage_t  where id=#{id}
+	</insert>
+	<insert id="insertPKeypartByR">
+		insert into p_mes_keypart_t(DT,TRANSFER,KEYPART_MODE,ST,SN,WID,TID,SECOND_NUM,KEYPART_ID,KEYPART_NAME,KEYPART_PN,KEYPART_NUM,KEYPART_MODULE,KEYPART_REWORK_FG,KEYPART_REWORK_ST,MATERIAL_ID,MATERIAL_NUMBER,REASONS,MATERIAL_INSTANCE_ID)
+		select DT,TRANSFER,KEYPART_MODE,ST,SN,WID,TID,SECOND_NUM,KEYPART_ID,KEYPART_NAME,KEYPART_PN,KEYPART_NUM,KEYPART_MODULE,1,KEYPART_REWORK_ST,MATERIAL_ID,MATERIAL_NUMBER,REASONS,MATERIAL_INSTANCE_ID
+		from r_mes_keypart_t where id=#{id}
+	</insert>
+	<insert id="insertPBoltByR">
+		insert into p_mes_bolt_t(A,A_LIMIT,BOLT_MODE,BOLT_NAME,BOLT_NUM,C,DT,EQS,GUN_NO,MATERIAL_INSTANCE_ID,P,R,REASONS,REWORK_FLAG,REWORK_ST,SN,ST,step,T,T_LIMIT,TID,TRANSFER,WID,Y)
+	 	select A,A_LIMIT,BOLT_MODE,BOLT_NAME,BOLT_NUM,C,DT,EQS,GUN_NO,MATERIAL_INSTANCE_ID,P,R,REASONS,1,REWORK_ST,SN,ST,step,T,T_LIMIT,TID,TRANSFER,WID,Y
+	 	from r_mes_bolt_t where id=#{id}
+	</insert>
+	<insert id="insertLeakageByR">
+		insert into p_mes_leakage_t(DT,LEAKAGE_LV,LEAKAGE_MODE,LEAKAGE_NAME,LEAKAGE_PV,LEAKAGE_R,REASON,REWORK_FLAG,SN,ST,step,TRANSFER,WID)
+		select DT,LEAKAGE_LV,LEAKAGE_MODE,LEAKAGE_NAME,LEAKAGE_PV,LEAKAGE_R,REASON,1,SN,ST,step,TRANSFER,WID
+		from r_mes_leakage_t  where id=#{id}
+	</insert>
+
+
+
+	<update id="updateKeyparts">
+		update p_mes_keypart_t set KEYPART_NUM=#{num} where id=#{id}
+	</update>
+	<update id="updateBolt">
+		update p_mes_bolt_t set a=#{a},t=#{t},Y=1,R='OK' where id=#{id}
+	</update>
+	<update id="updateLeakage">
+		update p_mes_leakage_t set LEAKAGE_LV=#{leakageLv},LEAKAGE_PV=#{leakagePv},LEAKAGE_R='OK' where id=#{id}
+	</update>
+	<update id="updateKeypartsR">
+		update r_mes_keypart_t set KEYPART_NUM=#{num} where id=#{id}
+	</update>
+	<update id="updateBoltsR">
+		update r_mes_bolt_t set a=#{a},t=#{t},R='OK',Y=1 where id=#{id}
+	</update>
+	<update id="updateLeakagesR">
+		update r_mes_leakage_t set LEAKAGE_LV=#{leakageLv},LEAKAGE_PV=#{leakagePv},LEAKAGE_R='OK' where id=#{id}
+	</update>
+</mapper>

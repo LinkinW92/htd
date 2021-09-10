@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.yp.wms.FactoryMaterialDao">
+
+	<!-- 查询集合 -->
+	<select id="list" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			DATE_FORMAT( a.dt, '%Y-%m-%d %H:%i:%s' ) AS dt,
+			a.materialId,
+			a.factoryId,
+			a.STOCK_UNIT AS stockUnit,
+			a.INVENTORY_MODEL_GROUP AS inventoryModelGroup,
+			a.INVENTORY_DIMENSION_GROUP AS inventoryDimensionGroup,
+			a.`release`,
+			a.inspection,
+			a.fictitious,
+			a.SALES_UNIT AS salesUnit,
+			a.secrecy,
+			a.PURCHASING_UNIT AS purchasingUnit,
+			a.PRODUCTION_TEAM AS productionTeam,
+			a.MININUMBER_OF_PACKAGES AS mininumberOfPackages,
+			DATE_FORMAT( a.TERM_OF_VALIDITY, '%Y-%m-%d' ) AS termOfValidity,
+			a.typenum,
+			a.voltage,
+			a.PART_COUNTS AS partCounts,
+			a.CELL_CAPACITY AS cellCapacity,
+			a.scan,
+			a.CELL_SPECIFICATION AS cellSpecification,
+			a.TRACES_TYPE AS tracesType,
+			a.DELIVERY_STRATEGY AS deliveryStrategy,
+			a.PURCHASING_STRATEGY AS purchasingStrategy,
+			a.PROCUREMENT_CYCLE AS procurementCycle,
+			a.wQIS,
+			a.InspectionMethod,
+			b.MATERIAL_NAME AS materialName,
+			c.factoryName
+		FROM
+			c_qh_factory_material_t a
+			JOIN c_mes_jl_material_t b ON a.materialId = b.id
+			JOIN c_mes_factory_t c ON a.factoryId = c.id
+		WHERE a.view_mode = 1
+		<if test="materialName != null and materialName != ''">
+		AND b.MATERIAL_NAME like '%${materialName}%'
+		</if>
+		<if test="factoryId != null and factoryId != ''">
+		AND a.factoryId = #{factoryId}
+		</if>
+		ORDER BY a.dt
+	</select>
+
+	<!-- 新增 -->
+	<insert id="add">
+		insert into c_qh_factory_material_t(dt,materialId,factoryId,STOCK_UNIT,INVENTORY_MODEL_GROUP,INVENTORY_DIMENSION_GROUP,`RELEASE`,INSPECTION,FICTITIOUS,SALES_UNIT,SECRECY,PURCHASING_UNIT,PRODUCTION_TEAM,MININUMBER_OF_PACKAGES,TERM_OF_VALIDITY,TYPENUM,VOLTAGE,PART_COUNTS,CELL_CAPACITY,SCAN,CELL_SPECIFICATION,TRACES_TYPE,DELIVERY_STRATEGY,PURCHASING_STRATEGY,PROCUREMENT_CYCLE,wQIS,InspectionMethod,VIEW_MODE)
+		value(now(),#{materialId},#{factoryId},#{stockUnit},#{inventoryModelGroup},#{inventoryDimensionGroup},#{release},#{inspection},#{fictitious},#{salesUnit},#{secrecy},#{purchasingUnit},#{productionTeam},#{mininumberOfPackages},#{termOfValidity},#{typenum},#{voltage},#{partCounts},#{cellCapacity},#{scan},#{cellSpecification},#{tracesType},#{deliveryStrategy},#{purchasingStrategy},#{procurementCycle},#{wQIS},#{InspectionMethod},1)
+	</insert>
+
+	<!-- 更新 -->
+	<update id="update">
+		update c_qh_factory_material_t
+		set
+		dt = now(),
+		materialId = #{materialId},
+		factoryId = #{factoryId},
+		STOCK_UNIT = #{stockUnit},
+		INVENTORY_MODEL_GROUP = #{inventoryModelGroup},
+		INVENTORY_DIMENSION_GROUP = #{inventoryDimensionGroup},
+		`RELEASE` = #{release},
+		INSPECTION = #{inspection},
+		FICTITIOUS = #{fictitious},
+		SALES_UNIT = #{salesUnit},
+		SECRECY = #{secrecy},
+		PURCHASING_UNIT = #{purchasingUnit},
+		PRODUCTION_TEAM = #{productionTeam},
+		MININUMBER_OF_PACKAGES = #{mininumberOfPackages},
+		TERM_OF_VALIDITY = #{termOfValidity},
+		TYPENUM = #{typenum},
+		VOLTAGE = #{voltage},
+		PART_COUNTS = #{partCounts},
+		CELL_CAPACITY = #{cellCapacity},
+		SCAN = #{scan},
+		CELL_SPECIFICATION = #{cellSpecification},
+		TRACES_TYPE = #{tracesType},
+		DELIVERY_STRATEGY = #{deliveryStrategy},
+		PURCHASING_STRATEGY = #{purchasingStrategy},
+		PROCUREMENT_CYCLE = #{procurementCycle},
+		wQIS = #{wQIS},
+		InspectionMethod = #{InspectionMethod},
+		where id = #{id}
+	</update>
+
+	<!-- 删除 -->
+	<update id="delete">
+		update c_qh_factory_material_t
+		set
+		dt = now(),
+		VIEW_MODE = 0
+		where id = #{id}
+	</update>
+
+	<!-- 查询所有物料 -->
+	<select id="findMaterialAll" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			id,
+			BOM_ID as bomId,
+			MATERIAL_NAME as materialName,
+			description,
+			specifications,
+			MATERIAL_GROUP as materialGroup,
+			MATERIAL_TYPE as materialType
+		FROM
+			c_mes_jl_material_t
+	</select>
+
+	<!-- 查询所有工厂 -->
+	<select id="findFactoryAll" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			id,
+			factoryCode,
+			factoryName,
+			`describe`,
+			DATE_FORMAT( dateTime, '%Y-%m-%d %H:%i:%s' ) AS dateTime,
+			DATE_FORMAT( alterDt, '%Y-%m-%d %H:%i:%s' ) AS alterDt,
+			companyCode
+		FROM
+			c_mes_factory_t
+	</select>
+
+	<!-- 查询物料id存在的数量 -->
+	<select id="findMaterialIdCount" resultType="int">
+		select count(*) from c_qh_factory_material_t
+		where materialId = #{materialId}
+		and factoryId = #{factoryId}
+	</select>
+
+</mapper>

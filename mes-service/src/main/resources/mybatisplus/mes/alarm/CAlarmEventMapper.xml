@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.alarm.CAlarmEventDao">
+
+	<!-- 通过用户名称查询用户 -->
+	<select id="findUserByName"
+		resultType="com.skeqi.mes.pojo.CMesUserT">
+		select
+		id,USER_NAME,`STATUS`,DEPARTMENT,`SECURITY`,USER_POWER,ROLE_ID,USER_NUMBER,LOGINSTATUS
+		from c_mes_user_t
+		where viewMode = 1
+		and USER_NAME = #{userName}
+	</select>
+
+	<!-- 查询事件 -->
+	<select id="findAlarmEventList"
+		resultType="com.skeqi.mes.pojo.alarm.CAlarmEvent">
+		select id,`event`,user_id,dt,note from c_alarm_event
+		where
+<!-- 		user_id = #{userId} -->
+<!-- 		and  -->
+		view_mode = 1
+		ORDER BY id
+	</select>
+
+	<!-- 查询事件是否重名 -->
+	<select id="findAlarmEvent" resultType="java.lang.Integer">
+		select count(id) from c_alarm_event
+		where view_mode = 1
+<!-- 		<if test="userId != null and userId != ''"> -->
+<!-- 			and user_id = #{userId} -->
+<!-- 		</if> -->
+		<if test="event != null and event != ''">
+			and event = #{event}
+		</if>
+		ORDER BY id
+	</select>
+
+	<!-- 新增事件 -->
+	<insert id="addAlarmEvent">
+		INSERT INTO c_alarm_event ( `event`, user_id, dt,
+		note,view_mode )
+		VALUE(#{event},#{userId},now(),#{note},1)
+	</insert>
+
+	<!-- 更新事件 -->
+	<update id="updateAlarmEvent">
+		UPDATE c_alarm_event
+		set `event` = #{event},
+		dt =
+		now(),
+		note = #{note}
+		where id = #{id}
+	</update>
+
+	<!-- 删除事件 -->
+	<update id="deleteAlarmEvent">
+		UPDATE c_alarm_event
+		set view_mode = 0
+		where id = #{id}
+	</update>
+
+	<!-- 删除通知方式 -->
+	<delete id="deleteNnotificationMethod">
+		delete from c_alarm_notification_method
+		<if test="id != null and id != ''">
+			where id = #{id}
+		</if>
+		<if
+			test="notificationChannelsId != null and notificationChannelsId != ''">
+			where notification_channels_id = #{notificationChannelsId}
+		</if>
+	</delete>
+
+</mapper>
+
+

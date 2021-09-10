@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.alarm.CAlarmUserTokenDao">
+
+	<!-- 通过用户名查询用户 -->
+	<select id="findUserByName" resultType="com.skeqi.mes.pojo.CMesUserT">
+		select id,USER_NAME,`STATUS`,DEPARTMENT,`SECURITY`,USER_POWER,ROLE_ID,USER_NUMBER,LOGINSTATUS,Token from c_mes_user_t
+		where viewMode = 1
+		and USER_NAME = #{userName}
+	</select>
+
+	<!-- 查询用户token -->
+	<select id="findUserToken" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT USER_NAME,token FROM `c_mes_user_t`
+		where viewMode = 1
+		and USER_NAME = #{userName}
+	</select>
+
+	<!-- 通过token查询用户 -->
+	<select id="findUserByToken" resultType="com.skeqi.mes.pojo.CMesUserT">
+		SELECT id,USER_NAME,`STATUS`,DEPARTMENT,`SECURITY`,USER_POWER,ROLE_ID,USER_NUMBER
+		FROM `c_mes_user_t`
+		where viewMode = 1
+		and token = #{token}
+	</select>
+
+	<!-- 更新用户token -->
+	<update id="updateUserToken">
+		update c_mes_user_t
+		set token = #{token}
+		where USER_NAME = #{userName}
+	</update>
+
+	<!-- 查询ip白名单 -->
+	<select id="findIpWhiteList" resultType="com.skeqi.mes.pojo.alarm.CAlarmIpWhiteList">
+		select a.* from c_alarm_ip_white_list a
+		join c_mes_user_t b on a.user_id = b.id
+		where b.USER_NAME = #{userName}
+	</select>
+
+	<!-- 新增ip白名单 -->
+	<insert id="addIpWhiteList">
+		INSERT INTO c_alarm_ip_white_list(user_id,ip)
+		VALUE(#{userId},#{ip})
+	</insert>
+
+	<!-- 更新ip白名单 -->
+	<update id="updateIpWhiteList">
+		update c_alarm_ip_white_list
+		set ip = #{ip}
+		where user_id = #{userId}
+	</update>
+
+</mapper>
+
+

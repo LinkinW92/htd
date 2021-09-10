@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.basicinformation.voucher.TGlVoucherEntryMapper">
+
+    <resultMap type="com.skeqi.finance.domain.voucher.TGlVoucherEntry" id="TGlVoucherEntryResult">
+        <result property="fEntryId" column="f_entry_id"/>
+        <result property="fVoucherId" column="f_voucher_id"/>
+        <result property="fExplanation" column="f_explanation"/>
+        <result property="fAccountId" column="f_account_id"/>
+        <result property="fDetailCode" column="f_detail_code"/>
+        <result property="fAmountfor" column="f_amountfor"/>
+        <result property="fAmount" column="f_amount"/>
+        <result property="fCurrencyId" column="f_currency_id"/>
+        <result property="fExchangeRateType" column="f_exchange_rate_type"/>
+        <result property="fExchangeRate" column="f_exchange_rate"/>
+        <result property="fDc" column="f_dc"/>
+        <result property="fMeasureUnitId" column="f_measure_unit_id"/>
+        <result property="fUnitPrice" column="f_unit_price"/>
+        <result property="fQuantity" column="f_quantity"/>
+        <result property="fAcctUnitQty" column="f_acct_unit_qty"/>
+        <result property="fBaseUnitQty" column="f_base_unit_qty"/>
+        <result property="fSettleTypeId" column="f_settle_type_id"/>
+        <result property="fSettleNo" column="f_settle_no"/>
+        <result property="fDebit" column="f_debit"/>
+        <result property="fCredit" column="f_credit"/>
+        <result property="fEntrySeq" column="f_entry_seq"/>
+        <result property="fSideEntrySeq" column="f_side_entry_seq"/>
+        <result property="fCashFlowItem" column="f_cash_flow_item"/>
+        <result property="fOriginalDetailId" column="f_original_detail_id"/>
+        <result property="fIsmultiCollect" column="f_ismulti_collect"/>
+    </resultMap>
+
+
+
+    <select id="getPageByVid" resultType="com.skeqi.finance.pojo.vo.voucher.VoucherEntryVo">
+     SELECT
+        a.f_name as f_account_name,
+         a.f_number as f_account_number,
+        rt.f_name as f_exchange_rate_name,
+        c.f_name as f_currency_name,
+		d.dimension_all as dimension,
+		d.dimension_code as dimension_code,
+        ve.*
+        FROM
+            (select * from t_gl_voucher_entry ve   WHERE
+            ve.f_voucher_id = #{vId}) ve
+            LEFT JOIN t_bd_account a ON a.f_acct_id = ve.f_account_id
+            LEFT JOIN t_bd_rate_type rt ON rt.f_rate_type_id=ve.f_exchange_rate_type
+            LEFT JOIN t_bd_currency c ON c.f_currency_id=ve.f_currency_id
+			LEFT JOIN t_gl_voucher_entry_dimension d ON d.voucher_entry_id =ve.f_entry_id
+    </select>
+
+    <select id="getCashFlowByVid" resultType="com.skeqi.finance.pojo.vo.voucher.VoucherEntryVo">
+       SELECT
+        a.f_name as f_account_name,
+        a.f_number as f_account_number,
+        c.f_name as f_currency_name,
+        ve.*
+        FROM
+            (select * from t_gl_voucher_entry ve   WHERE
+            ve.f_voucher_id = #{vId} and f_cash_flow_item='1') ve
+            LEFT JOIN t_bd_account a ON a.f_acct_id = ve.f_account_id
+            LEFT JOIN t_bd_currency c ON c.f_currency_id=ve.f_currency_id
+    </select>
+
+    <select id="queryByEntryId" resultType="com.skeqi.finance.pojo.vo.voucher.VoucherEntryVo">
+       SELECT
+        a.f_name as f_account_name,
+        a.f_number as f_account_number,
+        c.f_name as f_currency_name,
+        ve.*
+        FROM
+            (select * from t_gl_voucher_entry ve   WHERE
+            ve.f_entry_id = #{entryId}) ve
+            LEFT JOIN t_bd_account a ON a.f_acct_id = ve.f_account_id
+            LEFT JOIN t_bd_currency c ON c.f_currency_id=ve.f_currency_id
+    </select>
+
+    <update id="updateDetailCode" >
+        update t_gl_voucher_entry set f_detail_code=#{code} ,dimension_code=#{dimensionCode} where  f_entry_id=#{id}
+    </update>
+    <delete id="delByVchEntryId">
+        delete from t_gl_voucher_entry where f_voucher_id=#{vId}
+    </delete>
+</mapper>

@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.yp.equipment.maintain.EquipmentMaintainConfigDao">
+
+	<!-- 查询保养配置数据集合 -->
+	<select id="list" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			a.`name`,
+			a.`code`,
+			a.`explain`,
+			a.equipmentId,
+			DATE_FORMAT( a.dt, '%Y-%m-%d %H:%i:%s' ) AS dt,
+			b.`name` AS equipmentName,
+			c.`name` AS lineName,
+			d.id AS editionId,
+			d.edition,
+			( SELECT count(*) FROM c_qh_equipment_maintain_edition_t a2 WHERE a2.equipmentId = a.equipmentId ) AS number
+		FROM
+			c_qh_equipment_maintain_config_t a
+			JOIN c_qh_equipment_information b ON a.equipmentId = b.id
+			JOIN c_mes_line_t c ON b.lineId = c.id
+			LEFT JOIN ( SELECT * FROM c_qh_equipment_maintain_edition_t a1 WHERE a1.state = 1 ) d ON d.equipmentId = a.equipmentId
+		WHERE
+			1 =1
+		<if test="name != null and name != ''">
+		and a.name like '%${name}%'
+		</if>
+		<if test="lineId != null and lineId != ''">
+		and c.id = #{lineId}
+		</if>
+		<if test="equipmentId != null and equipmentId != ''">
+		and a.equipmentId = #{equipmentId}
+		</if>
+		<!-- <if test="state != null and state != ''"> -->
+		<!-- and a.state = #{state} -->
+		<!-- </if> -->
+		ORDER BY id
+	</select>
+
+	<resultMap type="com.alibaba.fastjson.JSONObject"
+		id="lineMap">
+		<result column="lineId" property="id" />
+		<result column="lineName" property="name" />
+		<!-- collection：一对多 property：实体类里的 ofType：实体类 -->
+		<collection property="equipment" javaType="list"
+			ofType="com.alibaba.fastjson.JSONObject">
+			<result column="equipmentId" property="id" />
+			<result column="equipmentName" property="name" />
+		</collection>
+	</resultMap>
+	<!-- 查询所有产线及设备 -->
+	<select id="findLineAndEquipment" resultMap="lineMap">
+		SELECT
+		a.id AS
+		lineId,
+		a.`NAME` AS lineName,
+		b.id AS equipmentId,
+		b.`name` AS
+		equipmentName
+		FROM
+		c_mes_line_t a
+		JOIN c_qh_equipment_information b ON
+		a.id = b.lineId
+		ORDER BY
+		a.id
+	</select>
+
+	<!-- 通过设备id查询设备存在配置的数量 -->
+	<select id="findConfigByEquipmentId" resultType="int">
+		select count(*) from c_qh_equipment_maintain_config_t
+		where equipmentId = #{equipmentId}
+	</select>
+
+	<!-- 新增保养配置 -->
+	<insert id="add">
+		INSERT INTO
+		c_qh_equipment_maintain_config_t(dt,name,code,equipmentId,`explain`)
+		value(now(),#{name},#{code},#{equipmentId},#{explain})
+	</insert>
+
+	<!-- 更新保养配置 -->
+	<update id="update">
+		update c_qh_equipment_maintain_config_t
+		set
+		`explain` = #{explain},
+		dt = now(),
+		`name` = #{name},
+		code = #{code}
+		where id = #{id}
+	</update>
+
+	<!-- 删除保养配置 -->
+	<delete id="delete">
+		delete from c_qh_equipment_maintain_config_t
+		where id = #{id}
+	</delete>
+
+	<!-- 查询名称重复数量 -->
+	<select id="findNameCount" resultType="int">
+		select count(*) from c_qh_equipment_maintain_config_t
+		where `name` = #{name}
+		<if test="id != null and  id  != ''">
+			and id != #{id}
+		</if>
+	</select>
+
+	<!-- 查询编号重复数量 -->
+	<select id="findCodeCount" resultType="int">
+		select count(*) from c_qh_equipment_maintain_config_t
+		where code = #{code}
+		<if test="id != null and  id  != ''">
+			and id != #{id}
+		</if>
+	</select>
+
+	<!-- 查询版本号 -->
+	<select id="findEdition"
+		resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			id,edition as `name`,
+			equipmentId as editioneEquipmentId
+		FROM
+			c_qh_equipment_maintain_edition_t
+		WHERE
+			equipmentId = #{equipmentId} OR equipmentId = 0
+		ORDER BY edition
+	</select>
+
+	<!-- 更新版本号的设备绑定更新 -->
+	<update id="updateEdition">
+		update c_qh_equipment_maintain_edition_t
+		<trim prefix="set" suffixOverrides=",">
+			<if test="state != null and state != ''">
+				state = #{state},
+			</if>
+			<if test="edition != null and edition != ''">
+				edition = #{edition},
+			</if>
+			<if test="equipmentId != null and equipmentId != ''">
+				equipmentId = #{equipmentId},
+			</if>
+		</trim>
+		<where>
+			<if test="where_id != null and where_id != ''">
+				and id = #{where_id}
+			</if>
+			<if test="where_equipmentId != null and where_equipmentId != ''">
+				and equipmentId = #{where_equipmentId}
+			</if>
+		</where>
+	</update>
+
+	<!-- 查询版本名数量 -->
+	<select id="findEditionCount" resultType="int">
+		select count(*) from
+		c_qh_equipment_maintain_edition_t
+		where edition = #{edition}
+		and equipmentId = #{equipmentId}
+	</select>
+
+	<!-- 新增版本号 -->
+	<insert id="addEdition" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO c_qh_equipment_maintain_edition_t(edition,dt,state,equipmentId)
+		value(#{edition},now(),1,#{equipmentId})
+	</insert>
+
+	<!-- 新增保养项 -->
+	<insert id="addItems">
+		INSERT INTO c_qh_equipment_maintain_items_t(item,editionId)
+		${sql}
+	</insert>
+
+</mapper>

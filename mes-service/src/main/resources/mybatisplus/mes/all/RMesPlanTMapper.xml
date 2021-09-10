@@ -1,0 +1,442 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.skeqi.mes.mapper.all.RMesPlanTDAO">
+
+	<!-- 查询所有 -->
+	<select id="findAllPlan" resultType="RMesPlanT">
+			SELECT
+			PLAN.ID,
+			PLAN.PLAN_SERIALNO,
+			PLAN.PLAN_NAME,
+			PLAN.DT,
+			PRODUCTION.PRODUCTION_TYPE,
+			PRODUCTION.PRODUCTION_NAME,
+			PLAN.PRODUCTION_ID,
+			PLAN.PLAN_NUMBER,
+			PLAN.COMPLETE_NUMBER,
+			PLAN.PLAN_LEVEL,
+			PLAN.LINE_ID,
+			plan.OPREATION_USER,
+			PLAN.COMPLETE_FLAG,
+			PLAN.ONLINE_NUMBER,
+			plan.CREATE_BARCODE_FLAG,
+			LINE.NAME AS lineName,
+			PLAN.PLAN_TYPE_ID,
+			(SELECT PLANTYPE.typeName FROM c_mes_plan_type_t PLANTYPE WHERE PLAN.PLAN_TYPE_ID=PLANTYPE.id) PLAN_TYPE_NAME
+		FROM
+			R_MES_PLAN_T PLAN,
+			C_MES_PRODUCTION_T PRODUCTION,
+			C_MES_LINE_T line
+		WHERE
+			PLAN.PRODUCTION_ID = PRODUCTION.ID
+			AND line.ID = PLAN.LINE_ID
+			AND PLAN.COMPLETE_FLAG not IN(3,4)
+		<if test="planName!=null and planName!='' ">
+			and PLAN.PLAN_NAME=#{planName}
+		</if>
+		<if test="planSerialno!=null and planSerialno!=''">
+			and PLAN.PLAN_SERIALNO=#{planSerialno}
+		</if>
+		ORDER BY PLAN_LEVEL,DT
+	</select>
+
+	<!-- 查询所有工艺路线 -->
+	<select id="findAllRouting" resultType="CMesRoutingT">
+		select * from c_mes_routing_t where 1=1
+		<if test="id!=null and id!='' and id!=0">
+			and id=#{id}
+		</if>
+		<if test="productionId!=null and  productionId!=0">
+			and PRODUCTION_ID = #{productionId}
+		</if>
+		<if test="lineId!=null and  lineId!=0">
+			and LINE_ID = #{lineId}
+		</if>
+	</select>
+
+	<!-- 根据总配方id查询下面的工位的产线id -->
+	<select id="findAllStation" resultType="CMesStationT">
+				SELECT DISTINCT
+					station.STATION_NAME,
+					STATION.LINE_ID
+				FROM
+					c_mes_recipe_t recipe,
+					c_mes_station_t station,
+					c_mes_line_t line
+				WHERE
+					recipe.STATION_ID = station.ID
+					AND station.LINE_ID = line.ID
+					AND recipe.TOTAL_ID =#{id}
+	</select>
+
+	<!-- 根据id查询 -->
+	<select id="findPlanByid" resultType="RMesPlanT">
+		select * from R_MES_PLAN_T where id=#{id}
+
+	</select>
+
+	<!-- 获取最大的优先级 -->
+	<select id="getMaxLevel" resultType="Integer">
+		SELECT ifnull(MAX(PLAN_LEVEL),0) FROM R_MES_PLAN_T WHERE COMPLETE_FLAG not IN(3,4)
+	</select>
+
+	<!-- 添加 -->
+	<insert id="addPlan">
+		INSERT INTO R_MES_PLAN_T(DT,PLAN_NAME,PRODUCTION_ID,PLAN_NUMBER,COMPLETE_NUMBER,REMAIND_NUMBER,
+		OK_NUMBER,NG_NUMBER,LINE_ID,PLAN_LEVEL,COMPLETE_FLAG,OPREATION_USER,CREATE_BARCODE_FLAG,PLAN_SERIALNO,ONLINE_NUMBER,ROUTING_ID,TOTAL_RECIPE_ID,PLAN_TYPE_ID)
+		values(NOW(),#{planName},#{productionId},#{planNumber},0,0,0,0,#{lineId},#{planLevel},0,#{opreationUser},0,#{planSerialno},0,#{routingId},#{totalRecipeId},#{planTypeId})
+	</insert>
+
+	<!-- 查询所有工单 -->
+	<select id="findAllWorkOrder" resultType="RMesWorkorderDetailT">
+			SELECT workorderDetail.*,shiftsTeam.NAME AS teamName,line.ID as
+		lineId,line.name AS
+		lineName,production.production_name
+		FROM R_MES_WORKORDER_DETAIL_T workorderDetail,
+		C_MES_LINE_T line,
+		C_MES_SHIFTS_TEAM_T shiftsTeam,
+		C_MES_PRODUCTION_T production,
+		R_MES_PLAN_T plan
+		WHERE workorderDetail.LINE_ID = line.ID
+		AND workorderDetail.TEAM_ID = shiftsTeam.ID
+		AND workorderDetail.PLAN_ID = plan.ID
+		AND plan.production_id = production.ID
+		<if test="planId!=null">
+			AND workorderDetail.plan_id = #{planId}
+		</if>
+		<if test="id!=null">
+			AND workorderDetail.ID = #{id}
+		</if>
+		<if test="status!=null">
+			AND workorderDetail.STATUS = #{status}
+		</if>
+		<if test="productionId!=null and productionId!='' ">
+			and plan.PRODUCTION_ID=#{productionId}
+		</if>
+		ORDER BY workorderDetail.LEVEL_NO
+	</select>
+
+	<!-- 根据id查询工单 -->
+	<select id="findWorkOrderByid" resultType="RMesWorkorderDetailT">
+		select * from r_mes_workorder_detail_t where id=#{id}
+	</select>
+	<!-- 根据计划id查询工单数量总数 -->
+	<select id="findWorkNumber" resultType="Integer">
+		select sum(ORDER_NUMBER) from r_mes_workorder_detail_t where PLAN_ID=#{id}
+	</select>
+
+	<!-- 根据计划id查询最大的工单优先级 -->
+	<select id="findWorkMaxLevel" resultType="Integer">
+		select max(LEVEL_NO) from r_mes_workorder_detail_t where PLAN_ID=#{planId}
+	</select>
+
+	<!-- 添加工单 -->
+	<insert id="addWorkorder">
+		INSERT INTO R_MES_WORKORDER_DETAIL_T (DT,WORKORDER_ID,ORDER_NUMBER,ONLINE_NUMBER,OFFLINE_NUMBER,DEFFECT_NUMBER,LINE_ID,TEAM_ID,LEVEL_NO,
+		STATUS,ALTER_DT,PLAN_ID,CREATE_BARCODE_FLAG,PRINTE_NUMBER)
+		VALUES(NOW(),#{productionId},
+		#{orderNumber},0,0,0,#{lineId},
+		#{teamId},#{levelNo},#{status},NOW(),#{planId},'0',0)
+	</insert>
+
+	<!-- 删除工单 -->
+	<delete id="delWorkorder">
+		delete from r_mes_workorder_detail_t where id=#{id}
+	</delete>
+
+	<!-- 修改工单 -->
+	<update id="updateWork">
+		update R_MES_WORKORDER_DETAIL_T set
+		production_id = #{productionId},order_number=#{orderNumber},
+	team_id=#{teamId},
+		level_no=#{levelNo},status=#{status},alter_dt=NOW() where id = #{id}
+	</update>
+
+	<!-- 修改工单优先级 -->
+	<update id="updateWorkLevel">
+			<if test="flag==0">
+			<![CDATA[
+			UPDATE R_MES_WORKORDER_DETAIL_T SET LEVEL_NO = LEVEL_NO+1 WHERE LEVEL_NO>=#{nLevelNo}
+			AND LEVEL_NO<#{oLevelNo} AND LINE_ID = #{lineId}
+			]]>
+		</if>
+		<if test="flag==1">
+			<![CDATA[
+			UPDATE R_MES_WORKORDER_DETAIL_T SET LEVEL_NO = LEVEL_NO-1 WHERE LEVEL_NO>#{oLevelNo}
+			AND LEVEL_NO<=#{nLevelNo} AND LEVEL_NO>1 AND LINE_ID = #{lineId}
+			]]>
+		</if>
+		<if test="flag==2">
+			SELECT ID FROM R_MES_WORKORDER_DETAIL_T
+		</if>
+		<if test="flag==3">
+			<![CDATA[
+			UPDATE R_MES_WORKORDER_DETAIL_T SET LEVEL_NO = LEVEL_NO-1 WHERE LEVEL_NO>=#{oLevelNo}
+			AND LEVEL_NO>1 AND LINE_ID = #{lineId}
+			]]>
+		</if>
+	</update>
+	<!-- 工单列表 -->
+	<select id="findOKWorkOrder" resultType="PMesPlanT">
+		select
+		plan.ID,
+		plan.PLAN_SERIALNO,
+		plan.PLAN_NAME,
+		plan.DT,
+		line.NAME,
+		production.PRODUCTION_TYPE,
+		plan.PLAN_NUMBER,
+		plan.COMPLETE_NUMBER,
+		plan.PLAN_LEVEL,
+		plan.OPREATION_USER,
+		plan.ONLINE_NUMBER,
+		plan.COMPLETE_FLAG,
+		plan.CREATE_BARCODE_FLAG
+		FROM
+		<!--  P_MES_PLAN_T plan, -->
+		 P_MES_PLAN_T plan,
+		 C_MES_LINE_T
+		line,C_MES_PRODUCTION_T production
+		WHERE plan.PRODUCTION_ID=production.ID
+		AND plan.LINE_ID=line.ID
+
+		<if test="id !=null and id!=''">
+			and plan.id = #{id}
+		</if>
+		<if test="planSerialno !=null and planSerialno!=''">
+			and plan.PLAN_SERIALNO = #{planSerialno}
+		</if>
+		<if test="date1!=null">
+		  <![CDATA[ and plan.DT > #{date1}]]>
+		</if>
+		<if test="date2!=null">
+		  <![CDATA[ and plan.DT < #{date2}]]>
+		</if>
+		<if test="line!=null and line!=''">
+		  <![CDATA[ and plan.LINE_ID = #{line}]]>
+		</if>
+		<if test="productionType!=null and productionType!=''">
+		  <![CDATA[ and plan.PRODUCTION_ID = #{productionType}]]>
+		</if>
+		<if test="opreationUser!=null and opreationUser!=''">
+		  <![CDATA[ and plan.OPREATION_USER like '%${opreationUser}%' ]]>
+		</if>
+		<if test="flag == 0">
+			and plan.COMPLETE_FLAG = '0'
+		</if>
+		<if test="flag == 1">
+			and plan.COMPLETE_FLAG = '1'
+		</if>
+		<if test="flag == 2">
+			and plan.COMPLETE_FLAG = '2'
+		</if>
+		<if test="flag == 3">
+			and plan.COMPLETE_FLAG = '3'
+		</if>
+		<if test="flag == 4">
+			and plan.COMPLETE_FLAG = '4'
+		</if>
+
+	</select>
+
+	<!-- 工单列表R -->
+	<select id="findOKWorkOrderR" resultType="PMesPlanT">
+		select
+		plan.ID,
+		plan.PLAN_SERIALNO,
+		plan.PLAN_NAME,
+		plan.DT,
+		line.NAME,
+		production.PRODUCTION_TYPE,
+		plan.PLAN_NUMBER,
+		plan.COMPLETE_NUMBER,
+		plan.PLAN_LEVEL,
+		plan.OPREATION_USER,
+		plan.ONLINE_NUMBER,
+		plan.COMPLETE_FLAG,
+		plan.CREATE_BARCODE_FLAG
+		FROM
+		<!--  P_MES_PLAN_T plan, -->
+		 R_MES_PLAN_T plan,
+		 C_MES_LINE_T
+		line,C_MES_PRODUCTION_T production
+		WHERE plan.PRODUCTION_ID=production.ID
+		AND plan.LINE_ID=line.ID
+
+		<if test="id !=null and id!=''">
+			and plan.id = #{id}
+		</if>
+		<if test="planSerialno !=null and planSerialno!=''">
+			and plan.PLAN_SERIALNO = #{planSerialno}
+		</if>
+		<if test="date1!=null">
+		  <![CDATA[ and plan.DT > #{date1}]]>
+		</if>
+		<if test="date2!=null">
+		  <![CDATA[ and plan.DT < #{date2}]]>
+		</if>
+		<if test="line!=null and line!=''">
+		  <![CDATA[ and plan.LINE_ID = #{line}]]>
+		</if>
+		<if test="productionType!=null and productionType!=''">
+		  <![CDATA[ and plan.PRODUCTION_ID = #{productionType}]]>
+		</if>
+		<if test="opreationUser!=null and opreationUser!=''">
+		  <![CDATA[ and plan.OPREATION_USER like '%${opreationUser}%' ]]>
+		</if>
+		<if test="flag == 0">
+			and plan.COMPLETE_FLAG = '0'
+		</if>
+		<if test="flag == 1">
+			and plan.COMPLETE_FLAG = '1'
+		</if>
+		<if test="flag == 2">
+			and plan.COMPLETE_FLAG = '2'
+		</if>
+		<if test="flag == 3">
+			and plan.COMPLETE_FLAG = '3'
+		</if>
+		<if test="flag == 4">
+			and plan.COMPLETE_FLAG = '4'
+		</if>
+
+	</select>
+
+	<!-- 查询工单条码  R表 -->
+	<select id="findWorkBarcode" resultType="CMesWorkBarcodeT">
+		select print.id as printId,print.sn as sn,print.dt as dt,work.id as workId,work.production_id as workName,
+			   plan.id as productionId,plan.plan_name as planName,line.id as lineId,line.name as lineName
+ 			   from r_mes_plan_print_t print,
+ 			   r_mes_plan_t plan,
+ 			   r_mes_workorder_detail_t work,
+ 			   c_mes_line_t line
+       		   where print.work_order_id=work.id and work.plan_id=plan.id and line.id=plan.line_id
+       		 <if test="planName!=null and planName!=''">
+       		 	and plan.PLAN_NAME = #{planName}
+       		 </if>
+       		   <if test="sn!=null and sn!=''">
+       		 	and print.sn=#{sn}
+       		 </if>
+       		 <if test="id!=null and id!=''">
+       		 	and work.id=#{id}
+       		 </if>
+       		 order by print.id desc
+	</select>
+
+	<!-- 查询工单条码  R+P表 -->
+	<select id="findWorkBarcodeRP" resultType="CMesWorkBarcodeT">
+	select * from
+		(select print.id as printId,print.sn as sn,print.dt as dt,work.id as workId,work.production_id as workName,
+			   plan.id as productionId,plan.plan_name as planName,line.id as lineId,line.name as lineName
+ 			   from r_mes_plan_print_t print,
+ 			   r_mes_plan_t plan,
+ 			   r_mes_workorder_detail_t work,
+ 			   c_mes_line_t line
+       		   where print.work_order_id=work.id and work.plan_id=plan.id and line.id=plan.line_id
+       		 <if test="planName!=null and planName!=''">
+       		 	and plan.PLAN_NAME = #{planName}
+       		 </if>
+       		   <if test="sn!=null and sn!=''">
+       		 	and print.sn=#{sn}
+       		 </if>
+       		 <if test="id!=null and id!=''">
+       		 	and work.id=#{id}
+       		 </if>
+       		 union all
+       	select print.id as printId,print.sn as sn,print.dt as dt,work.id as workId,work.production_id as workName,
+			   plan.id as productionId,plan.plan_name as planName,line.id as lineId,line.name as lineName
+ 			   from r_mes_plan_print_t print,
+ 			   r_mes_plan_t plan,
+ 			   r_mes_workorder_detail_t work,
+ 			   c_mes_line_t line
+       		   where print.work_order_id=work.id and work.plan_id=plan.id and line.id=plan.line_id
+       		 <if test="planName!=null and planName!=''">
+       		 	and plan.PLAN_NAME = #{planName}
+       		 </if>
+       		   <if test="sn!=null and sn!=''">
+       		 	and print.sn=#{sn}
+       		 </if>
+       		 <if test="id!=null and id!=''">
+       		 	and work.id=#{id}
+       		 </if>)T
+       		 order by printId desc
+	</select>
+
+	<!-- 查询工单条码  P表 -->
+	<select id="findPorkBarcode" resultType="CMesWorkBarcodeT">
+		select print.id as printId,print.sn as sn,print.dt as dt,work.id as workId,work.production_id as workName,
+			   plan.id as productionId,plan.plan_name as planName,line.id as lineId,line.name as lineName
+ 			   from p_mes_plan_print_t print,
+ 			   p_mes_plan_t plan,
+ 			   p_mes_workorder_detail_t work,
+ 			   c_mes_line_t line
+       		   where print.work_order_id=work.id and work.plan_id=plan.id and line.id=plan.line_id
+       		 <if test="planName!=null and planName!=''">
+       		 	and plan.PLAN_NAME = #{planName}
+       		 </if>
+       		   <if test="sn!=null and sn!=''">
+       		 	and print.sn=#{sn}
+       		 </if>
+       		 <if test="id!=null and id!=''">
+       		 	and work.id=#{id}
+       		 </if>
+       		  order by print.id desc
+	</select>
+	<!-- 查询优先级 -->
+	<select id="getPlanLevelByPlanId" resultType="Integer">
+		SELECT PLAN_LEVEL FROM R_MES_PLAN_T WHERE ID = #{planId}
+	</select>
+	<!-- 修改计划状态 -->
+	<update id="updateBarCodeFlagByPlanId">
+		UPDATE R_MES_PLAN_T SET COMPLETE_FLAG =#{flag},PLAN_LEVEL=#{planLevel} WHERE ID = #{planId}
+	</update>
+	<!-- 开始时修改计划优先级 -->
+	<update id="updatePlanLevelWhenBegin">
+		UPDATE R_MES_PLAN_T
+		SET PLAN_LEVEL=PLAN_LEVEL+1 WHERE PLAN_LEVEL &lt; #{planLevel}
+		AND COMPLETE_FLAG not IN(3,4)
+	</update>
+	<!-- 关闭完成时修改计划优先级 -->
+	<update id="updatePlanLevelWhenClose">
+		UPDATE R_MES_PLAN_T
+		SET PLAN_LEVEL=PLAN_LEVEL-1 WHERE PLAN_LEVEL &gt; #{planLevel}
+		AND COMPLETE_FLAG not IN(3,4)
+	</update>
+	<!-- 根据工单id和sn查询总成表  R表 -->
+	<select id="findRTrack" resultType="RMesTrackingT">
+		select * from R_MES_TRACKING_T where WORK_ORDER_ID = #{workId} and sn=#{sn}
+	</select>
+
+	<!-- 根据工单id和sn查询总成表  P表 -->
+	<select id="findPTrack" resultType="PMesTrackingT">
+		select * from P_MES_TRACKING_T where 1=1
+		<if test="workId!=null and workId!=''">
+			AND WORK_ORDER_ID = #{workId}
+		</if>
+		<if test="sn!=null and sn!=''">
+			AND sn=#{sn}
+		</if>
+	</select>
+
+	<!-- 根据产品ID获取总配方 -->
+	<select id="findAllTotal" resultType="CMesTotalRecipeT">
+		select * from c_mes_total_recipe_t where PRODUCTION_ID=#{id}
+	</select>
+
+	<!-- 查询此计划下是否还有条码未完成 -->
+	<select id="findPrintById" resultType="Integer">
+		select count(*) from r_mes_plan_print_t where PLAN_ID=#{id}
+	</select>
+
+	<!-- 查询此计划下是否还有条码未完成 -->
+	<select id="getBeginCountById" resultType="Integer">
+		select count(*)
+		from r_mes_plan_t
+		where 1=1
+		AND LINE_ID=(SELECT LINE_ID FROM r_mes_plan_t WHERE ID=#{id})
+		AND COMPLETE_FLAG = 1
+	</select>
+
+</mapper>

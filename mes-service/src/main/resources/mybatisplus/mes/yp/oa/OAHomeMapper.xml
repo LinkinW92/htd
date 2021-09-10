@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.yp.oa.OAHomeDao">
+
+	<!-- 按月查询我发起的申请数量 -->
+	<select id="findMyApprovalNumber" resultType="int">
+		select count(*) from c_oa_approval_record_t
+		where DATE_FORMAT( dt, '%Y-%m' ) = DATE_FORMAT( #{date}, '%Y-%m' )
+		and userId = #{userId}
+	</select>
+
+	<!-- 按月查询与我相关的审批单数量 -->
+	<select id="findItSAboutMeNumber" resultType="int">
+		select count(*) from c_oa_approval_related_t a
+		join c_oa_approval_record_t b on a.listNo = b.listNo
+		where DATE_FORMAT( b.dt, '%Y-%m' ) = DATE_FORMAT( #{date}, '%Y-%m' )
+		and a.userId = #{userId}
+	</select>
+
+	<!-- 按月查询我审批的单据数量 -->
+	<select id="findMyApprovalRecordNumber" resultType="int">
+		select count(*) from c_oa_approval_batch_records_t
+		where DATE_FORMAT( dt, '%Y-%m' ) = DATE_FORMAT( #{date}, '%Y-%m' )
+		and userId = #{userId}
+	</select>
+
+	<!-- 按月查询待我审批的单据数量 -->
+	<select id="findApprovalWithNumber" resultType="int">
+		select count(*) from c_oa_approval_record_with_t
+		where DATE_FORMAT( dt, '%Y-%m' ) = DATE_FORMAT( #{date}, '%Y-%m' )
+		and userId = #{userId}
+	</select>
+
+	<!-- 查询待办 -->
+	<select id="findDaiBan" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			DATE_FORMAT( b.dt, '%Y-%m-%d %H:%i:%s' ) AS dt,
+			DATE_FORMAT( b.dt, '%Y-%m-%d' ) AS date,
+			DATE_FORMAT( b.dt, '%H:%i:%s' ) AS time,
+			a.listNo,
+			b.`name`,
+			c.USER_NAME AS userName
+		FROM
+			`c_oa_approval_record_with_t` a
+			JOIN c_oa_approval_record_t b ON a.listNo = b.listNo
+			JOIN c_mes_user_t c ON b.userId = c.id
+		WHERE a.userId = #{userId}
+		and DATE_FORMAT( b.dt, '%Y-%m' ) = DATE_FORMAT( #{date}, '%Y-%m' )
+		ORDER BY b.dt desc
+	</select>
+
+	<!-- 查询已办 -->
+	<select id="findDone" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			DATE_FORMAT( b.dt, '%Y-%m-%d %H:%i:%s' ) AS dt,
+			DATE_FORMAT( b.dt, '%Y-%m-%d' ) AS date,
+			DATE_FORMAT( b.dt, '%H:%i:%s' ) AS time,
+			a.listNo,
+			a.state as myApprovalStatus,
+			b.state,
+			b.`name`,
+			c.USER_NAME AS userName
+		FROM
+			c_oa_approval_batch_records_t a
+			JOIN c_oa_approval_record_t b ON a.listNo = b.listNo
+			JOIN c_mes_user_t c ON b.userId = c.id
+		WHERE a.userId = #{userId}
+		and DATE_FORMAT( b.dt, '%Y-%m' ) = DATE_FORMAT( #{date}, '%Y-%m' )
+		ORDER BY b.dt desc
+	</select>
+
+	<!-- 查询办结 -->
+	<select id="findToConclude" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			DATE_FORMAT( b.dt, '%Y-%m-%d %H:%i:%s' ) AS dt,
+			DATE_FORMAT( b.dt, '%Y-%m-%d' ) AS date,
+			DATE_FORMAT( b.dt, '%H:%i:%s' ) AS time,
+			a.listNo,
+			a.state as myApprovalStatus,
+			b.state,
+			b.`name`,
+			c.USER_NAME AS userName
+		FROM
+			c_oa_approval_batch_records_t a
+			JOIN c_oa_approval_record_t b ON a.listNo = b.listNo
+			JOIN c_mes_user_t c ON b.userId = c.id
+		WHERE b.state != '审核中'
+		and	a.userId = #{userId}
+		and DATE_FORMAT( b.dt, '%Y-%m' ) = DATE_FORMAT( #{date}, '%Y-%m' )
+		ORDER BY b.dt desc
+	</select>
+
+
+
+</mapper>

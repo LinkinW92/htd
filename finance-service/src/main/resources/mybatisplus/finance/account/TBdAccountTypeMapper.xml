@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.account.TBdAccountTypeMapper">
+
+    <resultMap type="com.skeqi.finance.domain.TBdAccountType" id="TBdAccountTypeResult">
+        <result property="fAcctTypeId" column="f_acct_type_id"/>
+        <result property="fNumber" column="f_number"/>
+        <result property="fName" column="f_name"/>
+        <result property="fAcctGroupId" column="f_acct_group_id"/>
+        <result property="fAcctTableId" column="f_acct_table_id"/>
+        <result property="fDc" column="f_dc"/>
+        <result property="fLevel" column="f_level"/>
+        <result property="fParentId" column="f_parent_id"/>
+        <result property="fPriorplAdjust" column="f_priorpl_adjust"/>
+        <result property="fCreateOrgid" column="f_create_orgid"/>
+        <result property="fCreatorid" column="f_creatorid"/>
+        <result property="fCreateDate" column="f_create_date"/>
+        <result property="fUseOrgid" column="f_use_orgid"/>
+        <result property="fModifierid" column="f_modifierid"/>
+        <result property="fModifyDate" column="f_modify_date"/>
+        <result property="fDocumentStatus" column="f_document_status"/>
+        <result property="fAuditorid" column="f_auditorid"/>
+        <result property="fAuditDate" column="f_audit_date"/>
+        <result property="fForbidStatus" column="f_forbid_status"/>
+        <result property="fForbidderid" column="f_forbidderid"/>
+        <result property="fForbidDate" column="f_forbid_date"/>
+        <result property="fIssysPreset" column="f_issys_preset"/>
+        <result property="fMasterId" column="f_master_id"/>
+    </resultMap>
+
+    <resultMap type="com.skeqi.finance.pojo.vo.TBdAccount.TBdAccountTypeVo" id="TBdAccountTypeVoResult">
+        <result property="fAcctTypeId" column="f_acct_type_id"/>
+        <result property="fNumber" column="f_number"/>
+        <result property="fName" column="f_name"/>
+        <result property="fAcctGroupId" column="f_acct_group_id"/>
+        <result property="fAcctTableId" column="f_acct_table_id"/>
+        <result property="fDc" column="f_dc"/>
+        <result property="fLevel" column="f_level"/>
+        <result property="fParentId" column="f_parent_id"/>
+        <result property="fPriorplAdjust" column="f_priorpl_adjust"/>
+        <result property="fCreateOrgid" column="f_create_orgid"/>
+        <result property="fCreatorid" column="f_creatorid"/>
+        <result property="fCreateDate" column="f_create_date"/>
+        <result property="fUseOrgid" column="f_use_orgid"/>
+        <result property="fModifierid" column="f_modifierid"/>
+        <result property="fModifyDate" column="f_modify_date"/>
+        <result property="fDocumentStatus" column="f_document_status"/>
+        <result property="fAuditorid" column="f_auditorid"/>
+        <result property="fAuditDate" column="f_audit_date"/>
+        <result property="fForbidStatus" column="f_forbid_status"/>
+        <result property="fForbidderid" column="f_forbidderid"/>
+        <result property="fForbidDate" column="f_forbid_date"/>
+        <result property="fIssysPreset" column="f_issys_preset"/>
+        <result property="fMasterId" column="f_master_id"/>
+        <result property="fAcctTableName" column="fAcctTableName"/>
+        <result property="fAcctgroupName" column="fAcctgroupName"/>
+    </resultMap>
+
+    <update id="updateByList">
+        update t_bd_account
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="f_cfitem_id = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.fCfitemId != null">
+                        when f_acct_id = #{item.fAcctId,jdbcType=INTEGER}
+                        then #{item.fCfitemId,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="f_ocfitem_id = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.fOcfitemId != null">
+                        when f_acct_id = #{item.fAcctId,jdbcType=INTEGER}
+                        then #{item.fOcfitemId,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="f_cfindirectitem_id = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.fCfindirectitemId != null">
+                        when f_acct_id = #{item.fAcctId,jdbcType=INTEGER}
+                        then #{item.fCfindirectitemId,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="f_ocfindirectitem_id = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.fOcfindirectitemId != null">
+                        when f_acct_id = #{item.fAcctId,jdbcType=INTEGER}
+                        then #{item.fOcfindirectitemId,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where f_acct_id in
+        <foreach collection="list" item="item" open="(" separator=", " close=")">
+            #{item.fAcctId,jdbcType=INTEGER}
+        </foreach>
+    </update>
+
+    <select id="queryOne2" resultMap="TBdAccountTypeVoResult">
+        select t1.*, t2.f_name fAcctTableName, t3.f_name fAcctgroupName
+        from t_bd_account_type t1,
+             t_bd_account_table t2,
+             t_bd_account_group t3
+        where t1.f_acct_table_id = t2.f_id
+          and t1.f_acct_group_id = t3.f_acctgroup_id
+          and t1.f_acct_type_id = #{fId}
+    </select>
+    <select id="queryList2" resultMap="TBdAccountTypeVoResult">
+        select t1.*, t2.f_name fAcctTableName, t3.f_name fAcctgroupName
+        from t_bd_account_type t1,
+        t_bd_account_table t2,
+        t_bd_account_group t3
+        where t1.f_acct_table_id = t2.f_id
+        and t1.f_acct_group_id = t3.f_acctgroup_id
+        <if test="bo.fName != null and bo.fName != ''">
+            and t1.f_name like "%"#{bo.fName}"%"
+        </if>
+        <if test="bo.fAcctGroupId != null">
+            and t1.f_acct_group_id = #{bo.fAcctGroupId}
+        </if>
+        <if test="bo.fAcctTableId != null">
+            and t1.f_acct_table_id = #{bo.fAcctTableId}
+        </if>
+        <if test="bo.fNumber != null and bo.fNumber != ''">
+            and t1.f_number = #{fNumber}
+        </if>
+    </select>
+</mapper>

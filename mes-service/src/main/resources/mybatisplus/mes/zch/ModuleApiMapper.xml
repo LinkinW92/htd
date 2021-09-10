@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.zch.ModuleApiDao">
+	<insert id="writeLog">
+		insert into c_mod_client_log_t(type, lineName, DT, content) value (#{type}, #{lineName}, now(), #{content});
+		select @@IDENTITY
+	</insert>
+
+	<select id="findLog" resultType="java.util.Map">
+		select DT,content from c_mod_client_log_t
+		where type = #{type} and lineName = #{lineName}
+		<if test="beginTime != null and beginTime != ''">
+			and DT &gt;= #{beginTime}
+		</if>
+		<if test="endTime != null and endTime != ''">
+			and DT &lt;= #{endTime}
+		</if>
+	</select>
+
+	<select id="findConfList" resultType="java.util.Map">
+		select * from c_mod_data_collect_conf_t
+		where lineName = #{lineName} and stationName = #{stationName} and productionName = #{productName}
+	</select>
+
+	<select id="getProductionByName" resultType="java.util.Map">
+		select * from c_mes_production_t where PRODUCTION_NAME = #{productName}
+	</select>
+
+	<select id="insertDataCollect" resultType="java.lang.Integer">
+		insert into r_mod_data_collect_t (DT, lineName, stationName, productionName, SN, status) values(now(), #{lineName}, #{stationName}, #{productName}, #{sn}, #{status});
+		select @@IDENTITY
+	</select>
+
+	<insert id="insertDataCollectDetailBatch" parameterType="java.util.List" >
+		INSERT INTO r_mod_data_collect_detail_t(collectId, keyName, value)
+		VALUES
+		<foreach collection='list' item='item' index='index'  separator=','>
+			(#{item.collectId}, #{item.keyName}, #{item.value})
+		</foreach>
+	</insert>
+
+	<select id="getProduct" resultType="java.util.Map">
+		select * from c_mes_production_t where ID = #{PRODUCT_ID}
+	</select>
+
+	<select id="getNgNum" resultType="java.lang.Integer">
+		select count(*) from r_mod_data_collect_t where lineName = #{lineName} and stationName = #{stationName} and SN = #{sn} and status = 'NG'
+	</select>
+
+	<select id="getEmp" resultType="java.util.Map">
+		select * from c_mes_emp_t where EMP_NAME = #{emp} and password = #{password}
+	</select>
+
+	<select id="getLastDeviceState" resultType="java.util.Map">
+		select * from c_mod_device_state_log_t where lineName = #{lineName} and stationName = #{stationName} order by DT desc limit 1
+	</select>
+
+	<insert id="insertDeviceState">
+		insert into c_mod_device_state_log_t (DT, lineName, stationName, originalState, presentState, emp) value (now(), #{lineName}, #{stationName}, #{originalState}, #{state}, #{emp})
+	</insert>
+
+	<select id="findMaterialList" resultType="java.util.Map">
+
+	</select>
+
+	<update id="updateDataCollectValid">
+		update r_mod_data_collect_t set valid = 0 where lineName = #{lineName} and stationName = #{stationName} and productionName = #{productName}
+	</update>
+
+	<select id="findParaList" resultType="java.util.Map">
+		select keyName,PLCAddress,`describe`
+		from c_mod_data_collect_conf_t
+		where lineName=#{lineName} and stationName=#{stationName} and productionName=#{productName}
+	</select>
+</mapper>

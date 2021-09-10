@@ -1,0 +1,578 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.chenj.srm.CSrmPurPartnerInfoRMapper">
+    <resultMap id="BaseResultMap" type="com.skeqi.mes.pojo.chenj.srm.CSrmPurPartnerInfoR">
+        <!--@mbg.generated-->
+        <!--@Table c_srm_pur_partner_info_r-->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="partner_type_name" jdbcType="VARCHAR" property="partnerTypeName"/>
+        <result column="partner_type_code" jdbcType="VARCHAR" property="partnerTypeCode"/>
+        <result column="company_code" jdbcType="VARCHAR" property="companyCode"/>
+        <result column="corporate_name" jdbcType="VARCHAR" property="corporateName"/>
+        <result column="representative" jdbcType="VARCHAR" property="representative"/>
+        <result column="address" jdbcType="VARCHAR" property="address"/>
+        <result column="contact_information" jdbcType="VARCHAR" property="contactInformation"/>
+        <result column="mailbox" jdbcType="VARCHAR" property="mailbox"/>
+        <result column="name_of_bank_of_deposit" jdbcType="VARCHAR" property="nameOfBankOfDeposit"/>
+        <result column="bank_account" jdbcType="VARCHAR" property="bankAccount"/>
+        <result column="explain" jdbcType="VARCHAR" property="explain"/>
+        <result column="contract_no" jdbcType="VARCHAR" property="contractNo"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="line_item_no" jdbcType="VARCHAR" property="lineItemNo"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        id, line_item_no,partner_type_name, partner_type_code, company_code, corporate_name, representative,
+        address, contact_information, mailbox, name_of_bank_of_deposit, bank_account, `explain`,
+        contract_no, create_time, update_time
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmPurPartnerInfoR"
+            resultType="com.skeqi.mes.pojo.chenj.srm.CSrmPurPartnerInfoR">
+        <!--@mbg.generated-->
+        select
+        <include refid="Base_Column_List"/>
+        from c_srm_pur_partner_info_r
+        <where>
+            <if test="contractNo != null and contractNo != ''">
+                contract_no=#{contractNo,jdbcType=VARCHAR}
+            </if>
+            <if test="id != null">
+                and id=#{id,jdbcType=INTEGER}
+            </if>
+            and is_delete=0
+        </where>
+        order by create_time desc
+    </select>
+    <select id="selectByPrimaryList" resultType="com.skeqi.mes.pojo.chenj.srm.req.CSrmPurPartnerInfoRReq">
+        select
+        partner_type_name,line_item_no, partner_type_code, company_code, corporate_name, representative,
+        address, contact_information, mailbox, name_of_bank_of_deposit, bank_account, `explain`,
+        contract_no,create_time, update_time
+        from c_srm_pur_partner_info_r
+        <where>
+            <if test="contractNo != null and contractNo != ''">
+                contract_no like concat('%',#{contractNo,jdbcType=VARCHAR},'%')
+            </if>
+            and is_delete=0
+        </where>
+        order by create_time desc
+    </select>
+
+    <insert id="insertSelective" keyColumn="id" keyProperty="id"
+            parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmPurPartnerInfoR" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_pur_partner_info_r
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="partnerTypeName != null">
+                partner_type_name,
+            </if>
+            <if test="partnerTypeCode != null">
+                partner_type_code,
+            </if>
+            <if test="companyCode != null">
+                company_code,
+            </if>
+            <if test="corporateName != null">
+                corporate_name,
+            </if>
+            <if test="representative != null">
+                representative,
+            </if>
+            <if test="address != null">
+                address,
+            </if>
+            <if test="contactInformation != null">
+                contact_information,
+            </if>
+            <if test="mailbox != null">
+                mailbox,
+            </if>
+            <if test="nameOfBankOfDeposit != null">
+                name_of_bank_of_deposit,
+            </if>
+            <if test="bankAccount != null">
+                bank_account,
+            </if>
+            <if test="explain != null">
+                `explain`,
+            </if>
+            <if test="contractNo != null">
+                contract_no,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="partnerTypeName != null">
+                #{partnerTypeName,jdbcType=VARCHAR},
+            </if>
+            <if test="partnerTypeCode != null">
+                #{partnerTypeCode,jdbcType=VARCHAR},
+            </if>
+            <if test="companyCode != null">
+                #{companyCode,jdbcType=VARCHAR},
+            </if>
+            <if test="corporateName != null">
+                #{corporateName,jdbcType=VARCHAR},
+            </if>
+            <if test="representative != null">
+                #{representative,jdbcType=VARCHAR},
+            </if>
+            <if test="address != null">
+                #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="contactInformation != null">
+                #{contactInformation,jdbcType=VARCHAR},
+            </if>
+            <if test="mailbox != null">
+                #{mailbox,jdbcType=VARCHAR},
+            </if>
+            <if test="nameOfBankOfDeposit != null">
+                #{nameOfBankOfDeposit,jdbcType=VARCHAR},
+            </if>
+            <if test="bankAccount != null">
+                #{bankAccount,jdbcType=VARCHAR},
+            </if>
+            <if test="explain != null">
+                #{explain,jdbcType=VARCHAR},
+            </if>
+            <if test="contractNo != null">
+                #{contractNo,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmPurPartnerInfoR">
+        <!--@mbg.generated-->
+        update c_srm_pur_partner_info_r
+        <set>
+            <if test="partnerTypeName != null">
+                partner_type_name = #{partnerTypeName,jdbcType=VARCHAR},
+            </if>
+            <if test="partnerTypeCode != null">
+                partner_type_code = #{partnerTypeCode,jdbcType=VARCHAR},
+            </if>
+            <if test="companyCode != null">
+                company_code = #{companyCode,jdbcType=VARCHAR},
+            </if>
+            <if test="corporateName != null">
+                corporate_name = #{corporateName,jdbcType=VARCHAR},
+            </if>
+            <if test="representative != null">
+                representative = #{representative,jdbcType=VARCHAR},
+            </if>
+            <if test="address != null">
+                address = #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="contactInformation != null">
+                contact_information = #{contactInformation,jdbcType=VARCHAR},
+            </if>
+            <if test="mailbox != null">
+                mailbox = #{mailbox,jdbcType=VARCHAR},
+            </if>
+            <if test="nameOfBankOfDeposit != null">
+                name_of_bank_of_deposit = #{nameOfBankOfDeposit,jdbcType=VARCHAR},
+            </if>
+            <if test="bankAccount != null">
+                bank_account = #{bankAccount,jdbcType=VARCHAR},
+            </if>
+            <if test="explain != null">
+                `explain` = #{explain,jdbcType=VARCHAR},
+            </if>
+            <if test="contractNo != null">
+                contract_no = #{contractNo,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        <where>
+            <if test="contractNo != null and contractNo != ''">
+                contract_no=#{contractNo,jdbcType=VARCHAR}
+            </if>
+            <if test="lineItemNo != null">
+                and line_item_no = #{lineItemNo,jdbcType=VARCHAR}
+            </if>
+            <if test="id != null">
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+        </where>
+    </update>
+    <update id="updateBatchSelective" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update c_srm_pur_partner_info_r
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="partner_type_name = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.partnerTypeName != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.partnerTypeName,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="partner_type_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.partnerTypeCode != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.partnerTypeCode,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="company_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.companyCode != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.companyCode,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="corporate_name = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.corporateName != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.corporateName,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="representative = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.representative != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.representative,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="address = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.address != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.address,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="contact_information = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.contactInformation != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.contactInformation,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="mailbox = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.mailbox != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.mailbox,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="name_of_bank_of_deposit = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.nameOfBankOfDeposit != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.nameOfBankOfDeposit,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="bank_account = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.bankAccount != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.bankAccount,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="`explain` = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.explain != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.explain,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="contract_no = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.contractNo != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.contractNo,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.createTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.createTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.updateTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.updateTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_pur_partner_info_r
+        (partner_type_name, partner_type_code, company_code, corporate_name, representative,
+        address, contact_information, mailbox, name_of_bank_of_deposit, bank_account, `explain`,
+        contract_no, create_time, update_time)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.partnerTypeName,jdbcType=VARCHAR}, #{item.partnerTypeCode,jdbcType=VARCHAR},
+            #{item.companyCode,jdbcType=VARCHAR}, #{item.corporateName,jdbcType=VARCHAR},
+            #{item.representative,jdbcType=VARCHAR},
+            #{item.address,jdbcType=VARCHAR}, #{item.contactInformation,jdbcType=VARCHAR},
+            #{item.mailbox,jdbcType=VARCHAR}, #{item.nameOfBankOfDeposit,jdbcType=VARCHAR},
+            #{item.bankAccount,jdbcType=VARCHAR}, #{item.explain,jdbcType=VARCHAR}, #{item.contractNo,jdbcType=VARCHAR},
+            #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
+    <insert id="insertOrUpdate" keyColumn="id" keyProperty="id" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmPurPartnerInfoR"
+            useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_pur_partner_info_r
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            partner_type_name,
+            partner_type_code,
+            company_code,
+            corporate_name,
+            representative,
+            address,
+            contact_information,
+            mailbox,
+            name_of_bank_of_deposit,
+            bank_account,
+            `explain`,
+            contract_no,
+            create_time,
+            update_time,
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            #{partnerTypeName,jdbcType=VARCHAR},
+            #{partnerTypeCode,jdbcType=VARCHAR},
+            #{companyCode,jdbcType=VARCHAR},
+            #{corporateName,jdbcType=VARCHAR},
+            #{representative,jdbcType=VARCHAR},
+            #{address,jdbcType=VARCHAR},
+            #{contactInformation,jdbcType=VARCHAR},
+            #{mailbox,jdbcType=VARCHAR},
+            #{nameOfBankOfDeposit,jdbcType=VARCHAR},
+            #{bankAccount,jdbcType=VARCHAR},
+            #{explain,jdbcType=VARCHAR},
+            #{contractNo,jdbcType=VARCHAR},
+            #{createTime,jdbcType=TIMESTAMP},
+            #{updateTime,jdbcType=TIMESTAMP},
+        </trim>
+        on duplicate key update
+        <trim suffixOverrides=",">
+            <if test="id != null">
+                id = #{id,jdbcType=INTEGER},
+            </if>
+            partner_type_name = #{partnerTypeName,jdbcType=VARCHAR},
+            partner_type_code = #{partnerTypeCode,jdbcType=VARCHAR},
+            company_code = #{companyCode,jdbcType=VARCHAR},
+            corporate_name = #{corporateName,jdbcType=VARCHAR},
+            representative = #{representative,jdbcType=VARCHAR},
+            address = #{address,jdbcType=VARCHAR},
+            contact_information = #{contactInformation,jdbcType=VARCHAR},
+            mailbox = #{mailbox,jdbcType=VARCHAR},
+            name_of_bank_of_deposit = #{nameOfBankOfDeposit,jdbcType=VARCHAR},
+            bank_account = #{bankAccount,jdbcType=VARCHAR},
+            `explain` = #{explain,jdbcType=VARCHAR},
+            contract_no = #{contractNo,jdbcType=VARCHAR},
+            create_time = #{createTime,jdbcType=TIMESTAMP},
+            update_time = #{updateTime,jdbcType=TIMESTAMP},
+        </trim>
+    </insert>
+    <insert id="insertOrUpdateSelective"
+            parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmPurPartnerInfoR" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_pur_partner_info_r
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="lineItemNo != null">
+                line_item_no,
+            </if>
+            <if test="partnerTypeName != null">
+                partner_type_name,
+            </if>
+            <if test="partnerTypeCode != null">
+                partner_type_code,
+            </if>
+            <if test="companyCode != null">
+                company_code,
+            </if>
+            <if test="corporateName != null">
+                corporate_name,
+            </if>
+            <if test="representative != null">
+                representative,
+            </if>
+            <if test="address != null">
+                address,
+            </if>
+            <if test="contactInformation != null">
+                contact_information,
+            </if>
+            <if test="mailbox != null">
+                mailbox,
+            </if>
+            <if test="nameOfBankOfDeposit != null">
+                name_of_bank_of_deposit,
+            </if>
+            <if test="bankAccount != null">
+                bank_account,
+            </if>
+            <if test="explain != null">
+                `explain`,
+            </if>
+            <if test="contractNo != null">
+                contract_no,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="lineItemNo != null">
+                #{lineItemNo,jdbcType=VARCHAR},
+            </if>
+            <if test="partnerTypeName != null">
+                #{partnerTypeName,jdbcType=VARCHAR},
+            </if>
+            <if test="partnerTypeCode != null">
+                #{partnerTypeCode,jdbcType=VARCHAR},
+            </if>
+            <if test="companyCode != null">
+                #{companyCode,jdbcType=VARCHAR},
+            </if>
+            <if test="corporateName != null">
+                #{corporateName,jdbcType=VARCHAR},
+            </if>
+            <if test="representative != null">
+                #{representative,jdbcType=VARCHAR},
+            </if>
+            <if test="address != null">
+                #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="contactInformation != null">
+                #{contactInformation,jdbcType=VARCHAR},
+            </if>
+            <if test="mailbox != null">
+                #{mailbox,jdbcType=VARCHAR},
+            </if>
+            <if test="nameOfBankOfDeposit != null">
+                #{nameOfBankOfDeposit,jdbcType=VARCHAR},
+            </if>
+            <if test="bankAccount != null">
+                #{bankAccount,jdbcType=VARCHAR},
+            </if>
+            <if test="explain != null">
+                #{explain,jdbcType=VARCHAR},
+            </if>
+            <if test="contractNo != null">
+                #{contractNo,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+        on duplicate key update
+        <trim suffixOverrides=",">
+            <if test="id != null">
+                id = #{id,jdbcType=INTEGER},
+            </if>
+            <if test="lineItemNo != null">
+                line_item_no = #{lineItemNo,jdbcType=VARCHAR},
+            </if>
+            <if test="partnerTypeName != null">
+                partner_type_name = #{partnerTypeName,jdbcType=VARCHAR},
+            </if>
+            <if test="partnerTypeCode != null">
+                partner_type_code = #{partnerTypeCode,jdbcType=VARCHAR},
+            </if>
+            <if test="companyCode != null">
+                company_code = #{companyCode,jdbcType=VARCHAR},
+            </if>
+            <if test="corporateName != null">
+                corporate_name = #{corporateName,jdbcType=VARCHAR},
+            </if>
+            <if test="representative != null">
+                representative = #{representative,jdbcType=VARCHAR},
+            </if>
+            <if test="address != null">
+                address = #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="contactInformation != null">
+                contact_information = #{contactInformation,jdbcType=VARCHAR},
+            </if>
+            <if test="mailbox != null">
+                mailbox = #{mailbox,jdbcType=VARCHAR},
+            </if>
+            <if test="nameOfBankOfDeposit != null">
+                name_of_bank_of_deposit = #{nameOfBankOfDeposit,jdbcType=VARCHAR},
+            </if>
+            <if test="bankAccount != null">
+                bank_account = #{bankAccount,jdbcType=VARCHAR},
+            </if>
+            <if test="explain != null">
+                `explain` = #{explain,jdbcType=VARCHAR},
+            </if>
+            <if test="contractNo != null">
+                contract_no = #{contractNo,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+
+        </trim>
+    </insert>
+    <select id="selectFinallyData" resultMap="BaseResultMap">
+        SELECT line_item_no
+        FROM c_srm_pur_partner_info_r
+        where contract_no=#{contractNo,jdbcType=VARCHAR}
+        ORDER BY id DESC
+        LIMIT 1
+
+
+    </select>
+    <!--    删除合同伙伴行数据-->
+    <update id="deleteBatchSelective">
+        update c_srm_pur_partner_info_r set is_delete=1 where line_item_no in
+        <foreach close=")" collection="array" item="item" open="(" separator=", ">
+            #{item,jdbcType=INTEGER}
+        </foreach>
+    </update>
+
+</mapper>

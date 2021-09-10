@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.skeqi.mes.mapper.wf.productionQuality.qualityInspectionRecord.CMesQualityInspectionRecordDao">
+
+    <insert id="addCheckContent">
+        insert into c_mes_check_content
+        <trim  prefix="(" suffixOverrides="," suffix=")">
+            STANDARD_NAME,
+            STANDARD_VALUE,
+            RESULT,
+            CHECK_LIST_CODE,
+            ELIGIBILITY
+        </trim>
+        values
+        <foreach collection="contentList" separator="," item="list">
+            (#{list.STANDARD_NAME,jdbcType=VARCHAR},
+            #{list.STANDARD_VALUE,jdbcType=VARCHAR},
+            #{list.RESULT,jdbcType=VARCHAR},
+            #{code,jdbcType=VARCHAR},
+            #{list.ELIGIBILITY,jdbcType=VARCHAR}
+            )
+        </foreach>
+    </insert>
+
+    <insert id="addQuality">
+        insert into c_mes_quality_inspection_record
+        (
+        CODE,SN,TYPE,START,QC_PERSONNEL,DT,PROCESSING_TYPE
+        )
+        values(
+            #{code,jdbcType=VARCHAR},
+            #{sn,jdbcType=VARCHAR},
+            #{type,jdbcType=VARCHAR},
+            #{start,jdbcType=VARCHAR},
+            #{qcPersonnel,jdbcType=VARCHAR},
+            #{dt,jdbcType=VARCHAR},
+            #{processingType,jdbcType=VARCHAR}
+              )
+    </insert>
+
+    <!--查询质检记录-->
+    <select id="findQuality" resultType="java.util.Map">
+        select * from c_mes_quality_inspection_record
+        <where>
+            (START = #{start,jdbcType=VARCHAR} and RESULT_LEAD is null
+            <if test="resultLead!=null and resultLead!=''">
+                or RESULT_LEAD &lt;&gt; #{resultLead,jdbcType=VARCHAR}
+            </if>)
+            <if test="type !=null and type!=''">
+                and TYPE = #{type,jdbcType=VARCHAR}
+            </if>
+            <if test="sn !=null and sn!=''">
+                and SN = #{sn,jdbcType=VARCHAR}
+            </if>
+            <if test="qcPersonnel!=null and qcPersonnel!=''">
+                and QC_PERSONNEL = #{qcPersonnel,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <select id="findCheckListDetailBySN" resultType="java.util.Map">
+        select cd.*
+        FROM c_mes_inspection_checklist_detail_t cd
+
+                 LEFT JOIN c_mes_inspection_checklist_t c
+                           on c.CODE = cd.CHECK_LIST_CODE
+
+                 LEFT JOIN c_mes_production_t p
+                           on p.PRODUCTION_TYPE = c.PRODUCE_TYPE
+
+                 LEFT JOIN p_mes_tracking_t tk
+                           on tk.PRODUCTION_ID = p.ID
+
+        WHERE
+            c.TYPE = #{type,jdbcType=VARCHAR}
+          and  tk.SN = #{sn,jdbcType=VARCHAR}
+          and cd.`START` = 1
+    </select>
+
+    <select id="findQualityByCode" resultType="java.lang.Integer">
+        select count(1)
+        from           c_mes_quality_inspection_record
+        where
+        CODE = #{code,jdbcType=VARCHAR}
+    </select>
+
+    <!--按CODE查询质检内容项-->
+    <select id="findCheckContent" resultType="java.util.Map">
+        select * from c_mes_check_content
+        where
+        CHECK_LIST_CODE = #{code,jdbcType=VARCHAR}
+    </select>
+
+    <update id="editCheckContent">
+        update c_mes_check_content
+        set RESULT_LEAD = #{RESULT_LEAD,jdbcType=VARCHAR},
+        ELIGIBILITY_LEAD = #{ELIGIBILITY_LEAD,jdbcType=VARCHAR}
+        where ID = #{ID,jdbcType=VARCHAR}
+    </update>
+
+    <update id="auditQuality">
+        update c_mes_quality_inspection_record
+        <set>
+            QC_LEAD = #{qcLead,jdbcType=VARCHAR},
+            RESULT_LEAD = #{resultLead,jdbcType=VARCHAR},
+            DT_LEAD = #{dtLead,jdbcType=VARCHAR},
+            PROCESSING_TYPE = #{processingType,jdbcType=VARCHAR},
+            <if test="processType!=null and processType!=''">
+                PROCESS_TYPE = #{processType,jdbcType=VARCHAR}
+            </if>
+        </set>
+        where CODE = #{code,jdbcType=VARCHAR}
+    </update>
+
+
+    <select id="findQualityAll" resultType="java.util.Map">
+        select * from c_mes_quality_inspection_record
+    </select>
+
+    <select id="findDisposeQuality" resultType="java.util.Map">
+        select * from c_mes_quality_inspection_record
+        <where>
+            PROCESSING_TYPE = #{processingType,jdbcType=VARCHAR}
+            <if test="processType!=null and processType!=''">
+                <if test="processType == '0'.toString() ">
+                    and PROCESS_TYPE &lt;&gt; #{processType,jdbcType=VARCHAR}
+                </if>
+                <if test="processType != '0'.toString() ">
+                    and PROCESS_TYPE = #{processType,jdbcType=VARCHAR}
+                </if>
+            </if>
+            <if test="start!=null and start!=''">
+                and `START` = #{start,jdbcType=VARCHAR}
+            </if>
+            <if test="type !=null and type!=''">
+                and TYPE = #{type,jdbcType=VARCHAR}
+            </if>
+            <if test="sn !=null and sn!=''">
+                and SN = #{sn,jdbcType=VARCHAR}
+            </if>
+            <if test="qcPersonnel!=null and qcPersonnel!=''">
+                and QC_PERSONNEL = #{qcPersonnel,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>

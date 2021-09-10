@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.TBdAccountGroupMapper">
+
+    <resultMap type="com.skeqi.finance.domain.TBdAccountGroup" id="TBdAccountGroupResult">
+        <result property="fAcctgroupId" column="f_acctgroup_id"/>
+        <result property="fNumber" column="f_number"/>
+        <result property="fName" column="f_name"/>
+        <result property="fDescription" column="f_description"/>
+        <result property="fDc" column="f_dc"/>
+        <result property="fAccountType" column="f_account_type"/>
+        <result property="fAcctgroupTblid" column="f_acctgroup_tblid"/>
+        <result property="fIsprofit" column="f_isprofit"/>
+        <result property="fCreateOrgid" column="f_create_orgid"/>
+        <result property="fCreatorid" column="f_creatorid"/>
+        <result property="fCreateDate" column="f_create_date"/>
+        <result property="fUseOrgid" column="f_use_orgid"/>
+        <result property="fModifierid" column="f_modifierid"/>
+        <result property="fModifyDate" column="f_modify_date"/>
+        <result property="fDocumentStatus" column="f_document_status"/>
+        <result property="fAuditorid" column="f_auditorid"/>
+        <result property="fAuditDate" column="f_audit_date"/>
+        <result property="fForbidStatus" column="f_forbid_status"/>
+        <result property="fForbidderid" column="f_forbidderid"/>
+        <result property="fForbidDate" column="f_forbid_date"/>
+        <result property="fIssysPreset" column="f_issys_preset"/>
+        <result property="fMasterId" column="f_master_id"/>
+    </resultMap>
+
+    <select id="queryPageList" resultType="com.skeqi.finance.pojo.vo.TBdAccount.TBdAccountGroupVo">
+        SELECT g.*,gt.f_name as type_name from t_bd_account_group g
+        LEFT JOIN t_bd_account_group_table gt ON gt.f_acctgroup_tblid=g.f_acctgroup_tblid
+        <where>
+          <if test="bo.fNumber!=null and bo.fNumber!='' ">
+             and g.f_number=#{bo.fNumber}
+          </if>
+            <if test="bo.fName!=null and bo.fName!='' ">
+                and g.f_name=#{bo.fName}
+            </if>
+            <if test="bo.fAcctgroupTblid!=null ">
+                and g.f_acctgroup_tblid=#{bo.fAcctgroupTblid}
+            </if>
+        </where>
+    </select>
+
+</mapper>

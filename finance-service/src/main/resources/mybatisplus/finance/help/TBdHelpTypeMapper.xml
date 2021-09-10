@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.TBdHelpTypeMapper">
+
+    <resultMap type="com.skeqi.finance.domain.help.TBdHelpType" id="TBdHelpTypeResult">
+        <result property="fId" column="f_id"/>
+        <result property="fBusinessArea" column="f_business_area"/>
+        <result property="fBusinessAreaName" column="f_business_area_name"/>
+        <result property="fTypeName" column="f_type_name"/>
+        <result property="fNumber" column="f_number"/>
+        <result property="fDescription" column="f_description"/>
+        <result property="fParentId" column="f_parent_id"/>
+        <result property="fCreateOrgid" column="f_create_orgid"/>
+        <result property="fUseOrgid" column="f_use_orgid"/>
+        <result property="fCreatorid" column="f_creatorid"/>
+        <result property="fCreateDate" column="f_create_date"/>
+        <result property="fModifierid" column="f_modifierid"/>
+        <result property="fModifyDate" column="f_modify_date"/>
+        <result property="fDocumentStatus" column="f_document_status"/>
+        <result property="fAuditorid" column="f_auditorid"/>
+        <result property="fAuditDate" column="f_audit_date"/>
+        <result property="fForbidStatus" column="f_forbid_status"/>
+        <result property="fForbidderid" column="f_forbidderid"/>
+        <result property="fForbidDate" column="f_forbid_date"/>
+        <result property="fIssysPreset" column="f_issys_preset"/>
+        <result property="fMasterId" column="f_master_id"/>
+    </resultMap>
+
+
+    <select id="findByAreaId" resultType="java.lang.Integer">
+        select f_id from t_bd_help_type where  f_business_area=#{areaId} and f_parent_id=0 limit 1
+    </select>
+
+    <select id="findByParentId" resultType="java.lang.String">
+        select f_type_name from t_bd_help_type where  f_id=#{parentId}
+    </select>
+
+    <select id="queryPageGroup" parameterType="com.skeqi.finance.pojo.bo.help.TBdHelpTypeQueryBo" resultMap="TBdHelpTypeResult">
+        SELECT t4.f_id,t4.f_number,t4.f_business_area_name,t4.f_business_area,t4.f_type_name,t4.f_description,t4.f_parent_id,t4.f_issys_preset,t4.f_business_area_name    from (
+        SELECT *  from (
+        select t1.*,
+            if(find_in_set(f_parent_id, @pids) > 0, @pids := concat(@pids, ',', f_id), 0) as ischild
+
+                FROM
+                    ( SELECT f_id, f_number, f_business_area_name, f_business_area, f_type_name, f_description, f_parent_id, f_issys_preset FROM t_bd_help_type t ORDER BY f_parent_id, f_id ) t1,
+                    ( SELECT @pids := #{bo.fParentId} ) t2
+                ) t3
+            WHERE
+                ischild != 0
+                ) t4
+        <where>
+            <if test="bo.fBusinessAreaName != null and bo.fBusinessAreaName  != ''">
+                AND t4.f_business_area_name like concat('%', #{bo.fBusinessAreaName}, '%')
+            </if>
+            <if test="bo.fTypeName != null and bo.fTypeName != ''">
+                AND t4.f_type_name = #{bo.fTypeName}
+            </if>
+            <if test="bo.fDescription != null and bo.fDescription != ''">
+                AND t4.f_description = #{bo.fDescription}
+            </if>
+            <if test="bo.fIssysPreset != null and bo.fIssysPreset != ''">
+                AND t4.f_issys_preset = #{bo.fIssysPreset}
+            </if>
+        </where>
+         limit #{bo.pageNum},#{bo.pageSize}
+
+    </select>
+
+
+    <select id="queryPageGroupCount" parameterType="com.skeqi.finance.pojo.bo.help.TBdHelpTypeQueryBo" resultType="java.lang.Integer">
+        SELECT count(1)  from (
+        SELECT *  from (
+        select t1.*,
+        if(find_in_set(f_parent_id, @pids) > 0, @pids := concat(@pids, ',', f_id), 0) as ischild
+
+        FROM
+        ( SELECT f_id, f_number, f_business_area_name, f_business_area, f_type_name, f_description, f_parent_id, f_issys_preset FROM t_bd_help_type t ORDER BY f_parent_id, f_id ) t1,
+        ( SELECT @pids := #{bo.fParentId} ) t2
+        ) t3
+        WHERE
+        ischild != 0
+        ) t4
+        <where>
+            <if test="bo.fBusinessAreaName != null and bo.fBusinessAreaName  != ''">
+                AND t4.f_business_area_name like concat('%', #{bo.fBusinessAreaName}, '%')
+            </if>
+            <if test="bo.fTypeName != null and bo.fTypeName != ''">
+                AND t4.f_type_name = #{bo.fTypeName}
+            </if>
+            <if test="bo.fDescription != null and bo.fDescription != ''">
+                AND t4.f_description = #{bo.fDescription}
+            </if>
+            <if test="bo.fIssysPreset != null and bo.fIssysPreset != ''">
+                AND t4.f_issys_preset = #{bo.fIssysPreset}
+            </if>
+        </where>
+
+    </select>
+</mapper>

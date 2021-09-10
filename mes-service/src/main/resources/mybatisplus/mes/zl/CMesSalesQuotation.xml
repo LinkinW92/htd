@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.zl.CMesSalesQuotationDao">
+	<!-- 查询全部 -->
+	<select id="findAllSalesQuotation" resultType="CMesSalesQuotation">
+	SELECT * FROM c_mes_sales_quotation where 1=1
+	</select>
+	<select id="countSalesQuotation" resultType="int">
+		SELECT COUNT(*) FROM
+		c_mes_sales_quotation WHERE QUOTATION_NUMBER = #{quotationNumber}
+	</select>
+		<insert id="addSalesQuotation">
+		INSERT INTO c_mes_sales_quotation(
+		QUOTATION_NUMBER,SERIAL_NUMBER,SUPPLIER_NO,SHORT_NAME,
+		QUOTATION_DATE,INVOICE_STATUS,PRICE,COMPANY,STARTING_QUANTITY,
+		ROW_PICTURN_PATH,NOTE)
+		VALUES(
+		#{quotationNumber},#{serialNumber},#{supplierNo},#{shortName},#{quotationDate},#{invoiceStatus},#{price},
+		#{company},#{startingQuantity},#{rowPicturnPath},#{note})
+	</insert>
+		<select id="findSalesQuotationId" resultType="CMesSalesQuotation">
+			select * from c_mes_sales_quotation where id=#{id}
+	</select>
+		<update id="editSalesQuotation">
+		UPDATE c_mes_sales_quotation SET
+		QUOTATION_NUMBER =#{quotationNumber},SERIAL_NUMBER=#{serialNumber},SUPPLIER_NO=#{supplierNo},
+		SHORT_NAME=#{shortName},QUOTATION_DATE=#{quotationDate},INVOICE_STATUS=#{invoiceStatus},PRICE=#{price}
+		,COMPANY=#{company},STARTING_QUANTITY=#{startingQuantity},ROW_PICTURN_PATH=#{rowPicturnPath},NOTE=#{note}
+		WHERE ID = #{id}
+	</update>
+	<delete id="delSalesQuotation">
+		DELETE FROM c_mes_sales_quotation WHERE ID = #{id}
+	</delete>
+
+</mapper>

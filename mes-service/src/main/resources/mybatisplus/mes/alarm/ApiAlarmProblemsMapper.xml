@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.alarm.ApiAlarmProblemsDao">
+
+	<!-- 新增问题 -->
+	<insert id="addProblems">
+		INSERT INTO r_alarm_problems(problem,establish_time,establish_user_id,event_id)
+		value(#{problem},now(),#{establishUserId},#{eventId})
+	</insert>
+
+</mapper>

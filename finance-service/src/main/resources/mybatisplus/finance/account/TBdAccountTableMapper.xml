@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.account.TBdAccountTableMapper">
+
+    <resultMap type="com.skeqi.finance.domain.TBdAccountTable" id="TBdAccountTableResult">
+        <result property="fId" column="f_id"/>
+        <result property="fName" column="f_name"/>
+        <result property="fDescription" column="f_description"/>
+        <result property="fAcctGroupTblid" column="f_acct_group_tblid"/>
+        <result property="fNumber" column="f_number"/>
+        <result property="fMaxGrade" column="f_max_grade"/>
+        <result property="fIsuseControl" column="f_isuse_control"/>
+        <result property="fCreateOrgid" column="f_create_orgid"/>
+        <result property="fCreatorid" column="f_creatorid"/>
+        <result property="fCreateDate" column="f_create_date"/>
+        <result property="fUseOrgid" column="f_use_orgid"/>
+        <result property="fModifierid" column="f_modifierid"/>
+        <result property="fModifyDate" column="f_modify_date"/>
+        <result property="fDocumentStatus" column="f_document_status"/>
+        <result property="fAuditorid" column="f_auditorid"/>
+        <result property="fAuditDate" column="f_audit_date"/>
+        <result property="fForbidStatus" column="f_forbid_status"/>
+        <result property="fForbidderid" column="f_forbidderid"/>
+        <result property="fForbidDate" column="f_forbid_date"/>
+        <result property="fIssysPreset" column="f_issys_preset"/>
+        <result property="fMasterId" column="f_master_id"/>
+    </resultMap>
+    <resultMap type="com.skeqi.finance.pojo.vo.TBdAccount.TBdAccountTableVo" id="TBdAccountTableVoResult">
+        <result property="fId" column="f_id"/>
+        <result property="fName" column="f_name"/>
+        <result property="fDescription" column="f_description"/>
+        <result property="fAcctGroupTblid" column="f_acct_group_tblid"/>
+        <result property="fNumber" column="f_number"/>
+        <result property="fMaxGrade" column="f_max_grade"/>
+        <result property="fIsuseControl" column="f_isuse_control"/>
+        <result property="fCreateOrgid" column="f_create_orgid"/>
+        <result property="fCreatorid" column="f_creatorid"/>
+        <result property="fCreateDate" column="f_create_date"/>
+        <result property="fUseOrgid" column="f_use_orgid"/>
+        <result property="fModifierid" column="f_modifierid"/>
+        <result property="fModifyDate" column="f_modify_date"/>
+        <result property="fDocumentStatus" column="f_document_status"/>
+        <result property="fAuditorid" column="f_auditorid"/>
+        <result property="fAuditDate" column="f_audit_date"/>
+        <result property="fForbidStatus" column="f_forbid_status"/>
+        <result property="fForbidderid" column="f_forbidderid"/>
+        <result property="fForbidDate" column="f_forbid_date"/>
+        <result property="fIssysPreset" column="f_issys_preset"/>
+        <result property="fMasterId" column="f_master_id"/>
+        <result property="fAcctgroupNumber" column="fAcctgroupNumber"/>
+        <result property="fAcctgroupName" column="fAcctgroupName"/>
+    </resultMap>
+
+    <select id="queryOne2" resultMap="TBdAccountTableVoResult">
+        select t1.*, t2.f_number fAcctgroupNumber, t2.f_name fAcctgroupName
+        from t_bd_account_table t1,
+             t_bd_account_group_table t2
+        where t1.f_acct_group_tblid = t2.f_acctgroup_tblid
+          and t1.f_id = #{fId}
+    </select>
+    <select id="queryList2" resultMap="TBdAccountTableVoResult">
+        select t1.*, t2.f_number fAcctgroupNumber, t2.f_name fAcctgroupName
+        from t_bd_account_table t1,
+        t_bd_account_group_table t2
+        where t1.f_acct_group_tblid = t2.f_acctgroup_tblid
+        <if test="bo.fName != null and bo.fName != ''">
+            and t1.f_name like "%"#{bo.fName}"%"
+        </if>
+        <if test="bo.fAcctGroupTblid != null">
+            and t1.f_acct_group_tblid = #{bo.fAcctGroupTblid}
+        </if>
+        <if test="bo.fNumber != null and bo.fNumber != ''">
+            and t1.f_number = #{bo.fNumber}
+        </if>
+    </select>
+</mapper>

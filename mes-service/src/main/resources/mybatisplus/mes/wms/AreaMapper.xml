@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wms.AreaDao">
+
+	<resultMap type="com.skeqi.mes.pojo.wms.CWmsAreaT" id="areaMap">
+		<result column="ID" property="id" />
+		<result column="AREA_NO" property="areaNo" />
+		<result column="AREA_NAME" property="areaName" />
+		<result column="AREA_TYPE" property="areaType" />
+		<result column="AREA_LENGTH" property="areaLength" />
+		<result column="AREA_WIDTH" property="areaWidth" />
+		<result column="AREA_HIGHT" property="areaHight" />
+		<result column="AREA_LIMIT" property="areaLimit" />
+		<result column="AREA_LOADBEARING" property="areaLoadbearing" />
+		<result column="MODIFY_TIME" property="modifyTime" />
+		<result column="WAREHOUSE_ID" property="warehouseId" />
+		<result column="VIEW_MODE" property="viewMode" />
+		<association property="warehouse"
+			javaType="com.skeqi.mes.pojo.wms.WarehouseT">
+			<result column="NAME" property="name" />
+		</association>
+	</resultMap>
+
+	<!-- 查询区域集合 -->
+	<select id="findAreaList" resultMap="areaMap">
+		select area.*,warehouse.name from c_wms_area_t area
+		join
+		c_wms_warehouse_t warehouse on area.WAREHOUSE_ID = warehouse.id
+		where area. VIEW_MODE = 1
+		ORDER BY ID
+	</select>
+
+	<!-- 查询所有仓库ID、NAME -->
+	<select id="findWarehouseAll"
+		resultType="com.skeqi.mes.pojo.wms.WarehouseT">
+		select ID,NAME from c_wms_warehouse_t
+		where VIEW_MODE = 1
+		ORDER BY ID
+	</select>
+
+	<!-- 通过区域名称查询区域count -->
+	<select id="findAreaCountByName" resultType="int">
+		select count(*) from c_wms_area_t
+		where VIEW_MODE = 1
+		and id != #{id}
+		and AREA_NAME = #{name}
+	</select>
+
+	<!-- 通过区域编号查询区域count -->
+	<select id="findAreaCountByNo" resultType="int">
+		select count(*) from c_wms_area_t
+		where VIEW_MODE = 1
+		and id != #{id}
+		and AREA_NO = #{areaNo}
+	</select>
+
+	<!-- 新增区域 -->
+	<insert id="addArea">
+		insert into c_wms_area_t(
+		AREA_NO,AREA_NAME,AREA_TYPE,AREA_LENGTH,
+		AREA_WIDTH,AREA_HIGHT,AREA_LIMIT,AREA_LOADBEARING,
+		MODIFY_TIME,WAREHOUSE_ID)
+		values(
+		#{areaNo},#{areaName},#{areaType},#{areaLength},
+		#{areaWidth},#{areaHight},#{areaLimit},#{areaLoadbearing},
+		now(),#{warehouseId})
+	</insert>
+
+	<!-- 删除区域 -->
+	<delete id="deleteArea">
+		delete from c_wms_area_t
+		where id = #{areaId}
+	</delete>
+
+	<!-- 更新区域 -->
+	<update id="updateArea">
+		update c_wms_area_t
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="areaNo != null">AREA_NO = #{areaNo},</if>
+			<if test="areaName != null">AREA_NAME = #{areaName},</if>
+			<if test="areaType != null">AREA_TYPE = #{areaType},</if>
+			<if test="areaLength != null">AREA_LENGTH = #{areaLength},</if>
+			<if test="areaWidth != null">AREA_WIDTH = #{areaWidth},</if>
+			<if test="areaHight != null">AREA_HIGHT = #{areaHight},</if>
+			<if test="areaLimit != null">AREA_LIMIT = #{areaLimit},</if>
+			<if test="areaLoadbearing != null">AREA_LOADBEARING = #{areaLoadbearing},</if>
+			<if test="warehouseId != null">WAREHOUSE_ID = #{warehouseId},</if>
+			<if test="viewMode != null">VIEW_MODE = #{viewMode},</if>
+			MODIFY_TIME = now()
+		</trim>
+		where ID = #{id}
+	</update>
+
+</mapper>

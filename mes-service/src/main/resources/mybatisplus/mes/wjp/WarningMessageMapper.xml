@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.wjp.WarningMessageDao">
+
+	<!-- 报警信息列表 -->
+	<select id="findAll" resultType="CMesAlarmCodeT">
+		SELECT ID,ALARM_CODE,ALARM_TEXT,ALARM_ENGLISH,ALARM_GRADE FROM C_MES_ALARM_CODE_T WHERE 1 = 1
+		<if test="alarmCode!=null and alarmCode!=''">
+			AND ALARM_CODE=#{alarmCode}
+		</if>
+		 ORDER BY ALARM_CODE
+	</select>
+
+	<!-- 报警信息删除 -->
+	<delete id="delAlarm" parameterType="int">
+		DELETE FROM C_MES_ALARM_CODE_T WHERE ID=#{id}
+	</delete>
+
+	<!-- 报警信息条件查询 -->
+	<select id="selAlarm" resultType="CMesAlarmCodeT" parameterType="Map">
+		SELECT ID,ALARM_CODE,ALARM_TEXT,ALARM_ENGLISH FROM C_MES_ALARM_CODE_T WHERE ALARM_CODE=#{alarmCode}
+	</select>
+
+	<!-- 报警新增 -->
+	<insert id="addAlarm" parameterType="CMesAlarmCodeT" keyProperty="id" useGeneratedKeys="false">
+    	INSERT INTO C_MES_ALARM_CODE_T(DT,ALARM_CODE,ALARM_TEXT,ALARM_ENGLISH,ALARM_GRADE)
+		VALUES(#{dt},#{alarmCode},#{alarmText},#{alarmEnglish},#{alarmGrade})
+	</insert>
+
+	<!-- 根据Id查询 -->
+	<select id="findById" resultType="CMesAlarmCodeT" parameterType="Map">
+		SELECT ID,ALARM_CODE,ALARM_TEXT,ALARM_ENGLISH,ALARM_GRADE FROM C_MES_ALARM_CODE_T WHERE ID=#{id}
+	</select>
+
+	<!-- 报警修改 -->
+	<update id="updateAlarm" parameterType="CMesAlarmCodeT">
+		UPDATE C_MES_ALARM_CODE_T SET ALARM_TEXT=#{alarmText},ALARM_ENGLISH=#{alarmEnglish},ALARM_GRADE=#{alarmGrade} WHERE ID=#{id}
+	</update>
+
+</mapper>

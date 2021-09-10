@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.chenj.srm.CSrmKThreePurchaseAbuttingMapper">
+    <resultMap id="BaseResultMap" type="com.skeqi.mes.pojo.chenj.srm.CSrmKThreePurchaseAbutting">
+        <!--@mbg.generated-->
+        <!--@Table c_srm_k_three_purchase_abutting-->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="do_number" jdbcType="VARCHAR" property="doNumber"/>
+        <result column="do_type" jdbcType="VARCHAR" property="doType"/>
+        <result column="alter_type" jdbcType="VARCHAR" property="alterType"/>
+        <result column="alter_status" jdbcType="VARCHAR" property="alterStatus"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        id, do_number, do_type, alter_type, alter_status, create_time, update_time
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmKThreePurchaseAbutting"
+            resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        select
+        <include refid="Base_Column_List"/>
+        from c_srm_k_three_purchase_abutting
+        where do_number = #{doNumber,jdbcType=VARCHAR}
+    </select>
+    <insert id="insertSelective" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmKThreePurchaseAbutting">
+        <!--@mbg.generated-->
+        insert into c_srm_k_three_purchase_abutting
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="doNumber != null">
+                do_number,
+            </if>
+            <if test="doType != null">
+                do_type,
+            </if>
+            <if test="alterType != null">
+                alter_type,
+            </if>
+            <if test="alterStatus != null">
+                alter_status,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="doNumber != null">
+                #{doNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="doType != null">
+                #{doType,jdbcType=VARCHAR},
+            </if>
+            <if test="alterType != null">
+                #{alterType,jdbcType=VARCHAR},
+            </if>
+            <if test="alterStatus != null">
+                #{alterStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmKThreePurchaseAbutting">
+        <!--@mbg.generated-->
+        update c_srm_k_three_purchase_abutting
+        <set>
+            <if test="doType != null">
+                do_type = #{doType,jdbcType=VARCHAR},
+            </if>
+            <if test="alterType != null">
+                alter_type = #{alterType,jdbcType=VARCHAR},
+            </if>
+            <if test="alterStatus != null">
+                alter_status = #{alterStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where do_number=#{doNumber,jdbcType=VARCHAR}
+    </update>
+    <update id="updateBatchSelective" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update c_srm_k_three_purchase_abutting
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="do_number = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.doNumber != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.doNumber,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="do_type = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.doType != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.doType,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="alter_number = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.alterType != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.alterType,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="alter_status = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.alterStatus != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.alterStatus,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.createTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.createTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.updateTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.updateTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+
+    <update id="updateBatchAlterStatus" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update c_srm_k_three_purchase_abutting
+        set alter_status='2',update_time=now()
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    <update id="updateByPrimaryKeyListStatus">
+        update c_srm_k_three_purchase_abutting
+        set alter_status='2'
+        where do_number in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.doNumber,jdbcType=VARCHAR}
+        </foreach>
+          and is_delete = 0
+    </update>
+    <select id="findAlterRecord" resultMap="BaseResultMap">
+        select
+        do_number,
+        do_type,
+        alter_type,
+        alter_status
+        from c_srm_k_three_purchase_abutting
+        <where>
+            <if test="doType != null and doType != ''">
+                do_type=#{doType,jdbcType=VARCHAR}
+            </if>
+            and alter_status = '1' and is_delete=0
+        </where>
+    </select>
+    <select id="findAlterRecordList" resultMap="BaseResultMap">
+        select
+        id,
+        do_number,
+        do_type,
+        alter_type,
+        alter_status
+        from c_srm_k_three_purchase_abutting
+        <where>
+            <if test="doType != null and doType != ''">
+                do_type=#{doType,jdbcType=VARCHAR}
+            </if>
+            and alter_status = '1' and is_delete=0
+        </where>
+    </select>
+    <select id="selectByPrimaryKeyListStatus" resultType="com.skeqi.mes.pojo.chenj.srm.CSrmKThreePurchaseAbutting">
+        SELECT do_number
+        from c_srm_k_three_purchase_abutting
+        where alter_status = '1'
+          and update_time is not null
+    </select>
+</mapper>

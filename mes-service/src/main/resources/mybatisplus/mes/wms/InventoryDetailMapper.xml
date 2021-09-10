@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wms.InventoryDetailDao">
+
+	<select id="findInventoryDetail" resultType="com.skeqi.mes.pojo.wms.InventoryDetailT">
+		select * from c_wms_inventory_detail_t
+		where 1 = 1
+		<if test="id != null">
+			AND ID = #{id}
+		</if>
+		<if test="inventoryId != null">
+			AND INVENTORY_ID = #{inventoryId}
+		</if>
+		<if test="materialId != null">
+			AND MATERIAL_ID = #{materialId}
+		</if>
+		<if test="inventoryNo != null">
+			AND INVENTORY_NO = #{inventoryNo}
+		</if>
+		<if test="stockNo != null">
+			AND STOCK_NO = #{stockNo}
+		</if>
+		<if test="differenceNo != null">
+			AND DIFFERENCE_NO = #{differenceNo}
+		</if>
+		<if test="locationId != null">
+			AND LOCATION_ID = #{locationId}
+		</if>
+		<if test="projectId != null">
+			AND PROJECT_ID = #{projectId}
+		</if>
+		ORDER BY ID
+	</select>
+
+	<insert id="addInventoryDetail">
+		insert into c_wms_inventory_detail_t(
+		INVENTORY_ID,MATERIAL_ID,INVENTORY_NO,STOCK_NO,
+		DIFFERENCE_NO,LOCATION_ID,PROJECT_ID)
+		values(
+		#{inventoryId},#{materialId},#{inventoryNo},#{stockNo},
+		#{differenceNo},#{locationId},#{projectId})
+	</insert>
+
+	<delete id="deleteInventoryDetail">
+		delete from c_wms_inventory_detail_t
+		where id = #{inventoryDetailId}
+	</delete>
+
+	<update id="updateInventoryDetail">
+		update c_wms_inventory_detail_t
+		<trim prefix="SET" suffixOverrides=",">  
+			<if test="inventoryId != null">
+				INVENTORY_ID = #{inventoryId},
+        	</if>  
+			<if test="materialId != null">
+				MATERIAL_ID = #{materialId},
+        	</if>  
+			<if test="inventoryNo != null">
+				INVENTORY_NO = #{inventoryNo},
+        	</if>  
+			<if test="stockNo != null">
+				STOCK_NO = #{stockNo},
+        	</if>  
+			<if test="differenceNo != null">
+				DIFFERENCE_NO = #{differenceNo},
+        	</if>  
+			<if test="locationId != null">
+				LOCATION_ID = #{locationId},
+        	</if>  
+			<if test="projectId != null">
+				PROJECT_ID = #{projectId},
+        	</if>
+        </trim>  
+		where ID = #{id}
+	</update>
+
+</mapper>

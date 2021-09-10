@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wf.baseMode.alarmConfiguration.inform.CMesAlarmConfigTMapper">
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, code, `sql`, way, reception_staff, data_format,cdt,udt,title,content
+  </sql>
+  <select id="selectAll" resultType="com.skeqi.mes.pojo.wf.baseMode.alarmConfiguration.inform.CMesAlarmConfigT">
+    <!--@mbg.generated-->
+    select
+    <include refid="Base_Column_List" />
+    from c_mes_alarm_config_t
+  </select>
+  <select id="selectByCode" resultType="com.skeqi.mes.pojo.wf.baseMode.alarmConfiguration.inform.CMesAlarmConfigT">
+    <!--@mbg.generated-->
+    select
+    <include refid="Base_Column_List" />
+    from c_mes_alarm_config_t
+    <where>
+      code = #{code,jdbcType=VARCHAR}
+    </where>
+  </select>
+  <delete id="deleteByPrimaryKey">
+    <!--@mbg.generated-->
+    delete from c_mes_alarm_config_t
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+
+  <insert id="insertSelective" parameterType="com.skeqi.mes.pojo.wf.baseMode.alarmConfiguration.inform.CMesAlarmConfigT" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into c_mes_alarm_config_t
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="code != null">
+        code,
+      </if>
+      <if test="sql != null">
+        `sql`,
+      </if>
+      <if test="way != null">
+        way,
+      </if>
+      <if test="receptionStaff != null">
+        reception_staff,
+      </if>
+      <if test="dataFormat != null">
+        data_format,
+      </if>
+      <if test="title !=null ">
+        `title`,
+      </if>
+      <if test="content != null">
+        content,
+      </if>
+      cdt,
+      udt
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="code != null">
+        #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="sql != null">
+        #{sql,jdbcType=VARCHAR},
+      </if>
+      <if test="way != null">
+        #{way,jdbcType=VARCHAR},
+      </if>
+      <if test="receptionStaff != null">
+        #{receptionStaff,jdbcType=VARCHAR},
+      </if>
+      <if test="dataFormat != null">
+        #{dataFormat,jdbcType=VARCHAR},
+      </if>
+      <if test="title !=null ">
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null">
+        #{content,jdbcType=VARCHAR},
+      </if>
+      now(),
+      now()
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.skeqi.mes.pojo.wf.baseMode.alarmConfiguration.inform.CMesAlarmConfigT">
+    <!--@mbg.generated-->
+    update c_mes_alarm_config_t
+    <set>
+      <if test="code != null">
+        code = #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="sql != null">
+        `sql` = #{sql,jdbcType=VARCHAR},
+      </if>
+      <if test="way != null">
+        way = #{way,jdbcType=VARCHAR},
+      </if>
+      <if test="receptionStaff != null">
+        reception_staff = #{receptionStaff,jdbcType=VARCHAR},
+      </if>
+      <if test="dataFormat != null">
+        data_format = #{dataFormat,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null">
+        `title` = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null">
+        content = #{content,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <select id="selectSqlBySql" resultType="java.util.Map">
+    ${_parameter}
+  </select>
+</mapper>

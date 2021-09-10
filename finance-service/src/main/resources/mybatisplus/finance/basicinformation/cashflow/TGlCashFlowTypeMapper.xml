@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.basicinformation.cashflow.TGlCashFlowTypeMapper">
+
+    <resultMap type="com.skeqi.finance.domain.basicinformation.cashflow.TGlCashFlowType" id="TGlCashFlowTypeResult">
+        <result property="fItemTypeid" column="f_item_typeid"/>
+        <result property="fNumber" column="f_number"/>
+        <result property="fName" column="f_name"/>
+        <result property="fItemGroupid" column="f_itemg_roupid"/>
+        <result property="fGroupTypeid" column="f_group_typeid"/>
+        <result property="fDescription" column="f_description"/>
+        <result property="fCashFlowItemTable" column="f_cash_flow_item_table"/>
+        <result property="fCreateOrgid" column="f_create_orgid"/>
+        <result property="fCreatorid" column="f_creatorid"/>
+        <result property="fCreateDate" column="f_create_date"/>
+        <result property="fUseOrgid" column="f_use_orgid"/>
+        <result property="fModifierid" column="f_modifierid"/>
+        <result property="fModifyDate" column="f_modify_date"/>
+        <result property="fMasterId" column="f_master_id"/>
+    </resultMap>
+    <select id="queryPageList"
+            resultType="com.skeqi.finance.pojo.vo.basicinformation.cashflow.TGlCashFlowTypeVo">
+        SELECT
+            t.*,
+            tf.f_id,
+            tf.f_number tfNumber,
+            tf.f_name tfName,
+            tf.f_parent_id,
+            tf.f_parent_directory_id,
+            IF
+                (
+                ISNULL( tf.f_parent_directory_id )= 1,(
+                SELECT
+                    sum( ec.amount )
+                FROM
+                    t_gl_voucher_entry_cash ec
+                WHERE
+                        ec.main_table_id IN ( SELECT cf.f_id FROM t_gl_cash_flow cf WHERE cf.f_parent_directory_id = tf.f_id )
+            ),
+                c.amount
+                ) amount,
+            ROUND(
+                        c.amount / (
+                        SELECT
+                            sum( ec.amount )
+                        FROM
+                            t_gl_voucher_entry_cash ec
+                        WHERE
+                                ec.main_table_id IN ( SELECT cf.f_id FROM t_gl_cash_flow cf WHERE cf.f_parent_directory_id = tf.f_parent_directory_id )) * 100,
+                        2
+                ) proportion
+        FROM
+            t_gl_cash_flow_type t
+                LEFT JOIN t_gl_cash_flow tf ON t.f_item_typeid = tf.f_parent_id
+                LEFT JOIN t_gl_voucher_entry_cash c ON tf.f_id = c.main_table_id
+        where  c.book_id = #{param2.bookId,jdbcType=INTEGER}
+                AND c.currency_id = #{param2.currencyId,jdbcType=INTEGER}
+    </select>
+
+
+</mapper>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wms.TaskqueueDao">
+
+	<!-- 查询临时出库队列 -->
+	<select id="findROutTaskqueue" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			DATE_FORMAT(a.dt, '%Y-%m-%d %H:%i:%s') as dt,
+			a.LIST_NO as listNo,
+			a.tray,
+			a.flag,
+			b.LOCATION_NAME as locationName,
+			a.LOCATION_ID as locationId
+		FROM
+			r_wms_out_taskqueue_t a
+			JOIN c_wms_location_t b ON a.LOCATION_ID = b.id
+	</select>
+
+	<!-- 查询临时入库队列 -->
+	<select id="findRInTaskqueue" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			DATE_FORMAT(a.dt, '%Y-%m-%d %H:%i:%s') as dt,
+			a.LIST_NO as listNo,
+			a.tray,
+			a.flag,
+			b.LOCATION_NAME as locationName,
+			a.LOCATION_ID as locationId
+		FROM
+			r_wms_in_taskqueue_t a
+			JOIN c_wms_location_t b ON a.LOCATION_ID = b.id
+	</select>
+
+	<!-- 删除临时出库队列 -->
+	<delete id="deleteROutTaskqueue">
+		DELETE from r_wms_out_taskqueue_t
+		where id = #{id}
+	</delete>
+
+	<!-- 删除临时入库队列 -->
+	<delete id="deleteRInTaskqueue">
+		DELETE from r_wms_in_taskqueue_t
+		where id = #{id}
+	</delete>
+
+	<!-- 删除临时库存详情 -->
+	<delete id="deleteRStorageDetail">
+		DELETE from r_wms_storage_detail_t
+		where LIST_NO = #{listNo}
+		and LOCATION_ID = #{locationId}
+	</delete>
+
+	<!-- 查询库位集合 -->
+	<select id="findLocation" resultType="com.alibaba.fastjson.JSONObject">
+		select id,LOCATION_NAME as locationName from c_wms_location_t
+		ORDER BY id
+	</select>
+
+	<!-- 查询库存详情 -->
+	<select id="findRStorageDetail" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			MATERIAL_ID AS materialId,
+			LOCATION_ID AS locationId,
+			PROJECT_ID AS projectId,
+			MATERIAL_NUMBER as materialNumber,
+			materialNumberId
+		FROM
+			r_wms_storage_detail_t
+		where LIST_NO = #{listNo}
+		and LOCATION_ID = #{locationId}
+	</select>
+
+	<!-- 查询待出库的物料 -->
+	<select id="findMaterialNumber" resultType="com.alibaba.fastjson.JSONObject">
+		select id,bar_code as barCode from c_wms_material_number_t
+		where LMMINENT_RELEASE = 1
+		and LOCATION_ID = #{locationId}
+		and PROJECT_ID = #{projectId}
+		and MATERIAL_ID = #{materialId}
+	</select>
+
+	<!-- 修改库存即将出库数量 -->
+	<update id="updateMaterialNumberLmminentRelease">
+		update c_wms_material_number_t
+		set LMMINENT_RELEASE = LMMINENT_RELEASE - #{materialNumber}
+		where id = #{materialNumberId}
+	</update>
+
+</mapper>

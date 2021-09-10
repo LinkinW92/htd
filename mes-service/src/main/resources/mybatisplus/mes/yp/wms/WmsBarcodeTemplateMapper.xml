@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.yp.wms.WmsBarcodeTemplateDao">
+
+	<!-- 查询 -->
+	<select id="list" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			DATE_FORMAT( a.dt, '%Y-%m-%d %H:%i:%s' ) AS dt,
+			a.title,
+			a.`name`,
+			a.userId,
+			b.USER_NAME AS userName,
+			b.`name` AS fullName
+		FROM c_qh_wms_barcode_template_t a
+		LEFT JOIN c_mes_user_t b ON a.userId = b.id
+		WHERE a.viewMode = 1
+		<if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+		and DATE_FORMAT(a.dt,'%Y-%m-%d') between #{startTime} and #{endTime}
+		</if>
+		<if test="title != null and title != ''">
+		and a.title like '%${title}%'
+		</if>
+		<if test="name != null and name != ''">
+		and a.name like '%${name}%'
+		</if>
+		<if test="userId != null and userId != ''">
+		and a.userId = #{userId}
+		</if>
+	</select>
+
+	<!-- 新增 -->
+	<insert id="add">
+		insert into c_qh_wms_barcode_template_t(dt,title,name,userId,viewMode)
+		value(now(),#{title},#{name},#{userId},1)
+	</insert>
+
+	<!-- 更新 -->
+	<update id="update">
+		UPDATE c_qh_wms_barcode_template_t
+		<trim prefix="set" suffixOverrides=",">
+			<if test="title != null and title != ''">
+				title = #{title},
+			</if>
+			<if test="name != null and name != ''">
+				name = #{name},
+			</if>
+			<if test="userId != null and userId != ''">
+				userId = #{userId},
+			</if>
+			<if test="viewMode != null">
+				viewMode = #{viewMode},
+			</if>
+		</trim>
+		WHERE viewMode = 1
+		and id = #{id}
+	</update>
+
+	<!-- 通过名称查询数量 -->
+	<select id="findCountByName" resultType="int">
+		select count(*) from c_qh_wms_barcode_template_t
+		where viewMode = 1
+		and
+		`name` = #{name}
+		<if test="id != null and id != ''">
+			and id != #{id}
+		</if>
+	</select>
+
+	<!-- 通过标题查询数量 -->
+	<select id="findCountByTitle" resultType="int">
+		select count(*) from c_qh_wms_barcode_template_t
+		where viewMode = 1
+		and
+		`title` = #{title}
+		<if test="id != null and id != ''">
+			and id != #{id}
+		</if>
+	</select>
+
+	<!-- 查询详情 -->
+	<select id="listDetailed" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			id,
+			`key`,
+			`value`,
+			type
+		FROM
+			c_qh_wms_barcode_template_details_t
+		WHERE templateId = #{templateId}
+		<if test="key != null and key != ''">
+		and key = #{key}
+		</if>
+		<if test="value != null and value != ''">
+		and value = #{value}
+		</if>
+		<if test="type != null and type != ''">
+		and type = #{type}
+		</if>
+	</select>
+
+	<!-- 新增详情 -->
+	<insert id="addDetailed">
+		insert into c_qh_wms_barcode_template_details_t(`key`,`value`,templateId,type)
+		value(#{key},#{value},#{templateId},#{type})
+	</insert>
+
+	<!-- 删除详情 -->
+	<delete id="deleteDetailed">
+		delete from c_qh_wms_barcode_template_details_t
+		where templateId = #{templateId}
+	</delete>
+
+</mapper>

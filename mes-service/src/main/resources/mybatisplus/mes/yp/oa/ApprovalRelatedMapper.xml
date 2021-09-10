@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.yp.oa.ApprovalRelatedDao">
+
+	<!-- 查询 -->
+	<select id="list" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.type,
+			b.id,
+			DATE_FORMAT( b.dt, '%Y-%m-%d %H:%i:%s' ) AS dt,
+			b.`name`,
+			b.state,
+			b.listNo,
+			c.USER_NAME AS userName
+		FROM
+			c_oa_approval_related_t a
+			JOIN c_oa_approval_record_t b ON a.listNo = b.listNo
+			JOIN c_mes_user_t c ON b.userId = c.id
+		where a.userId = #{applicantId}
+		<if test="listNo != null and listNo != ''">
+		and b.listNo like '%${listNo}%'
+		</if>
+		<if test="state != null and state != ''">
+		and b.state = #{state}
+		</if>
+		<if test="name != null and name != ''">
+		and b.`name` = #{name}
+		</if>
+		<if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
+		and DATE_FORMAT(b.dt,'%Y-%m-%d') between #{startDate} and #{endDate}
+		</if>
+		ORDER BY b.dt desc
+	</select>
+
+	<!-- 新增 -->
+	<insert id="add">
+		insert into c_oa_approval_related_t(listNo,userId,type)
+		value(#{listNo},#{userId},#{type})
+	</insert>
+
+	<!-- 查询模板 -->
+	<select id="findTemplateAll" resultType="com.alibaba.fastjson.JSONObject">
+		select id,`name` from c_oa_form_template_t
+	</select>
+
+</mapper>

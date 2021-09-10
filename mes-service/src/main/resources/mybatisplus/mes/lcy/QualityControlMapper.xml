@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+
+<mapper namespace="com.skeqi.mes.mapper.lcy.QualityControlMapper">
+
+
+
+	<update id="updataAllDutyManager">
+		update P_MES_DEFECT_REASON_T set DUTY_ID = ''
+		where DUTY_ID =#{id} insert into C_MES_DEFECT_MANAGER_T
+	</update>
+	<update id="updataAllDefectManager">
+		update P_MES_DEFECT_REASON_T set DEFECT_ID = ''
+		where DEFECT_ID = #{id}
+	</update>
+	<!-- 查询使用缺陷管理的数据 -->
+	<select id="queryUseDefectManagerNumber" resultType="int">
+	select count(*)
+	from P_MES_DEFECT_REASON_T tt
+	where 1=1
+	and tt.DEFECT_ID =#{id}
+	</select>
+	<!-- 查询使用责任管理的数据 -->
+	<select id="queryUseDutyManagerNumber" resultType="int">
+		select count(*)
+		from P_MES_DEFECT_REASON_T tt
+		where 1=1
+		and tt.DUTY_ID =#{id}
+	</select>
+
+
+	<!-- *****缺陷管理******* -->
+
+	<resultMap type="com.skeqi.mes.pojo.CMesDefectManager" id="defectMap">
+		<id property="id" column="id"/>
+		<result property="dt" column="dt"/>
+		<result property="defectId" column="defect_id"/>
+		<result property="defectName" column="defect_name"/>
+		<result property="defectDis" column="defect_dis"/>
+		<collection property="defectGrade" ofType="com.skeqi.mes.pojo.CMesDefectGradeManagerT">
+			<id property="id" column="did"/>
+			<result property="dt" column="ddt"/>
+			<result property="defectGradeId" column="defect_grade_id"/>
+			<result property="defectGradeName" column="defect_grade_name"/>
+			<result property="defectGradeDis" column="defect_grade_dis"/>
+		</collection>
+	</resultMap>
+
+
+	<sql id="queryDefectGrade">
+			select tt.id,tt.dt,tt.defect_id,tt.defect_name,tt.defect_dis,
+			m.id did,m.dt ddt,m.defect_grade_id,m.defect_grade_name,m.defect_grade_dis
+			from C_MES_DEFECT_MANAGER_T tt
+			left join C_MES_DEFECT_GRADE_MANAGER_T m
+			on tt.defect_grade = m.id
+	</sql>
+		<!-- 移除 -->
+		<delete id="removeDefectManager">
+			delete from  C_MES_DEFECT_MANAGER_T where id = #{id}
+		</delete>
+		<!-- 添加 -->
+		<insert id="addDefectManager"  keyProperty="id" useGeneratedKeys="false" >
+				insert into C_MES_DEFECT_MANAGER_T (dt,defect_id,
+				defect_name,defect_grade,defect_dis)values(#{getDate},
+				#{defectId},#{defectName},#{defectGrade},#{defectDis})
+		</insert>
+		<!-- 查询 -->
+		<select id="findDefectManager" resultMap="defectMap">
+			<include refid="queryDefectGrade"/>
+			where tt.id = #{id}
+		</select>
+		<!-- 修改 -->
+		<update id="updataDefectManager">
+			update C_MES_DEFECT_MANAGER_T set dt =#{getDate},
+              defect_id=#{defectId},defect_name=#{defectName},defect_grade=#{defectGrade}
+       		where id = #{id}
+		</update>
+		<!-- 查询 -->
+		<select id="queryDefectManagerList" resultMap="defectMap">
+			<include refid="queryDefectGrade"/>
+		</select>
+
+		<!-- 初始化缺陷等级下拉选 -->
+		<select id="getInitDefectGradeManagerList" resultType="CMesDefectGradeManagerT">
+			select tt.id,tt.dt,tt.defect_grade_id,tt.defect_grade_name,tt.defect_grade_dis
+			from C_MES_DEFECT_GRADE_MANAGER_T tt
+		</select>
+
+
+		<select id="findEqualDefectManager" resultType="int">
+			select count(tt.defect_id) from C_MES_DEFECT_MANAGER_T tt
+				where 1=1
+				and tt.defect_id = #{defectId}
+				<if test="id!=null and id!=''">
+        			and id=#{id}
+        		</if>
+		</select>
+
+
+
+	<!-- *****缺陷等级管理******* -->
+		<delete id="removeAllDefectManager">
+
+		delete from  C_MES_DEFECT_MANAGER_T where defect_grade = #{id}
+
+		</delete>
+
+
+		<!-- 获取缺陷管理的数量 -->
+		<select id="getDefectManagerNumber" resultType="int">
+			select count(*) from C_MES_DEFECT_MANAGER_T tt
+			where tt.defect_grade = #{id}
+		</select>
+		<!-- 移除 -->
+		<delete id="removeDefectGradeManager">
+			delete from  C_MES_DEFECT_GRADE_MANAGER_T  where id = #{id}
+		</delete>
+		<!-- 添加 -->
+		<insert id="addDefectGradeManager"  keyProperty="id" useGeneratedKeys="false" >
+				insert into C_MES_DEFECT_GRADE_MANAGER_T (dt,defect_grade_id,
+        		defect_grade_name,defect_grade_dis)values(#{getDate},
+				#{defectGradeId},#{defectGradeName},#{defectGradeDis})
+
+		</insert>
+		<!-- 查询 -->
+		<select id="findDefectGradeManagerById" resultType="CMesDefectGradeManagerT">
+			select tt.id,tt.dt,tt.defect_grade_id,tt.defect_grade_name,tt.defect_grade_dis
+			from C_MES_DEFECT_GRADE_MANAGER_T tt
+			where id = #{id}
+		</select>
+		<!-- 修改 -->
+		<update id="updataDefectGradeManager">
+			 update C_MES_DEFECT_GRADE_MANAGER_T  set dt =#{getDate},
+             defect_grade_id=#{defectGradeId},defect_grade_name=#{defectGradeName}
+       		where id = #{id}
+		</update>
+		<!-- 查询列表 -->
+		<select id="queryDefectGradeManagerList" resultType="CMesDefectGradeManagerT">
+			select tt.id,tt.dt,tt.defect_grade_id,tt.defect_grade_name,tt.defect_grade_dis
+			from C_MES_DEFECT_GRADE_MANAGER_T tt
+		</select>
+		<!-- 查询相同的缺陷等级管理 -->
+		<select id="findEqualDefectGradeManager" resultType="int">
+			select count(tt.defect_grade_id) from C_MES_DEFECT_GRADE_MANAGER_T tt
+				where 1=1
+				and tt.defect_grade_id = #{defectGradeId}
+				<if test="id!=null and id!=''">
+        			and id=#{id}
+        		</if>
+		</select>
+
+
+
+	<!-- *****责任类型管理****** -->
+
+		<select id="getDutyManagerNumber" resultType="int">
+			select count(*) from C_MES_DUTY_MANAGER_T tt
+			where tt.duty_type = #{id}
+		</select>
+
+		<delete id="removeAllDutyManager">
+			delete from  C_MES_DUTY_MANAGER_T  where duty_type = #{id}
+		</delete>
+
+		<!-- 查询列表 -->
+		<select id="queryDutyTypeManagerList" resultType="CMesDutyTypeManagerT">
+			select tt.id,tt.dt,tt.duty_type_id,tt.duty_type_name,
+			tt.duty_type_dis from C_MES_DUTY_TYPE_MANAGER_T tt
+		</select>
+		<!-- 移除 -->
+		<delete id="removeDutyTypeManager">
+			delete from  C_MES_DUTY_TYPE_MANAGER_T  where id = #{id}
+		</delete>
+		<!-- 查询 -->
+		<select id="findDutyTypeManagerById" resultType="CMesDutyTypeManagerT">
+			select tt.id,tt.dt,tt.duty_type_id,tt.duty_type_name,
+			tt.duty_type_dis from C_MES_DUTY_TYPE_MANAGER_T tt
+			where id = #{id}
+		</select>
+
+		<!-- 添加 -->
+		<insert id="addDutyTypeManager"  keyProperty="id" useGeneratedKeys="false" >
+				insert into C_MES_DUTY_TYPE_MANAGER_T (dt,duty_type_id,
+           		duty_type_name,duty_type_dis)values(#{getDate},
+				#{dutyTypeId},#{dutyTypeName},#{dutyTypeDis})
+
+		</insert>
+
+		<!-- 修改 -->
+		<update id="updataDutyTypeManager">
+			 update C_MES_DUTY_TYPE_MANAGER_T set dt = DATE_FORMAT(#{getDate},'%Y-%m-%d %H:%i:%s'),
+             duty_type_id=#{dutyTypeId},duty_type_name=#{dutyTypeName}
+       		where id = #{id}
+		</update>
+		<!-- 查询相同的缺陷等级管理 -->
+		<select id="findEqualDutyTypeManager" resultType="int">
+			select count(duty_type_Id) from C_MES_DUTY_TYPE_MANAGER_T t
+				where 1=1
+				and tt.duty_type_Id = #{dutyTypeId}
+				<if test="id!=null and id!=''">
+        			and id=#{id}
+        		</if>
+		</select>
+
+
+	<!-- ****责任管理****** -->
+
+	<resultMap type="com.skeqi.mes.pojo.CMesDutyManagerT" id="dutyMap">
+		<id property="id" column="id"/>
+		<result property="dt" column="dt"/>
+		<result property="dutyId" column="duty_id"/>
+		<result property="dutyName" column="duty_name"/>
+		<result property="dutyDis" column="duty_dis"/>
+		<collection property="dutyType" ofType="com.skeqi.mes.pojo.CMesDutyTypeManagerT">
+			<id property="id" column="did"/>
+			<result property="dt" column="ddt"/>
+			<result property="dutyTypeId" column="duty_type_id"/>
+			<result property="dutyTypeName" column="duty_type_name"/>
+			<result property="dutyTypeDis" column="duty_type_dis"/>
+		</collection>
+	</resultMap>
+
+	<sql id="queryDutyType">
+			select tt.id,tt.dt,tt.duty_id,tt.duty_name,tt.duty_dis,
+			m.id did,m.dt ddt,m.duty_type_id,m.duty_type_name,m.duty_type_dis
+			from C_MES_DUTY_MANAGER_T tt
+			left join C_MES_DUTY_TYPE_MANAGER_T m
+			on tt.duty_type = m.id
+	</sql>
+
+
+	<!-- 获取责任类型下拉选列表 -->
+		<select id="getInitDutyTypeManagerList" resultType="CMesDutyTypeManagerT">
+			select tt.id,tt.dt,tt.duty_type_id,tt.duty_type_name,tt.duty_type_dis
+			from C_MES_DUTY_TYPE_MANAGER_T tt
+		</select>
+	<!-- 获取责任管理列表 -->
+		<select id="queryDutyManagerList" resultMap="dutyMap">
+			<include refid="queryDutyType"/>
+		</select>
+	<!--寻找责任管理-->
+		<select id="findDutyManagerById" resultMap="dutyMap">
+			<include refid="queryDutyType"/>
+			where tt.id =#{id}
+		</select>
+	<!--寻找相同的责任管理编号  -->
+		<select id="findEqualDutyManager" resultType="int">
+			select count(tt.duty_id) from C_MES_DUTY_MANAGER_T tt
+				where 1=1
+				and tt.duty_id = #{dutyId}
+				<if test="id!=null and id!=''">
+        			and id=#{id}
+        		</if>
+		</select>
+	<!-- 添加 -->
+		<insert id="addDutyManager"  keyProperty="id" useGeneratedKeys="false" >
+				insert into C_MES_DUTY_MANAGER_T (dt,duty_id,duty_name,
+            	duty_type,duty_dis)values(#{getDate},
+				#{dutyId},#{dutyName},#{dutyType},#{dutyDis})
+
+		</insert>
+	<!-- 修改 -->
+		<update id="updataDutyManager">
+			update C_MES_DUTY_MANAGER_T set dt = DATE_FORMAT(#{getDate},'%Y-%m-%d %H:%i:%s'),
+            duty_id=#{dutyId},duty_name=#{dutyName},duty_type=#{dutyType}
+       		where id = #{id}
+		</update>
+		<!-- 删除 -->
+	<delete id="removeDutyManager">
+			delete from  C_MES_DUTY_MANAGER_T where id = #{id}
+		</delete>
+
+
+
+</mapper>

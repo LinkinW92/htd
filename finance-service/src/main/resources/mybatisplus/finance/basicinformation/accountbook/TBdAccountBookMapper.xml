@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.basicinformation.accountbook.TBdAccountBookMapper">
+
+    <resultMap type="com.skeqi.finance.domain.basicinformation.accountbook.TBdAccountBook" id="TBdAccountBookResult">
+        <result property="fBookId" column="f_book_id"/>
+        <result property="fNumber" column="f_number"/>
+        <result property="fAccttableId" column="f_accttable_id"/>
+        <result property="fPeriodId" column="f_period_id"/>
+        <result property="fCurrencyId" column="f_currency_id"/>
+        <result property="fRateTypeId" column="f_rate_type_id"/>
+        <result property="fAccountOrgid" column="f_account_orgid"/>
+        <result property="fAcctsystemId" column="f_acctsystem_id"/>
+        <result property="fBookType" column="f_book_type"/>
+        <result property="fDefaultVoucherType" column="f_default_voucher_type"/>
+        <result property="fUseAdjustPeriod" column="f_use_adjust_period"/>
+        <result property="fInitialStatus" column="f_initial_status"/>
+        <result property="fCurrentYear" column="f_current_year"/>
+        <result property="fCurrentPeriod" column="f_current_period"/>
+        <result property="fCrtYearPeriod" column="f_crt_year_period"/>
+        <result property="fStartYear" column="f_start_year"/>
+        <result property="fStartPeriod" column="f_start_period"/>
+        <result property="fYearandPeriod" column="f_yearand_period"/>
+        <result property="fAcctPolicyid" column="f_acct_policyid"/>
+        <result property="fApfinType" column="f_apfin_type"/>
+        <result property="fArfinType" column="f_arfin_type"/>
+        <result property="fCreateOrgid" column="f_create_orgid"/>
+        <result property="fCreatorid" column="f_creatorid"/>
+        <result property="fCreateDate" column="f_create_date"/>
+        <result property="fUseOrgid" column="f_use_orgid"/>
+        <result property="fModifierid" column="f_modifierid"/>
+        <result property="fModifyDate" column="f_modify_date"/>
+        <result property="fDocumentStatus" column="f_document_status"/>
+        <result property="fAuditorid" column="f_auditorid"/>
+        <result property="fAuditDate" column="f_audit_date"/>
+        <result property="fForbidStatus" column="f_forbid_status"/>
+        <result property="fForbidderid" column="f_forbidderid"/>
+        <result property="fForbidDate" column="f_forbid_date"/>
+        <result property="fIssysPreset" column="f_issys_preset"/>
+        <result property="fMasterId" column="f_master_id"/>
+    </resultMap>
+
+
+    <select id="queryPolicyId" resultType="java.lang.Integer">
+        select f_acctpolicy_id from t_org_acct_sys_entry where  f_acctsystem_id=#{acctsystemId} and f_acct_orgid=#{orgId}
+    </select>
+
+
+    <select id="queryCalendarInfo" resultType="com.skeqi.finance.pojo.vo.book.BookPolicyVo">
+        SELECT
+            ap.f_acctpolicy_id as policy_id,
+            ap.f_number as policy_number,
+            ap.f_name as policy_name,
+            ac.f_id as calendar_id,
+            ac.f_name as calendar_name,
+            ac.f_number as calendar_number,
+            c.f_number as currency_code,
+            c.f_name as currency_name,
+            c.f_currency_id,
+            rt.f_rate_type_id,
+            rt.f_name as rate_name,
+            rt.f_number as rate_number
+        FROM
+            (SELECT f_acctpolicy_id,f_acctcalendar_id,f_number,f_name,f_currency_id,f_ratetype_id from t_fa_acct_policy WHERE f_acctpolicy_id=#{acctpolicyId}) ap
+            LEFT JOIN t_bd_account_calendar ac ON ac.f_id = ap.f_acctcalendar_id
+            LEFT JOIN t_bd_currency c ON c.f_currency_id = ap.f_currency_id
+            LEFT JOIN t_bd_rate_type rt ON rt.f_rate_type_id=ap.f_ratetype_id
+
+    </select>
+
+    <select id="queryByPage" parameterType="com.skeqi.finance.pojo.bo.basicinformation.book.TBdAccountBookQueryBo" resultType="com.skeqi.finance.pojo.vo.book.TBdAccountBookVo">
+        SELECT
+            ab.*,
+            s.f_name as sys_name ,
+            s.f_number as sys_number,
+            so.`name` as org_name,
+            so.org_code as org_code,
+            a.f_name as acct_tab_name,
+            ap.f_name as policy_name,
+            c.f_name as currency_name,
+            c.f_number as currency_number,
+            vg.f_voucher_words ,
+            rt.f_name as rate_name,
+             rt.f_number as rate_number
+        FROM
+            t_bd_account_book ab
+            LEFT JOIN t_org_account_system s ON s.f_id = ab.f_acctsystem_id
+            LEFT JOIN sys_organization so ON so.id = ab.f_account_orgid
+            LEFT JOIN t_bd_account_table a ON a.f_id = ab.f_accttable_id
+            LEFT JOIN t_fa_acct_policy ap ON ap.f_acctpolicy_id=ab.f_acct_policyid
+            LEFT JOIN t_bd_currency c on c.f_currency_id=ab.f_currency_id
+            LEFT JOIN t_bd_voucher_group vg ON vg.f_vchgroup_id=ab.f_default_voucher_type
+            LEFT JOIN t_bd_rate_type rt ON rt.f_rate_type_id=ab.f_rate_type_id
+        <where>
+            <if test="bo.fDocumentStatus!=null and bo.fDocumentStatus!=''">
+                ab.f_document_status=#{bo.fDocumentStatus}
+            </if>
+            <if test="bo.fNumber!=null and bo.fNumber!=''">
+                 ab.f_number=#{bo.fNumber}
+            </if>
+            <if test="bo.sysNumber!=null and bo.sysNumber!=''">
+                s.f_number=#{bo.sysNumber}
+            </if>
+            <if test="bo.fBookName!=null and bo.fBookName!=''">
+                ab.f_name=#{bo.fBookName}
+            </if>
+            <if test="bo.sysName!=null and bo.sysName!=''">
+                s.f_name=#{bo.sysName}
+            </if>
+            <if test="bo.orgName!=null and bo.orgName!=''">
+                so.`name`=#{bo.orgName}
+            </if>
+            <if test="bo.orgCode!=null and bo.orgCode!=''">
+                so.org_code=#{bo.orgCode}
+            </if>
+            <if test="bo.acctTabName!=null and bo.acctTabName!=''">
+                a.f_name=#{bo.acctTabName}
+            </if>
+            <if test="bo.fAcctsystemId!=null ">
+                ab.f_acctsystem_id=#{bo.fAcctsystemId}
+            </if>
+            <if test="bo.fBookType!=null ">
+                ab.f_book_type=#{bo.fBookType}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryOne"  resultType="com.skeqi.finance.pojo.vo.book.TBdAccountBookVo">
+        SELECT
+        ab.*,
+        so1.`name` as corg_name,
+        so1.org_code as corg_code,
+        s.f_name as sys_name ,
+        s.f_number as sys_number,
+        so.`name` as org_name,
+        so.org_code as org_code,
+        a.f_name as acct_tab_name,
+        a.f_number as acct_tab_number,
+        ap.f_name as policy_name,
+        c.f_name as currency_name,
+        vg.f_voucher_words ,
+        rt.f_name as rate_name
+        FROM
+        (select * from t_bd_account_book where f_book_id=#{id}) ab
+        LEFT JOIN t_org_account_system s ON s.f_id = ab.f_acctsystem_id
+        LEFT JOIN sys_organization so ON so.id = ab.f_account_orgid
+        LEFT JOIN t_bd_account_table a ON a.f_id = ab.f_accttable_id
+        LEFT JOIN t_fa_acct_policy ap ON ap.f_acctpolicy_id=ab.f_acct_policyid
+        LEFT JOIN t_bd_currency c on c.f_currency_id=ab.f_currency_id
+        LEFT JOIN t_bd_voucher_group vg ON vg.f_vchgroup_id=ab.f_default_voucher_type
+        LEFT JOIN t_bd_rate_type rt ON rt.f_rate_type_id=ab.f_rate_type_id
+        LEFT JOIN sys_organization so1 ON so1.id = ab.f_create_orgid
+    </select>
+
+    <select id="countMainBook" resultType="java.lang.Integer">
+        select count(*) from t_bd_account_book
+        where  f_acctsystem_id=#{acctsystemId} and f_acct_orgid=#{orgId} f_book_type='1'
+    </select>
+</mapper>

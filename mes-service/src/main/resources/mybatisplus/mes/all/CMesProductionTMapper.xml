@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.all.CMesProductionTDAO">
+	<!-- 查询全部 -->
+	<select id="findAllProduction" resultType="CMesProductionT">
+			SELECT p.*,l.LABEL_NAME as productionPrintName from c_mes_production_t p left join c_mes_label_manager_t l on p.PRODUCTION_PRINT_ID=l.id
+			<where>
+				<if test="materialCode != null and materialCode != ''">
+					and p.MATERIAL_CODE = #{materialCode,jdbcType=VARCHAR}
+				</if>
+			</where>
+	</select>
+	<!-- 按物料编码查询产品 -->
+	<select id="findProductionByCode" resultType="CMesProductionT">
+		SELECT
+		production.*
+		FROM
+		C_MES_PRODUCTION_T production
+		<where>
+			<if test="materialCode != null and materialCode != ''">
+				production.MATERIAL_CODE = #{materialCode,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+		<!-- 产品列表 -->
+	<select id="findAllProductionL" resultType="CMesProductionT">
+				SELECT
+					production.*
+				FROM
+					C_MES_PRODUCTION_T production
+		</select>
+	<!-- 查询name是否重复 -->
+	<select id="findProductionByName" resultType="CMesProductionT">
+		select * from C_MES_PRODUCTION_T where
+				PRODUCTION_NAME = #{name}
+
+	</select>
+		<select id="findProductionByNameL" resultType="CMesProductionT">
+		select * from C_MES_PRODUCTION_T where
+		<if test="name!=null and name!=''">
+				PRODUCTION_NAME = #{name}
+		</if>
+		<if  test="id !=null ">
+		and ID !=#{id}
+		</if>
+	</select>
+
+	<select id="findProductionByNameAndId" resultType="CMesProductionT">
+		select ID id,PRODUCTION_NAME productionName from C_MES_PRODUCTION_T
+		where 1=1
+		<if test="name!=null and name!=''">
+		and	PRODUCTION_NAME = #{name}
+		</if>
+		<if  test="id !=null and id!=0 ">
+		and ID=#{id}
+		</if>
+	</select>
+	<!-- 根据id查询 -->
+	<select id="findProductionByid" resultType="CMesProductionT">
+		select * from C_MES_PRODUCTION_T where id=#{id}
+	</select>
+		<!-- 根据id查询 -->
+	<select id="findProductionByidL" resultType="CMesProductionT">
+		select * from C_MES_PRODUCTION_T
+		<where>
+			<if test="productionType != null and productionType != ''">
+				 PRODUCTION_TYPE = #{productionType,jdbcType=VARCHAR}
+			</if>
+			<if test="id != null and id>0">
+				and id = #{id,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	<!-- 添加 -->
+	<insert id="addProduction">
+			INSERT INTO
+		C_MES_PRODUCTION_T(PRODUCTION_NAME,PRODUCTION_TYPE,PRODUCTION_TRADEMARK,PRODUCTION_SERIES,PRODUCTION_VR,
+		PRODUCTION_DISCRIPTION,STATION_NAME,PRODUCTION_ET,PRODUCTION_GT,PRODUCTION_STE,PRODUCTION_PRINT_ID,PRODUCTION_SYSTEM_ID,PRODUCTION_GROUP_ID,PATH,code_digit)
+		VALUES
+		(#{productionName},#{productionType},#{productionTrademark,jdbcType=VARCHAR},
+		#{productionSeries,jdbcType=VARCHAR},#{productionVr,jdbcType=VARCHAR},#{productionDiscription,jdbcType=VARCHAR},
+		#{stationName,jdbcType=VARCHAR},#{productionEt,jdbcType=VARCHAR},
+		#{productionGt,jdbcType=VARCHAR},
+		#{productionSte,jdbcType=VARCHAR},#{productionPrintId},#{productionSystemId},#{productionGroupId},#{path,jdbcType=VARCHAR},
+		#{codeDigit})
+	</insert>
+		<!-- 添加 -->
+	<insert id="addProductionL">
+
+	INSERT into C_MES_PRODUCTION_T
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="productionName != null and productionName != ''">
+				PRODUCTION_NAME,
+			</if>
+			<if test="productionType != null and productionType != ''">
+				PRODUCTION_TYPE,
+			</if>
+			<if test="productionSn != null and productionSn != ''">
+				PRODUCTION_SN,
+			</if>
+			<if test="materialCode != null and materialCode != ''">
+				MATERIAL_CODE,
+			</if>
+			<if test="productionTrademark != null and productionTrademark != ''">
+				PRODUCTION_TRADEMARK,
+			</if>
+			<if test="productionVr != null and productionVr != ''">
+				PRODUCTION_VR,
+			</if>
+			<if test="productionSte != null and productionSte != ''">
+				PRODUCTION_STE,
+			</if>
+			<if test="productionDiscription != null and productionDiscription != ''">
+				PRODUCTION_DISCRIPTION,
+			</if>
+			<if test="path != null and path != ''">
+				PATH
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="productionName != null and productionName != ''">
+				#{productionName},
+			</if>
+			<if test="productionType != null and productionType != ''">
+				#{productionType},
+			</if>
+			<if test="productionSn != null and productionSn != ''">
+				#{productionSn,jdbcType=VARCHAR},
+			</if>
+			<if test="materialCode != null and materialCode != ''">
+				#{materialCode,jdbcType=VARCHAR},
+			</if>
+			<if test="productionTrademark != null and productionTrademark != ''">
+				#{productionTrademark},
+			</if>
+			<if test="productionVr != null and productionVr != ''">
+				#{productionVr,jdbcType=VARCHAR},
+			</if>
+			<if test="productionSte != null and productionSte != ''">
+				#{productionSte,jdbcType=VARCHAR},
+			</if>
+			<if test="productionDiscription != null and productionDiscription != ''">
+				#{productionDiscription},
+			</if>
+			<if test="path != null and path != ''">
+				#{path}
+			</if>
+		</trim>
+	</insert>
+
+
+
+
+
+	<!-- 修改 -->
+	<update id="updateProduction">
+	UPDATE
+		C_MES_PRODUCTION_T
+		<set>
+			<if test="productionName != null and productionName != ''">
+				PRODUCTION_NAME = #{productionName,jdbcType=VARCHAR},
+			</if>
+			<if test="productionType != null and productionType != ''">
+				PRODUCTION_TYPE = #{productionType,jdbcType=VARCHAR},
+			</if>
+			<if test="productionSn != null and productionSn != ''">
+				PRODUCTION_SN = #{productionSn,jdbcType=VARCHAR},
+			</if>
+			<if test="materialCode != null and materialCode != ''">
+				MATERIAL_CODE = #{materialCode,jdbcType=VARCHAR},
+			</if>
+
+				PRODUCTION_TRADEMARK = #{productionTrademark,jdbcType=VARCHAR},
+
+				PRODUCTION_VR = #{productionVr,jdbcType=VARCHAR},
+
+				PRODUCTION_STE = #{productionSte,jdbcType=VARCHAR},
+
+				PRODUCTION_DISCRIPTION = #{productionDiscription,jdbcType=VARCHAR},
+
+				PATH = #{path,jdbcType=VARCHAR}
+		</set>
+		<where>
+			<if test="id!=null ">
+				ID = #{id,jdbcType=INTEGER}
+			</if>
+		</where>
+	</update>
+
+	<!-- 删除 -->
+	<delete id="delProduction">
+		delete from C_MES_PRODUCTION_T where id=#{id}
+	</delete>
+
+
+	<!-- 查询所有lable -->
+	<select id="findAllLable" resultType="CMesLabelManagerT">
+		SELECT labelManager.*,line.NAME AS lineName ,labelType.NAME AS
+		labelTypeName
+		FROM C_MES_LABEL_MANAGER_T
+		labelManager,C_MES_LINE_T line,C_MES_LABEL_TYPE
+		labelType
+		WHERE labelManager.LINE_ID = line.ID AND
+		labelManager.LABEL_TYPE_ID=labelType.ID
+		<if test="id!=null">
+			AND labelManager.ID=#{id}
+		</if>
+		<if test="labelNumber!=null or labelName!=null">
+			AND (labelManager.LABEL_NUMBER = #{labelNumber} OR
+			labelManager.LABEL_NAME = #{labelName})
+		</if>
+		ORDER BY labelManager.LABEL_NUMBER
+	</select>
+		<!-- 查询所有lable -->
+	<select id="findAllLableL" resultType="CMesLabelManagerT">
+		SELECT labelManager.*,line.NAME AS lineName ,labelType.NAME AS
+		labelTypeName
+		FROM C_MES_LABEL_MANAGER_T
+		labelManager,C_MES_LINE_T line,C_MES_LABEL_TYPE
+		labelType
+		WHERE labelManager.LINE_ID = line.ID AND
+		labelManager.LABEL_TYPE_ID=labelType.ID
+		<if test="id!=null">
+			AND labelManager.ID=#{id}
+		</if>
+		<if test="labelNumber!=null or labelName!=null">
+			AND (labelManager.LABEL_NUMBER = #{labelNumber} OR
+			labelManager.LABEL_NAME = #{labelName})
+		</if>
+		ORDER BY labelManager.LABEL_NUMBER
+	</select>
+</mapper>

@@ -1,0 +1,1165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.chenj.srm.CSrmEnquiryInvitationForBidsTHMapper">
+    <resultMap id="BaseResultMap" type="com.skeqi.mes.pojo.chenj.srm.CSrmEnquiryInvitationForBidsTH">
+        <!--@mbg.generated-->
+        <!--@Table c_srm_enquiry_invitation_for_bids_t_h-->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="rfq_or_tender_form_code" jdbcType="VARCHAR" property="rfqOrTenderFormCode"/>
+        <result column="title" jdbcType="VARCHAR" property="title"/>
+        <result column="template_number" jdbcType="VARCHAR" property="templateNumber"/>
+        <result column="status" jdbcType="VARCHAR" property="status"/>
+        <result column="sourcing_type" jdbcType="VARCHAR" property="sourcingType"/>
+        <result column="way_of_quoting" jdbcType="VARCHAR" property="wayOfQuoting"/>
+        <result column="way_to_find_the_source" jdbcType="VARCHAR" property="wayToFindTheSource"/>
+        <result column="currency" jdbcType="VARCHAR" property="currency"/>
+        <result column="quotation_start_time" jdbcType="TIMESTAMP" property="quotationStartTime"/>
+        <result column="quotation_stop_time" jdbcType="TIMESTAMP" property="quotationStopTime"/>
+        <result column="bid_opening_place" jdbcType="VARCHAR" property="bidOpeningPlace"/>
+        <result column="bid_opening_time" jdbcType="TIMESTAMP" property="bidOpeningTime"/>
+        <result column="principal" jdbcType="VARCHAR" property="principal"/>
+        <result column="creator" jdbcType="VARCHAR" property="creator"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="template_id" jdbcType="INTEGER" property="templateId"/>
+        <result column="company_code" jdbcType="VARCHAR" property="companyCode"/>
+        <result column="supplier_code" jdbcType="VARCHAR" property="supplierCode"/>
+        <result column="update_explain" jdbcType="VARCHAR" property="updateExplain"/>
+        <result column="is_delete" jdbcType="BIT" property="isDelete"/>
+        <result column="purchasing_organization" jdbcType="VARCHAR" property="purchasingOrganization"/>
+        <result column="clarification_deadline" jdbcType="TIMESTAMP" property="clarificationDeadline"/>
+        <result column="buyer" jdbcType="VARCHAR" property="buyer"/>
+        <result column="the_bid_opening_people" jdbcType="VARCHAR" property="theBidOpeningPeople"/>
+        <result column="selection_of_people" jdbcType="VARCHAR" property="selectionOfPeople"/>
+        <result column="bidding_technical_documents" jdbcType="VARCHAR" property="biddingTechnicalDocuments"/>
+        <result column="bidding_business_documents" jdbcType="VARCHAR" property="biddingBusinessDocuments"/>
+        <result column="budget" jdbcType="VARCHAR" property="budget"/>
+        <result column="item_number" jdbcType="VARCHAR" property="itemNumber"/>
+        <result column="item_name" jdbcType="VARCHAR" property="itemName"/>
+        <result column="item_address" jdbcType="VARCHAR" property="itemAddress"/>
+        <result column="exchange_rate" jdbcType="VARCHAR" property="exchangeRate"/>
+        <result column="payment_method" jdbcType="VARCHAR" property="paymentMethod"/>
+        <result column="terms_of_payment" jdbcType="VARCHAR" property="termsOfPayment"/>
+        <result column="purchasing_contact" jdbcType="VARCHAR" property="purchasingContact"/>
+        <result column="telephone" jdbcType="VARCHAR" property="telephone"/>
+        <result column="contact_email" jdbcType="VARCHAR" property="contactEmail"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        id, rfq_or_tender_form_code, title, template_number, `status`, sourcing_type, way_of_quoting,
+        way_to_find_the_source, currency, quotation_start_time, quotation_stop_time, bid_opening_place,
+        bid_opening_time, principal, creator, create_time, update_time, template_id, company_code,
+        supplier_code, update_explain, is_delete, purchasing_organization, clarification_deadline,
+        buyer, the_bid_opening_people, selection_of_people, bidding_technical_documents,
+        bidding_business_documents, budget, item_number, item_name, item_address, exchange_rate,
+        payment_method, terms_of_payment, purchasing_contact, telephone, contact_email
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmEnquiryInvitationForBidsTH"
+            resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        select
+        <include refid="Base_Column_List"/>
+        from c_srm_enquiry_invitation_for_bids_t_h
+        <where>
+            <if test="rfqOrTenderFormCode != null and rfqOrTenderFormCode != ''">
+                rfq_or_tender_form_code=#{rfqOrTenderFormCode,jdbcType=VARCHAR}
+            </if>
+            <if test="id != null">
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+        </where>
+        order by create_time desc
+
+    </select>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id"
+            parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmEnquiryInvitationForBidsTH" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_enquiry_invitation_for_bids_t_h
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="rfqOrTenderFormCode != null">
+                rfq_or_tender_form_code,
+            </if>
+            <if test="title != null">
+                title,
+            </if>
+            <if test="templateNumber != null">
+                template_number,
+            </if>
+            <if test="status != null">
+                `status`,
+            </if>
+            <if test="sourcingType != null">
+                sourcing_type,
+            </if>
+            <if test="wayOfQuoting != null">
+                way_of_quoting,
+            </if>
+            <if test="wayToFindTheSource != null">
+                way_to_find_the_source,
+            </if>
+            <if test="currency != null">
+                currency,
+            </if>
+            <if test="quotationStartTime != null">
+                quotation_start_time,
+            </if>
+            <if test="quotationStopTime != null">
+                quotation_stop_time,
+            </if>
+            <if test="bidOpeningPlace != null">
+                bid_opening_place,
+            </if>
+            <if test="bidOpeningTime != null">
+                bid_opening_time,
+            </if>
+            <if test="principal != null">
+                principal,
+            </if>
+            <if test="creator != null">
+                creator,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="templateId != null">
+                template_id,
+            </if>
+            <if test="companyCode != null">
+                company_code,
+            </if>
+            <if test="supplierCode != null">
+                supplier_code,
+            </if>
+            <if test="updateExplain != null">
+                update_explain,
+            </if>
+            <if test="isDelete != null">
+                is_delete,
+            </if>
+            <if test="purchasingOrganization != null">
+                purchasing_organization,
+            </if>
+            <if test="clarificationDeadline != null">
+                clarification_deadline,
+            </if>
+            <if test="buyer != null">
+                buyer,
+            </if>
+            <if test="theBidOpeningPeople != null">
+                the_bid_opening_people,
+            </if>
+            <if test="selectionOfPeople != null">
+                selection_of_people,
+            </if>
+            <if test="biddingTechnicalDocuments != null">
+                bidding_technical_documents,
+            </if>
+            <if test="biddingBusinessDocuments != null">
+                bidding_business_documents,
+            </if>
+            <if test="budget != null">
+                budget,
+            </if>
+            <if test="itemNumber != null">
+                item_number,
+            </if>
+            <if test="itemName != null">
+                item_name,
+            </if>
+            <if test="itemAddress != null">
+                item_address,
+            </if>
+            <if test="exchangeRate != null">
+                exchange_rate,
+            </if>
+            <if test="paymentMethod != null">
+                payment_method,
+            </if>
+            <if test="termsOfPayment != null">
+                terms_of_payment,
+            </if>
+            <if test="purchasingContact != null">
+                purchasing_contact,
+            </if>
+            <if test="telephone != null">
+                telephone,
+            </if>
+            <if test="contactEmail != null">
+                contact_email,
+            </if>
+            <if test="examineNumber != null">
+                examine_number,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="rfqOrTenderFormCode != null">
+                #{rfqOrTenderFormCode,jdbcType=VARCHAR},
+            </if>
+            <if test="title != null">
+                #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="templateNumber != null">
+                #{templateNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="sourcingType != null">
+                #{sourcingType,jdbcType=VARCHAR},
+            </if>
+            <if test="wayOfQuoting != null">
+                #{wayOfQuoting,jdbcType=VARCHAR},
+            </if>
+            <if test="wayToFindTheSource != null">
+                #{wayToFindTheSource,jdbcType=VARCHAR},
+            </if>
+            <if test="currency != null">
+                #{currency,jdbcType=VARCHAR},
+            </if>
+            <if test="quotationStartTime != null">
+                #{quotationStartTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="quotationStopTime != null">
+                #{quotationStopTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="bidOpeningPlace != null">
+                #{bidOpeningPlace,jdbcType=VARCHAR},
+            </if>
+            <if test="bidOpeningTime != null">
+                #{bidOpeningTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="principal != null">
+                #{principal,jdbcType=VARCHAR},
+            </if>
+            <if test="creator != null">
+                #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="templateId != null">
+                #{templateId,jdbcType=INTEGER},
+            </if>
+            <if test="companyCode != null">
+                #{companyCode,jdbcType=VARCHAR},
+            </if>
+            <if test="supplierCode != null">
+                #{supplierCode,jdbcType=VARCHAR},
+            </if>
+            <if test="updateExplain != null">
+                #{updateExplain,jdbcType=VARCHAR},
+            </if>
+            <if test="isDelete != null">
+                #{isDelete,jdbcType=BIT},
+            </if>
+            <if test="purchasingOrganization != null">
+                #{purchasingOrganization,jdbcType=VARCHAR},
+            </if>
+            <if test="clarificationDeadline != null">
+                #{clarificationDeadline,jdbcType=TIMESTAMP},
+            </if>
+            <if test="buyer != null">
+                #{buyer,jdbcType=VARCHAR},
+            </if>
+            <if test="theBidOpeningPeople != null">
+                #{theBidOpeningPeople,jdbcType=VARCHAR},
+            </if>
+            <if test="selectionOfPeople != null">
+                #{selectionOfPeople,jdbcType=VARCHAR},
+            </if>
+            <if test="biddingTechnicalDocuments != null">
+                #{biddingTechnicalDocuments,jdbcType=VARCHAR},
+            </if>
+            <if test="biddingBusinessDocuments != null">
+                #{biddingBusinessDocuments,jdbcType=VARCHAR},
+            </if>
+            <if test="budget != null">
+                #{budget,jdbcType=VARCHAR},
+            </if>
+            <if test="itemNumber != null">
+                #{itemNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="itemName != null">
+                #{itemName,jdbcType=VARCHAR},
+            </if>
+            <if test="itemAddress != null">
+                #{itemAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="exchangeRate != null">
+                #{exchangeRate,jdbcType=VARCHAR},
+            </if>
+            <if test="paymentMethod != null">
+                #{paymentMethod,jdbcType=VARCHAR},
+            </if>
+            <if test="termsOfPayment != null">
+                #{termsOfPayment,jdbcType=VARCHAR},
+            </if>
+            <if test="purchasingContact != null">
+                #{purchasingContact,jdbcType=VARCHAR},
+            </if>
+            <if test="telephone != null">
+                #{telephone,jdbcType=VARCHAR},
+            </if>
+            <if test="contactEmail != null">
+                #{contactEmail,jdbcType=VARCHAR},
+            </if>
+            <if test="examineNumber != null">
+                #{examineNumber,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmEnquiryInvitationForBidsTH">
+        <!--@mbg.generated-->
+        update c_srm_enquiry_invitation_for_bids_t_h
+        <set>
+            <if test="title != null">
+                title = #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="templateNumber != null">
+                template_number = #{templateNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                `status` = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="sourcingType != null">
+                sourcing_type = #{sourcingType,jdbcType=VARCHAR},
+            </if>
+            <if test="wayOfQuoting != null">
+                way_of_quoting = #{wayOfQuoting,jdbcType=VARCHAR},
+            </if>
+            <if test="wayToFindTheSource != null">
+                way_to_find_the_source = #{wayToFindTheSource,jdbcType=VARCHAR},
+            </if>
+            <if test="currency != null">
+                currency = #{currency,jdbcType=VARCHAR},
+            </if>
+            <if test="quotationStartTime != null">
+                quotation_start_time = #{quotationStartTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="quotationStopTime != null">
+                quotation_stop_time = #{quotationStopTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="bidOpeningPlace != null">
+                bid_opening_place = #{bidOpeningPlace,jdbcType=VARCHAR},
+            </if>
+            <if test="bidOpeningTime != null">
+                bid_opening_time = #{bidOpeningTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="principal != null">
+                principal = #{principal,jdbcType=VARCHAR},
+            </if>
+            <if test="creator != null">
+                creator = #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="templateId != null">
+                template_id = #{templateId,jdbcType=INTEGER},
+            </if>
+            <if test="companyCode != null">
+                company_code = #{companyCode,jdbcType=VARCHAR},
+            </if>
+            <if test="supplierCode != null">
+                supplier_code = #{supplierCode,jdbcType=VARCHAR},
+            </if>
+            <if test="updateExplain != null">
+                update_explain = #{updateExplain,jdbcType=VARCHAR},
+            </if>
+            <if test="isDelete != null">
+                is_delete = #{isDelete,jdbcType=BIT},
+            </if>
+            <if test="purchasingOrganization != null">
+                purchasing_organization = #{purchasingOrganization,jdbcType=VARCHAR},
+            </if>
+            <if test="clarificationDeadline != null">
+                clarification_deadline = #{clarificationDeadline,jdbcType=TIMESTAMP},
+            </if>
+            <if test="buyer != null">
+                buyer = #{buyer,jdbcType=VARCHAR},
+            </if>
+            <if test="theBidOpeningPeople != null">
+                the_bid_opening_people = #{theBidOpeningPeople,jdbcType=VARCHAR},
+            </if>
+            <if test="selectionOfPeople != null">
+                selection_of_people = #{selectionOfPeople,jdbcType=VARCHAR},
+            </if>
+            <if test="biddingTechnicalDocuments != null">
+                bidding_technical_documents = #{biddingTechnicalDocuments,jdbcType=VARCHAR},
+            </if>
+            <if test="biddingBusinessDocuments != null">
+                bidding_business_documents = #{biddingBusinessDocuments,jdbcType=VARCHAR},
+            </if>
+            <if test="budget != null">
+                budget = #{budget,jdbcType=VARCHAR},
+            </if>
+            <if test="itemNumber != null">
+                item_number = #{itemNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="itemName != null">
+                item_name = #{itemName,jdbcType=VARCHAR},
+            </if>
+            <if test="itemAddress != null">
+                item_address = #{itemAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="exchangeRate != null">
+                exchange_rate = #{exchangeRate,jdbcType=VARCHAR},
+            </if>
+            <if test="paymentMethod != null">
+                payment_method = #{paymentMethod,jdbcType=VARCHAR},
+            </if>
+            <if test="termsOfPayment != null">
+                terms_of_payment = #{termsOfPayment,jdbcType=VARCHAR},
+            </if>
+            <if test="purchasingContact != null">
+                purchasing_contact = #{purchasingContact,jdbcType=VARCHAR},
+            </if>
+            <if test="telephone != null">
+                telephone = #{telephone,jdbcType=VARCHAR},
+            </if>
+            <if test="contactEmail != null">
+                contact_email = #{contactEmail,jdbcType=VARCHAR},
+            </if>
+            <if test="examineNumber != null">
+                examine_number = #{examineNumber,jdbcType=VARCHAR},
+            </if>
+        </set>
+        <where>
+            <if test="rfqOrTenderFormCode != null and rfqOrTenderFormCode != ''">
+                rfq_or_tender_form_code=#{rfqOrTenderFormCode,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </update>
+    <update id="updateBatchSelective" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update c_srm_enquiry_invitation_for_bids_t_h
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="rfq_or_tender_form_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.rfqOrTenderFormCode != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.rfqOrTenderFormCode,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="title = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.title != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.title,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="template_number = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.templateNumber != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.templateNumber,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="`status` = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.status != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.status,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="sourcing_type = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.sourcingType != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.sourcingType,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="way_of_quoting = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.wayOfQuoting != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.wayOfQuoting,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="way_to_find_the_source = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.wayToFindTheSource != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.wayToFindTheSource,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="company_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.companyCode != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.companyCode,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="currency = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.currency != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.currency,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="quotation_start_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.quotationStartTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.quotationStartTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="quotation_stop_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.quotationStopTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.quotationStopTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="bid_opening_place = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.bidOpeningPlace != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.bidOpeningPlace,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="bid_opening_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.bidOpeningTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.bidOpeningTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="principal = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.principal != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.principal,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="creator = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.creator != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.creator,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.createTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.createTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.updateTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.updateTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_enquiry_invitation_for_bids_t_h
+        (rfq_or_tender_form_code, title, template_number, `status`, sourcing_type, way_of_quoting,
+        way_to_find_the_source, company_code, currency, quotation_start_time, quotation_stop_time,
+        bid_opening_place, bid_opening_time, principal, creator, create_time, update_time
+        )
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.rfqOrTenderFormCode,jdbcType=VARCHAR}, #{item.title,jdbcType=VARCHAR},
+            #{item.templateNumber,jdbcType=VARCHAR},
+            #{item.status,jdbcType=VARCHAR}, #{item.sourcingType,jdbcType=VARCHAR},
+            #{item.wayOfQuoting,jdbcType=VARCHAR},
+            #{item.wayToFindTheSource,jdbcType=VARCHAR}, #{item.companyCode,jdbcType=VARCHAR},
+            #{item.currency,jdbcType=VARCHAR}, #{item.quotationStartTime,jdbcType=TIMESTAMP},
+            #{item.quotationStopTime,jdbcType=TIMESTAMP}, #{item.bidOpeningPlace,jdbcType=VARCHAR},
+            #{item.bidOpeningTime,jdbcType=TIMESTAMP}, #{item.principal,jdbcType=VARCHAR},
+            #{item.creator,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP},
+            #{item.updateTime,jdbcType=TIMESTAMP}
+            )
+        </foreach>
+    </insert>
+    <insert id="insertOrUpdateSelective"
+            parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmEnquiryInvitationForBidsTH">
+        <!--@mbg.generated-->
+        insert into c_srm_enquiry_invitation_for_bids_t_h
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="rfqOrTenderFormCode != null">
+                rfq_or_tender_form_code,
+            </if>
+            <if test="title != null">
+                title,
+            </if>
+            <if test="templateNumber != null">
+                template_number,
+            </if>
+            <if test="status != null">
+                `status`,
+            </if>
+            <if test="sourcingType != null">
+                sourcing_type,
+            </if>
+            <if test="wayOfQuoting != null">
+                way_of_quoting,
+            </if>
+            <if test="wayToFindTheSource != null">
+                way_to_find_the_source,
+            </if>
+            <if test="currency != null">
+                currency,
+            </if>
+            <if test="quotationStartTime != null">
+                quotation_start_time,
+            </if>
+            <if test="quotationStopTime != null">
+                quotation_stop_time,
+            </if>
+            <if test="bidOpeningPlace != null">
+                bid_opening_place,
+            </if>
+            <if test="bidOpeningTime != null">
+                bid_opening_time,
+            </if>
+            <if test="principal != null">
+                principal,
+            </if>
+            <if test="creator != null">
+                creator,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="templateId != null">
+                template_id,
+            </if>
+            <if test="companyCode != null">
+                company_code,
+            </if>
+            <if test="supplierCode != null">
+                supplier_code,
+            </if>
+            <if test="updateExplain != null">
+                update_explain,
+            </if>
+            <if test="isDelete != null">
+                is_delete,
+            </if>
+            <if test="purchasingOrganization != null">
+                purchasing_organization,
+            </if>
+            <if test="clarificationDeadline != null">
+                clarification_deadline,
+            </if>
+            <if test="buyer != null">
+                buyer,
+            </if>
+            <if test="theBidOpeningPeople != null">
+                the_bid_opening_people,
+            </if>
+            <if test="selectionOfPeople != null">
+                selection_of_people,
+            </if>
+            <if test="biddingTechnicalDocuments != null">
+                bidding_technical_documents,
+            </if>
+            <if test="biddingBusinessDocuments != null">
+                bidding_business_documents,
+            </if>
+            <if test="budget != null">
+                budget,
+            </if>
+            <if test="itemNumber != null">
+                item_number,
+            </if>
+            <if test="itemName != null">
+                item_name,
+            </if>
+            <if test="itemAddress != null">
+                item_address,
+            </if>
+            <if test="exchangeRate != null">
+                exchange_rate,
+            </if>
+            <if test="paymentMethod != null">
+                payment_method,
+            </if>
+            <if test="termsOfPayment != null">
+                terms_of_payment,
+            </if>
+            <if test="purchasingContact != null">
+                purchasing_contact,
+            </if>
+            <if test="telephone != null">
+                telephone,
+            </if>
+            <if test="contactEmail != null">
+                contact_email,
+            </if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="rfqOrTenderFormCode != null">
+                #{rfqOrTenderFormCode,jdbcType=VARCHAR},
+            </if>
+            <if test="title != null">
+                #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="templateNumber != null">
+                #{templateNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="sourcingType != null">
+                #{sourcingType,jdbcType=VARCHAR},
+            </if>
+            <if test="wayOfQuoting != null">
+                #{wayOfQuoting,jdbcType=VARCHAR},
+            </if>
+            <if test="wayToFindTheSource != null">
+                #{wayToFindTheSource,jdbcType=VARCHAR},
+            </if>
+            <if test="currency != null">
+                #{currency,jdbcType=VARCHAR},
+            </if>
+            <if test="quotationStartTime != null">
+                #{quotationStartTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="quotationStopTime != null">
+                #{quotationStopTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="bidOpeningPlace != null">
+                #{bidOpeningPlace,jdbcType=VARCHAR},
+            </if>
+            <if test="bidOpeningTime != null">
+                #{bidOpeningTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="principal != null">
+                #{principal,jdbcType=VARCHAR},
+            </if>
+            <if test="creator != null">
+                #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="templateId != null">
+                #{templateId,jdbcType=INTEGER},
+            </if>
+            <if test="companyCode != null">
+                #{companyCode,jdbcType=VARCHAR},
+            </if>
+            <if test="supplierCode != null">
+                #{supplierCode,jdbcType=VARCHAR},
+            </if>
+            <if test="updateExplain != null">
+                #{updateExplain,jdbcType=VARCHAR},
+            </if>
+            <if test="isDelete != null">
+                #{isDelete,jdbcType=BIT},
+            </if>
+            <if test="purchasingOrganization != null">
+                #{purchasingOrganization,jdbcType=VARCHAR},
+            </if>
+            <if test="clarificationDeadline != null">
+                #{clarificationDeadline,jdbcType=TIMESTAMP},
+            </if>
+            <if test="buyer != null">
+                #{buyer,jdbcType=VARCHAR},
+            </if>
+            <if test="theBidOpeningPeople != null">
+                #{theBidOpeningPeople,jdbcType=VARCHAR},
+            </if>
+            <if test="selectionOfPeople != null">
+                #{selectionOfPeople,jdbcType=VARCHAR},
+            </if>
+            <if test="biddingTechnicalDocuments != null">
+                #{biddingTechnicalDocuments,jdbcType=VARCHAR},
+            </if>
+            <if test="biddingBusinessDocuments != null">
+                #{biddingBusinessDocuments,jdbcType=VARCHAR},
+            </if>
+            <if test="budget != null">
+                #{budget,jdbcType=VARCHAR},
+            </if>
+            <if test="itemNumber != null">
+                #{itemNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="itemName != null">
+                #{itemName,jdbcType=VARCHAR},
+            </if>
+            <if test="itemAddress != null">
+                #{itemAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="exchangeRate != null">
+                #{exchangeRate,jdbcType=VARCHAR},
+            </if>
+            <if test="paymentMethod != null">
+                #{paymentMethod,jdbcType=VARCHAR},
+            </if>
+            <if test="termsOfPayment != null">
+                #{termsOfPayment,jdbcType=VARCHAR},
+            </if>
+            <if test="purchasingContact != null">
+                #{purchasingContact,jdbcType=VARCHAR},
+            </if>
+            <if test="telephone != null">
+                #{telephone,jdbcType=VARCHAR},
+            </if>
+            <if test="contactEmail != null">
+                #{contactEmail,jdbcType=VARCHAR},
+            </if>
+        </trim>
+        on duplicate key update
+        <trim suffixOverrides=",">
+            <if test="id != null">
+                id = #{id,jdbcType=INTEGER},
+            </if>
+            <if test="rfqOrTenderFormCode != null">
+                rfq_or_tender_form_code = #{rfqOrTenderFormCode,jdbcType=VARCHAR},
+            </if>
+            <if test="title != null">
+                title = #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="templateNumber != null">
+                template_number = #{templateNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                `status` = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="sourcingType != null">
+                sourcing_type = #{sourcingType,jdbcType=VARCHAR},
+            </if>
+            <if test="wayOfQuoting != null">
+                way_of_quoting = #{wayOfQuoting,jdbcType=VARCHAR},
+            </if>
+            <if test="wayToFindTheSource != null">
+                way_to_find_the_source = #{wayToFindTheSource,jdbcType=VARCHAR},
+            </if>
+            <if test="currency != null">
+                currency = #{currency,jdbcType=VARCHAR},
+            </if>
+            <if test="quotationStartTime != null">
+                quotation_start_time = #{quotationStartTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="quotationStopTime != null">
+                quotation_stop_time = #{quotationStopTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="bidOpeningPlace != null">
+                bid_opening_place = #{bidOpeningPlace,jdbcType=VARCHAR},
+            </if>
+            <if test="bidOpeningTime != null">
+                bid_opening_time = #{bidOpeningTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="principal != null">
+                principal = #{principal,jdbcType=VARCHAR},
+            </if>
+            <if test="creator != null">
+                creator = #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="templateId != null">
+                template_id = #{templateId,jdbcType=INTEGER},
+            </if>
+            <if test="companyCode != null">
+                company_code = #{companyCode,jdbcType=VARCHAR},
+            </if>
+            <if test="supplierCode != null">
+                supplier_code = #{supplierCode,jdbcType=VARCHAR},
+            </if>
+            <if test="updateExplain != null">
+                update_explain = #{updateExplain,jdbcType=VARCHAR},
+            </if>
+            <if test="isDelete != null">
+                is_delete = #{isDelete,jdbcType=BIT},
+            </if>
+            <if test="purchasingOrganization != null">
+                purchasing_organization = #{purchasingOrganization,jdbcType=VARCHAR},
+            </if>
+            <if test="clarificationDeadline != null">
+                clarification_deadline = #{clarificationDeadline,jdbcType=TIMESTAMP},
+            </if>
+            <if test="buyer != null">
+                buyer = #{buyer,jdbcType=VARCHAR},
+            </if>
+            <if test="theBidOpeningPeople != null">
+                the_bid_opening_people = #{theBidOpeningPeople,jdbcType=VARCHAR},
+            </if>
+            <if test="selectionOfPeople != null">
+                selection_of_people = #{selectionOfPeople,jdbcType=VARCHAR},
+            </if>
+            <if test="biddingTechnicalDocuments != null">
+                bidding_technical_documents = #{biddingTechnicalDocuments,jdbcType=VARCHAR},
+            </if>
+            <if test="biddingBusinessDocuments != null">
+                bidding_business_documents = #{biddingBusinessDocuments,jdbcType=VARCHAR},
+            </if>
+            <if test="budget != null">
+                budget = #{budget,jdbcType=VARCHAR},
+            </if>
+            <if test="itemNumber != null">
+                item_number = #{itemNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="itemName != null">
+                item_name = #{itemName,jdbcType=VARCHAR},
+            </if>
+            <if test="itemAddress != null">
+                item_address = #{itemAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="exchangeRate != null">
+                exchange_rate = #{exchangeRate,jdbcType=VARCHAR},
+            </if>
+            <if test="paymentMethod != null">
+                payment_method = #{paymentMethod,jdbcType=VARCHAR},
+            </if>
+            <if test="termsOfPayment != null">
+                terms_of_payment = #{termsOfPayment,jdbcType=VARCHAR},
+            </if>
+            <if test="purchasingContact != null">
+                purchasing_contact = #{purchasingContact,jdbcType=VARCHAR},
+            </if>
+            <if test="telephone != null">
+                telephone = #{telephone,jdbcType=VARCHAR},
+            </if>
+            <if test="contactEmail != null">
+                contact_email = #{contactEmail,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <!--获取最后一条数据-->
+    <select id="selectFinallyData" resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        SELECT
+        rfq_or_tender_form_code
+        FROM
+        c_srm_enquiry_invitation_for_bids_t_h
+        ORDER BY
+        id DESC
+        LIMIT 1
+    </select>
+    <select id="findForQuotationOrCallForBidsH"
+            resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CSrmEnquiryInvitationForBidsTHRsps">
+        select h.`status`,
+        h.rfq_or_tender_form_code,
+        h.title,
+        h.quotation_start_time,
+        h.quotation_stop_time,
+        s.name supplierName,
+        h.supplier_code supplierCode,
+        h.principal,
+        h.sourcing_type,
+        h.way_of_quoting,
+        h.way_to_find_the_source,
+        h.currency,
+        h.creator,
+        h.company_code,
+        t.companyName companyName
+        from c_srm_enquiry_invitation_for_bids_t_h h
+        left join c_srm_supplier s on h.supplier_code = s.supplier_code
+        join c_mes_company_t t on t.companyCode = h.company_code
+        <where>
+            <if test="rfqOrTenderFormCode != null and rfqOrTenderFormCode != ''">
+                h.rfq_or_tender_form_code like concat('%',#{rfqOrTenderFormCode,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="title != null and title != ''">
+                and h.title like concat('%',#{title,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="principal != null and principal != ''">
+                and h.principal like concat('%',#{principal,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="status != null and status != ''">
+                and h.status=#{status,jdbcType=VARCHAR}
+            </if>
+            <if test="sourcingType != null and sourcingType != ''">
+                and h.sourcing_type =#{sourcingType,jdbcType=VARCHAR}
+            </if>
+            <if test="supplierCode!=null and supplierCode.size() != 0 and supplierCode.get(0) != null ">
+                and h.supplier_code in
+                <foreach close=")" collection="supplierCode" item="item" open="(" separator=", ">
+                    #{item,jdbcType=INTEGER}
+                </foreach>
+            </if>
+            and h.is_delete=0
+        </where>
+        group by h.rfq_or_tender_form_code
+        order by h.create_time desc
+    </select>
+
+    <select id="findForQuotationOrCallForBidsHS"
+            resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CSrmEnquiryInvitationForBidsTHRsps">
+        select
+        h.`status`,h.rfq_or_tender_form_code, h.title,h.quotation_start_time, h.quotation_stop_time,
+        h.supplier_code,h.principal,
+        h.sourcing_type,
+        h.way_of_quoting,
+        h.way_to_find_the_source,
+        h.company_code,
+        css.name supplierName,
+        h.currency,
+        h.creator,
+        h.supplier_code supplierCode
+        from c_srm_enquiry_invitation_for_bids_t_h h
+        left join c_srm_enquiry_invitation_for_bids_t_r cseifbtr on h.rfq_or_tender_form_code =
+        cseifbtr.rfq_or_tender_form_code
+        right join c_srm_supplier css on h.supplier_code = css.supplier_code
+        join c_srm_purchase_demand_h cspdh on cseifbtr.purchase_request = cspdh.request_code
+        <where>
+            <if test="rfqOrTenderFormCode != null and rfqOrTenderFormCode != ''">
+                h.rfq_or_tender_form_code like concat('%',#{rfqOrTenderFormCode,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="title != null and title != ''">
+                and h.title like concat('%',#{title,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="wayToFindTheSource != null and wayToFindTheSource != ''">
+                and h.way_to_find_the_source=#{wayToFindTheSource,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null and status != ''">
+                and h.status=#{status,jdbcType=VARCHAR}
+            </if>
+            <if test="searchSourceConStatus != null and searchSourceConStatus != ''">
+                and h.status in
+                <foreach close=")" collection="searchSourceConStatus" item="item" open="(" separator=", ">
+                    #{item,jdbcType=INTEGER}
+                </foreach>
+            </if>
+            <if test="supplierCode != null and supplierCode != ''">
+                and h.supplier_code in
+                <foreach close=")" collection="supplierCode" item="item" open="(" separator=", ">
+                    #{item,jdbcType=VARCHAR}
+                </foreach>
+            </if>
+            <if test="materialCode != null and materialCode != ''">
+                and cseifbtr.material_code like concat('%',#{materialCode,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="principal != null and principal != ''">
+                and h.principal like concat('%',#{principal,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="name != null and name != ''">
+                and css.name like concat('%',#{name,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="buyer != null and buyer != ''">
+                and cspdh.buyer like concat('%',#{buyer,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="sourcingType != null and sourcingType != ''">
+                <!--寻源类型(1.询价2.招标)-->
+                and h.sourcing_type=#{sourcingType,jdbcType=VARCHAR}
+            </if>
+            and h.is_delete=0
+        </where>
+        group by h.rfq_or_tender_form_code
+        order by h.create_time desc
+    </select>
+
+    <select id="findUpdateCall" resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CSrmEnquiryInvitationForBidsTHUpdateRsp">
+        select
+        `status`, `quotation_start_time`,quotation_stop_time, bid_opening_place,bid_opening_time,update_explain
+        from c_srm_enquiry_invitation_for_bids_t_h
+        <where>
+            <if test="rfqOrTenderFormCode != null and rfqOrTenderFormCode != ''">
+                rfq_or_tender_form_code like concat('%',#{rfqOrTenderFormCode,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="status != null and status != ''">
+                and status=#{status,jdbcType=VARCHAR}
+            </if>
+            and is_delete=0
+        </where>
+        order by create_time desc
+
+    </select>
+    <select id="findBidOpening" resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CSrmEnquiryInvitationForBidsTHOpenBidRsp">
+        select
+        h.status,h.title,csc.company_name,h.creator,h.create_time,h.quotation_start_time,h.principal
+        from c_srm_enquiry_invitation_for_bids_t_h h left join c_srm_company csc on h.company_code = csc.company_code
+        <where>
+            <if test="rfqOrTenderFormCode != null and rfqOrTenderFormCode != ''">
+                h.rfq_or_tender_form_code=#{rfqOrTenderFormCode,jdbcType=VARCHAR}
+            </if>
+            <if test="title != null and title != ''">
+                and h.title=#{title,jdbcType=VARCHAR}
+            </if>
+            <if test="creator != null and creator != ''">
+                and h.creator=#{creator,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null and status != ''">
+                and h.status=#{status,jdbcType=VARCHAR}
+            </if>
+        </where>
+        order by create_time desc
+
+    </select>
+    <select id="expertRating" resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CSrmEnquiryInvitationForBidsTHScoreRsp">
+        select
+        h.status,h.rfq_or_tender_form_code,h.title,csc.company_name,h.sourcing_type,h.way_to_find_the_source,csc.company_name,h.principal
+        from c_srm_enquiry_invitation_for_bids_t_h h left join c_srm_company csc on h.company_code = csc.company_code
+        <where>
+            <if test="rfqOrTenderFormCode != null and rfqOrTenderFormCode != ''">
+                h.rfq_or_tender_form_code=#{rfqOrTenderFormCode,jdbcType=VARCHAR}
+            </if>
+            <if test="title != null and title != ''">
+                and h.title=#{title,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null and status != ''">
+                and h.status=#{status,jdbcType=VARCHAR}
+            </if>
+        </where>
+        order by create_time desc
+
+    </select>
+    <select id="scalingQuery" resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CSrmEnquiryInvitationForBidsTHScalingRsp">
+        select
+        h.status,h.rfq_or_tender_form_code,h.title,csc.company_name,h.creator,h.create_time,h.quotation_start_time,h.principal
+        from c_srm_enquiry_invitation_for_bids_t_h h left join c_srm_company csc on h.company_code = csc.company_code
+        <where>
+            <if test="rfqOrTenderFormCode != null and rfqOrTenderFormCode != ''">
+                h.rfq_or_tender_form_code=#{rfqOrTenderFormCode,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null and status != ''">
+                and h.status=#{status,jdbcType=VARCHAR}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="findExamineNumber" resultType="java.lang.String">
+        select
+        examine_number
+        from c_srm_enquiry_invitation_for_bids_t_h
+        <where>
+            <if test="rfqOrTenderFormCode != null and rfqOrTenderFormCode != ''">
+                rfq_or_tender_form_code=#{rfqOrTenderFormCode,jdbcType=VARCHAR}
+            </if>
+            and is_delete=0
+        </where>
+        order by create_time desc
+    </select>
+
+
+</mapper>

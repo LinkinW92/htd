@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.skeqi.mes.mapper.fqz.PatrolDAO">
+
+	<select id="findAll" resultType="CMesPatrolT">
+		select t.*,s.station_name as stationName,p.production_name as productionName
+		from C_MES_PATROL_T t,c_mes_production_t p,c_mes_station_t s
+			where t.production_id=p.id and t.station_id=s.id
+			<if test="sn!=null and sn!=''">
+				and t.sn=#{sn}
+			</if>
+			<if test="productionId!=null and production!='' and productionId!=0">
+				and p.id=#{productionId}
+			</if>
+			<if test="stationId!=null and stationId!='' and stationId!=0">
+				and s.id=#{stationId}
+			</if>
+			order by t.id desc
+	</select>
+
+	<insert id="insertPatrol">
+		insert into C_MES_PATROL_T(PRODUCTION_ID,SN,STATION_ID,EMP,REASON,DT)
+		values(#{productionId},#{sn},#{stationId},#{emp},#{reason,jdbcType=VARCHAR},NOW())
+	</insert>
+
+	<update id="updatePatrol">
+		update C_MES_PATROL_T set PRODUCTION_ID=#{productionId},
+										 sn=#{sn},
+										 STATION_ID=#{stationId},
+										 emp=#{emp},
+										 reason=#{reason},
+										 dt=NOW()
+								where id=#{id}
+	</update>
+
+	<delete id="delPatrol">
+		delete from C_MES_PATROL_T where id=#{id}
+	</delete>
+
+	<select id="findByid" resultType="CMesPatrolT">
+		select * from C_MES_PATROL_T where id=#{id}
+	</select>
+
+	<select id="findStation" resultType="CMesStationT">
+		select * from c_mes_station_t
+	</select>
+
+	<select id="findPro" resultType="CMesProductionT">
+		select * from c_mes_production_t
+	</select>
+</mapper>

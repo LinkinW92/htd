@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.yp.SimulationImplementDao">
+
+	<!-- 新增事件 -->
+	<insert id="addEvent">
+		INSERT INTO c_mes_event_t(dt,OBJECT_TYPE,OBJECT_ID,`EVENT`,PARAMETER1,PARAMETER2,PARAMETER3,PARAMETER4,PARAMETER5,OPERATOR,EVENT_DIS,OBJECT_TYPE2)
+		value(now(),#{objectType},#{objectId},#{event},#{parameter1},#{parameter2},#{parameter3},#{parameter4},#{parameter5},#{operator},#{eventDis},#{objectType2})
+	</insert>
+
+	<!-- 扫描员工号 -->
+	<update id="scanEmp">
+		UPDATE r_mes_step_t
+		set emp = #{emp},
+		STEP_NO = STEP_NO + 1
+		where sn = #{sn}
+	</update>
+
+	<!-- 下一步 -->
+	<update id="nextStep">
+		UPDATE r_mes_step_t
+		set STEP_NO = STEP_NO + 1
+		where sn = #{sn}
+	</update>
+
+	<!-- 新增步序表 -->
+	<insert id="addStep">
+		INSERT INTO r_mes_step_t(DT,ST,SN,STEP_NO,LINE_NAME)
+		value(now(),#{stationName},#{sn},1,#{lineName})
+	</insert>
+
+	<!-- 修改总成运行表当前工位跟前工位 -->
+	<update id="updateTrackingStAndBSt">
+		UPDATE r_mes_tracking_t
+		set bst = st,
+		st = #{stationName}
+		where sn = #{sn}
+	</update>
+
+	<!-- 查询工位是否可上线 -->
+	<select id="findStationCanIGoOnline" resultType="int">
+		select COUNT(*) from r_mes_tracking_t
+		where LINE_ID = #{lineId}
+		and st = #{stationName}
+	</select>
+
+	<!-- 气密性测试 -->
+	<insert id="airTightnessTest">
+		INSERT INTO r_mes_leakage_t(DT,ST,SN,LEAKAGE_NAME,LEAKAGE_PV,LEAKAGE_LV,LEAKAGE_R,WID)
+		value(now(),#{st},#{sn},#{leakageName},#{leakagePv},#{leakageLv},#{leakageR},#{emp})
+	</insert>
+
+	<!-- 称重 -->
+	<update id="weigh">
+		update p_mes_weigh_t
+		set WID = #{emp},
+		WEIGH = #{weigh}
+		where sn = #{sn}
+	</update>
+
+</mapper>

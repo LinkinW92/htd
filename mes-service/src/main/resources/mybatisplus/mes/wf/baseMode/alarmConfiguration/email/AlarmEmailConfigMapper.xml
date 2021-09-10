@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wf.baseMode.alarmConfiguration.email.AlarmEmailConfigMapper">
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, sender_email, the_server, authorization_code, if_enable, cdt, udt
+  </sql>
+  <select id="selectBySenderEmail" resultType="com.skeqi.mes.pojo.wf.baseMode.alarmConfiguration.email.AlarmEmailConfig">
+    <!--@mbg.generated-->
+    select
+    <include refid="Base_Column_List" />
+    from c_alarm_email_config
+    where sender_email = #{senderEmail,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <!--@mbg.generated-->
+    delete from c_alarm_email_config
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insertSelective" parameterType="com.skeqi.mes.pojo.wf.baseMode.alarmConfiguration.email.AlarmEmailConfig" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into c_alarm_email_config
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="senderEmail != null">
+        sender_email,
+      </if>
+      <if test="theServer != null">
+        the_server,
+      </if>
+      <if test="authorizationCode != null">
+        authorization_code,
+      </if>
+      <if test="ifEnable != null">
+        if_enable,
+      </if>
+      <if test="cdt != null">
+        cdt,
+      </if>
+      <if test="udt != null">
+        udt,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="senderEmail != null">
+        #{senderEmail,jdbcType=VARCHAR},
+      </if>
+      <if test="theServer != null">
+        #{theServer,jdbcType=VARCHAR},
+      </if>
+      <if test="authorizationCode != null">
+        #{authorizationCode,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="ifEnable != null">
+        #{ifEnable,jdbcType=INTEGER},
+      </if>
+      <if test="cdt != null">
+        #{cdt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="udt != null">
+        #{udt,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.skeqi.mes.pojo.wf.baseMode.alarmConfiguration.email.AlarmEmailConfig">
+    <!--@mbg.generated-->
+    update c_alarm_email_config
+    <set>
+      <if test="senderEmail != null">
+        sender_email = #{senderEmail,jdbcType=VARCHAR},
+      </if>
+      <if test="theServer != null">
+        the_server = #{theServer,jdbcType=VARCHAR},
+      </if>
+      <if test="authorizationCode != null">
+        authorization_code = #{authorizationCode,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="ifEnable != null">
+        if_enable = #{ifEnable,jdbcType=INTEGER},
+      </if>
+      <if test="cdt != null">
+        cdt = #{cdt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="udt != null">
+        udt = #{udt,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <select id="selectAll" resultType="com.skeqi.mes.pojo.wf.baseMode.alarmConfiguration.email.AlarmEmailConfig">
+    select
+    <include refid="Base_Column_List" />
+    from c_alarm_email_config
+  </select>
+  <select id="selectByIfEnable" resultType="com.skeqi.mes.pojo.wf.baseMode.alarmConfiguration.email.AlarmEmailConfig">
+    select
+    <include refid="Base_Column_List" />
+    from c_alarm_email_config
+    <where>
+      <if test="_parameter != null">
+        if_enable = #{i,jdbcType=INTEGER}
+      </if>
+    </where>
+  </select>
+
+  <update id="updateIfEnableBySenderEmail">
+    update c_alarm_email_config
+    <set>
+      <if test="ifEnable != null">
+        if_enable = #{ifEnable,jdbcType=INTEGER},
+      </if>
+    </set>
+    where sender_email <![CDATA[ <> ]]> #{senderEmail,jdbcType=VARCHAR}
+  </update>
+</mapper>

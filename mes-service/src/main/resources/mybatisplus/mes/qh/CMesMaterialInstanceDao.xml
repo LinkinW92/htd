@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.qh.CMesMaterialInstanceDao">
+  <resultMap id="BaseResultMap" type="com.skeqi.mes.pojo.qh.CMesMaterialInstanceT">
+    <!--@mbg.generated-->
+    <!--@Table c_mes_material_instance_t-->
+    <id column="ID" jdbcType="INTEGER" property="id" />
+    <result column="MATERIAL_CODE" jdbcType="VARCHAR" property="materialCode" />
+    <result column="MATERIAL_BATCH" jdbcType="VARCHAR" property="materialBatch" />
+    <result column="MATERIAL_SN" jdbcType="VARCHAR" property="materialSn" />
+    <result column="MATERIAL_NAME" jdbcType="VARCHAR" property="materialName" />
+    <result column="MATERIAL_TYPE" jdbcType="INTEGER" property="materialType" />
+    <result column="INSTANCE_VALIDITY" jdbcType="INTEGER" property="instanceValidity" />
+    <result column="INSTANCE_DESCRIPTION" jdbcType="VARCHAR" property="instanceDescription" />
+    <result column="EVENT_ID" jdbcType="INTEGER" property="eventId" />
+    <result column="WEAR_STATE" jdbcType="VARCHAR" property="wearState" />
+    <result column="MATERIAL_NUMBER" jdbcType="INTEGER" property="materialNumber" />
+    <result column="DT" jdbcType="TIMESTAMP" property="dt" />
+    <result column="ALTER_DT" jdbcType="TIMESTAMP" property="alterDt" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    ID, MATERIAL_CODE, MATERIAL_BATCH, MATERIAL_SN, MATERIAL_NAME, MATERIAL_TYPE,
+    INSTANCE_VALIDITY, INSTANCE_DESCRIPTION, EVENT_ID, WEAR_STATE, MATERIAL_NUMBER, DT,
+    ALTER_DT
+  </sql>
+  <select id="findAllMaterialInstanceList" resultType="com.skeqi.mes.pojo.qh.CMesMaterialInstanceT">
+    select
+    i.*,t.MATERIAL_TYPE as materialTypeName
+    from c_mes_material_instance_t as i
+    left join c_mes_material_type_t as t
+    on i.MATERIAL_TYPE=t.id
+    <where>
+      <if test="materialBatch != null and materialBatch != ''">
+        i.MATERIAL_BATCH = #{materialBatch,jdbcType=VARCHAR}
+      </if>
+      <if test="materialCode != null and materialCode != ''">
+       and i.MATERIAL_CODE like concat('%',#{materialCode,jdbcType=VARCHAR},'%')
+      </if>
+      <if test="materialSn != null and materialSn != ''">
+        and i.MATERIAL_SN like concat('%',#{materialSn,jdbcType=VARCHAR},'%')
+      </if>
+      <if test="materialType != null and materialType!='' and materialType!=0">
+       and i.MATERIAL_TYPE = #{materialType,jdbcType=INTEGER}
+      </if>
+      and DELETED=0
+    </where>
+    order by DT desc
+  </select>
+
+  <select id="findMaterialInstanceByCodeOrId" resultType="com.skeqi.mes.pojo.qh.CMesMaterialInstanceT">
+    select
+    i.*,t.MATERIAL_TYPE as materialTypeName
+    from c_mes_material_instance_t as i
+    left join c_mes_material_type_t as t
+    on i.MATERIAL_TYPE=t.id
+    <where>
+      <if test="id != null and id >0 ">
+        i.ID = #{id,jdbcType=INTEGER}
+      </if>
+      <if test="materialCode != null and materialCode != ''">
+        and i.MATERIAL_CODE like concat('%',#{materialCode,jdbcType=VARCHAR},'%')
+      </if>
+      <if test="materialSn != null and materialSn != ''">
+        and i.MATERIAL_SN = #{materialSn,jdbcType=VARCHAR}
+      </if>
+      and DELETED=0
+    </where>
+    order by DT desc
+  </select>
+
+
+  <insert id="addMaterialInstance">
+    insert into c_mes_material_instance_t
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="materialCode != null and materialCode != ''">
+        MATERIAL_CODE,
+      </if>
+      <if test="materialBatch != null and materialBatch != ''">
+        MATERIAL_BATCH,
+      </if>
+      <if test="materialSn != null and materialSn != ''">
+        MATERIAL_SN,
+      </if>
+      <if test="materialType != null and materialType>0">
+        MATERIAL_TYPE,
+      </if>
+      <if test="instanceValidity != null and instanceValidity != ''">
+        INSTANCE_VALIDITY,
+      </if>
+      <if test="instanceDescription != null and instanceDescription != ''">
+        INSTANCE_DESCRIPTION,
+      </if>
+      <if test="wearState != null and wearState != ''">
+        WEAR_STATE,
+      </if>
+      <if test="materialNumber != null and materialNumber >0">
+        MATERIAL_NUMBER,
+      </if>
+      <if test="dt != null and dt!=''">
+        DT,
+      </if>
+      <if test="alterDt != null and dt!=''">
+        ALTER_DT,
+      </if>
+        DELETED,
+      NUMBER_REMAINING,
+      PICKING_LOCK_NUMBER,
+      FROZEN_NUMBER,
+      LOCATION_ID
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="materialCode != null and materialCode != ''">
+        #{materialCode,jdbcType=VARCHAR},
+      </if>
+      <if test="materialBatch != null and materialBatch != ''">
+        #{materialBatch,jdbcType=VARCHAR},
+      </if>
+      <if test="materialSn != null and materialSn != ''">
+        #{materialSn,jdbcType=VARCHAR},
+      </if>
+      <if test="materialType != null and materialType>0">
+        #{materialType,jdbcType=INTEGER},
+      </if>
+      <if test="instanceValidity != null and instanceValidity != ''">
+        #{instanceValidity,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceDescription != null and instanceDescription != ''">
+        #{instanceDescription,jdbcType=VARCHAR},
+      </if>
+      <if test="wearState != null and wearState != ''">
+        #{wearState,jdbcType=VARCHAR},
+      </if>
+      <if test="materialNumber != null and materialNumber >0">
+        #{materialNumber,jdbcType=INTEGER},
+      </if>
+      <if test="dt != null and dt!=''">
+        #{dt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="alterDt != null and dt!=''">
+        #{alterDt,jdbcType=TIMESTAMP},
+      </if>
+        0,
+      #{materialNumber,jdbcType=INTEGER},
+      0,
+      0,
+      #{locationId,jdbcType=INTEGER}
+    </trim>
+  </insert>
+
+  <update id="updateMaterialInstance" >
+    update c_mes_material_instance_t
+    <set >
+      <if test="materialBatch != null and materialBatch != ''">
+        MATERIAL_BATCH = #{materialBatch,jdbcType=VARCHAR},
+      </if>
+      <if test="materialSn != null and materialSn != ''">
+        MATERIAL_SN = #{materialSn,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceValidity != null and instanceValidity != ''">
+        INSTANCE_VALIDITY = #{instanceValidity,jdbcType=VARCHAR},
+      </if>
+      <if test="instanceDescription != null and instanceDescription != ''">
+        INSTANCE_DESCRIPTION = #{instanceDescription,jdbcType=DATE},
+      </if>
+      <if test="wearState != null and wearState != ''">
+        WEAR_STATE = #{wearState,jdbcType=VARCHAR},
+      </if>
+      <if test="materialNumber != null and materialNumber >0">
+        MATERIAL_NUMBER = #{materialNumber,jdbcType=INTEGER},
+      </if>
+      <if test="alterDt != null and dt!=''">
+        ALTER_DT = #{alterDt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="locationId != null">
+        LOCATION_ID = #{locationId,jdbcType=INTEGER}
+      </if>
+    </set>
+    <where>
+      <if test="id != null and id>0">
+        ID=#{id,jdbcType=INTEGER}
+      </if>
+      and DELETED=0
+    </where>
+  </update>
+  <delete id="deleteMaterialInstance">
+         update c_mes_material_instance_t
+         <set>
+           DELETED=1
+         </set>
+        <where>
+          <if test="_parameter != null and _parameter>0">
+            ID = #{id,jdbcType=INTEGER}
+          </if>
+        </where>
+  </delete>
+    <select id="findMaterialByProductIDAndWorkOrderId" resultType="com.skeqi.mes.pojo.qh.CMesMaterialInstanceT">
+      select i.*,(select t.MATERIAL_TYPE from c_mes_material_type_t t where t.id = i.MATERIAL_TYPE) materialTypeName FROM
+        c_mes_material_instance_t i
+        <where>
+          <if test="productId != null and productId>0">
+           and i.MATERIAL_CODE = (
+            select p.MATERIAL_CODE
+            FROM c_mes_production_t p
+            WHERE p.ID = #{productId,jdbcType=INTEGER})
+          </if>
+          <if test="workOrderId != null and workOrderId != ''">
+            and i.WORKORDER_ID = #{workOrderId,jdbcType=VARCHAR}
+          </if>
+          and DELETED=0
+        </where>
+      order by DT desc
+    </select>
+
+  <select id="findMaterialById" resultType="com.skeqi.mes.pojo.qh.CMesMaterialInstanceT">
+    select
+    i.*,t.MATERIAL_TYPE as materialTypeName
+    from c_mes_material_instance_t as i
+    left join c_mes_material_type_t as t
+    on i.MATERIAL_TYPE=t.id
+    <where>
+      <if test="id != null and id >0 ">
+        i.ID = #{id,jdbcType=INTEGER}
+      </if>
+      and i.DELETED=0
+    </where>
+    order by DT desc
+  </select>
+
+  <select id="findMaterialInstanceByCodeAndBatchAndSn" resultMap="BaseResultMap">
+    select
+        ID, MATERIAL_CODE, MATERIAL_BATCH, MATERIAL_SN, NUMBER_REMAINING
+    from
+        c_mes_material_instance_t
+    <where>
+      <foreach collection="list" item="item" separator="or" >
+        (
+        <if test="item.materialNo != null and item.materialNo != ''">
+          MATERIAL_CODE in (#{item.materialNo,jdbcType=VARCHAR})
+        </if>
+        <if test="item.materialBatch != null and item.materialBatch != ''">
+          and MATERIAL_BATCH in (#{item.materialBatch,jdbcType=VARCHAR})
+        </if>
+        <if test="item.materialCode != null and item.materialCode != ''">
+          and MATERIAL_SN in (#{item.materialCode,jdbcType=VARCHAR})
+        </if>
+        and NUMBER_REMAINING >0
+        )
+      </foreach>
+      and DELETED=0
+    </where>
+  </select>
+
+  <update id="updateMaterialInstanceByRLslMaterialResponseTS">
+    UPDATE c_mes_material_instance_t
+    <set>
+        PICKING_LOCK_NUMBER =
+            CASE
+                ID
+                <foreach collection="list" item="item">
+                  WHEN #{item.materialId,jdbcType=INTEGER} THEN #{item.quantity,jdbcType=INTEGER}
+                </foreach>
+            END,
+        NUMBER_REMAINING =
+            CASE
+                ID
+                <foreach collection="list" item="item">
+                     WHEN #{item.materialId,jdbcType=INTEGER} THEN (#{item.numberRemaining,jdbcType=INTEGER}-#{item.quantity,jdbcType=INTEGER})
+                </foreach>
+            END
+    </set>
+    <where>
+      <foreach collection="list" open="ID in(" close=")" separator="," item="item">
+        #{item.materialId,jdbcType=INTEGER}
+      </foreach>
+    </where>
+  </update>
+
+  <update id="freezeInventory">
+    UPDATE c_mes_material_instance_t
+    <set>
+      NUMBER_REMAINING = #{numberRemaining,jdbcType=INTEGER},
+      FROZEN_NUMBER = #{frozenNumber,jdbcType=INTEGER}
+    </set>
+    <where>
+      ID = #{id,jdbcType=INTEGER}
+    </where>
+  </update>
+
+</mapper>

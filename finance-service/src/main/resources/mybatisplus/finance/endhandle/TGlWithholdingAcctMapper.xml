@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.endhandle.TGlWithholdingAcctMapper">
+
+    <resultMap type="com.skeqi.finance.domain.endhandle.withholding.TGlWithholdingAcct" id="TGlWithholdingAcctResult">
+        <result property="fId" column="f_id"/>
+        <result property="fSchemeId" column="f_scheme_id"/>
+        <result property="fProvisionAccount" column="f_provision_account"/>
+        <result property="fDetailId" column="f_detail_id"/>
+        <result property="fProvisionRatio" column="f_provision_ratio"/>
+        <result property="fProvisionFixed" column="f_provision_fixed"/>
+    </resultMap>
+
+
+    <select id="queryList" resultType="com.skeqi.finance.pojo.vo.endhandle.TGlWithholdingAcctVo">
+          select a.*,concat(d.ds_code,'/',d.ds_name) as f_detail ,ac.f_name as f_account_name  from t_gl_withholding_acct a
+         LEFT JOIN t_gl_withholding_acct_dimension d ON d.amort_entry_id=a.f_id
+         LEFT JOIN t_bd_account ac ON ac.f_acct_id= a.f_provision_account
+         where  f_scheme_id=#{fSchemeId}
+    </select>
+</mapper>

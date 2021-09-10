@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.zch.WorkorderDao">
+
+	<!-- 工单列表 -->
+	<select id="findWorkorderList" resultType="java.util.Map">
+		select w.*
+		,(select p.PRODUCTION_NAME from c_mes_production_t p where p.ID=w.PRODUCT_ID) as PRODUCTION_NAME
+		,(select t.NAME from c_mes_shifts_team_t t where t.ID=w.TEAM_ID) as TEAM_NAME
+		,(select l.NAME from c_mes_line_t l where l.ID=w.LINE_ID)  as LINE_NAME
+		from r_mes_workorder_detail_t w
+		where 1=1
+		<if test="status!=null and status!=''">
+			and w.status=#{status}
+		</if>
+		<if test="lineId!=null and lineId!=''">
+			and w.LINE_ID=#{lineId}
+		</if>
+		<if test="workorderId!=null and workorderId!=''">
+			and w.WORKORDER_ID like concat('%', #{workorderId}, '%')
+		</if>
+		<if test="PRODUCT_ID!=null and PRODUCT_ID!=''">
+			and w.PRODUCT_ID=#{PRODUCT_ID}
+		</if>
+		<if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!=''">
+			and w.PLAN_START_TIME between #{beginTime} and #{endTime}
+		</if>
+		order by w.LEVEL_NO
+	</select>
+
+	<!-- 完成工单 -->
+	<select id="findPWorkorderList" resultType="java.util.Map">
+		select w.*
+		,(select p.PRODUCTION_NAME from c_mes_production_t p where p.ID=w.PRODUCT_ID) as PRODUCTION_NAME
+		,(select t.NAME from c_mes_shifts_team_t t where t.ID=w.TEAM_ID) as TEAM_NAME
+		,(select l.NAME from c_mes_line_t l where l.ID=w.LINE_ID)  as LINE_NAME
+		from p_mes_workorder_detail_t w
+		where 1=1
+		<if test="workorderId!=null and workorderId!=''">
+			and w.WORKORDER_ID like concat('%', #{workorderId}, '%')
+		</if>
+		<if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!=''">
+			and w.PLAN_START_TIME between #{beginTime} and #{endTime}
+		</if>
+		order by w.ALTER_DT desc
+	</select>
+
+	<!-- 工单条码 -->
+	<select id="findWorkSn" resultType="java.util.Map">
+		SELECT
+			id,sn,dt
+		FROM
+			p_mes_plan_print_t
+		where 1=1
+		<if test="id!=null and id!='' ">
+			and WORK_ORDER_ID = #{id}
+		</if>
+	</select>
+
+	<update id="updateLevelNoByLineId">
+		UPDATE R_MES_WORKORDER_DETAIL_T SET LEVEL_NO =
+		LEVEL_NO+1 WHERE LINE_ID = #{LINE_ID} and LEVEL_NO >=#{LEVEL_NO}
+	</update>
+
+	<!-- 添加工单 -->
+	<insert id="addWorkorder" keyProperty="id"
+		useGeneratedKeys="false">
+		INSERT INTO R_MES_WORKORDER_DETAIL_T
+		(DT,WORKORDER_ID,ORDER_NUMBER,ONLINE_NUMBER,OFFLINE_NUMBER
+		,DEFFECT_NUMBER,LINE_ID,TEAM_ID,LEVEL_NO,STATUS
+		,ALTER_DT,PLAN_ID,CREATE_BARCODE_FLAG,PRINTE_NUMBER,COMPLETE_NUMBER
+		,REMAIND_NUMBER,PLAN_START_TIME,PLAN_END_TIME,ROUTING_ID,BARCODE_RULE_ID
+		,BOM_ID,PRODUCT_ID,TOTAL_RECIPE_ID,OK_NUMBER,ORDER_ID,ORDERRECORD_ID)
+		VALUES
+		(NOW(),#{workorderId},#{orderNumber},0,0
+		,0,#{lineId},#{teamId},#{levelNo},0
+		,NOW(),#{planId},0,0,0
+		,0,#{planStartTime},#{planEndTime},#{routingId},#{barcodeRuleId}
+		,#{bomId},#{productId},#{totalRecipeId},0,#{ORDER_ID},#{ORDERRECORD_ID})
+	</insert>
+
+	<!-- 修改工单 -->
+	<update id="updateWorkorder">
+		UPDATE R_MES_WORKORDER_DETAIL_T SET
+			ALTER_DT=NOW()
+		<if test="WORKORDER_ID!=null and WORKORDER_ID!=''">
+			,WORKORDER_ID=#{WORKORDER_ID}
+		</if>
+		<if test="LINE_ID!=null and LINE_ID!=''">
+			,LINE_ID=#{LINE_ID}
+		</if>
+		<if test="TEAM_ID!=null and TEAM_ID!=''">
+			,TEAM_ID=#{TEAM_ID}
+		</if>
+		<if test="PLAN_ID!=null and PLAN_ID!=''">
+			,PLAN_ID=#{PLAN_ID}
+		</if>
+		<if test="PLAN_START_TIME!=null and PLAN_START_TIME!=''">
+			,PLAN_START_TIME=#{PLAN_START_TIME}
+		</if>
+		<if test="PLAN_END_TIME!=null and PLAN_END_TIME!=''">
+			,PLAN_END_TIME=#{PLAN_END_TIME}
+		</if>
+		<if test="ROUTING_ID!=null and ROUTING_ID!=''">
+			,ROUTING_ID=#{ROUTING_ID}
+		</if>
+		<if test="BARCODE_RULE_ID!=null and BARCODE_RULE_ID!=''">
+			,BARCODE_RULE_ID=#{BARCODE_RULE_ID}
+		</if>
+		<if test="BOM_ID!=null and BOM_ID!=''">
+			,BOM_ID=#{BOM_ID}
+		</if>
+		<if test="ORDER_NUMBER!=null and ORDER_NUMBER!=''">
+			,ORDER_NUMBER=#{ORDER_NUMBER}
+		</if>
+		<if test="PRODUCT_ID!=null and PRODUCT_ID!=''">
+			,PRODUCT_ID=#{PRODUCT_ID}
+		</if>
+		<if test="TOTAL_RECIPE_ID!=null and TOTAL_RECIPE_ID!=''">
+			,TOTAL_RECIPE_ID=#{TOTAL_RECIPE_ID}
+		</if>
+		<if test="LEVEL_NO!=null and LEVEL_NO!=''">
+			,LEVEL_NO=#{LEVEL_NO}
+		</if>
+		<if test="STATUS!=null and STATUS!=''">
+			,STATUS=#{STATUS}
+		</if>
+		<if test="ORDER_ID!=null and ORDER_ID!=''">
+			,ORDER_ID=#{ORDER_ID}
+		</if>
+		<if test="ORDERRECORD_ID!=null and ORDERRECORD_ID!=''">
+			,ORDERRECORD_ID=#{ORDERRECORD_ID}
+		</if>
+		WHERE ID=#{ID}
+	</update>
+
+	<!-- 获取产线最大优先级值 -->
+	<select id="getMaxLevelNoByLine" resultType="java.lang.Integer">
+		select max(LEVEL_NO) from r_mes_workorder_detail_t where LINE_ID=#{lineId} GROUP BY LINE_ID
+	</select>
+
+	<!-- 获取原优先级和状态 -->
+	<select id="getLevelNoStatusOldByID" resultType="java.util.Map">
+		select LEVEL_NO,STATUS from r_mes_workorder_detail_t where ID=#{ID}
+	</select>
+
+	<delete id="deleteWorkorder">
+		delete from r_mes_workorder_detail_t where ID=#{ID}
+	</delete>
+
+	<!-- 根据id获取工单 -->
+	<select id="getByID" resultType="java.util.Map">
+		select * from r_mes_workorder_detail_t where ID=#{ID}
+	</select>
+    <select id="findWorkorderByIdOrWID" resultType="java.util.Map">
+		select t.* from
+		(select w.*
+		,(select p.PRODUCTION_NAME from c_mes_production_t p where p.ID=w.PRODUCT_ID) as PRODUCTION_NAME
+		,(select t.NAME from c_mes_shifts_team_t t where t.ID=w.TEAM_ID) as TEAM_NAME
+		,(select l.NAME from c_mes_line_t l where l.ID=w.LINE_ID)  as LINE_NAME
+		from r_mes_workorder_detail_t w
+		<where>
+			1=1
+			<if test="WORKORDER_ID != null and WORKORDER_ID!=''">
+				and w.WORKORDER_ID = #{WORKORDER_ID,jdbcType=VARCHAR}
+			</if>
+			<if test="ID!=null and ID>0">
+				and w.ID = #{ID}
+			</if>
+		</where>
+		union all
+		select w.*
+		,(select p.PRODUCTION_NAME from c_mes_production_t p where p.ID=w.PRODUCT_ID) as PRODUCTION_NAME
+		,(select t.NAME from c_mes_shifts_team_t t where t.ID=w.TEAM_ID) as TEAM_NAME
+		,(select l.NAME from c_mes_line_t l where l.ID=w.LINE_ID)  as LINE_NAME
+		from p_mes_workorder_detail_t w
+		<where>
+			1=1
+			<if test="WORKORDER_ID != null and WORKORDER_ID!=''">
+				and w.WORKORDER_ID = #{WORKORDER_ID,jdbcType=VARCHAR}
+			</if>
+			<if test="ID!=null and ID>0">
+				and w.ID = #{ID}
+			</if>
+		</where>) t
+	</select>
+
+	<!-- 获取编号规则 -->
+	<select id="getCodeRuleByID" resultType="java.util.Map">
+		select * from c_mes_code_rule_t where ID=#{ID}
+	</select>
+
+	<!-- 更新最后工单编号 -->
+	<update id="updateLastCode">
+		update c_mes_code_rule_t set LAST_CODE=#{workorderIdOld} where ID=1
+	</update>
+
+	<!-- 根据工单编号获取数量 -->
+	<select id="getCountByWorkorderId" resultType="java.lang.Integer">
+		SELECT count(*) FROM
+		(SELECT WORKORDER_ID FROM r_mes_workorder_detail_t UNION ALL SELECT WORKORDER_ID FROM p_mes_workorder_detail_t) t
+		WHERE t.WORKORDER_ID=#{workorderId}
+	</select>
+
+	<!-- 添加工单到P表 -->
+	<insert id="insertWork">
+		insert into p_mes_workorder_detail_t select * from r_mes_workorder_detail_t where id=#{id}
+	</insert>
+
+	<!-- 删除R表工单 -->
+	<delete id="deleteWork">
+		delete from r_mes_workorder_detail_t where id=#{id}
+	</delete>
+
+	<!-- 添加条码表到P表  -->
+	<insert id="insertPrint">
+		insert into p_mes_plan_print_t(R_MES_PLAN_PRINT_ID,DT,SN,PLAN_ID,LINE_ID,PRODUCTION_ID,SERIAL_NO,PRINT_FLAG,WORK_ORDER_ID)
+		select ID,DT,SN,PLAN_ID,LINE_ID,PRODUCTION_ID,SERIAL_NO,PRINT_FLAG,WORK_ORDER_ID from r_mes_plan_print_t where WORK_ORDER_ID=#{id}
+	</insert>
+
+	<!-- 删除条码表 -->
+	<delete id="deletePrint">
+		delete from r_mes_plan_print_t where WORK_ORDER_ID=#{id}
+	</delete>
+
+
+    <select id="findListAll" resultType="java.util.Map">
+		select ID,WORKORDER_ID from r_mes_workorder_detail_t
+	</select>
+
+	<insert id="insertBolt">
+		insert into p_mes_bolt_t select * from r_mes_bolt_t where SN in (select SN from r_mes_plan_print_t where WORK_ORDER_ID=#{id})
+	</insert>
+
+	<insert id="insertKeypart">
+		insert into p_mes_keypart_t select * from r_mes_keypart_t where SN in (select SN from r_mes_plan_print_t where WORK_ORDER_ID=#{id})
+	</insert>
+
+	<insert id="insertLeakage">
+		insert into p_mes_leakage_t select * from r_mes_leakage_t where SN in (select SN from r_mes_plan_print_t where WORK_ORDER_ID=#{id})
+	</insert>
+
+	<delete id="deleteBolt">
+		delete from r_mes_bolt_t where SN in (select SN from r_mes_plan_print_t where WORK_ORDER_ID=#{id})
+	</delete>
+
+	<delete id="deleteKeypart">
+		delete from r_mes_keypart_t where SN in (select SN from r_mes_plan_print_t where WORK_ORDER_ID=#{id})
+	</delete>
+
+	<delete id="deleteLeakage">
+		delete from r_mes_leakage_t where SN in (select SN from r_mes_plan_print_t where WORK_ORDER_ID=#{id})
+	</delete>
+
+	<select id="findRecipeDetailList" resultType="java.util.Map">
+		select *
+		from c_mes_recipe_datil_t rd
+		left join c_mes_recipe_t r on r.ID = rd.RECIPE_ID
+		where r.ID = #{recipeId}
+	</select>
+</mapper>

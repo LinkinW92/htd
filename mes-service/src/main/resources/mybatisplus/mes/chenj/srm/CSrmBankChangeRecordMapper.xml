@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.chenj.srm.CSrmBankChangeRecordMapper">
+    <resultMap id="BaseResultMap" type="com.skeqi.mes.pojo.chenj.srm.CSrmBankChangeRecord">
+        <!--@mbg.generated-->
+        <!--@Table c_srm_bank_change_record-->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="bank_name" jdbcType="VARCHAR" property="bankName"/>
+        <result column="bank_account" jdbcType="VARCHAR" property="bankAccount"/>
+        <result column="supplier_code" jdbcType="VARCHAR" property="supplierCode"/>
+        <result column="status" jdbcType="VARCHAR" property="status"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="supplier_id" jdbcType="INTEGER" property="supplierId"/>
+        <result column="is_delete" jdbcType="BIT" property="isDelete"/>
+        <result column="account_title" jdbcType="VARCHAR" property="accountTitle"/>
+        <result column="receiver_mailbox" jdbcType="VARCHAR" property="receiverMailbox"/>
+        <result column="collector_telephone_number" jdbcType="VARCHAR" property="collectorTelephoneNumber"/>
+        <result column="company_code" jdbcType="VARCHAR" property="companyCode"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        id, bank_name, bank_account, supplier_code, `status`, create_time, update_time, supplier_id,
+        is_delete, account_title, receiver_mailbox, collector_telephone_number, company_code
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        select
+        <include refid="Base_Column_List"/>
+        from c_srm_bank_change_record
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <select id="selectByPrimaryKeyList" resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CSrmBankChangeRecordRsp">
+        <!--@mbg.generated-->
+        select
+        <include refid="Base_Column_List"/>
+        from c_srm_bank_change_record
+        <where>
+            <if test="supplierCode != null and supplierCode != ''">
+                supplier_code=#{supplierCode,jdbcType=VARCHAR}
+            </if>
+            <if test="companyCode != null and companyCode != ''">
+                and company_code=#{companyCode,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null and status != ''">
+                and status=#{status,jdbcType=VARCHAR}
+            </if>
+            and is_delete=0
+        </where>
+    </select>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id"
+            parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmBankChangeRecord" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_bank_change_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="bankName != null">
+                bank_name,
+            </if>
+            <if test="bankAccount != null">
+                bank_account,
+            </if>
+            <if test="supplierCode != null">
+                supplier_code,
+            </if>
+            <if test="status != null">
+                `status`,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="supplierId != null">
+                supplier_id,
+            </if>
+            <if test="isDelete != null">
+                is_delete,
+            </if>
+            <if test="accountTitle != null">
+                account_title,
+            </if>
+            <if test="receiverMailbox != null">
+                receiver_mailbox,
+            </if>
+            <if test="collectorTelephoneNumber != null">
+                collector_telephone_number,
+            </if>
+            <if test="companyCode != null">
+                company_code,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="bankName != null">
+                #{bankName,jdbcType=VARCHAR},
+            </if>
+            <if test="bankAccount != null">
+                #{bankAccount,jdbcType=VARCHAR},
+            </if>
+            <if test="supplierCode != null">
+                #{supplierCode,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="supplierId != null">
+                #{supplierId,jdbcType=INTEGER},
+            </if>
+            <if test="isDelete != null">
+                #{isDelete,jdbcType=BIT},
+            </if>
+            <if test="accountTitle != null">
+                #{accountTitle,jdbcType=VARCHAR},
+            </if>
+            <if test="receiverMailbox != null">
+                #{receiverMailbox,jdbcType=VARCHAR},
+            </if>
+            <if test="collectorTelephoneNumber != null">
+                #{collectorTelephoneNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="companyCode != null">
+                #{companyCode,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmBankChangeRecord">
+        <!--@mbg.generated-->
+        update c_srm_bank_change_record
+        <set>
+            <if test="bankName != null">
+                bank_name = #{bankName,jdbcType=VARCHAR},
+            </if>
+            <if test="bankAccount != null">
+                bank_account = #{bankAccount,jdbcType=VARCHAR},
+            </if>
+            <if test="supplierCode != null">
+                supplier_code = #{supplierCode,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                `status` = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="supplierId != null">
+                supplier_id = #{supplierId,jdbcType=INTEGER},
+            </if>
+            <if test="isDelete != null">
+                is_delete = #{isDelete,jdbcType=BIT},
+            </if>
+            <if test="accountTitle != null">
+                account_title = #{accountTitle,jdbcType=VARCHAR},
+            </if>
+            <if test="receiverMailbox != null">
+                receiver_mailbox = #{receiverMailbox,jdbcType=VARCHAR},
+            </if>
+            <if test="collectorTelephoneNumber != null">
+                collector_telephone_number = #{collectorTelephoneNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="companyCode != null">
+                company_code = #{companyCode,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <update id="updateBatchSelectiveDel" parameterType="java.util.List">
+        update c_srm_bank_change_record set is_delete=1,update_time=now() where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+
+    <update id="updateBatchSelective" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update c_srm_bank_change_record
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="bank_name = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.bankName != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.bankName,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="bank_account = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.bankAccount != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.bankAccount,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="supplier_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.supplierCode != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.supplierCode,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="`status` = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.status != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.status,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.createTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.createTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.updateTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.updateTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="supplier_id = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.supplierId != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.supplierId,jdbcType=INTEGER}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="is_delete = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.isDelete != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.isDelete,jdbcType=BIT}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="account_title = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.accountTitle != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.accountTitle,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="receiver_mailbox = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.receiverMailbox != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.receiverMailbox,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="collector_telephone_number = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.collectorTelephoneNumber != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.collectorTelephoneNumber,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="company_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.companyCode != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.companyCode,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="false">
+        <!--@mbg.generated-->
+        insert into c_srm_bank_change_record
+        (bank_name, bank_account, supplier_code, `status`, create_time, update_time, supplier_id,
+        is_delete, account_title, receiver_mailbox, collector_telephone_number, company_code
+        )
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.bankName,jdbcType=VARCHAR}, #{item.bankAccount,jdbcType=VARCHAR},
+            #{item.supplierCode,jdbcType=VARCHAR},
+            #{item.status,jdbcType=VARCHAR}, now(), #{item.updateTime,jdbcType=TIMESTAMP},
+            #{item.supplierId,jdbcType=INTEGER}, 0, #{item.accountTitle,jdbcType=VARCHAR},
+            #{item.receiverMailbox,jdbcType=VARCHAR}, #{item.collectorTelephoneNumber,jdbcType=VARCHAR},
+            #{item.companyCode,jdbcType=VARCHAR})
+        </foreach>
+    </insert>
+
+
+    <update id="delData">
+        update c_srm_bank_change_record set is_delete=1,update_time=now() where
+        supplier_code=#{supplierCode,jdbcType=VARCHAR} and is_delete=0
+        and status=#{status,jdbcType=VARCHAR}
+        <if test="id != null">
+            and id=#{id,jdbcType=INTEGER}
+        </if>
+    </update>
+
+    <update id="updateBatchSelectiveData">
+        update c_srm_bank_change_record
+        set is_delete=1
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+</mapper>

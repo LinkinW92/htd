@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.cashflow.TGlVoucherEntryCashMapper">
+
+    <resultMap type="com.skeqi.finance.domain.voucher.TGlVoucherEntryCash" id="TGlVoucherEntryCashResult">
+        <result property="id" column="id"/>
+        <result property="bookId" column="book_id"/>
+        <result property="cashAccountId" column="cash_account_id"/>
+        <result property="forAcctId" column="for_acct_id"/>
+        <result property="voucherEntryId" column="voucher_entry_id"/>
+        <result property="forVoucherEntryId" column="for_voucher_entry_id"/>
+        <result property="mainTableId" column="main_table_id"/>
+        <result property="attachTableId" column="attach__table_id"/>
+        <result property="amount" column="amount"/>
+        <result property="amountFor" column="amount_for"/>
+        <result property="currencyId" column="currency_id"/>
+    </resultMap>
+    <select id="queryPageList" resultType="com.skeqi.finance.pojo.vo.cashflow.TGlVoucherEntryCashVo">
+        SELECT
+            ve.*,
+            ec.*
+        FROM
+            (
+                SELECT
+                    ec.id,
+                    ec.book_id,
+                    ec.voucher_entry_id,
+                    ec.main_table_id,
+                    ec.cash_account_id,
+                    ec.attach_table_id,
+                    ec.currency_id,
+                    ec.amount_for flow_amount_for,
+                    ec.amount flow_amount,
+                    ba.f_number subject_number,
+                    ba.f_name subject_name,
+                    bc.f_name flow_account_name,
+                    cf.main_table_name,
+                    cf.attach_table_name
+                FROM
+                    t_gl_voucher_entry_cash ec
+                        LEFT JOIN t_bd_currency bc ON bc.f_currency_id = ec.currency_id
+                        LEFT JOIN t_bd_account ba ON ba.f_acct_id = ec.cash_account_id
+                        LEFT JOIN (
+                        SELECT
+                            cf.f_id,
+                            IF
+                                ( ft.f_item_groupid = 1, cf.f_name, NULL ) main_table_name,
+                            IF
+                                ( ft.f_item_groupid = 2, cf.f_name, NULL ) attach_table_name
+                        FROM
+                            t_gl_cash_flow cf
+                                LEFT JOIN t_gl_cash_flow_type ft ON ft.f_item_typeid = cf.f_cash_flow_item_table
+                    ) cf
+                                  ON cf.f_id = ec.main_table_id
+            ) ec
+                LEFT JOIN (
+                SELECT
+                    gv.f_date,
+                    bv.f_voucher_words,
+                    gv.f_voucher_group_no,
+                    ve.f_entry_id,
+                    ve.f_explanation,
+                    ve.f_amountfor,
+                    ve.f_amount,
+                    ve.f_debit,
+                    ve.f_credit
+                FROM
+                    t_gl_voucher_entry ve
+                        LEFT JOIN t_bd_currency bc ON bc.f_currency_id = ve.f_currency_id
+                        LEFT JOIN t_gl_voucher gv ON ve.f_voucher_id = gv.f_voucher_id
+                        LEFT JOIN t_bd_voucher_group bv ON bv.f_vchgroup_id = gv.f_voucher_group_id
+            ) ve ON ec.voucher_entry_id = ve.f_entry_id
+        <where>
+            <if test="bo.bookId !=null and bo.bookId > 0">
+                and ec.book_id = #{bo.bookId,jdbcType=INTEGER}
+            </if>
+            <if test="bo.currencyId !=null and bo.currencyId > 0">
+                and ec.currency_id = #{bo.currencyId,jdbcType=INTEGER}
+            </if>
+            <if test="bo.cashAccountId !=null and bo.cashAccountId > 0">
+                and ec.cash_account_id = #{bo.cashAccountId,jdbcType=INTEGER}
+            </if>
+            <if test="bo.attachTableId !=null and bo.attachTableId > 0">
+                and ec.attach_table_id = #{bo.attachTableId,jdbcType=INTEGER}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryByVid" resultType="com.skeqi.finance.pojo.vo.cashflow.TGlVoucherEntryCashVo" parameterType="java.util.List">
+        select c.*,a.f_name as f_accunt_name,a.f_number as f_accunt_number,f.f_name as main_table_name,f.f_item_typeid,f.f_number as main_table_number from (
+        select * from t_gl_voucher_entry_cash where voucher_entry_id in
+        <trim prefix="(" suffix=")">
+            <foreach collection="ids" index="index" item="id" separator=",">
+                #{id}
+            </foreach>
+        </trim>
+        )  c
+        LEFT JOIN t_bd_account a on a.f_acct_id=c.for_acct_id
+        LEFT JOIN t_gl_cash_flow f on f.f_id =c.main_table_id
+
+    </select>
+    <delete id="delByVid">
+        delete from t_gl_voucher_entry_cash where voucher_entry_id=#{vId}
+    </delete>
+</mapper>

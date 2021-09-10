@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wms.WmsMaterialTypeDao">
+
+	<select id="findMaterialTypeList" resultType="com.skeqi.mes.pojo.wms.CWmsMaterialTypeT">
+		select * from c_wms_material_type_t
+		where 1 = 1
+		<if test="id != null">
+			AND ID = #{id}
+		</if>
+		<if test="modifyTime != null">
+			AND MODIFY_TIME = #{modifyTime}
+		</if>
+		<if test="mtNo != null">
+			AND MT_NO = #{mtNo}
+		</if>
+		<if test="mtName != null">
+			AND MT_NAME = #{mtName}
+		</if>
+		ORDER BY ID
+	</select>
+
+	<insert id="addMaterialType">
+		insert into c_wms_material_type_t(
+		MODIFY_TIME,MT_NO,MT_NAME)
+		values(
+		now(),#{mtNo},#{mtName})
+	</insert>
+
+	<delete id="deleteMaterialType">
+		delete from c_wms_material_type_t
+		where id = #{materialTypeId}
+	</delete>
+
+	<update id="updateMaterialType">
+		update c_wms_material_type_t
+		<trim prefix="SET" suffixOverrides=",">  
+			<if test="mtNo != null">
+				MT_NO = #{mtNo},
+        	</if>
+			<if test="mtName != null">
+				MT_NAME = #{mtName},
+        	</if>
+			MODIFY_TIME = now()
+        </trim>  
+		where ID = #{id}
+	</update>
+
+</mapper>

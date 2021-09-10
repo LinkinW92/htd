@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.zl.CMesInventoryBalanceDao">
+	<!-- 查询全部 -->
+	<select id="findAllInventoryBalance" resultType="CMesInventoryBalanceTable">
+	SELECT * FROM c_mes_inventory_balance_table where 1=1
+	</select>
+	<select id="countInventoryBalance" resultType="int">
+		SELECT COUNT(*) FROM
+		c_mes_inventory_balance_table WHERE NAME_GOODS = #{nameGoods}
+	</select>
+	<insert id="addInventoryBalance">
+		INSERT INTO c_mes_inventory_balance_table(
+		TRADE_NAME,NAME_GOODS,TYPENUM,COMMODITY_ENCODING,
+		C_NUMBER)
+		VALUES(
+		#{tradeName},#{nameGoods},#{typenum},#{commodityEncoding},
+		#{cNumber})
+	</insert>
+	<select id="findInventoryBalanceId" resultType="CMesInventoryBalanceTable">
+			select * from c_mes_inventory_balance_table where id=#{id}
+	</select>
+	<update id="editInventoryBalance">
+		UPDATE c_mes_inventory_balance_table SET
+		TRADE_NAME =#{tradeName},NAME_GOODS=#{nameGoods},TYPENUM=#{typenum},
+		COMMODITY_ENCODING=#{commodityEncoding},C_NUMBER=#{cNumber}
+		WHERE ID = #{id}
+	</update>
+	<delete id="delInventoryBalance">
+		DELETE FROM c_mes_inventory_balance_table WHERE ID = #{id}
+	</delete>
+
+</mapper>

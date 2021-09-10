@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.TBdUnitGroupTableMapper">
+
+    <resultMap type="com.skeqi.finance.domain.unit.TBdUnitGroupTable" id="TBdUnitGroupTableResult">
+        <result property="fId" column="f_id"/>
+        <result property="fNumber" column="f_number"/>
+        <result property="fName" column="f_name"/>
+        <result property="fParentId" column="f_parent_id"/>
+        <result property="fDescription" column="f_description"/>
+    </resultMap>
+
+
+</mapper>

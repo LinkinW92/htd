@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.report.DimensionBalanceMapper">
+
+    <select id="queryPageList" resultType="com.skeqi.finance.pojo.vo.report.DimensionBalanceVo">
+        SELECT
+        gb.f_year,
+        gb.f_period,
+        gb.f_detail_code,
+        ds.f_name f_detail_name,
+        gb.f_account_id,
+        ba.f_number f_account_number,
+        ba.f_name f_account_name,
+        ba.f_dc,
+        gb.f_account_book_id,
+        gb.f_currency_id,
+        gb.f_begin_balancefor,
+        gb.f_begin_balance,
+        IF
+        ( ba.f_dc <![CDATA[ > ]]> 0, gb.f_begin_balance, 0 ) initDebit,
+        IF
+        ( ba.f_dc <![CDATA[ < ]]> 0, gb.f_begin_balance, 0 ) initCredit,
+        gb.f_debit_for,
+        gb.f_debit,
+        gb.f_credit_for,
+        gb.f_credit,
+        gb.f_ytd_debitfor,
+        gb.f_ytd_debit,
+        gb.f_ytd_creditfor,
+        gb.f_ytd_credit,
+        gb.f_end_balancefor,
+        gb.f_end_balance,
+        IF
+        ( (gb.f_begin_balance + gb.f_debit - gb.f_credit) <![CDATA[ > ]]> 0, abs(gb.f_begin_balance + gb.f_debit - gb.f_credit), 0 ) endDebit,
+        IF
+        ( (gb.f_begin_balance + gb.f_debit - gb.f_credit) <![CDATA[ < ]]> 0, abs(gb.f_begin_balance + gb.f_debit - gb.f_credit), 0 ) endCredit,
+        gb.f_adjust_period,
+        gb.f_year_period
+        FROM
+        t_gl_balance gb
+        LEFT JOIN t_bd_dimension_source ds ON gb.f_detail_code = ds.f_number
+        LEFT JOIN t_bd_account ba ON ba.f_acct_id = gb.f_account_id
+        <where>
+            <if test="bo.fAccountBookId !=null">
+                gb.f_account_book_id = #{bo.fAccountBookId,jdbcType=INTEGER}
+            </if>
+            <if test="bo.fCurrencyId !=null ">
+                and gb.f_currency_id = #{bo.fCurrencyId,jdbcType=INTEGER}
+            </if>
+            <if test="bo.fYear != null and bo.fYear != ''">
+                and gb.f_year = #{bo.fYear,jdbcType=VARCHAR}
+            </if>
+            <if test="bo.fPeriod != null">
+                and gb.f_period = #{bo.fPeriod,jdbcType=INTEGER}
+            </if>
+            <if test="bo.fAccountId !=null ">
+                and gb.f_account_id = #{bo.fAccountId,jdbcType=INTEGER}
+            </if>
+            <if test="bo.dimensionCode !=null and bo.dimensionCode !=''">
+                and gb.dimension_code = concat('%',#{bo.dimensionCode,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="bo.fDetailCode !=null and bo.fDetailCode !=''">
+                and gb.f_detail_code like concat('%',#{bo.fDetailCode,jdbcType=VARCHAR},'%')
+            </if>
+        </where>
+        ORDER BY
+        gb.f_year,
+        gb.f_period,
+        gb.f_detail_code,
+        gb.f_account_id
+    </select>
+
+    <select id="dimensionList" resultType="com.skeqi.finance.pojo.vo.dimension.TBdFlexItemPropertyVo">
+        SELECT
+        ip.*
+        FROM
+        t_bd_flex_item_property ip
+        WHERE
+        ip.f_id in (
+            SELECT af.f_flexitemproperty_id from t_bd_account_flexentry af WHERE af.f_acct_id = #{fAccountId,jdbcType=INTEGER}
+        )
+    </select>
+
+    <select id="queryDimensionDetails" resultType="java.util.Map">
+        select
+        ve.f_entry_id fEntryId,
+        ve.f_voucher_id fVoucherId,
+        ve.f_explanation fExplanation,
+        ve.f_account_id fAccountId,
+        ve.f_detail_code fDetailCode,
+        ve.dimension_code dimensionCode,
+        ve.f_amountfor fAmountfor,
+        ve.f_amount fAmount,
+        ve.f_currency_id fCurrencyId,
+        ve.f_dc fDc,
+        ve.f_debit fDebit,
+        ve.f_credit fCredit,
+        v.f_voucher_words fVoucherWords,
+        v.f_voucher_group_no fVoucherGroupNo,
+        v.f_voucher_id fVoucherId
+        from t_gl_voucher_entry ve
+        LEFT JOIN (select v.*,vg.f_voucher_words from  t_gl_voucher v,t_bd_voucher_group vg where vg.f_vchgroup_id = v.f_voucher_group_id) v on v.f_voucher_id = ve.f_voucher_id
+        <where>
+            <if test="bo.fAccountBookId !=null">
+                v.f_account_book_id = #{bo.fAccountBookId,jdbcType=INTEGER}
+            </if>
+            <if test="bo.fDate !=null">
+                and v.f_date = #{bo.fDate,jdbcType=TIMESTAMP}
+            </if>
+            <if test="bo.fCurrencyId !=null ">
+                and ve.f_currency_id = #{bo.fCurrencyId,jdbcType=INTEGER}
+            </if>
+            <if test="bo.fAccountId !=null ">
+                and ve.f_account_id = #{bo.fAccountId,jdbcType=INTEGER}
+            </if>
+            <if test="bo.dimensionCode !=null and bo.dimensionCode !=''">
+                and ve.dimension_code = concat('%',#{bo.dimensionCode,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="bo.fDetailCode !=null and bo.fDetailCode !=''">
+                and ve.f_detail_code like concat('%',#{bo.fDetailCode,jdbcType=VARCHAR},'%')
+            </if>
+        </where>
+    </select>
+
+    <select id="selectByFlexItemPropertyId" resultType="com.skeqi.finance.pojo.vo.dimension.TBdFlexItemPropertyVo">
+        select * from t_bd_flex_item_property WHERE f_id = #{flexItemPropertyId,jdbcType=INTEGER}
+    </select>
+
+    <select id="selectHelpDataByFlexItemPropertyId" resultType="com.skeqi.finance.pojo.vo.basicinformation.help.TBdHelpDataVo">
+        SELECT
+            *
+        FROM
+            t_bd_help_data
+        WHERE
+                f_type_id IN (
+                SELECT
+                    f_id
+                FROM
+                    t_bd_help_type
+                WHERE
+                        f_id IN ( SELECT f_dimension_source_id FROM t_bd_flex_item_property WHERE f_id = #{flexItemPropertyId,jdbcType=INTEGER} )
+            )
+    </select>
+</mapper>

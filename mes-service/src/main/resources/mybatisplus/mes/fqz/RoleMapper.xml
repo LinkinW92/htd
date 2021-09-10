@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.fqz.RoleDAO">
+
+	<select id="findRoleList" resultType="CMesRoleT">
+		select id as rId,ROLE_NAME from c_mes_role_t
+		where VIEW_MODE = 1
+		GROUP BY ID
+	</select>
+
+	<select id="findMenu" resultType="CMesMenuT">
+		SELECT menu.id,menu.MENU_NAME FROM C_MES_MENU_T menu,C_MES_ROLE_T role,C_MES_ROLE_MENU_T rm
+		where menu.ID=rm.MENU_ID and role.ID=rm.ROLE_ID and role.ID=#{id}  and menu.grade=2
+	</select>
+
+	<select id="findCrud" resultType="CMesMenuCrudT">
+		select id,MENU_ID,MENU_CRUD_ID from C_MES_MENU_CRUD_T where ROLE_ID=#{id} and MENU_id=#{mid}
+	</select>
+
+	<delete id="deleteMenu">
+		delete from C_MES_MENU_CRUD_T where ROLE_ID=#{id}
+	</delete>
+
+	<insert id="addRoleMenu">
+		insert into C_MES_MENU_CRUD_T(MENU_ID,MENU_CRUD_ID,ROLE_ID)
+		values(#{mid},#{status},#{rid})
+	</insert>
+		<insert id="addCrud"   useGeneratedKeys="true"  keyProperty="cid">
+		insert into c_mes_crud_t  (ID,CRUD_NAME,CRUD_ALIAS,MENU_ID)
+		values(null,#{label},#{url},#{id})
+	</insert>
+
+	<!-- 根据用户ID查询按钮权限 -->
+ 	<select id="findByCrud" resultType="com.skeqi.mes.mapper.qh.CmesCrudL">
+			SELECT
+				c.CRUD_NAME label,
+				c.CRUD_ALIAS id
+			FROM
+				c_mes_user_t u
+				LEFT JOIN c_mes_role_t r ON r.ID = u.ROLE_ID
+				LEFT JOIN c_mes_menu_crud_t mc ON mc.ROLE_ID = r.ID
+				LEFT JOIN c_mes_menu_t m ON m.id = mc.MENU_ID
+				LEFT JOIN c_mes_crud_t c ON c.ID = mc.MENU_CRUD_ID
+			WHERE
+				u.viewMode = 1 and u.ID = #{userId}  and c.MENU_ID = m.ID
+			GROUP BY
+				c.id
+	</select>
+	<!-- 根据角色ID查询按钮权限 -->
+	 	<select id="toupdateCrud" resultType="com.skeqi.mes.mapper.qh.CmesCrudL">
+			SELECT
+				c.CRUD_NAME label,
+				c.CRUD_ALIAS id
+			FROM
+				c_mes_role_t r
+				LEFT JOIN c_mes_menu_crud_t mc ON mc.ROLE_ID = r.ID
+				LEFT JOIN c_mes_menu_t m ON m.id = mc.MENU_ID
+				LEFT JOIN c_mes_crud_t c ON c.ID = mc.MENU_CRUD_ID
+			WHERE
+				r.ID = #{roleId}
+				AND c.MENU_ID = m.ID
+			GROUP BY
+				c.id
+	</select>
+	<select id="findByMenuId"   resultType="com.skeqi.mes.mapper.qh.CmesCrudL">
+SELECT
+	m.id id
+FROM
+	c_mes_role_t r
+	LEFT JOIN c_mes_menu_crud_t mc ON mc.ROLE_ID = r.ID
+	LEFT JOIN c_mes_menu_t m ON m.id = mc.MENU_ID
+	LEFT JOIN c_mes_crud_t c ON c.ID = mc.MENU_CRUD_ID
+WHERE
+	r.ID = #{roleId}
+	AND c.MENU_ID = m.ID
+GROUP BY
+	m.id
+	</select>
+</mapper>

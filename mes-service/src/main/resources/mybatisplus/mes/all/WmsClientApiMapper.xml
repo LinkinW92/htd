@@ -1,0 +1,493 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.all.WmsClientApiDao">
+
+	<resultMap type="com.skeqi.mes.pojo.wms.CWmsOutTaskqueueT" id="outTaskqueueMap">
+		<result column="ID" property="id" />
+		<result column="DT" property="dt" />
+		<result column="LIST_NO" property="listNo" />
+		<result column="TRAY" property="tray" />
+		<result column="STATION_ID" property="stationId" />
+		<result column="FLAG" property="flag" />
+		<result column="OVER_DT" property="overDt" />
+		<result column="LOCATION_ID" property="locationId" />
+		<association property="location" javaType="com.skeqi.mes.pojo.wms.CWmsLocationT">
+			<result column="LOCATION_NAME" property="locationName" />
+			<result column="LOCATION_X" property="locationX" />
+			<result column="LOCATION_Y" property="locationY" />
+			<result column="LOCATION_Z" property="locationZ" />
+		</association>
+		<association property="station" javaType="com.skeqi.mes.pojo.CMesStationT">
+			<result column="STATION_NAME" property="stationName" />
+		</association>
+	</resultMap>
+	<select id="findOutTaskqueue" resultMap="outTaskqueueMap">
+		select
+		`out`.*,station.STATION_NAME,location.LOCATION_NAME,location.LOCATION_X,location.LOCATION_Y,location.LOCATION_Z
+		from r_wms_out_taskqueue_t `out`
+		LEFT join c_mes_station_t station on
+		`out`.STATION_ID = station.id
+		join c_wms_location_t location on
+		`out`.LOCATION_ID = location.id
+		where `out`.flag = 1
+		<if test="id != null">
+			AND `out`.ID = #{id}
+		</if>
+		<if test="dt != null">
+			AND `out`.DT = #{dt}
+		</if>
+		<if test="listNo != null">
+			AND `out`.LIST_NO = #{listNo}
+		</if>
+		<if test="tray != null">
+			AND `out`.TRAY = #{tray}
+		</if>
+		<if test="stationId != null">
+			AND `out`.STATION_ID = #{stationId}
+		</if>
+		<if test="flag != null">
+			AND `out`.FLAG = #{flag}
+		</if>
+		<if test="overDt != null">
+			AND `out`.OVER_DT = #{overDt}
+		</if>
+		<if test="locationId != null">
+			AND `out`.LOCATION_ID = #{locationId}
+		</if>
+		ORDER BY `out`.ID
+	</select>
+
+	<delete id="deleteOutTaskqueue">
+		delete from r_wms_out_taskqueue_t
+		where id =
+		#{outTaskqueueId}
+	</delete>
+
+	<insert id="addPOutTaskqueue">
+		insert into p_wms_out_taskqueue_t(
+		DT,LIST_NO,TRAY,STATION_ID,
+		FLAG,OVER_DT,LOCATION_ID)
+		values(
+		now(),#{listNo},#{tray},#{stationId},
+		#{flag},now(),#{locationId})
+	</insert>
+
+	<resultMap type="com.skeqi.mes.pojo.wms.CWmsMaterialNumberT" id="numberMap">
+		<result column="ID" property="id" />
+		<result column="MATERIAL_NO" property="materialNo" />
+		<result column="MATERIAL_NAME" property="materialName" />
+		<result column="MATERIAL_NUMBER" property="materialNumber" />
+		<result column="PROJECT_ID" property="projectId" />
+		<result column="MATERIAL_ID" property="materialId" />
+		<result column="WAREHOUSE_ID" property="wareHouseId" />
+		<result column="AREA_ID" property="areaId" />
+		<result column="LOCATION_ID" property="locationId" />
+		<result column="RESERVOIR_AREA_ID" property="reservoirareaId" />
+		<result column="LMMINENT_RELEASE" property="lmminentRelease" />
+		<result column="DT" property="dt" />
+		<result column="FREEZING_NUMBER" property="freezingNumber" />
+		<result column="RESERVED_NUMBER" property="reservedNumber" />
+		<result column="TRAY" property="tray" />
+		<result column="bar_code" property="barCode" />
+		<association property="material" javaType="com.skeqi.mes.pojo.CMesJlMaterialT">
+			<result column="MATERIAL_NAME" property="materialName" />
+		</association>
+		<association property="project" javaType="com.skeqi.mes.pojo.wms.CWmsProject">
+			<result column="PROJECT_NAME" property="projectName" />
+		</association>
+		<association property="materialUnit"
+			javaType="com.skeqi.mes.pojo.wms.CWmsMaterialUnitT">
+			<result column="UNIT_NAME" property="unitName" />
+		</association>
+		<association property="materialType"
+			javaType="com.skeqi.mes.pojo.wms.CWmsMaterialTypeT">
+			<result column="MT_NAME" property="mtName" />
+		</association>
+		<association property="warehouse" javaType="com.skeqi.mes.pojo.wms.WarehouseT">
+			<result column="WAREHOUSE_NAME" property="name" />
+		</association>
+		<association property="area" javaType="com.skeqi.mes.pojo.wms.CWmsAreaT">
+			<result column="AREA_NAME" property="areaName" />
+		</association>
+		<association property="reservoirArea"
+			javaType="com.skeqi.mes.pojo.wms.CWmsReservoirAreaT">
+			<result column="RA_NAME" property="raName" />
+		</association>
+		<association property="location" javaType="com.skeqi.mes.pojo.wms.CWmsLocationT">
+			<result column="LOCATION_NAME" property="locationName" />
+		</association>
+	</resultMap>
+
+	<select id="findMaterialNumberList" resultMap="numberMap">
+		select
+		NUMBER.*,MATERIAL.MATERIAL_NAME,PROJECT.PROJECT_NAME,WAREHOUSE.`NAME`
+		AS
+		WAREHOUSE_NAME,AREA.AREA_NAME,reservoir.RA_NAME,LOCATION.LOCATION_NAME
+		from c_wms_material_number_t NUMBER
+		JOIN c_mes_jl_material_t MATERIAL
+		ON NUMBER.MATERIAL_ID = MATERIAL.ID
+		JOIN c_wms_project_t PROJECT ON
+		NUMBER.PROJECT_ID = PROJECT.ID
+		JOIN c_wms_warehouse_t WAREHOUSE ON
+		NUMBER.WAREHOUSE_ID = WAREHOUSE.ID
+		JOIN c_wms_area_t AREA ON
+		NUMBER.AREA_ID = AREA.ID
+		JOIN c_wms_reservoir_area_t reservoir ON
+		NUMBER.RESERVOIR_AREA_ID = reservoir.ID
+		JOIN c_wms_location_t LOCATION
+		ON NUMBER.LOCATION_ID = LOCATION.ID
+		where 1 = 1
+		<if test="id != null and id != ''">
+			AND NUMBER.ID = #{id}
+		</if>
+		<if test="materialNumberId != null and materialNumberId != ''">
+			AND NUMBER.ID = #{materialNumberId}
+		</if>
+		<if test="materialNo != null and materialNo != ''">
+			AND NUMBER.MATERIAL_NO = #{materialNo}
+		</if>
+		<if test="materialName != null and materialName != ''">
+			AND NUMBER.MATERIAL_NAME like '%${materialName}%'
+		</if>
+		<if test="materialNumber != null and materialNumber != ''">
+			AND NUMBER.MATERIAL_NUMBER = #{materialNumber}
+		</if>
+		<if test="projectId != null and projectId != ''">
+			AND NUMBER.PROJECT_ID = #{projectId}
+		</if>
+		<if test="materialId != null and materialId != ''">
+			AND NUMBER.MATERIAL_ID = #{materialId}
+		</if>
+		<if test="wareHouseId != null and wareHouseId != ''">
+			AND NUMBER.WAREHOUSE_ID = #{wareHouseId}
+		</if>
+		<if test="areaId != null and areaId != ''">
+			AND NUMBER.AREA_ID = #{areaId}
+		</if>
+		<if test="locationId != null and locationId != ''">
+			AND NUMBER.LOCATION_ID = #{locationId}
+		</if>
+		<if test="reservoirareaId != null and reservoirareaId != ''">
+			AND NUMBER.RESERVOIR_AREA_ID = #{reservoirareaId}
+		</if>
+		<if test="lmminentRelease != null and lmminentRelease != ''">
+			AND NUMBER.LMMINENT_RELEASE = #{lmminentRelease}
+		</if>
+		<if
+			test="ksDate != null and ksDate != '' and jsDate != null and jsDate != ''">
+			AND NUMBER.DT BETWEEN #{ksDate} AND #{jsDate}
+		</if>
+		<if test="freezingNumber != null and freezingNumber != ''">
+			AND NUMBER.FREEZING_NUMBER = #{freezingNumber}
+		</if>
+		<if test="reservedNumber != null and reservedNumber != ''">
+			AND NUMBER.RESERVED_NUMBER = #{reservedNumber}
+		</if>
+		<if test="tray != null and tray != ''">
+			AND NUMBER.TRAY like '%${tray}%'
+		</if>
+		ORDER BY NUMBER.dt DESC
+	</select>
+
+	<insert id="addMaterialNumber">
+		insert into c_wms_material_number_t(
+		MATERIAL_NO,MATERIAL_NAME,MATERIAL_NUMBER,PROJECT_ID,
+		MATERIAL_ID,WAREHOUSE_ID,AREA_ID,LOCATION_ID,
+		RESERVOIR_AREA_ID,LMMINENT_RELEASE,DT,FREEZING_NUMBER,
+		RESERVED_NUMBER,TRAY,bar_code)
+		values(
+		#{materialNo},#{materialName},#{materialNumber},#{projectId},
+		#{materialId},#{wareHouseId},#{areaId},#{locationId},
+		#{reservoirareaId},#{lmminentRelease},now(),#{freezingNumber},
+		#{reservedNumber},#{tray},#{barCode})
+	</insert>
+
+	<update id="updateMaterialNumber">
+		update c_wms_material_number_t
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="materialNo != null">MATERIAL_NO = #{materialNo},</if>
+			<if test="materialName != null">MATERIAL_NAME = #{materialName},</if>
+			<if test="materialNumber != null">MATERIAL_NUMBER = #{materialNumber},</if>
+			<if test="projectId != null">PROJECT_ID = #{projectId},</if>
+			<if test="materialId != null">MATERIAL_ID = #{materialId},</if>
+			<if test="wareHouseId != null">WAREHOUSE_ID = #{wareHouseId},</if>
+			<if test="areaId != null">AREA_ID = #{areaId},</if>
+			<if test="locationId != null">LOCATION_ID = #{locationId},</if>
+			<if test="reservoirareaId != null">RESERVOIR_AREA_ID = #{reservoirareaId},</if>
+			<if test="lmminentRelease != null">LMMINENT_RELEASE = #{lmminentRelease},</if>
+			<if test="freezingNumber != null">FREEZING_NUMBER = #{freezingNumber},</if>
+			<if test="reservedNumber != null">RESERVED_NUMBER = #{reservedNumber},</if>
+			<if test="tray != null">TRAY = #{tray}</if>
+		</trim>
+		where ID = #{id}
+	</update>
+
+	<delete id="deleteMaterialNumber">
+		delete from c_wms_material_number_t
+		where id =
+		#{materialNumberId}
+	</delete>
+
+	<select id="findLocationCount" resultType="java.lang.Integer">
+		select
+		ifnull(count(*),0) from c_wms_material_number_t
+		where LOCATION_ID =
+		#{locationId}
+	</select>
+
+	<resultMap type="com.skeqi.mes.pojo.wms.CWmsStorageDetailT" id="storageMap">
+		<result column="ID" property="id" />
+		<result column="DT" property="dt" />
+		<result column="MATERIAL_ID" property="materialId" />
+		<result column="MATERIAL_NUMBER" property="materialNumber" />
+		<result column="MATERIAL_CODE" property="materialCode" />
+		<result column="AREA_ID" property="areaId" />
+		<result column="RESERVOIR_AREA_ID" property="reservoirAreaId" />
+		<result column="LOCATION_ID" property="locationId" />
+		<result column="NOTE" property="note" />
+		<result column="LIST_NO" property="listNo" />
+		<result column="PROJECT_ID" property="projectId" />
+		<result column="SUPPLIER_ID" property="supplierId" />
+		<result column="TRAY" property="tray" />
+		<result column="WAREHOUSE_ID" property="warehouseId" />
+		<result column="YN_SHIFT" property="ynShift" />
+		<result column="STATION_ID" property="stationId" />
+		<result column="ISSUE_OR_RECEIPT" property="issueOrReceipt" />
+		<result column="bar_code" property="barCode" />
+		<result column="materialNumberId" property="materialNumberId" />
+		<association property="material" javaType="com.skeqi.mes.pojo.CMesJlMaterialT">
+			<result column="BOM_ID" property="bomId" />
+			<result column="MATERIAL_NAME" property="materialName" />
+		</association>
+		<association property="warehouse" javaType="com.skeqi.mes.pojo.wms.WarehouseT">
+			<result column="W_NAME" property="name" />
+		</association>
+		<association property="area" javaType="com.skeqi.mes.pojo.wms.CWmsAreaT">
+			<result column="AREA_NAME" property="areaName" />
+		</association>
+		<association property="reservoirArea"
+			javaType="com.skeqi.mes.pojo.wms.CWmsReservoirAreaT">
+			<result column="RA_NAME" property="raName" />
+		</association>
+		<association property="location" javaType="com.skeqi.mes.pojo.wms.CWmsLocationT">
+			<result column="LOCATION_NAME" property="locationName" />
+		</association>
+		<association property="project" javaType="com.skeqi.mes.pojo.wms.CWmsProject">
+			<result column="PROJECT_NAME" property="projectName" />
+		</association>
+		<association property="station" javaType="com.skeqi.mes.pojo.CMesStationT">
+			<result column="STATION_NAME" property="stationName" />
+		</association>
+	</resultMap>
+	<select id="findStorageDetail" resultMap="storageMap">
+		SELECT STORAGE
+			.*,
+			material.MATERIAL_NAME,
+			material.BOM_ID,
+			warehouse.NAME AS W_NAME,
+			area.AREA_NAME,
+			reservoir.RA_NAME,
+			location.LOCATION_NAME,
+			project.PROJECT_NAME,
+			station.STATION_NAME
+		FROM
+			r_wms_storage_detail_t
+			STORAGE
+			JOIN c_mes_jl_material_t material ON STORAGE.MATERIAL_ID = material.id
+			LEFT JOIN c_wms_location_t location ON STORAGE.LOCATION_ID = location.id
+			LEFT JOIN c_wms_reservoir_area_t reservoir ON location.RESERVOIR_AREA_ID = reservoir.id
+			LEFT JOIN c_wms_area_t area ON reservoir.AREA_ID = area.id
+			LEFT JOIN c_wms_warehouse_t warehouse ON area.WAREHOUSE_ID = warehouse.ID
+			JOIN c_wms_project_t project ON STORAGE.PROJECT_ID = project.id
+			LEFT JOIN c_mes_station_t station ON STORAGE.STATION_ID = station.id
+		WHERE
+			1 = 1
+		<if test="id != null">
+			AND storage.ID = #{id}
+		</if>
+		<if test="dt != null">
+			AND storage.DT = #{dt}
+		</if>
+		<if test="materialId != null">
+			AND storage.MATERIAL_ID = #{materialId}
+		</if>
+		<if test="materialNumber != null">
+			AND storage.MATERIAL_NUMBER = #{materialNumber}
+		</if>
+		<if test="materialCode != null">
+			AND storage.MATERIAL_CODE = #{materialCode}
+		</if>
+		<if test="areaId != null">
+			AND storage.AREA_ID = #{areaId}
+		</if>
+		<if test="reservoirAreaId != null">
+			AND storage.RESERVOIR_AREA_ID = #{reservoirAreaId}
+		</if>
+		<if test="locationId != null">
+			AND storage.LOCATION_ID = #{locationId}
+		</if>
+		<if test="note != null">
+			AND storage.NOTE = #{note}
+		</if>
+		<if test="listNo != null">
+			AND storage.LIST_NO = #{listNo}
+		</if>
+		<if test="projectId != null">
+			AND storage.PROJECT_ID = #{projectId}
+		</if>
+		<if test="supplierId != null">
+			AND storage.SUPPLIER_ID = #{supplierId}
+		</if>
+		<if test="tray != null">
+			AND storage.TRAY = #{tray}
+		</if>
+		<if test="warehouseId != null">
+			AND storage.WAREHOUSE_ID = #{warehouseId}
+		</if>
+		<if test="ynShift != null">
+			AND storage.YN_SHIFT = #{ynShift}
+		</if>
+		ORDER BY storage.ID
+	</select>
+
+	<insert id="addPStorageDetail">
+		insert into p_wms_storage_detail_t(
+		DT,MATERIAL_ID,MATERIAL_NUMBER,MATERIAL_CODE,
+		AREA_ID,RESERVOIR_AREA_ID,LOCATION_ID,NOTE,
+		LIST_NO,PROJECT_ID,SUPPLIER_ID,TRAY,
+		WAREHOUSE_ID,YN_SHIFT,ISSUE_OR_RECEIPT,STATION_ID,bar_code,
+		MATERIAL_NAME,WAREHOUSE_NAME,AREA_NAME,RESERVOIR_AREA_NAME,LOCATION_NAME,PROJECT_NAME,STATION_NAME)
+		values(
+		now(),#{materialId},#{materialNumber},#{materialCode},
+		#{areaId},#{reservoirAreaId},#{locationId},#{note},
+		#{listNo},#{projectId},#{supplierId},#{tray},
+		#{warehouseId},#{ynShift},#{issueOrReceipt},#{stationId},#{barCode},
+		#{material.materialName},#{warehouse.name},#{area.areaName},
+		#{reservoirArea.raName},#{location.locationName},#{project.projectName},#{station.stationName})
+	</insert>
+
+	<delete id="deleteStorageDetail">
+		delete from r_wms_storage_detail_t
+		where id = #{id}
+	</delete>
+
+	<select id="findBarcodeGeneratedMaterialNumberList" resultMap="numberMap">
+		select * from c_wms_material_number_t
+		where id = (
+			select min(id) from c_wms_material_number_t
+			where bar_code is not null
+			and LMMINENT_RELEASE !=0
+			and LOCATION_ID = #{locationId}
+			and PROJECT_ID = #{projectId}
+			and MATERIAL_ID = #{materialId}
+		)
+	</select>
+
+	<!-- 修改库位状态 -->
+	<update id="updateLocationState">
+		update c_wms_location_t
+		set LOCATION_STATUS = #{state}
+		where id = #{locationId}
+		<if test="state != 0">
+			and LOCATION_STATUS = 0
+		</if>
+	</update>
+
+	<!-- 修改库位托盘码 -->
+	<update id="updateTrayCode">
+		update c_wms_location_t
+		set TRAY = #{trayCode}
+		where id = #{locationId}
+	</update>
+
+	<!-- 通过托盘码查询临时入库队列信息 -->
+	<select id="findRInTaskqueueByTrayCode" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			id,
+			dt,
+			LIST_NO as listNo,
+			tray,
+			flag,
+			OVER_DT as overDt,
+			LOCATION_ID as locationId
+		FROM
+			r_wms_in_taskqueue_t
+		where TRAY = #{trayCode}
+		and flag = 1
+	</select>
+
+	<!-- 新增永久入库队列信息 -->
+	<update id="addPInTaskqueue">
+		INSERT INTO p_wms_in_taskqueue_t(dt,LIST_NO,tray,OVER_DT,LOCATION_ID)
+		value(#{dt},#{listNo},#{tray},now(),#{locationId})
+	</update>
+
+	<!-- 删除出库队列临时表数据 -->
+	<delete id="deleteRInTaskqueue">
+		DELETE FROM r_wms_in_taskqueue_t
+		where id = #{id}
+	</delete>
+
+	<!-- 查询库位坐标 -->
+	<select id="findlocationZuoBiaoByTayCode" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			b.LOCATION_X AS x,
+			b.LOCATION_Y AS y,
+			b.LOCATION_Z AS z,
+			b.id as locationId,
+			a.LIST_NO as listNo
+		FROM
+			r_wms_in_taskqueue_t a
+		JOIN c_wms_location_t b ON a.LOCATION_ID = b.id
+		where a.TRAY = #{trayCode}
+	</select>
+
+	<!-- 新增临时入库队列表信息 -->
+	<insert id="addRInTaskqueue">
+		INSERT INTO r_wms_in_taskqueue_t(DT,LIST_NO,TRAY,FLAG,LOCATION_ID)
+		value(now(),#{listNo},#{trayCode},1,#{locationId})
+	</insert>
+
+	<!-- 更新库存时间 -->
+	<update id="updateNumberDt">
+		update c_wms_material_number_t
+		set DT = now()
+		where PROJECT_ID = #{projectId}
+		and MATERIAL_ID = #{materialId}
+		and location_id = #{locationId}
+	</update>
+
+	<!-- 新 -->
+	<!-- 出库更新库存 -->
+	<update id="updateStockMaterialNumber">
+		update c_wms_material_number_t
+		set
+		MATERIAL_NUMBER = MATERIAL_NUMBER - #{materialNumber},
+		LMMINENT_RELEASE = LMMINENT_RELEASE - #{materialNumber}
+		where id = #{materialNumberId}
+	</update>
+
+	<!-- 新 -->
+	<!-- 删除空库存的记录 -->
+	<delete id="deleteNullStock">
+		delete from c_wms_material_number_t
+		where MATERIAL_NUMBER = 0
+	</delete>
+
+	<!-- 查询是否有库存 -->
+	<select id="findStockCount" resultType="java.lang.Integer">
+		SELECT id FROM c_wms_material_number_t
+		where MATERIAL_ID = #{materialId}
+		and PROJECT_ID = #{projectId}
+		and LOCATION_ID = #{locationId}
+		LIMIT 1
+	</select>
+
+	<!-- 更新库存数量 -->
+	<update id="updateStockNumber">
+		update c_wms_material_number_t
+		set MATERIAL_NUMBER = MATERIAL_NUMBER + #{number}
+		where id = #{id}
+	</update>
+
+</mapper>

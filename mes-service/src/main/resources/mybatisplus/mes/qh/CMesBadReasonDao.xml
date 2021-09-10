@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.skeqi.mes.mapper.qh.CMesBadReasonDao">
+    <insert id="addBadReason">
+        insert into c_mes_bad_reason_t(bad_reason,bad_code,bad_desc) values(#{badReason},#{badCode},#{badDesc})
+    </insert>
+
+
+    <update id="updateBadReason">
+        update c_mes_bad_reason_t set bad_reason=#{badReason},bad_code=#{badCode},bad_desc=#{badDesc} where id=#{id}
+    </update>
+
+    <delete id="delBadReason">
+        delete from c_mes_bad_reason_t where id=#{id}
+    </delete>
+
+
+    <select id="findAllBadReason" resultType="com.skeqi.mes.pojo.qh.CMesBadReasonT">
+        select id,bad_reason,bad_code,bad_desc from c_mes_bad_reason_t where 1=1
+        <if test="badReason!=null and badReason!='' ">
+            and bad_reason like '%${badReason}%'
+        </if>
+    </select>
+</mapper>

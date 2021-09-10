@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.zl.CMesItemRegistrationFormDao">
+	<!-- 查询全部 -->
+	<select id="findAllItemRegistrationForm" resultType="CMesItemRegistrationForm">
+	SELECT * FROM c_mes_item_registration_form where 1=1
+		</select>
+	<select id="countItemRegistrationForm" resultType="int">
+		SELECT COUNT(*) FROM
+		c_mes_item_registration_form WHERE SERIAL_NUMBER = #{serialNumber}
+	</select>
+		<insert id="addItemRegistrationForm">
+		INSERT INTO c_mes_item_registration_form(
+		ITEM_TYPE,QUOTATION_NUMBER,SERIAL_NUMBER,PRODUCT_ID,
+		NAME_GOODS,TYPENUM,SPECIFICATIONS,SHAPE,E_PACKAGE,MATERIAL_LENGTH,
+		MATERIAL_WIDTH,MATERIAL_HIGHT,CURRENT_INVENTORY,CALCULATE_UNIT,
+		SAFETY_STOCK,SALES_REFERENCE_PRICE,CURRENT_NET_WORTH,PURCHASE_REFERENCE_PRICE,
+		MONTHLY_DEPRECIATION_RATE,PRICE,SUPPLY_OF_GOODS,NOTE,PICTURN_PATH)
+		VALUES(
+		#{itemType},#{quotationNumber},#{serialNumber},#{productId},#{nameGoods},#{typeNum},
+		#{specifications},#{shape},#{ePackage},#{materialLength},#{materialWidth},#{materialHight},#{currentInventory}
+		,#{calculateUnit},#{safetyStock},#{salesReferencePrice},#{currentNetWorth},#{purchaseReferencePrice},#{monthlyDepreciationRate}
+		,#{price},#{supplyOfGoods},#{note},#{picturnPath})
+	</insert>
+	<select id="findItemRegistrationFormId" resultType="CMesItemRegistrationForm">
+			select * from c_mes_item_registration_form where ID=#{id}
+	</select>
+	<update id="editItemRegistrationForm">
+		UPDATE c_mes_item_registration_form SET
+		ITEM_TYPE =#{itemType},QUOTATION_NUMBER=#{quotationNumber},SERIAL_NUMBER=#{serialNumber},
+		PRODUCT_ID=#{productId},NAME_GOODS=#{nameGoods},TYPENUM=#{typeNum},SPECIFICATIONS=#{specifications},SHAPE=#{shape},E_PACKAGE=#{ePackage},
+		MATERIAL_LENGTH=#{materialLength},MATERIAL_WIDTH=#{materialWidth},MATERIAL_HIGHT=#{materialHight},CURRENT_INVENTORY=#{currentInventory},
+		CALCULATE_UNIT=#{calculateUnit},SAFETY_STOCK=#{safetyStock},SALES_REFERENCE_PRICE=#{salesReferencePrice},CURRENT_NET_WORTH=#{currentNetWorth},
+		PURCHASE_REFERENCE_PRICE=#{purchaseReferencePrice},MONTHLY_DEPRECIATION_RATE=#{monthlyDepreciationRate},
+		PRICE=#{price},
+		SUPPLY_OF_GOODS=#{supplyOfGoods},NOTE=#{note},PICTURN_PATH=#{picturnPath}
+		WHERE ID = #{id}
+	</update>
+	<delete id="delItemRegistrationForm">
+		DELETE FROM c_mes_item_registration_form WHERE ID = #{id}
+	</delete>
+
+</mapper>

@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.yp.wms.WmsProductionRequisitionDao">
+
+	<!-- 查询 -->
+	<select id="list" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			a.dt,
+			a.factoryId,
+			a.listNo,
+			a.workOrderNo,
+			a.lineId,
+			a.rockNo,
+			a.stationId,
+			a.type,
+			a.userId,
+			a.handleUserId,
+			a.handleDt,
+			a.dis,
+			a.`status`,
+			b.factoryName,
+			d.STATION_NAME AS stationName,
+			e.USER_NAME AS userName,
+			e.`name` AS fullName,
+			f.USER_NAME AS handleUserName,
+			f.`name` AS handleUserFullName,
+			g.`name` AS lineName
+		FROM
+			c_qh_wms_production_requisition_h_t a
+			JOIN c_mes_factory_t b ON a.factoryId = b.id
+			LEFT JOIN c_mes_station_t d ON a.stationId = d.id
+			JOIN c_mes_user_t e ON a.userId = e.id
+			LEFT JOIN c_mes_user_t f ON a.handleUserId = f.id
+			JOIN c_mes_line_t g ON a.lineId = g.id
+		WHERE
+			a.viewMode = 1
+		<if test="listNo != null and listNo != ''">
+			and a.listNo like '%${listNo}%'
+		</if>
+		<if test="workOrderNo != null and workOrderNo != ''">
+			and a.workOrderNo like '%${workOrderNo}%'
+		</if>
+		<if test="userId != null and userId != ''">
+			and a.userId = #{userId}
+		</if>
+		<if test="handleUserId != null and handleUserId != ''">
+			and a.handleUserId = #{handleUserId}
+		</if>
+		<if test="startHandleDt != null and startHandleDt != '' and endHandleDt != null and endHandleDt != ''">
+			and DATE_FORMAT(a.handleDt,'%Y-%m-%d') between #{startHandleDt} and #{endHandleDt}
+		</if>
+		ORDER BY a.dt desc
+	</select>
+
+	<!-- 新增 -->
+	<insert id="add">
+		insert into c_qh_wms_production_requisition_h_t
+		(
+			dt,factoryId,listNo,workOrderNo,
+			lineId,rockNo,stationId,type,
+			userId,`status`,dis,viewMode
+		)
+		value
+		(
+			now(),#{factoryId},#{listNo},#{workOrderNo},
+			#{lineId},#{rockNo},#{stationId},#{type},
+			#{userId},#{status},#{dis},#{viewMode}
+		)
+	</insert>
+
+	<!-- 更新 -->
+	<update id="update">
+		update c_qh_wms_production_requisition_h_t
+		<trim prefix="set" suffixOverrides=",">
+			<if test="rockNo != null and rockNo != ''">
+				rockNo = #{rockNo},
+			</if>
+			<if test="type != null and type != ''">
+				type = #{type},
+			</if>
+			<if test="handleUserId != null and handleUserId != ''">
+				handleUserId = #{handleUserId},
+			</if>
+			<if test="handleDt != null and handleDt != ''">
+				handleDt = now(),
+			</if>
+			<if test="status != null and status != ''">
+				`status` = #{status},
+			</if>
+			<if test="dis != null">
+				dis = #{dis},
+			</if>
+			<if test="viewMode != null">
+				viewMode = #{viewMode},
+			</if>
+		</trim>
+		where listNo = #{listNo}
+	</update>
+
+	<!-- 查询BOM -->
+	<select id="findBom" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			c.id AS cId,
+			c.stationId,
+			c.materialId,
+			c.quantity,
+			d.MATERIAL_NAME AS materialName,
+			d.BOM_ID AS materialNo,
+			d.STOCK_UNIT as unit
+		FROM
+			c_lsl_bom_t a
+			JOIN r_mes_workorder_detail_t b ON a.productId = b.PRODUCT_ID
+			JOIN c_lsl_bom_detail_t c ON a.id = c.bomId
+			JOIN c_mes_jl_material_t d ON c.materialId = d.id
+		WHERE
+			b.WORKORDER_ID = 'WO0608000008'
+			AND a.`status` = 1
+			AND c.`status` = 1
+			<if test="stationId != null and stationId != ''">
+			AND stationId = #{stationId}
+			</if>
+	</select>
+
+	<!-- 新增R -->
+	<insert id="addR">
+		insert into c_qh_wms_production_requisition_r_t(listNo,materialNo,materialName,demandQuantity,issuedQuantity,unit)
+		value(#{listNo},#{materialNo},#{materialName},#{demandQuantity},#{issuedQuantity},#{unit})
+	</insert>
+
+	<!-- type：实体类 id：在resultMap引用-->
+	<resultMap type="com.alibaba.fastjson.JSONObject" id="rdMap">
+		<!-- column：数据库查询出来的列  property：实体类属性的值 -->
+		<result column="rId" property="id"/>
+		<result column="listNo" property="listNo"/>
+		<result column="demandQuantity" property="demandQuantity"/>
+		<result column="issuedQuantity" property="issuedQuantity"/>
+		<result column="unit" property="unit"/>
+		<result column="materialNo" property="materialNo"/>
+		<result column="materialName" property="materialName"/>
+		<result column="workOrderNo" property="workOrderNo"/>
+		<!-- collection：一对多  property：实体类里的 ofType：实体类 -->
+		<collection property="d" javaType="list" ofType="com.alibaba.fastjson.JSONObject">
+			<result column="dId" property="id"/>
+			<result column="packingId" property="packingId"/>
+			<result column="code" property="code"/>
+			<result column="packingNumber" property="packingNumber"/>
+			<result column="num" property="number"/>
+		</collection>
+	</resultMap>
+	<!-- 查询R跟D表 -->
+	<select id="findRAndD" resultMap="rdMap">
+		SELECT
+			a.id AS rId,
+			a.listNo,
+			a.materialNo,
+			a.materialName,
+			a.demandQuantity,
+			a.issuedQuantity,
+			a.unit,
+			b.id AS dId,
+			b.packingId,
+			b.`code`,
+			b.packingNumber,
+			b.number,
+			c.workOrderNo
+		FROM
+			c_qh_wms_production_requisition_r_t a
+			LEFT JOIN c_qh_wms_production_requisition_d_t b ON a.id = b.rId
+			JOIN c_qh_wms_production_requisition_h_t c on a.listNo = c.listNo
+		where a.listNo = #{listNo}
+	</select>
+
+	<!-- 通过工单编号查询已出的物料数量 -->
+	<select id="queryTheIssuedMaterialQuantityByWorkOrderNo" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			b.materialNo,
+			b.materialName,
+			sum( b.issuedQuantity ) AS alreadyNumber
+		FROM
+			c_qh_wms_production_requisition_h_t a
+			JOIN c_qh_wms_production_requisition_r_t b ON a.listNo = b.listNo
+		WHERE
+			a.workOrderNo = #{workOrderNo}
+		<if test="materialNo != null and materialNo != ''">
+		and b.materialNo = #{materialNo}
+		</if>
+		GROUP BY
+			b.materialNo
+	</select>
+
+	<!-- 新增D -->
+	<insert id="addD">
+		insert into c_qh_wms_production_requisition_d_t(rId,packingId,`code`,packingNumber,number)
+		value(#{rId},#{packingId},#{code},#{packingNumber},#{number})
+	</insert>
+
+	<!-- 通过id查询R表 -->
+	<select id="findRById" resultType="com.alibaba.fastjson.JSONObject">
+		select * from c_qh_wms_production_requisition_r_t
+		where id = #{id}
+	</select>
+
+	<!-- 更新行表 -->
+	<update id="updateR">
+		update c_qh_wms_production_requisition_r_t
+		set
+		issuedQuantity = #{issuedQuantity}
+		where id = #{id}
+	</update>
+
+	<!-- 查询详情表 -->
+	<select id="listD" resultType="com.alibaba.fastjson.JSONObject">
+		select * from c_qh_wms_production_requisition_d_t
+		where 1 = 1
+		<if test="id != null and id != ''">
+		and id = #{id}
+		</if>
+		<if test="rId != null and rId != ''">
+		and rId = #{rId}
+		</if>
+		<if test="packingId != null and packingId != ''">
+		and packingId = #{packingId}
+		</if>
+		<if test="code != null and code != ''">
+		and code = #{code}
+		</if>
+	</select>
+
+	<!-- 删除行表 -->
+	<delete id="deleteR">
+		delete from c_qh_wms_production_requisition_r_t
+		where id = #{id}
+	</delete>
+
+	<!-- 删除详情表 -->
+	<delete id="deleteD">
+		delete from c_qh_wms_production_requisition_d_t
+		where id = #{id}
+	</delete>
+
+	<!-- 通过行ID删除详情表 -->
+	<delete id="deleteDByRId">
+		delete from c_qh_wms_production_requisition_d_t
+		where rId = #{rId}
+	</delete>
+
+	<!-- 查询需过账数据 -->
+	<select id="queryDataToBePosted" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.listNo,
+			a.materialNo,
+			a.materialName,
+			a.unit,
+			b.packingId,
+			b.`code`,
+			b.packingNumber,
+			b.number,
+			c.id AS materialId,
+			d.factoryId,
+			d.workOrderNo,
+			d.lineId,
+			d.rockNo,
+			d.stationId
+		FROM
+			c_qh_wms_production_requisition_r_t a
+			LEFT JOIN c_qh_wms_production_requisition_d_t b ON a.id = b.rId
+			JOIN c_mes_jl_material_t c ON a.materialNo = c.BOM_ID
+			JOIN c_qh_wms_production_requisition_h_t d ON a.listNo = d.listNo
+		where a.listNo = #{listNo}
+		and d.`status` != '过账'
+	</select>
+
+</mapper>

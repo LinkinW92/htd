@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.skeqi.mes.mapper.authorization.ApplicationForAuthorizationDao">
+
+	<!-- 保存校验记录 -->
+	<insert id="addCheck">
+		INSERT INTO c_mes_check_data(dt,`code`)
+		value(#{dt}, #{code})
+	</insert>
+
+	<!-- 查询最后一次登录校验的数据 -->
+	<select id="findMaxId" resultType="com.alibaba.fastjson.JSONObject">
+		select * from c_mes_check_data
+		where id = (
+		select max(id) from c_mes_check_data
+		)
+	</select>
+
+</mapper>

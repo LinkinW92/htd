@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.dzb.report.DayOutputReportDao">
+
+    <!-- 查询全部产线 -->
+    <select id="listLine" resultType="java.util.Map">
+        select id,name from c_mes_line_t
+    </select>
+    <!--    根据产线和年份、月份查询数量    -->
+    <select id="listDaySnCountByYearAndMonthAndLineId" resultType="java.util.Map">
+        select
+        day_num,
+        (select count(sn) from p_mes_tracking_t where year(OFFLINE_DT)=#{year}
+        and month(OFFLINE_DT)=#{month} and day(OFFLINE_DT)=day_num
+        <if test="lineId != null">
+            and LINE_ID=#{lineId}
+        </if>
+        ) snCount,
+        ( ifnull((select SUM(ORDER_NUMBER) from r_mes_workorder_detail_t where year(PLAN_START_TIME)=#{year} and
+        month(PLAN_START_TIME)=#{month} and day(PLAN_START_TIME)=day_num
+        <if test="lineId != null">
+            and LINE_ID=#{lineId}
+        </if>
+        ),0)
+        + ifnull((select SUM(ORDER_NUMBER) from p_mes_workorder_detail_t where year(PLAN_START_TIME)=#{year} and
+        month(PLAN_START_TIME)=#{month} and day(PLAN_START_TIME)=day_num
+        <if test="lineId != null">
+            and LINE_ID=#{lineId}
+        </if>
+        ),0)
+        ) orderSum
+        from c_mes_day where day(LAST_DAY(str_to_date('${year}-${month}', '%Y-%m-%d %H')))>=day_num
+    </select>
+
+
+    <select id="okNgOutputByYearAndMonthAndDayAndLineId" resultType="java.util.Map">
+        select
+        (select count(sn) from p_mes_tracking_t where `STATUS` = 'OK' and year(OFFLINE_DT)=#{year}
+        <if test="lineId != null">
+            and LINE_ID=#{lineId}
+        </if>
+        and month(OFFLINE_DT)=#{month}
+        <if test="day != null">
+            and day(OFFLINE_DT)=#{day}
+        </if> ) okSn,
+        (select count(sn) from p_mes_tracking_t where `STATUS` = 'NG' and year(OFFLINE_DT)=#{year}
+        <if test="lineId != null">
+            and LINE_ID=#{lineId}
+        </if>
+        and month(OFFLINE_DT)=#{month}
+        <if test="day != null">
+            and day(OFFLINE_DT)=#{day}
+        </if>) ngSn
+    </select>
+
+    <select id="snCountByYearAndMonthAndLineId" resultType="java.util.Map">
+        select
+        (select count(sn) from p_mes_tracking_t where year(OFFLINE_DT)=#{year}
+        and month(OFFLINE_DT)=#{month}
+        <if test="lineId != null">
+            and LINE_ID=#{lineId}
+        </if>
+        ) snCount,
+        ( ifnull((select SUM(ORDER_NUMBER) from r_mes_workorder_detail_t where year(PLAN_START_TIME)=#{year}
+        and month(PLAN_START_TIME)=#{month}
+        <if test="lineId != null">
+            and LINE_ID=#{lineId}
+        </if>
+        ),0)
+        + ifnull((select SUM(ORDER_NUMBER) from p_mes_workorder_detail_t where year(PLAN_START_TIME)=#{year}
+        and month(PLAN_START_TIME)=#{month}
+        <if test="lineId != null">
+            and LINE_ID=#{lineId}
+        </if>
+        ),0)
+        ) orderSum
+    </select>
+    <select id="listSnCountByMonth" resultType="java.util.Map">
+        select to_days(OFFLINE_DT) days, count(sn) snCount
+        from p_mes_tracking_t
+        <![CDATA[
+        WHERE TO_DAYS(OFFLINE_DT)>=TO_DAYS(#{start}) and TO_DAYS(OFFLINE_DT) < TO_DAYS(#{end}) and LINE_ID=#{lineId}
+        group by days;
+        ]]>
+    </select>
+    <select id="listOrderCountByMonth" resultType="java.util.Map">
+        select TO_DAYS(PLAN_START_TIME) days, SUM(ORDER_NUMBER) orderCount
+        FROM
+        <![CDATA[
+        (select * from r_mes_workorder_detail_t
+        WHERE TO_DAYS(PLAN_START_TIME) >= TO_DAYS(#{start}) and TO_DAYS(PLAN_START_TIME) < TO_DAYS(#{end}) and LINE_ID=#{lineId}
+        UNION
+        select * from p_mes_workorder_detail_t
+        WHERE TO_DAYS(PLAN_START_TIME)<TO_DAYS(#{start}) and TO_DAYS(PLAN_START_TIME) >= TO_DAYS(#{end}) and LINE_ID=#{lineId}
+        ) t
+        group by days;
+        ]]>
+    </select>
+    <select id="okNgCountByDateRangeAndLineId" resultType="java.util.Map">
+        select `STATUS` status,count(sn) countSn
+        FROM p_mes_tracking_t
+      <![CDATA[
+        WHERE  LINE_ID=#{lineId} and OFFLINE_DT >= #{start} and OFFLINE_DT < #{end}
+        group by `STATUS`
+      ]]>
+    </select>
+    <select id="listSnCountByMonth2" resultType="java.util.Map">
+        select to_days(OFFLINE_DT) days, count(sn) snCount
+        from p_mes_tracking_t
+        <![CDATA[
+        WHERE OFFLINE_DT >= #{start} and OFFLINE_DT < #{end} and LINE_ID=#{lineId}
+        group by days;
+        ]]>
+    </select>
+    <select id="snCountByYearAndMonthAndLineId2" resultType="java.util.Map">
+        select
+        (select count(sn) from p_mes_tracking_t where
+        <![CDATA[
+        OFFLINE_DT >= #{start} and OFFLINE_DT < #{end}
+        ]]>
+        <if test="lineId != null">
+            and LINE_ID=#{lineId}
+        </if>
+        ) snCount,
+        ( ifnull((select SUM(ORDER_NUMBER) from r_mes_workorder_detail_t where
+        <![CDATA[
+        PLAN_START_TIME >= #{start} and PLAN_START_TIME < #{end}
+        ]]>
+        <if test="lineId != null">
+            and LINE_ID=#{lineId}
+        </if>
+        ),0)
+        + ifnull((select SUM(ORDER_NUMBER) from p_mes_workorder_detail_t where
+        <![CDATA[
+        PLAN_START_TIME >= #{start} and PLAN_START_TIME < #{end}
+        ]]>
+        <if test="lineId != null">
+            and LINE_ID=#{lineId}
+        </if>
+        ),0)
+        ) orderSum
+    </select>
+</mapper>
+
+

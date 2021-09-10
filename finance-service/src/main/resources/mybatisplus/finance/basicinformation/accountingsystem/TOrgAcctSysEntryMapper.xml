@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.basicinformation.accountingsystem.TOrgAcctSysEntryMapper">
+
+    <resultMap type="com.skeqi.finance.domain.basicinformation.accountingsystem.TOrgAcctSysEntry" id="TOrgAcctSysEntryResult">
+        <result property="fId" column="f_id"/>
+        <result property="fAcctsystemId" column="f_acctsystem_id"/>
+        <result property="fAcctOrgid" column="f_acct_orgid"/>
+        <result property="fDefaultAcctpolicyId" column="f_default_acctpolicy_id"/>
+        <result property="fAcctpolicyId" column="f_acctpolicy_id"/>
+        <result property="fDescription" column="f_description"/>
+    </resultMap>
+    <insert id="insertByAddBoList">
+        insert into
+        <trim prefix="t_org_acct_sys_entry(" suffix=")" suffixOverrides=",">
+            f_acctsystem_id,
+            f_acct_orgid,
+            f_default_acctpolicy_id,
+            f_acctpolicy_id,
+            f_description
+        </trim>
+        <foreach collection="list" item="item" open="VALUES" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                #{item.fAcctsystemId,jdbcType=INTEGER},
+                #{item.fAcctOrgid,jdbcType=INTEGER},
+                #{item.fDefaultAcctpolicyId,jdbcType=INTEGER},
+                #{item.fAcctpolicyId,jdbcType=INTEGER},
+                #{item.fDescription,jdbcType=VARCHAR}
+            </trim>
+        </foreach>
+    </insert>
+
+    <update id="updateByEditList">
+        update t_org_acct_sys_entry
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="f_acctsystem_id = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.fAcctpolicyId != null">
+                        when f_id = #{item.fId,jdbcType=INTEGER}
+                        then #{item.FAcctsystemId,jdbcType=INTEGER}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="f_acct_orgid = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.FAcctOrgid != null">
+                        when f_id = #{item.fId,jdbcType=INTEGER}
+                        then #{item.FAcctOrgid,jdbcType=INTEGER}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="f_default_acctpolicy_id = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.FDefaultAcctpolicyId != null">
+                        when f_id = #{item.fId,jdbcType=INTEGER}
+                        then #{item.FDefaultAcctpolicyId,jdbcType=INTEGER}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="f_acctpolicy_id = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.FAcctpolicyId != null">
+                        when f_id = #{item.fId,jdbcType=INTEGER}
+                        then #{item.FAcctpolicyId,jdbcType=INTEGER}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="f_description = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.FDescription != null">
+                        when f_id = #{item.fId,jdbcType=INTEGER}
+                        then #{item.FDescription,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where f_id in
+        <foreach  collection="list" item="item" open="(" separator=", " close=")">
+            #{item.fId,jdbcType=INTEGER}
+        </foreach>
+
+    </update>
+
+    <select id="queryListByFAcctsystemId"
+            resultType="com.skeqi.finance.pojo.vo.basicinformation.accountingsystem.TOrgAcctSysEntryVo">
+        select  toase.*,
+                ap.f_name policyName,
+                ap.f_number policyNumber,
+                so.org_code fAcctOrgCode,
+                so.name fAcctOrgName
+        from t_org_acct_sys_entry toase
+        left join sys_organization so on so.id = toase.f_acct_orgid
+        left join t_fa_acct_policy ap on ap.f_acctpolicy_id = toase.f_acctpolicy_id
+        where toase.f_acctsystem_id = #{fAcctsystemId,jdbcType=INTEGER}
+    </select>
+
+
+</mapper>

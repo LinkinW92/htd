@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.yp.wms.WmsReturnStockInDao">
+
+	<!-- 查询 -->
+	<select id="list" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			a.number,
+			DATE_FORMAT( a.cdt, '%Y-%m-%d %H:%i:%s' ) AS cdt,
+			DATE_FORMAT( a.udt, '%Y-%m-%d %H:%i:%s' ) AS udt,
+			a.type,
+			a.`status`,
+			a.creator,
+			a.mender,
+			a.remarks,
+			a.receivingGoodsUserId,
+			DATE_FORMAT( a.receivingGoodsDt, '%Y-%m-%d %H:%i:%s' ) AS receivingGoodsDt,
+			a.receivingGoodsFactoryId,
+			a.receivingGoodsLocationId,
+			b.USER_NAME AS receivingGoodsUserName,
+			b.`name` AS receivingGoodsUserFullName,
+			c.factoryName,
+			d.LOCATION_NAME AS locationName
+		FROM
+			c_lsl_material_return_t a
+			LEFT JOIN c_mes_user_t b ON a.receivingGoodsUserId = b.id
+			LEFT JOIN c_mes_factory_t c ON a.receivingGoodsFactoryId = c.id
+			LEFT JOIN c_wms_location_t d ON a.receivingGoodsLocationId = d.id
+		where 1 = 1
+		<if test="listNo != null and listNo !=''">
+		 and a.number like '%${listNo}%'
+		</if>
+		<if test="status != null and status !=''">
+		 and a.status = #{status}
+		</if>
+		<if test="creator != null and creator !=''">
+		 and a.creator like '%${creator}%'
+		</if>
+		<if test="receivingGoodsUserId != null and receivingGoodsUserId !=''">
+		 and a.receivingGoodsUserId = #{receivingGoodsUserId}
+		</if>
+		<if test="startReceivingGoodsDt != null and startReceivingGoodsDt !='' and endReceivingGoodsDt != null and endReceivingGoodsDt !=''">
+		and DATE_FORMAT(a.receivingGoodsDt,'%Y-%m-%d') between #{startReceivingGoodsDt} and #{endReceivingGoodsDt}
+		</if>
+	</select>
+
+	<!-- 更新 -->
+	<update id="update">
+		UPDATE c_lsl_material_return_t
+		 <trim prefix="set" suffixOverrides=",">
+		 	receivingGoodsFactoryId = #{receivingGoodsFactoryId},
+		  	receivingGoodsLocationId = #{receivingGoodsLocationId},
+		  <if test="type != null and type != ''">
+		  	type = #{type},
+		  </if>
+		  <if test="status != null and status != ''">
+		  	`status` = #{status},
+		  </if>
+		  <if test="mender != null and mender != ''">
+		  	mender = #{mender},
+		  </if>
+		  <if test="remarks != null">
+		  	remarks = #{remarks},
+		  </if>
+		  <if test="receivingGoodsUserId != null and receivingGoodsUserId != ''">
+		  	receivingGoodsUserId = #{receivingGoodsUserId},
+		  </if>
+		  <if test="receivingGoodsDt != null and receivingGoodsDt != ''">
+		  	receivingGoodsDt = now(),
+		  </if>
+		 </trim>
+		 WHERE number = #{listNo}
+	</update>
+	
+	<!-- 更新状态 -->
+	<update id="updateState">
+		UPDATE c_lsl_material_return_t
+		set 
+		`status` = #{status}
+		where number = #{listNo}
+	</update>
+
+	<!-- 查询行 -->
+	<select id="listR" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			a.number,
+			a.return_number AS returnNumber,
+			DATE_FORMAT( a.cdt, '%Y-%m-%d %H:%i:%s' ) AS cdt,
+			DATE_FORMAT( a.udt, '%Y-%m-%d %H:%i:%s' ) AS udt,
+			a.material_code AS materialCode,
+			a.quantity,
+			a.stock_quantity AS stockQuantity,
+			a.work_order AS workOrder,
+			a.materialId,
+			a.unit,
+			b.MATERIAL_NAME AS materialName,
+			b.BOM_ID AS materialNo
+		FROM
+			c_lsl_material_return_detailed_t a
+			LEFT JOIN c_mes_jl_material_t b ON a.materialId = b.id
+		WHERE
+			a.return_number = #{listNo}
+	</select>
+
+	<!-- 查询详情 -->
+	<select id="listD" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			a.number,
+			a.detailed_number as detailedNumber,
+			DATE_FORMAT( a.cdt, '%Y-%m-%d %H:%i:%s' ) AS cdt,
+			DATE_FORMAT( a.udt, '%Y-%m-%d %H:%i:%s' ) AS udt,
+			a.material_sn as materialSn,
+			a.quantity,
+			a.stock_quantity as stockQuantity
+		FROM
+			c_lsl_material_return_detailed_detail_t a
+		where detailed_number = #{RListNo}
+	</select>
+
+	<!-- 查询需要过账的信息 -->
+	<select id="queryPostingInformation" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.material_sn AS materialSn,
+			a.quantity,
+			a.stock_quantity AS stockQuantity,
+			b.materialId,
+			b.unit,
+			c.BOM_ID AS materialNo,
+			d.receivingGoodsFactoryId,
+			d.receivingGoodsLocationId 
+		FROM
+			c_lsl_material_return_detailed_detail_t a
+			JOIN c_lsl_material_return_detailed_t b ON a.detailed_number = b.number
+			JOIN c_lsl_material_return_t d ON b.return_number = d.number
+			JOIN c_mes_jl_material_t c ON b.material_code = c.BOM_ID
+		WHERE
+			b.return_number = #{listNo}
+	</select>
+
+	<!-- 通过条码查询线边库库存 -->
+	<select id="findLslStockByMaterialCode" resultType="com.alibaba.fastjson.JSONObject">
+		select * from c_lsl_material_inventory_t
+		where materialCode = #{materialCode}
+		or batchCode = #{materialCode}
+	</select>
+
+	<!-- 更新线边库库存 -->
+	<update id="updateLslStock">
+		update c_lsl_material_inventory_t
+		set
+		quantity = #{quantity}
+		<where>
+			<if test="materialCode != null and materialCode !=''">
+				materialCode = #{materialCode}
+			</if>
+			<if test="batchCode != null and batchCode !=''">
+				batchCode = #{batchCode}
+			</if>
+		</where>
+	</update>
+
+
+	<!-- type：实体类 id：在resultMap引用-->
+	<resultMap type="com.alibaba.fastjson.JSONObject" id="rdMap">
+		<!-- column：数据库查询出来的列  property：实体类属性的值 -->
+		<result column="id" property="id"/>
+		<result column="listNo" property="listNo"/>
+		<result column="materialId" property="materialId"/>
+		<result column="number" property="number"/>
+		<result column="unit" property="unit"/>
+		<result column="materialName" property="materialName"/>
+		<result column="materialNo" property="materialNo"/>
+		<!-- collection：一对多  property：实体类里的 ofType：实体类 -->
+		<collection property="d" javaType="list" ofType="com.alibaba.fastjson.JSONObject">
+			<result column="dId" property="id"/>
+			<result column="code" property="code"/>
+			<result column="num" property="number"/>
+		</collection>
+	</resultMap>
+	<!-- 查询R跟D表数据 -->
+	<select id="findRAndD" resultMap="rdMap">
+		SELECT
+			a.id,
+			a.return_number as listNo,
+			a.materialId,
+			a.quantity as number,
+			a.unit,
+			b.id AS dId,
+			b.material_sn as `code`,
+			b.quantity AS num,
+			c.MATERIAL_NAME AS materialName,
+			c.BOM_ID AS materialNo
+		FROM
+			c_lsl_material_return_detailed_t a
+			LEFT JOIN c_lsl_material_return_detailed_detail_t b ON a.number = b.detailed_number
+			JOIN c_mes_jl_material_t c ON a.material_code = c.BOM_ID 
+		WHERE
+			a.return_number = #{listNo}
+	</select>
+
+</mapper>

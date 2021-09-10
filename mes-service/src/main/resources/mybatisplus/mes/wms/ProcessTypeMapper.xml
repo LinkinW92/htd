@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wms.ProcessTypeDao">
+
+	<select id="findProcessTypeList" resultType="com.skeqi.mes.pojo.wms.ProcessType">
+		select * from c_wms_process_type_t
+		where VIEW_MODE = 1
+		<if test="id != null">
+			AND ID = #{id}
+		</if>
+		<if test="processType != null">
+			AND PROCESS_TYPE = #{processType}
+		</if>
+		<if test="dis != null">
+			AND DIS = #{dis}
+		</if>
+		ORDER BY ID
+	</select>
+
+	<select id="findProcessTypeAll" resultType="com.skeqi.mes.pojo.wms.ProcessType">
+		select ID,PROCESS_TYPE from c_wms_process_type_t
+		where VIEW_MODE = 1
+		ORDER BY ID
+	</select>
+
+	<insert id="addProcessType">
+		insert into c_wms_process_type_t(
+		PROCESS_TYPE,DIS)
+		values(
+		#{processType},#{dis})
+	</insert>
+
+	<delete id="deleteProcessType">
+		delete from c_wms_process_type_t
+		where id = #{processTypeId}
+	</delete>
+
+	<update id="updateProcessType">
+		update c_wms_process_type_t
+		<trim prefix="SET" suffixOverrides=",">  
+			<if test="processType != null">
+				PROCESS_TYPE = #{processType},
+        	</if>
+			<if test="dis != null">
+				DIS = #{dis},
+        	</if>
+        </trim>  
+		where ID = #{id}
+	</update>
+
+</mapper>

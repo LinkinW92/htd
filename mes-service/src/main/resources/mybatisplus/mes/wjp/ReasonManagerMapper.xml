@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wjp.ReasonManagerDao">
+	<!-- 原因列表 -->
+	<select id="findAll" resultType="CMesDefectResionT">
+		SELECT ID,RESION_NUMBER,DIS,DT FROM C_MES_DEFECT_RESION_T ORDER BY RESION_NUMBER
+	</select>
+	<!-- 原因新增 -->
+	<insert id="addReason" parameterType="Map">
+		INSERT INTO C_MES_DEFECT_RESION_T(RESION_NUMBER,DIS,DT) VALUES(#{resionNumber,jdbcType=VARCHAR},#{dis,jdbcType=VARCHAR},NOW())
+	</insert>
+	<!-- 原因删除 -->
+	<delete id="removeReason" parameterType="int">
+		DELETE FROM C_MES_DEFECT_RESION_T WHERE ID=#{id}
+	</delete>
+	<!-- 根据ID查询 -->
+	<select id="findById" resultType="CMesDefectResionT" parameterType="int">
+		SELECT ID,RESION_NUMBER,DIS,DT FROM C_MES_DEFECT_RESION_T WHERE ID=#{id}
+	</select>
+	<!-- 编号不能重复 -->
+	<select id="noRepeat" resultType="int" parameterType="String">
+		SELECT COUNT(1) FROM C_MES_DEFECT_RESION_T WHERE RESION_NUMBER=#{resionNumber}
+	</select>
+	<!-- 原因修改 -->
+	<update id="updateReason" parameterType="Map">
+		UPDATE C_MES_DEFECT_RESION_T SET RESION_NUMBER=#{resionNumber} ,DIS=#{dis},DT=#{sysdate} WHERE ID=#{id}
+	</update>
+
+</mapper>

@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wms.ApprovalResultDao">
+
+	<resultMap type="com.skeqi.mes.pojo.wms.CWmsApprovalT" id="approvalMap">
+		<result column="ID" property="id"/>
+		<result column="LIST_NO" property="listNo"/>
+		<result column="DT" property="dt"/>
+		<result column="PROCESS_ID" property="processId"/>
+		<result column="USER_ID" property="userId"/>
+		<result column="STATE" property="state"/>
+		<result column="NOTE" property="note"/>
+		<association property="processType" javaType="com.skeqi.mes.pojo.wms.ProcessType">
+			<result column="TYPE_ID" property="id" />
+			<result column="PROCESS_TYPE" property="processType" />
+		</association>
+		<association property="user" javaType="com.skeqi.mes.pojo.CMesUserT">
+			<result column="USER_NAME" property="userName" />
+		</association>
+		<association property="department" javaType="com.skeqi.mes.pojo.wms.CWmsDepartmentT">
+			<result column="DM_NAME" property="dmName" />
+		</association>
+		<association property="approvalDetails" javaType="com.skeqi.mes.pojo.wms.CWmsApprovalDetailsT">
+			<result column="details_id" property="id" />
+			<result column="PRIORITY_LEVEL" property="priorityLevel" />
+		</association>
+	</resultMap>
+
+	<select id="findApprovalList" resultMap="approvalMap">
+		select approval.*,user.USER_NAME,type.id as TYPE_ID,type.PROCESS_TYPE,department.DM_NAME from c_wms_approval_t approval
+		join c_mes_user_t user on approval.USER_ID = user.id
+		join c_wms_process_approval_t process on approval.PROCESS_ID = process.id
+		join c_wms_process_type_t type on process.TYPE_ID = type.id
+		join c_wms_department_t department on user.DEPARTMENT = department.id
+		where approval.STATE !=0
+		and approval.STATE !=1
+		<if test="processId != null">
+			AND type.ID = #{processId}
+		</if>
+		<if test="id != null">
+			AND approval.ID = #{id}
+		</if>
+		<if test="listNo != null">
+			AND approval.LIST_NO = #{listNo}
+		</if>
+		<if test="dt != null">
+			AND approval.DT = #{dt}
+		</if>
+		<if test="state != null">
+			AND approval.STATE = #{state}
+		</if>
+		<if test="note != null">
+			AND approval.NOTE = #{note}
+		</if>
+		ORDER BY approval.dt
+	</select>
+
+	<resultMap type="com.skeqi.mes.pojo.wms.CWmsStorageDetailT" id="storageMap">
+		<result column="ID" property="id"/>
+		<result column="DT" property="dt"/>
+		<result column="MATERIAL_ID" property="materialId"/>
+		<result column="MATERIAL_NUMBER" property="materialNumber"/>
+		<result column="MATERIAL_CODE" property="materialCode"/>
+		<result column="AREA_ID" property="areaId"/>
+		<result column="RESERVOIR_AREA_ID" property="reservoirAreaId"/>
+		<result column="LOCATION_ID" property="locationId"/>
+		<result column="NOTE" property="note"/>
+		<result column="LIST_NO" property="listNo"/>
+		<result column="PROJECT_ID" property="projectId"/>
+		<result column="SUPPLIER_ID" property="supplierId"/>
+		<result column="TRAY" property="tray"/>
+		<result column="WAREHOUSE_ID" property="warehouseId"/>
+		<result column="YN_SHIFT" property="ynShift"/>
+		<result column="STATION_ID" property="stationId"/>
+		<result column="ISSUE_OR_RECEIPT" property="issueOrReceipt"/>
+		<association property="material" javaType="com.skeqi.mes.pojo.CMesJlMaterialT">
+			<result column="BOM_ID" property="bomId" />
+			<result column="MATERIAL_NAME" property="materialName" />
+		</association>
+		<association property="warehouse" javaType="com.skeqi.mes.pojo.wms.WarehouseT">
+			<result column="W_NAME" property="name" />
+		</association>
+		<association property="area" javaType="com.skeqi.mes.pojo.wms.CWmsAreaT">
+			<result column="AREA_NAME" property="areaName" />
+		</association>
+		<association property="reservoirArea" javaType="com.skeqi.mes.pojo.wms.CWmsReservoirAreaT">
+			<result column="RA_NAME" property="raName" />
+		</association>
+		<association property="location" javaType="com.skeqi.mes.pojo.wms.CWmsLocationT">
+			<result column="LOCATION_NAME" property="locationName" />
+		</association>
+		<association property="project" javaType="com.skeqi.mes.pojo.wms.CWmsProject">
+			<result column="PROJECT_NAME" property="projectName" />
+		</association>
+	</resultMap>
+
+	<select id="findStorageDetailList" resultMap="storageMap">
+		SELECT storage.*,material.MATERIAL_NAME,material.BOM_ID,warehouse.name as W_NAME,area.AREA_NAME,reservoir.RA_NAME,location.LOCATION_NAME,project.PROJECT_NAME FROM r_wms_storage_detail_t storage
+		JOIN c_mes_jl_material_t material on storage.MATERIAL_ID = material.id
+		JOIN c_wms_warehouse_t warehouse on storage.WAREHOUSE_ID = warehouse.ID
+		Left JOIN c_wms_area_t area on storage.AREA_ID = area.id
+		Left JOIN c_wms_reservoir_area_t reservoir on storage.RESERVOIR_AREA_ID = reservoir.id
+		Left JOIN c_wms_location_t location on storage.LOCATION_ID = location.id
+		JOIN c_wms_project_t project on storage.PROJECT_ID = project.id
+		where 1 = 1
+		<if test="id != null">
+			AND storage.ID = #{id}
+		</if>
+		<if test="dt != null">
+			AND storage.DT = #{dt}
+		</if>
+		<if test="materialId != null">
+			AND storage.MATERIAL_ID = #{materialId}
+		</if>
+		<if test="materialNumber != null">
+			AND storage.MATERIAL_NUMBER = #{materialNumber}
+		</if>
+		<if test="materialCode != null">
+			AND storage.MATERIAL_CODE = #{materialCode}
+		</if>
+		<if test="areaId != null">
+			AND storage.AREA_ID = #{areaId}
+		</if>
+		<if test="reservoirAreaId != null">
+			AND storage.RESERVOIR_AREA_ID = #{reservoirAreaId}
+		</if>
+		<if test="locationId != null">
+			AND storage.LOCTION_ID = #{locationId}
+		</if>
+		<if test="note != null">
+			AND storage.NOTE = #{note}
+		</if>
+		<if test="listNo != null">
+			AND storage.LIST_NO = #{listNo}
+		</if>
+		<if test="projectId != null">
+			AND storage.PROJECT_ID = #{projectId}
+		</if>
+		<if test="supplierId != null">
+			AND storage.SUPPLIER_ID = #{supplierId}
+		</if>
+		<if test="tray != null">
+			AND storage.TRAY = #{tray}
+		</if>
+		<if test="warehouseId != null">
+			AND storage.WAREHOUSE_ID = #{warehouseId}
+		</if>
+		<if test="ynShift != null">
+			AND storage.YN_SHIFT = #{ynShift}
+		</if>
+		ORDER BY storage.ID
+	</select>
+
+	<select id="findPStorageDetailList" resultMap="storageMap">
+		SELECT storage.*,material.MATERIAL_NAME,material.BOM_ID,warehouse.name as W_NAME,area.AREA_NAME,reservoir.RA_NAME,location.LOCATION_NAME,project.PROJECT_NAME FROM p_wms_storage_detail_t storage
+		JOIN c_mes_jl_material_t material on storage.MATERIAL_ID = material.id
+		JOIN c_wms_warehouse_t warehouse on storage.WAREHOUSE_ID = warehouse.ID
+		Left JOIN c_wms_area_t area on storage.AREA_ID = area.id
+		Left JOIN c_wms_reservoir_area_t reservoir on storage.RESERVOIR_AREA_ID = reservoir.id
+		Left JOIN c_wms_location_t location on storage.LOCATION_ID = location.id
+		JOIN c_wms_project_t project on storage.PROJECT_ID = project.id
+		where 1 = 1
+		<if test="id != null">
+			AND storage.ID = #{id}
+		</if>
+		<if test="dt != null">
+			AND storage.DT = #{dt}
+		</if>
+		<if test="materialId != null">
+			AND storage.MATERIAL_ID = #{materialId}
+		</if>
+		<if test="materialNumber != null">
+			AND storage.MATERIAL_NUMBER = #{materialNumber}
+		</if>
+		<if test="materialCode != null">
+			AND storage.MATERIAL_CODE = #{materialCode}
+		</if>
+		<if test="areaId != null">
+			AND storage.AREA_ID = #{areaId}
+		</if>
+		<if test="reservoirAreaId != null">
+			AND storage.RESERVOIR_AREA_ID = #{reservoirAreaId}
+		</if>
+		<if test="locationId != null">
+			AND storage.LOCTION_ID = #{locationId}
+		</if>
+		<if test="note != null">
+			AND storage.NOTE = #{note}
+		</if>
+		<if test="listNo != null">
+			AND storage.LIST_NO = #{listNo}
+		</if>
+		<if test="projectId != null">
+			AND storage.PROJECT_ID = #{projectId}
+		</if>
+		<if test="supplierId != null">
+			AND storage.SUPPLIER_ID = #{supplierId}
+		</if>
+		<if test="tray != null">
+			AND storage.TRAY = #{tray}
+		</if>
+		<if test="warehouseId != null">
+			AND storage.WAREHOUSE_ID = #{warehouseId}
+		</if>
+		<if test="ynShift != null">
+			AND storage.YN_SHIFT = #{ynShift}
+		</if>
+		ORDER BY storage.ID
+	</select>
+
+</mapper>

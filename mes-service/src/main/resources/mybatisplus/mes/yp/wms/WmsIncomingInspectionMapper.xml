@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.yp.wms.WmsIncomingInspectionDao">
+
+	<!-- 查询 -->
+	<select id="list" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			a.delivery_number AS deliveryNumber,
+			a.factoryId,
+			a.locationId,
+			a.creator,
+			DATE_FORMAT( a.create_time, '%Y-%m-%d %H:%i:%s' ) AS createTime,
+			a.consignee,
+			DATE_FORMAT( a.receivingGoodsDt, '%Y-%m-%d %H:%i:%s' ) AS receivingGoodsDt,
+			a.`status`,
+			a.dis,
+			a.checkUserId,
+			a.wQIS,
+			DATE_FORMAT( a.checkDt, '%Y-%m-%d %H:%i:%s' ) AS checkDt,
+			b.LOCATION_NAME AS locationName,
+			c.factoryName,
+			d1.USER_NAME AS checkUserName,
+			d1.`name` AS checkFullName,
+			d2.USER_NAME AS receivingGoodsUserName,
+			d2.`name` AS receivingGoodsFullName,
+			d3.USER_NAME AS establishUserName,
+			d3.`name` AS establishFullName
+		FROM
+			c_srm_send_commodity_h a
+			LEFT JOIN c_wms_location_t b ON a.locationId = b.id
+			LEFT JOIN c_mes_factory_t c ON a.factoryId = c.id
+			LEFT JOIN c_mes_user_t d1 ON a.checkUserId = d1.id
+			LEFT JOIN c_mes_user_t d2 ON a.consignee = d2.id
+			LEFT JOIN c_mes_user_t d3 ON a.creator = d3.id
+		WHERE
+			a.is_delete = 0
+		<if test="startCheckDt != null and startCheckDt != '' and endCheckDt != null and endCheckDt != ''">
+		and DATE_FORMAT(a.checkDt,'%Y-%m-%d') between #{startCheckDt} and #{endCheckDt}
+		</if>
+		<if test="startReceivingGoodsDt != null and startReceivingGoodsDt != '' and endReceivingGoodsDt != null and endReceivingGoodsDt != ''">
+		and DATE_FORMAT(a.receivingGoodsDt,'%Y-%m-%d') between #{startReceivingGoodsDt} and #{endReceivingGoodsDt}
+		</if>
+		<if test="factoryId != null and factoryId != ''">
+		and a.factoryId = #{factoryId}
+		</if>
+		<if test="listNo != null and listNo != ''">
+		and a.delivery_number like '%${listNo}'
+		</if>
+		<if test="consigneeName != null and consigneeName != ''">
+		and d2.USER_NAME like '%${consigneeName}%' or d2.`name` like '%${consigneeName}%'
+		</if>
+		<if test="checkUserName != null and checkUserName != ''">
+		and d1.USER_NAME like '%${checkUserName}%' or d1.`name` like '%${checkUserName}%'
+		</if>
+		<if test="status != null and status != ''">
+		and a.status = #{status}
+		</if>
+		<if test="id != null and id != ''">
+		and a.id = #{id}
+		</if>
+		ORDER BY a.create_time DESC
+	</select>
+	
+	<!-- 更新 -->
+	<update id="update">
+		update c_srm_send_commodity_h
+		set 
+		checkUserId = #{checkUserId},
+		checkDt = now(),
+		status = #{status}
+		where id = #{id}
+	</update>
+
+	<!-- 查询行 -->
+	<select id="listRow" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			a.delivery_number AS deliveryNumber,
+			a.line_item_no AS lineItemNo,
+			a.material_code AS materialCode,
+			a.count,
+			a.paid_in_number AS paidInNumber,
+			a.unit,
+			a.purchase_order_no AS purchaseOrderNo,
+			a.create_time AS createTime,
+			a.update_time AS updateTime,
+			a.commodity_id AS commodityId,
+			b.id AS materialId,
+			a.is_delete AS isDelete,
+			b.MATERIAL_NAME AS materialName,
+			b.BOM_ID AS materialNo 
+		FROM
+			c_srm_send_commodity_r a
+			LEFT JOIN c_mes_jl_material_t b ON a.material_code = b.BOM_ID 
+		WHERE
+			a.is_delete = 0
+		<if test="commodityId != null and commodityId != ''">
+		and a.commodity_id = #{commodityId}
+		</if>
+		<if test="listNo != null and listNo != ''">
+		and a.delivery_number = #{listNo}
+		</if>
+		<if test="id != null and id != ''">
+		and a.id = #{id}
+		</if>
+	</select>
+
+	<!-- 查询详情 -->
+	<select id="listD" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			id,
+			dt,
+			packingId,
+			`code`,
+			unitQuantity,
+			numberOfPackages,
+			supplierBatchCode,
+			DATE_FORMAT( productionDt, '%Y-%m-%d %H:%i:%s' ) AS productionDt,
+			DATE_FORMAT( termOfValidityDt, '%Y-%m-%d %H:%i:%s' ) AS termOfValidityDt,
+			listNo,
+			rowId,
+			InspectionMethod,
+			checkNumber,
+			qualifiedNumber
+		FROM
+			c_srm_send_commodity_d
+		WHERE listNo = #{listNo}
+		AND rowId = #{rowId}
+	</select>
+
+	<!-- 更新详情 -->
+	<update id="updateD">
+		UPDATE c_srm_send_commodity_d
+		<trim prefix="set" suffixOverrides=",">
+			<if test="InspectionMethod != null and InspectionMethod != ''">
+				InspectionMethod = #{InspectionMethod},
+			</if>
+			<if test="checkNumber != null and checkNumber != ''">
+				checkNumber = #{checkNumber},
+			</if>
+			<if test="qualifiedNumber != null and qualifiedNumber != ''">
+				qualifiedNumber = #{qualifiedNumber},
+			</if>
+			<if test="checkUserId != null and checkUserId != ''">
+				checkUserId = #{checkUserId},
+			</if>
+			<if test="checkUserId != null and checkUserId != ''">
+				checkDt = now(),
+			</if>
+		</trim>
+		WHERE id = #{id}
+	</update>
+
+	<!-- 查询检验完成的数据 -->
+	<select id="queryVerificationComplete" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.delivery_number AS listNo,
+			a.factoryId,
+			a.locationId,
+			c.packingId,
+			c.`code`,
+			d.id AS materialId,
+			c.unitQuantity,
+			c.numberOfPackages,
+			b.unit,
+			c.supplierBatchCode,
+			c.productionDt,
+			c.termOfValidityDt,
+			d.BOM_ID AS materialNo,
+			b.purchase_order_no AS purchaseOrderNo,
+			c.InspectionMethod,
+			c.checkNumber,
+			c.qualifiedNumber 
+		FROM
+			c_srm_send_commodity_h a
+			JOIN c_srm_send_commodity_r b ON a.delivery_number = b.delivery_number
+			LEFT JOIN c_srm_send_commodity_d c ON b.id = c.rowId
+			LEFT JOIN c_mes_jl_material_t d ON b.material_code = d.BOM_ID 
+		where a.delivery_number = #{listNo}
+		and a.is_delete = 0
+		and b.is_delete = 0
+	</select>
+
+	<!-- 通过单据号查询表头 -->
+	<select id="findHByListNo" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			id,
+			delivery_number as listNo,
+			type_of_delivery_note as typeOfDeliveryNote,
+			delivery_date as deliveryDate,
+			expected_date_of_arrival as expectedDateOfArrival,
+			place_of_receipt as placeOfReceipt,
+			point_of_departure as pointOfDeparture,
+			receiving_organization as receivingOrganization,
+			client,
+			consignee,
+			creator,
+			`status`,
+			create_time as create_time,
+			update_time as update_time,
+			supplier_id as supplier_id,
+			is_delete as is_delete,
+			factoryId,
+			locationId,
+			receivingGoodsDt,
+			dis,
+			checkUserId,
+			checkDt
+		FROM
+			c_srm_send_commodity_h
+		where delivery_number = #{listNo}
+	</select>
+
+	<!-- type：实体类 id：在resultMap引用-->
+	<resultMap type="com.alibaba.fastjson.JSONObject" id="rdMap">
+		<!-- column：数据库查询出来的列  property：实体类属性的值 -->
+		<result column="id" property="id"/>
+		<result column="listNo" property="listNo"/>
+		<result column="materialId" property="materialId"/>
+		<result column="number" property="number"/>
+		<result column="paidInNumber" property="paidInNumber"/>
+		<result column="unit" property="unit"/>
+		<result column="purchaseOrderNo" property="purchaseOrderNo"/>
+		<result column="materialName" property="materialName"/>
+		<result column="materialNo" property="materialNo"/>
+		<!-- collection：一对多  property：实体类里的 ofType：实体类 -->
+		<collection property="d" javaType="list" ofType="com.alibaba.fastjson.JSONObject">
+			<result column="dId" property="id"/>
+			<result column="packingId" property="packingId"/>
+			<result column="code" property="code"/>
+			<result column="unitQuantity" property="unitQuantity"/>
+			<result column="numberOfPackages" property="numberOfPackages"/>
+			<result column="productionDt" property="productionDt"/>
+			<result column="termOfValidityDt" property="termOfValidityDt"/>
+			<result column="InspectionMethod" property="InspectionMethod"/>
+			<result column="checkNumber" property="checkNumber"/>
+			<result column="qualifiedNumber" property="qualifiedNumber"/>
+			<result column="rowId" property="rowId"/>
+		</collection>
+	</resultMap>
+	<!-- 查询R跟D表数据 -->
+	<select id="findRAndD" resultMap="rdMap">
+		SELECT
+			a.id,
+			a.delivery_number AS listNo,
+			c.id AS materialId,
+			a.count AS number,
+			a.paid_in_number AS paidInNumber,
+			a.unit,
+			a.purchase_order_no AS purchaseOrderNo,
+			b.id AS dId,
+			b.packingId,
+			b.`code`,
+			b.unitQuantity,
+			b.numberOfPackages,
+			b.productionDt,
+			b.termOfValidityDt,
+			b.InspectionMethod,
+			b.checkNumber,
+			b.qualifiedNumber,
+			b.rowId,
+			c.MATERIAL_NAME AS materialName,
+			c.BOM_ID AS materialNo 
+		FROM
+			c_srm_send_commodity_r a
+			LEFT JOIN c_srm_send_commodity_d b ON a.id = b.rowId
+			JOIN c_mes_jl_material_t c ON a.material_code = c.BOM_ID
+		WHERE
+			a.delivery_number = #{listNo}
+	</select>
+
+</mapper>

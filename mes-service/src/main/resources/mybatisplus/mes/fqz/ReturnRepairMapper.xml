@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.fqz.ReRepairDAO">
+	<select id="findAll" resultType="CMesReturnRepairT">
+		select t.*,p.production_name as productionName,l.name as lineName from C_MES_RETURN_REPAIR_T t,c_mes_production_t p,c_mes_line_t l
+			where t.production_id=p.id and t.line_id=l.id
+			<if test="sn!=null and sn!=''">
+				and t.sn=#{sn}
+			</if>
+			<if test="lineId!=null and lineId!='' and lineId!=0">
+				and l.id=#{lineId}
+			</if>
+			<if test="productionId!=null and productionId!='' and productionId!=0">
+				and p.id=#{productionId}
+			</if>
+			<if test="status!=null and status!='' and status!=2">
+				and t.status=#{status}
+			</if>
+			order by t.id
+	</select>
+
+	<insert id="insertReRepair">
+		insert into C_MES_RETURN_REPAIR_T(DT,PRODUCTION_ID,REASON,SN,LINE_ID,STATUS)
+		values(NOW(),#{productionId},#{reason},#{sn},#{lineId},0)
+	</insert>
+
+	<update id="updateReRepair">
+		update C_MES_RETURN_REPAIR_T set  PRODUCTION_ID=#{productionId},
+											     reason=#{reason},
+											     dt=NOW(),
+											     sn=#{sn},
+											     status=#{status},
+											     lineId=#{lineId}
+											 where id=#{id}
+	</update>
+
+	<update id="endRepair">
+		update C_MES_RETURN_REPAIR_T set  ENDTIME=NOW(),
+												status=1
+										where id=#{id}
+	</update>
+	<delete id="delReRepair">
+		delete from C_MES_RETURN_REPAIR_T  where id=#{id}
+	</delete>
+
+	<select id="findByid" resultType="CMesReturnRepairT">
+		select * from  C_MES_RETURN_REPAIR_T where id=#{id}
+	</select>
+
+	<select id="findLine" resultType="CMesLineT">
+		select * from c_mes_line_t
+	</select>
+
+	<select id="findPro" resultType="CMesProductionT">
+		select * from c_mes_production_t
+	</select>
+</mapper>

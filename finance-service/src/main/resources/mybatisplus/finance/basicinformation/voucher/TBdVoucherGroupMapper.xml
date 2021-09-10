@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.basicinformation.voucher.TBdVoucherGroupMapper">
+
+    <resultMap type="com.skeqi.finance.domain.basicinformation.voucher.TBdVoucherGroup" id="TBdVoucherGroupResult">
+        <result property="fVchgroupId" column="f_vchgroup_id"/>
+        <result property="fLimitMulti" column="f_limit_multi"/>
+        <result property="fAccttableId" column="f_accttable_id"/>
+        <result property="fIsdefault" column="f_isdefault"/>
+        <result property="fCreateOrgid" column="f_create_orgid"/>
+        <result property="fCreatorid" column="f_creatorid"/>
+        <result property="fCreateDate" column="f_create_date"/>
+        <result property="fUseOrgid" column="f_use_orgid"/>
+        <result property="fModifierid" column="f_modifierid"/>
+        <result property="fModifyDate" column="f_modify_date"/>
+        <result property="fDocumentStatus" column="f_document_status"/>
+        <result property="fAuditorid" column="f_auditorid"/>
+        <result property="fAuditDate" column="f_audit_date"/>
+        <result property="fForbidStatus" column="f_forbid_status"/>
+        <result property="fForbidderid" column="f_forbidderid"/>
+        <result property="fForbidDate" column="f_forbid_date"/>
+        <result property="fIssysPreset" column="f_issys_preset"/>
+        <result property="fMasterId" column="f_master_id"/>
+    </resultMap>
+    <select id="queryPageList" resultType="com.skeqi.finance.pojo.vo.basicinformation.voucher.TBdVoucherGroupVo">
+        select tbvg.*,tbat.f_name fAccttableName,tbat.f_number fAccttableNumber
+        from t_bd_voucher_group tbvg
+        left join t_bd_account_table tbat
+        on tbvg.f_accttable_id = tbat.f_id
+        <where>
+            tbvg.f_document_status != '-1'
+            <if test="bo.fAccttableId !=null and bo.fAccttableId!=''">
+                and tbvg.f_accttable_id = #{bo.fAccttableId,jdbcType=INTEGER}
+            </if>
+            <if test="bo.fVoucherWords !=null and bo.fVoucherWords!=''">
+                and tbvg.f_voucher_words = #{bo.fVoucherWords,jdbcType=VARCHAR}
+            </if>
+            <if test="bo.fLimitMulti !=null and bo.fLimitMulti!=''">
+                and tbvg.f_limit_multi = #{bo.fLimitMulti,jdbcType=VARCHAR}
+            </if>
+            <if test="bo.fDocumentStatus !=null and bo.fDocumentStatus !=''">
+                and tbvg.f_document_status = #{bo.fDocumentStatus,jdbcType=VARCHAR}
+            </if>
+            <if test="bo.fCreatorid !=null and bo.fCreatorid !=''">
+                and tbvg.f_creatorid = #{bo.fCreatorid,jdbcType=INTEGER}
+            </if>
+            <if test="bo.fCreateDate !=null and bo.fCreateDate !=''">
+                and tbvg.f_create_date = #{bo.fCreateDate,jdbcType=TIMESTAMP}
+            </if>
+            <if test="bo.fModifierid !=null and bo.fModifierid !=''">
+                and tbvg.f_modifierid = #{bo.fModifierid,jdbcType=INTEGER}
+            </if>
+            <if test="bo.fModifyDate !=null and bo.fModifyDate !=''">
+                and tbvg.f_modify_date = #{bo.fModifyDate,jdbcType=TIMESTAMP}
+            </if>
+            <if test="bo.fForbidStatus !=null and bo.fForbidStatus !=''">
+                and tbvg.f_forbid_status = #{bo.fForbidStatus,jdbcType=VARCHAR}
+            </if>
+            <if test="bo.fIssysPreset !=null and bo.fIssysPreset !=''">
+                and tbvg.f_issys_preset = #{bo.fIssysPreset,jdbcType=INTEGER}
+            </if>
+        </where>
+    </select>
+
+</mapper>

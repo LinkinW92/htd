@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.all.CMesStationTDAO">
+	<!-- 查询所有工位-->
+	<select id="findAllStation" resultType="CMesStationT">
+		SELECT station.*,line.ID AS lineID,line.DT,line.NAME as lineName,line.DSC FROM C_MES_STATION_T station,C_MES_LINE_T line WHERE station.LINE_ID = line.ID
+		<if test="lineId!=null and lineId!=0">
+			and station.line_id = #{lineId}
+		</if>
+		<if test="id!=null and id!=0">
+			and station.ID = #{id}
+		</if>
+		<if test="stationName!=null and stationName!='' ">
+			AND binary station.STATION_NAME = #{stationName}
+		</if>
+		ORDER BY station.STATION_INDEX
+	</select>
+
+	<!-- 根据工位名称或者工位id查询-->
+	<select id="findStationNameAndId" resultType="CMesStationT">
+		SELECT ID id,STATION_NAME stationName,STATION_INDEX stationIndex,LINE_ID lineId from c_mes_station_t
+		where 1=1
+		<if test="id!=null and id!=0">
+			and id= #{id}
+		</if>
+		<if test="stationName!=null and stationName!='' ">
+			AND  STATION_NAME = #{stationName}
+		</if>
+		<if test="stationIndex!=null and stationIndex!='' ">
+			AND  STATION_INDEX = #{stationIndex}
+		</if>
+		<if test="lineId!=null and lineId!='' ">
+			AND  LINE_ID = #{lineId}
+		</if>
+	</select>
+
+
+	<!-- 根据料单id查询所属产线下的工位-->
+	<select id="findStationByListId" resultType="CMesStationT">
+		SELECT ID,STATION_NAME FROM C_MES_STATION_T WHERE 1=1
+		and LINE_ID=(SELECT LINE_ID FROM c_mes_material_list_t WHERE ID=#{listId})
+	</select>
+
+	<!-- 查询所有工位-->
+	<select id="findStationAll" resultType="CMesStationT">
+		SELECT ID,STATION_NAME FROM C_MES_STATION_T
+		ORDER BY id
+	</select>
+
+	<!-- 根据id查询工位 -->
+	<select id="findStationByid" resultType="CMesStationT">
+		SELECT station.*,line.ID AS lineID,line.DT,line.NAME as lineName,line.DSC FROM C_MES_STATION_T station,C_MES_LINE_T line
+		WHERE station.LINE_ID = line.ID   and station.id=#{id}
+	</select>
+
+	<!-- 添加工位 -->
+	<insert id="addStation">
+		INSERT INTO
+		<trim prefix="C_MES_STATION_T(" suffix=")" suffixOverrides=",">
+			STATION_INDEX,
+			STATION_NAME,
+			STATION_PROCESSOK,STATION_DATAOK,STATION_TYPE,STATION_RECIPEORNOT,
+			STATION_AGVORNOT,STATION_REQUSTOUTLINE,STATION_LIGHTORNOT,STATION_REQUSTIN,STATION_REVIEWORNOT,STATION_PRINTORNOT,
+			STATION_UPLOADMES,STATION_ENDORNOT,STATION_GUNORNOT,STATION_AUTOORNOT,STATION_TIME,STAION_FLOWORNOT,LINE_ID,
+			STATION_SCANDER_FLAG,STATION_CCD_FLAG,STATION_RUBBER_FLAG,STATION_LEAKAGE_FLAG,STATION_EOL_FLAG,STATION_ADAM_FLAG,STATION_PLC_FLAG,ip,userName,password,
+			<if test="trumpet != null and trumpet != ''">
+				trumpet,
+			</if>
+			<if test="loopSum != null and loopSum != ''">
+				loopSum,
+			</if>
+			<if test="automaticPolling != null and automaticPolling != ''">
+				automaticPolling
+			</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			#{stationIndex},#{stationName},#{stationProcessok},#{stationDataok},
+			#{stationType},#{stationRecipeornot},#{stationAgvornot},#{stationRequstoutline},#{stationLightornot},
+			#{stationRequstin},#{stationReviewornot},#{stationPrintornot},#{stationUploadmes},#{stationEndornot},
+			#{stationGunornot},#{stationAutoornot},#{stationTime},'',#{lineId},#{stationScanderFlag},#{stationCcdFlag},#{stationRubberFlag},
+			#{stationLeakageFlag},#{stationEolFlag},#{stationAdamFlag},#{stationPlcFlag},#{ip},#{userName},#{password},
+			<if test="trumpet != null and trumpet != ''">
+				#{trumpet,jdbcType=VARCHAR},
+			</if>
+			<if test="loopSum != null and loopSum != ''">
+				#{loopSum,jdbcType=VARCHAR},
+			</if>
+			<if test="automaticPolling != null and automaticPolling != ''">
+				#{automaticPolling,jdbcType=VARCHAR}
+			</if>
+		</trim>
+		<!-- INSERT INTO C_MES_STATION_T(STATION_INDEX,STATION_NAME,LINE_ID,STATION_TIME)
+		VALUES(#{stationIndex},#{stationName},#{lineId},#{stationTime}) -->
+	</insert>
+
+	<!-- 修改工位 -->
+	<update id="updateStation">
+		UPDATE C_MES_STATION_T
+		<set>
+		STATION_NAME = #{stationName},STATION_INDEX = #{stationIndex},
+		STATION_TIME = #{stationTime},STATION_PROCESSOK=#{stationProcessok},STATION_DATAOK=#{stationDataok},
+		STATION_TYPE=#{stationType},STATION_RECIPEORNOT=#{stationRecipeornot},STATION_AGVORNOT=#{stationAgvornot},
+		STATION_REQUSTOUTLINE=#{stationRequstoutline},STATION_LIGHTORNOT=#{stationLightornot},
+		STATION_REQUSTIN=#{stationRequstin},STATION_REVIEWORNOT=#{stationReviewornot},
+		STATION_PRINTORNOT=#{stationPrintornot},STATION_UPLOADMES=#{stationUploadmes},
+		STATION_ENDORNOT=#{stationEndornot},STATION_GUNORNOT=#{stationGunornot},
+		STATION_AUTOORNOT=#{stationAutoornot},STAION_FLOWORNOT='0',LINE_ID=#{lineId},
+		STATION_SCANDER_FLAG=#{stationScanderFlag},STATION_CCD_FLAG=#{stationCcdFlag},
+		STATION_RUBBER_FLAG=#{stationRubberFlag},STATION_LEAKAGE_FLAG=#{stationLeakageFlag},
+		STATION_EOL_FLAG=#{stationEolFlag},STATION_ADAM_FLAG=#{stationAdamFlag},STATION_PLC_FLAG=#{stationPlcFlag},
+		ip=#{ip},userName=#{userName},password=#{password},
+		<if test="trumpet != null and trumpet != ''">
+			trumpet = #{trumpet,jdbcType=VARCHAR},
+		</if>
+		<if test="loopSum != null and loopSum != ''">
+			loopSum = #{loopSum,jdbcType=VARCHAR},
+		</if>
+			<if test="automaticPolling != null and automaticPolling != ''">
+				automaticPolling = #{automaticPolling,jdbcType=VARCHAR}
+			</if>
+		</set>
+		WHERE ID = #{id}
+	</update>
+
+	<update id="updateStations">
+		UPDATE C_MES_STATION_T SET STATION_NAME = #{stationName},STATION_INDEX = #{stationIndex},
+		STATION_TIME = #{stationTime},STATION_PROCESSOK=#{stationProcessok},STATION_DATAOK=#{stationDataok},
+		STATION_TYPE=#{stationType},STATION_RECIPEORNOT=#{stationRecipeornot},STATION_AGVORNOT=#{stationAgvornot},
+		STATION_REQUSTOUTLINE=#{stationRequstoutline},STATION_LIGHTORNOT=#{stationLightornot},
+		STATION_REQUSTIN=#{stationRequstin},STATION_REVIEWORNOT=#{stationReviewornot},
+		STATION_PRINTORNOT=#{stationPrintornot},STATION_UPLOADMES=#{stationUploadmes},
+		STATION_ENDORNOT=#{stationEndornot},STATION_GUNORNOT=#{stationGunornot},
+		STATION_AUTOORNOT=#{stationAutoornot},STAION_FLOWORNOT='0',LINE_ID=#{lineId},
+		STATION_SCANDER_FLAG=#{stationScanderFlag},STATION_CCD_FLAG=#{stationCcdFlag},
+		STATION_RUBBER_FLAG=#{stationRubberFlag},STATION_LEAKAGE_FLAG=#{stationLeakageFlag},
+		STATION_EOL_FLAG=#{stationEolFlag},STATION_ADAM_FLAG=#{stationAdamFlag},STATION_PLC_FLAG=#{stationPlcFlag}
+		WHERE ID = #{id}
+	</update>
+
+	<!-- 删除工位 -->
+	<delete id="delStation">
+		delete from C_MES_STATION_T where id=#{id}
+	</delete>
+
+	<!-- 根据产线名称和工位下标验证工位下标是否存在 -->
+	<select id="findIndex" resultType="int">
+      SELECT COUNT(1) from  C_MES_LINE_T AS line LEFT JOIN C_MES_STATION_T AS station
+      ON line.ID=station.LINE_ID
+      where station.STATION_INDEX=#{index} AND line.NAME=#{lineName}
+	</select>
+
+		<select id="findIndexs" resultType="CMesStationT">
+		SELECT * FROM C_MES_STATION_T WHERE LINE_ID = #{lineId} AND STATION_INDEX = #{index}
+	</select>
+
+	<!-- 查询该产线是否存在末站 -->
+	<select id="findEndornot" resultType="CMesStationT">
+		select * from C_MES_STATION_T where LINE_ID = #{lineId} AND STATION_ENDORNOT=1
+	</select>
+	<select id="findLineName" resultType="java.lang.String">
+        SELECT NAME from  C_MES_LINE_T WHERE ID=#{lineId}
+	</select>
+</mapper>

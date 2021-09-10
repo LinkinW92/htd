@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.yin.MaterialDao">
+	<select id="findNo" resultType="String">
+		select BOM_ID as materialNo from C_MES_JL_MATERIAL_T where MATERIAL_NAME = #{name}
+	</select>
+	<select id="findStation" resultType="CMesStationT">
+		select t.id as id,t.station_name as stationName from C_MES_STATION_T t
+	</select>
+	<select id="assemblyTypeList" resultType="CMesAssemblyType">
+		SELECT assemblyType.*,line.NAME AS lineName from C_MES_ASSEMBLY_TYPE assemblyType,C_MES_LINE_T line WHERE assemblyType.LINE_ID=line.ID
+		<if test="id!=null">
+			AND assemblyType.ID = #{id}
+		</if>
+	</select>
+	<select id="countAssemblyTypeByAddAssemblyTypeNo" resultType="int">
+		SELECT COUNT(*) FROM C_MES_ASSEMBLY_TYPE WHERE ASSEMBLY_TYPE_NO = #{assemblyTypeNo}
+	</select>
+	<select id="countAssemblyTypeByAddAssemblyTypeName" resultType="int">
+		SELECT COUNT(*) FROM C_MES_ASSEMBLY_TYPE WHERE ASSEMBLY_TYPE_NAME = #{assemblyTypeName}
+	</select>
+	<insert id="addAssemblyType" keyProperty="id" useGeneratedKeys="false">
+		INSERT INTO C_MES_ASSEMBLY_TYPE(ASSEMBLY_TYPE_NO,ASSEMBLY_TYPE_NAME,ASSEMBLY_TYPE_DIS,DT,LINE_ID)
+		VALUES(#{assemblyTypeNo},#{assemblyTypeName},#{assemblyTypeDis},NOW(),#{lineId})
+	</insert>
+	<delete id="delAssemblyType">
+		DELETE FROM C_MES_ASSEMBLY_TYPE WHERE ID = #{id}
+	</delete>
+	<update id="editAssemblyType">
+		UPDATE C_MES_ASSEMBLY_TYPE SET ASSEMBLY_TYPE_NO = #{assemblyTypeNo},
+		ASSEMBLY_TYPE_NAME=#{assemblyTypeName},ASSEMBLY_TYPE_DIS=#{assemblyTypeDis},DT=NOW(),LINE_ID=#{lineId}
+		WHERE ID = #{id}
+	</update>
+
+	<select id="materialList" resultType="CMesMaterialT">
+    SELECT material.*,materialType.material_type AS materialTypeName,assemblyType.assembly_type_name as assemblyTypeName,ceslabelmanagert.label_name as ceslabelmanagertName FROM C_MES_MATERIAL_T material,
+    C_MES_ASSEMBLY_TYPE assemblyType,C_MES_MATERIAL_TYPE_T materialType,c_mes_label_manager_t ceslabelmanagert WHERE material.assembly_type_id = assemblyType.id
+    AND material.MATERIAL_TYPE_ID = materialType.ID and material.print_lable=ceslabelmanagert.id
+		<if test="id!=null">
+			AND material.ID = #{id}
+		</if>
+		<if test="materialId!=null">
+			AND material.ID = #{materialId}
+		</if>
+		<if test="materialName!=null">
+			AND material.MATERIAL_NAME like '%${materialName}%'
+		</if>
+	</select>
+
+	<insert id="addMaterial" keyProperty="id" useGeneratedKeys="false">
+       	INSERT INTO C_MES_MATERIAL_T(GRAPH_NUMBER,MATERIAL_NO,MATERIAL_NAME,MATERIAL_TYPE_ID,MATERIAL_EDITION,ASSEMBLY_TYPE_ID,MATERIAL_SERIES_NAME,PRINT_LABLE,PRODUCTION_COMMODITY_NUMBER,PRODUCTION_LICENCE,PROCTION_SECURITY_CODE,SAMPLING_TYPE,TRANSFER_MATERIAL,BOXED_NUMBER,BATCH_NUMBER,MATERIAL_VR,STANDARD_NUMBER,DT,PATH)
+		VALUES(#{graphNumber,jdbcType=VARCHAR},#{materialNo},#{materialName},#{materialTypeId,jdbcType=NUMERIC},
+       	#{materialEdition,jdbcType=VARCHAR},#{assemblyTypeId,jdbcType=NUMERIC},#{materialSeriesName,jdbcType=VARCHAR},
+       	#{printLable,jdbcType=VARCHAR},#{productionCommodityNumber,jdbcType=VARCHAR},
+       	#{productionLicence,jdbcType=VARCHAR},#{proctionSecurityCode,jdbcType=VARCHAR},#{samplingType,jdbcType=VARCHAR},
+       	#{transferMaterial,jdbcType=VARCHAR},#{boxedNumber,jdbcType=VARCHAR},
+       	#{batchNumber,jdbcType=NUMERIC},#{materialVr,jdbcType=VARCHAR},#{standardNumber,jdbcType=NUMERIC},NOW(),#{path,jdbcType=VARCHAR})
+	</insert>
+
+	<delete id="del">
+		delete from C_MES_MATERIAL_T
+	</delete>
+
+	<update id="editMaterial">
+		UPDATE C_MES_MATERIAL_T SET GRAPH_NUMBER = #{graphNumber},MATERIAL_NO = #{materialNo},MATERIAL_NAME = #{materialName},
+		MATERIAL_EDITION = #{materialEdition},ASSEMBLY_TYPE_ID = #{assemblyTypeId},MATERIAL_SERIES_NAME = #{materialSeriesName},
+		PRINT_LABLE = #{printLable},PRODUCTION_COMMODITY_NUMBER = #{productionCommodityNumber},PRODUCTION_LICENCE = #{productionLicence},
+		PROCTION_SECURITY_CODE = #{proctionSecurityCode},SAMPLING_TYPE = #{samplingType},TRANSFER_MATERIAL = #{transferMaterial},
+		BOXED_NUMBER = #{boxedNumber},BATCH_NUMBER = #{batchNumber},MATERIAL_VR = #{materialVr},STANDARD_NUMBER = #{standardNumber},
+		DT = NOW(),MATERIAL_TYPE_ID=#{materialTypeId},path=#{path,jdbcType=VARCHAR} WHERE ID=#{id}
+	</update>
+	<delete id="delMaterial">
+		DELETE FROM C_MES_MATERIAL_T WHERE ID = #{id}
+	</delete>
+	<select id="materialTypeList" resultType="CMesMaterialTypeT">
+		SELECT * FROM C_MES_MATERIAL_TYPE_T WHERE 1=1
+		<if test="id!=null">
+			AND ID = #{id}
+		</if>
+	</select>
+	<insert id="addMaterialType" keyProperty="id" useGeneratedKeys="false">
+		INSERT INTO C_MES_MATERIAL_TYPE_T(MATERIAL_TYPE,DIS,DT)
+		values(#{materialType},#{dis},NOW())
+	</insert>
+	<select id="countMaterialTypeByName" resultType="int">
+		SELECT COUNT(*) FROM C_MES_MATERIAL_TYPE_T WHERE material_type = #{materialType}
+	</select>
+	<delete id="delMaterialType">
+		DELETE FROM C_MES_MATERIAL_TYPE_T WHERE ID = #{id}
+	</delete>
+	<update id="editMaterialType">
+		UPDATE C_MES_MATERIAL_TYPE_T SET MATERIAL_TYPE = #{materialType},DIS=#{dis},DT=NOW() WHERE ID = #{id}
+	</update>
+	<select id="countMaterialByName" resultType="int">
+		SELECT COUNT(*) FROM C_MES_MATERIAL_T WHERE MATERIAL_NAME = #{materialName}
+	</select>
+	<select id="countMaterialByNo" resultType="int">
+		SELECT COUNT(*) FROM C_MES_MATERIAL_T WHERE MATERIAL_NO = #{materialNo}
+	</select>
+	<select id="materialLists" resultType="CMesMaterialListT">
+		SELECT materialList.*,line.NAME as lineName FROM C_MES_MATERIAL_LIST_T materialList,C_MES_LINE_T line
+		WHERE materialList.LINE_ID = line.ID
+		<if test="id!=null">
+			AND materialList.ID = #{id}
+		</if>
+		<if test="lid!=null and lid!='' and lid!=0">
+			and materialList.LINE_ID=#{lid}
+		</if>
+		<if test="lno!=null and lno!='' ">
+			and materialList.LIST_NO like '%${lno}%'
+		</if>
+	</select>
+	<select id="materialListDetails" resultType="CMesMaterialListDetailT">
+		SELECT materialListDetail.*,station.station_name ,materialList.list_no
+		FROM C_MES_MATERIAL_LIST_DETAIL_T materialListDetail,
+		C_MES_STATION_T station,C_MES_MATERIAL_LIST_T materialList
+		WHERE materialListDetail.station_id = station.id AND materialList.id=materialListDetail.MATERILA_LIST_ID
+		<if test="id!=nulll">
+			AND materialListDetail.ID = #{id}
+		</if>
+		<if test="listNo!=null and listNo!=''">
+			AND materialList.LIST_NO like '%${listNo}%'
+		</if>
+		<if test="staname!=null and staname!=''">
+			and materialListDetail.station_id=#{staname}
+		</if>
+	</select>
+
+	<select id="findMaxVersion" resultType="double">
+		select max(LIST_VERSION) from c_mes_material_list_t
+	</select>
+
+	<update id="editstatus">
+		update c_mes_material_list_t set status=1  where id=#{id}
+	</update>
+
+	<update id="editstatustwo">
+		update c_mes_material_list_t set status=0
+	</update>
+	<insert id="addMaterialList" keyProperty="id" useGeneratedKeys="false">
+		INSERT INTO C_MES_MATERIAL_LIST_T(
+		DT,LIST_NO,LIST_NAME,EFFECTIVE_TIME,
+		INVALID_TIME,LIST_VERSION,LINE_ID)
+		VALUES(
+		NOW(),#{listNo},#{listName},DATE_FORMAT(#{effectiveTime},'%Y-%m-%d %H:%i:%s'),
+		DATE_FORMAT(#{invalidTime},'%Y-%m-%d %H:%i:%s'),#{listVersion},#{lineId})
+	</insert>
+	<select id="countMaterialListByNo" resultType="int">
+		SELECT COUNT(*) FROM C_MES_MATERIAL_LIST_T WHERE LIST_NO = #{listNo}
+	</select>
+	<select id="countMaterialListByName" resultType="int">
+		SELECT COUNT(*) FROM C_MES_MATERIAL_LIST_T WHERE LIST_NAME = #{listName}
+	</select>
+	<update id="editMaterialList">
+		UPDATE C_MES_MATERIAL_LIST_T SET DT=NOW(),LIST_NO=#{listNo},LIST_NAME=#{listName},
+		EFFECTIVE_TIME=STR_TO_DATE(#{effectiveTime},'%Y-%m-%d %H:%i:%s'),
+		INVALID_TIME=STR_TO_DATE(#{invalidTime},'%Y-%m-%d %H:%i:%s'),LIST_VERSION=#{listVersion},
+		LINE_ID=#{lineId} WHERE ID = #{id}
+	</update>
+
+	<delete id="delMaterialList">
+		DELETE FROM C_MES_MATERIAL_LIST_T WHERE ID = #{id}
+	</delete>
+
+	<insert id="addMaterialDetail" keyProperty="id" useGeneratedKeys="false">
+       	INSERT INTO C_MES_MATERIAL_LIST_DETAIL_T(DT,FIGURE_NO,MATERIAL_NO,MATERIAL_NAME,MATERIAL_SHEFT,MATERIAL_REPLACE,MATERIAL_TRACE,MATERIAL_NUMBER,MATERIAL_IMP_FLAG,MATERIAL_CHECK,MATERIAL_GET_NUMBER,MATERIAL_STORE,MATERIAL_GET_CHECK_FLAG,STATION_ID,MATERIAL_PULL_FALG,MATERILA_LIST_ID)
+		VALUES(NOW(),#{figureNo},#{materialNo},
+       	#{materialName},#{materialSheft},#{materialReplace},#{materialTrace},#{materialNumber},
+       	#{materialImpFlag},#{materialCheck},#{materialGetNumber},#{materialStore},#{materialGetCheckFlag},
+       	#{stationId},#{materialPullFalg},#{materilaListId})
+	</insert>
+	<update id="editMaterialDetail">
+		UPDATE C_MES_MATERIAL_LIST_DETAIL_T SET DT = NOW(),FIGURE_NO=#{figureNo},MATERIAL_NO=#{materialNo},
+		MATERIAL_NAME=#{materialName},MATERIAL_SHEFT=#{materialSheft},MATERIAL_REPLACE=#{materialReplace},
+		MATERIAL_TRACE=#{materialTrace},MATERIAL_NUMBER=#{materialNumber},MATERIAL_IMP_FLAG=#{materialImpFlag},
+		MATERIAL_CHECK=#{materialCheck},MATERIAL_GET_NUMBER=#{materialGetNumber},MATERIAL_STORE=#{materialStore},
+		MATERIAL_GET_CHECK_FLAG=#{materialGetCheckFlag},STATION_ID=#{stationId},MATERIAL_PULL_FALG=#{materialPullFalg},
+		MATERILA_LIST_ID=#{materilaListId} WHERE ID = #{id}
+	</update>
+	<delete id="delMaterialDetail">
+		DELETE FROM C_MES_MATERIAL_LIST_DETAIL_T WHERE ID = #{id}
+	</delete>
+	<select id="manuParameterLists" resultType="CMesManufactureParametersT">
+		SELECT manuParameterList.*,line.NAME as lineName FROM C_MES_MANUFACTURE_PARAMETERS_T manuParameterList,C_MES_LINE_T line
+		WHERE manuParameterList.LINE_ID = line.ID
+		<if test="id!=null">
+			AND manuParameterList.ID = #{id}
+		</if>
+		<if test="lid!=null and lid!='' and lid!=0">
+			and manuParameterList.LINE_ID=#{lid}
+		</if>
+		<if test="lno!=null and lno!='' ">
+			and manuParameterList.LIST_NO like '%${lno}%'
+		</if>
+		ORDER BY manuParameterList.LIST_NO
+	</select>
+	<select id="findMaxmanu" resultType="double">
+		select max(LIST_VERSION) from C_MES_MANUFACTURE_PARAMETERS_T
+	</select>
+
+	<insert id="addManuParameterList" keyProperty="id" useGeneratedKeys="false">
+		INSERT INTO C_MES_MANUFACTURE_PARAMETERS_T(DT,LIST_NO,LIST_NAME,EFFECTIVE_TIME,INVALID_TIME,LIST_VERSION,LINE_ID)
+		VALUES(NOW(),#{listNo},#{listName},#{effectiveTime},#{invalidTime},#{listVersion},#{lineId})
+	</insert>
+	<select id="countaddManuParameterListByNo" resultType="int">
+		SELECT COUNT(*) FROM C_MES_MANUFACTURE_PARAMETERS_T WHERE LIST_NO = #{listNo}
+	</select>
+	<select id="countaddManuParameterListByName" resultType="int">
+		SELECT COUNT(*) FROM C_MES_MANUFACTURE_PARAMETERS_T WHERE LIST_NAME = #{listName}
+	</select>
+	<update id="editManuParameterList">
+		UPDATE C_MES_MANUFACTURE_PARAMETERS_T SET DT=NOW(),LIST_NO=#{listNo},LIST_NAME=#{listName},
+		EFFECTIVE_TIME=#{effectiveTime},
+		INVALID_TIME=#{invalidTime},LIST_VERSION=#{listVersion},
+		LINE_ID=#{lineId} WHERE ID = #{id}
+	</update>
+	<delete id="delManuParameterList">
+		DELETE FROM C_MES_MANUFACTURE_PARAMETERS_T WHERE ID = #{id}
+	</delete>
+	<select id="mfParametersDetailList" resultType="CMesMfParametersDetailT">
+		SELECT mfParametersDetail.*,mfParamters.LIST_NAME AS mfParametersName,t.STATION_NAME as stationName FROM C_MES_MF_PARAMETERS_DETAIL_T mfParametersDetail,C_MES_MANUFACTURE_PARAMETERS_T mfParamters,C_MES_STATION_T t
+		WHERE mfParametersDetail.MF_PARAMETERS_ID = mfParamters.ID and t.id=mfParametersDetail.station_id
+		<if test="id!=null">
+			AND mfParametersDetail.ID = #{id}
+		</if>
+		<if test="listNo!=null and listNo!=''">
+			AND mfParamters.LIST_NO like '%${listNo}%'
+		</if>
+		<if test="staName!=null and staName!=''">
+			and mfParametersDetail.station_id= #{staName}
+		</if>
+	</select>
+	<insert id="addManuParameterListDetail" keyProperty="id" useGeneratedKeys="false">
+		INSERT INTO C_MES_MF_PARAMETERS_DETAIL_T(DT,PARAMETER_NO,PARAMETER_NAME,PARAMETER_MAIN_FLAG,PARAMETER_CHECK,
+		PARAMETER_REPLACE,SCREW_NUMBER,NORMAL_T,T_UPPER_LIMIT,T_LOWER_LIMIT,NORMAL_A,A_UPPER_LIMIT,A_LOWER_LIMIT,OTHER_MORMAL_T,
+		OTHER_UPPER_LIMIT,OTHER_LOWER_LIMIT,MF_PARAMETERS_ID,STATION_ID)
+		 VALUES(NOW(),#{parameterNo},#{parameterName},
+		#{parameterMainFlag},#{parameterCheck},#{parameterReplace},#{screwNumber},#{normalT},#{tUpperLimit},
+		#{tLowerLimit},#{normalA},#{aUpperLimit},#{aLowerLimit},#{otherMormalT},#{otherUpperLimit},#{otherLowerLimit},
+		#{mfParametersId},#{staid})
+	</insert>
+	<update id="editManuParameterListDetail">
+		UPDATE C_MES_MF_PARAMETERS_DETAIL_T SET DT=NOW(),PARAMETER_NO=#{parameterNo},PARAMETER_NAME=#{parameterName},
+		PARAMETER_MAIN_FLAG=#{parameterMainFlag},PARAMETER_CHECK=#{parameterCheck},PARAMETER_REPLACE=#{parameterReplace},
+		SCREW_NUMBER=#{screwNumber},NORMAL_T=#{normalT},T_UPPER_LIMIT=#{tUpperLimit},T_LOWER_LIMIT=#{tLowerLimit},
+		NORMAL_A=#{normalA},A_UPPER_LIMIT=#{aUpperLimit},A_LOWER_LIMIT=#{aLowerLimit},OTHER_MORMAL_T=#{otherMormalT},
+		OTHER_UPPER_LIMIT=#{otherUpperLimit},OTHER_LOWER_LIMIT=#{otherLowerLimit},MF_PARAMETERS_ID=#{mfParametersId},STATION_ID=#{staid}
+		WHERE ID = #{id}
+	</update>
+	<delete id="delManuParameterListDetail">
+		DELETE FROM C_MES_MF_PARAMETERS_DETAIL_T WHERE ID = #{id}
+	</delete>
+	<select id="productionProcess" resultType="CMesProductionProcessT">
+		SELECT productionProcess.ID,productionProcess.LINE_ID,productionProcess.MATERIAL_LIST_ID,productionProcess.MF_PARAMETER_ID,productionProcess.PRODUCTON_ID, line.NAME AS lineName,materialList.LIST_NAME AS materialListName,manufactureParameters.LIST_NAME AS mfParameterName,production.PRODUCTION_NAME,productionProcess.DT
+		FROM C_MES_PRODUCTION_PROCESS_T productionProcess, C_MES_LINE_T line,C_MES_MATERIAL_LIST_T materialList,C_MES_MANUFACTURE_PARAMETERS_T manufactureParameters,C_MES_PRODUCTION_T production
+		WHERE productionProcess.LINE_ID=line.ID AND productionProcess.MATERIAL_LIST_ID = materialList.ID AND
+		productionProcess.MF_PARAMETER_ID=manufactureParameters.ID AND productionProcess.PRODUCTON_ID=production.ID
+		<if test="id!=null">
+			AND productionProcess.ID = #{id}
+		</if>
+	</select>
+	<insert id="addProcessConfig" keyProperty="id" useGeneratedKeys="false">
+       	INSERT INTO C_MES_PRODUCTION_PROCESS_T(LINE_ID,MATERIAL_LIST_ID,MF_PARAMETER_ID,PRODUCTON_ID,DT)
+		VALUES (#{lineId},#{materialListId},#{mfParameterId},#{productonId},NOW())
+	</insert>
+	<select id="countProcessConfigByAll" resultType="int">
+		SELECT COUNT(*) FROM C_MES_PRODUCTION_PROCESS_T WHERE LINE_ID=#{lineId} AND MATERIAL_LIST_ID=#{materialListId} AND
+		MF_PARAMETER_ID=#{mfParameterId} AND PRODUCTON_ID=#{productonId}
+	</select>
+	<delete id="delProcessConfig">
+		DELETE FROM C_MES_PRODUCTION_PROCESS_T WHERE ID = ${id}
+	</delete>
+	<update id="editProcessConfig">
+		UPDATE C_MES_PRODUCTION_PROCESS_T SET LINE_ID = #{lineId},MATERIAL_LIST_ID=#{materialListId},
+		MF_PARAMETER_ID=#{mfParameterId},PRODUCTON_ID=#{productonId},DT=NOW() WHERE ID = #{id}
+	</update>
+	<select id="countMaterialListDetailByMaterilaListId" resultType="int">
+		SELECT COUNT(*) FROM C_MES_MATERIAL_LIST_DETAIL_T WHERE MATERIAL_NAME =#{materialName}
+	</select>
+	<select id="countMaterialMsgByMaterialType" resultType="int">
+		SELECT COUNT(*) FROM C_MES_MATERIAL_MSG_T WHERE MATERIAL_TYPE = #{id}
+	</select>
+	<select id="countMaterialListByMaterialListId" resultType="int">
+		SELECT COUNT(*) FROM C_MES_MATERIAL_LIST_DETAIL_T WHERE MATERILA_LIST_ID = #{id}
+	</select>
+	<select id="countProductionProcessByParameterListId" resultType="int">
+		SELECT COUNT(*) FROM C_MES_PRODUCTION_PROCESS_T WHERE MF_PARAMETER_ID = #{id}
+	</select>
+	<select id="countMaterialByAssemblyTypeId" resultType="int">
+		SELECT COUNT(*) FROM C_MES_MATERIAL_T WHERE ASSEMBLY_TYPE_ID = #{id}
+	</select>
+
+	<select id="findMaterialTypeStatistics" resultType="java.util.Map">
+		select t.MATERIAL_TYPE,ifnull(i.num,0) as NUM from c_mes_material_type_t t
+		left join
+		(select MATERIAL_TYPE,Count(MATERIAL_TYPE) as num from c_mes_jl_material_t group by MATERIAL_TYPE) i
+		on i.MATERIAL_TYPE=t.ID
+		union all
+		select '总数' as MATERIAL_TYPE,(SELECT count(*) FROM c_mes_jl_material_t) as NUM
+	</select>
+
+	<select id="findMaterialNumStatistics" resultType="java.util.Map">
+		select t.MATERIAL_TYPE,ifnull(i.num,0) as NUM from c_mes_material_type_t t
+		left join
+		(select MATERIAL_TYPE,Count(MATERIAL_TYPE) as num from c_mes_material_instance_t group by MATERIAL_TYPE) i
+		on i.MATERIAL_TYPE=t.ID
+		union all
+		select '总数' as MATERIAL_TYPE,(SELECT count(*) FROM c_mes_material_instance_t) as NUM
+	</select>
+
+	<select id="findMaterialList" resultType="java.util.Map">
+		select * from c_mes_jl_material_t where BOM_ID like concat('%', #{BOM_ID}, '%') and VIEW_MODE = 1
+	</select>
+
+</mapper>

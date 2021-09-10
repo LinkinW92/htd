@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.all.CMesMaterialTDAO">
+
+
+    <!-- 物料类型列表 -->
+    <select id="findAllMaterialType" resultType="CMesMaterialTypeT">
+        SELECT * FROM C_MES_MATERIAL_TYPE_T WHERE 1=1
+        <if test="materialType!=null and materialType!='' ">
+            and MATERIAL_TYPE =#{materialType}
+        </if>
+    </select>
+
+    <!-- 根据id查询 -->
+    <select id="findMaterialTypeByid" resultType="CMesMaterialTypeT">
+        select * from C_MES_MATERIAL_TYPE_T where id=#{id}
+    </select>
+
+    <!-- 添加 -->
+    <insert id="addMaterialType">
+        INSERT INTO C_MES_MATERIAL_TYPE_T(MATERIAL_TYPE,DIS,DT)
+        values(#{materialType},#{dis},NOW())
+    </insert>
+
+    <!-- 修改 -->
+    <update id="updateMaterialType">
+        UPDATE C_MES_MATERIAL_TYPE_T SET MATERIAL_TYPE = #{materialType},DIS=#{dis},DT=NOW() WHERE ID = #{id}
+    </update>
+
+    <!-- 删除 -->
+    <delete id="delMaterialType">
+        delete from C_MES_MATERIAL_TYPE_T where id=#{id}
+    </delete>
+
+    <!-- 查询物料列表 -->
+    <select id="findAllMaterial" resultType="CMesJlMaterialT">
+        select t.*,m.MATERIAL_TYPE as typeName
+        from C_MES_JL_MATERIAL_T t,c_mes_material_type_t m where 1=1 and t.MATERIAL_TYPE=m.id
+        and VIEW_MODE=1
+        <if test="materialName!=null and materialName!=''">
+            and t.MATERIAL_NAME like '%${materialName}%'
+        </if>
+        <if test="bomId!=null and bomId!=''">
+            and t.BOM_ID=#{bomId}
+        </if>
+        <if test="materialType!=null and materialType!='' and materialType!=0">
+            and m.id = #{materialType}
+        </if>
+        <if test="id != null and id > 0">
+            and t.ID = #{id,jdbcType=INTEGER}
+        </if>
+        order by t.id
+    </select>
+
+    <!-- 根据物料名称查询 -->
+    <select id="findMaterialByName" resultType="integer">
+        select count(*) from C_MES_JL_MATERIAL_T where MATERIAL_NAME=#{name}
+    </select>
+    <!-- 根据id查询 -->
+    <select id="findMaterialByid" resultType="CMesJlMaterialT">
+        select * from C_MES_JL_MATERIAL_T where id=#{id}
+    </select>
+
+    <!-- 查询ID和物料名称 -->
+    <select id="findMaterialByidAndMaterialName" resultType="CMesJlMaterialT">
+        select ID id,MATERIAL_NAME materialName from C_MES_JL_MATERIAL_T
+        where 1=1
+        <if test="id!=null and id!=0">
+            and ID=#{id}
+        </if>
+        <if test="materialName!=null and materialName!=''">
+            and MATERIAL_NAME=#{materialName}
+        </if>
+        and VIEW_MODE=1
+    </select>
+
+    <!-- 添加 -->
+    <insert id="addMaterial">
+        insert into C_MES_JL_MATERIAL_T(
+        BOM_ID,MATERIAL_NAME,DESCRIPTION,SPECIFICATIONS,MATERIAL_GROUP,
+        MATERIAL_TYPE,TRACES_TYPE,STOCK_UNIT,INVENTORY_MODEL_GROUP,INVENTORY_DIMENSION_GROUP,`RELEASE`,
+        INSPECTION,FICTITIOUS,SALES_UNIT,SECRECY,PURCHASING_UNIT,
+        PRODUCTION_TEAM,MININUMBER_OF_PACKAGES,
+        <if test="termOfValidity != null and termOfValidity != ''">
+            TERM_OF_VALIDITY,
+        </if>
+        TYPENUM,VOLTAGE,
+        PART_COUNTS,CELL_CAPACITY,SCAN,CELL_SPECIFICATION,VIEW_MODE,CUSTOMER_PART_CODE)
+        values(
+        #{bomId},#{materialName},#{description},#{specifications},#{materialGroup},
+        #{materialType},#{tracesType,jdbcType=INTEGER},#{stockUnit},#{inventoryModelGroup},#{inventoryDimensionGroup},#{release},
+        #{inspection},#{fictitious},#{salesUnit},#{secrecy},#{purchasingUnit},
+        #{productionTeam},#{mininumberOfPackages},
+        <if test="termOfValidity != null and termOfValidity != ''">
+            #{termOfValidity},
+        </if>
+        #{typenum},#{voltage},
+        #{partCounts},#{cellCapacity},#{scan},#{cellSpecification},1,#{customerPartCode})
+    </insert>
+
+    <!-- 修改 -->
+    <update id="updateMaterial">
+        update C_MES_JL_MATERIAL_T set BOM_ID=#{bomId},
+        MATERIAL_NAME=#{materialName},
+        DESCRIPTION=#{description},
+        SPECIFICATIONS=#{specifications},
+        MATERIAL_GROUP=#{materialGroup},
+        MATERIAL_TYPE=#{materialType},
+        TRACES_TYPE = #{tracesType,jdbcType=INTEGER},
+        STOCK_UNIT=#{stockUnit},
+        INVENTORY_MODEL_GROUP=#{inventoryModelGroup},
+        INVENTORY_DIMENSION_GROUP=#{inventoryDimensionGroup},
+        `RELEASE`=#{release},
+        INSPECTION=#{inspection},
+        FICTITIOUS=#{fictitious},
+        SALES_UNIT=#{salesUnit},
+        SECRECY=#{secrecy},
+        PURCHASING_UNIT=#{purchasingUnit},
+        PRODUCTION_TEAM=#{productionTeam},
+        MININUMBER_OF_PACKAGES=#{mininumberOfPackages},
+        TYPENUM=#{typenum},
+        VOLTAGE=#{voltage},
+        PART_COUNTS=#{partCounts},
+        CELL_CAPACITY=#{cellCapacity},
+        SCAN=#{scan},
+        CELL_SPECIFICATION=#{cellSpecification},
+        CUSTOMER_PART_CODE=#{customerPartCode}
+        where id=#{id}
+    </update>
+
+    <!-- 删除 -->
+    <delete id="delMaterial">
+        delete from C_MES_JL_MATERIAL_T where id=#{id}
+    </delete>
+
+    <!-- 物料维修列表 -->
+    <select id="findAllMaterialRepair" resultType="CMESMaterialRepairT">
+        select t.*,s.station_name as stationName,m.material_name as materialName
+        from C_MES_MATERIAL_REPAIR_T t,c_mes_station_t s,C_MES_JL_MATERIAL_T m
+        where t.material_id=m.id and t.station_id=s.id
+        <if test="stationId!=null and stationId!='' and stationId != 0">
+            and s.id=#{stationId}
+        </if>
+        <if test="materialName!=null and materialName!=''">
+            and m.MATERIAL_NAME like '%${materialName}%'
+        </if>
+        <if test="status!=null and status!='' and status!=0">
+            and status=#{status}
+        </if>
+    </select>
+
+    <!-- 根据id查询 -->
+    <select id="findMaterialRepairByid" resultType="CMESMaterialRepairT">
+        select * from C_MES_MATERIAL_REPAIR_T where id=#{id}
+    </select>
+
+    <!-- 添加 -->
+    <insert id="addMaterialRepair">
+        insert into c_mes_material_repair_t(MATERIAL_ID,STATION_ID,DT,EMP,NOTE,STATUS)
+        values(#{materialId},#{stationId},NOW(),#{emp},#{note},1)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="updateMaterialRepair">
+        update c_mes_material_repair_t set status=2,ENDDT=NOW(),REPAIR_EMP=#{repairEmp},reason=#{reason} where id=#{id}
+    </update>
+
+    <!-- 删除 -->
+    <delete id="delMaterialRepair">
+        delete from c_mes_material_repair_t where id=#{id}
+    </delete>
+
+    <!-- 工艺配置列表 -->
+    <select id="findAllProcess" resultType="CMesProductionProcessT">
+		SELECT productionProcess.ID,productionProcess.LINE_ID,productionProcess.MATERIAL_LIST_ID,productionProcess.MF_PARAMETER_ID,productionProcess.PRODUCTON_ID, line.NAME AS lineName,materialList.LIST_NAME AS materialListName,manufactureParameters.LIST_NAME AS mfParameterName,production.PRODUCTION_NAME,productionProcess.DT
+		FROM C_MES_PRODUCTION_PROCESS_T productionProcess, C_MES_LINE_T line,C_MES_MATERIAL_LIST_T materialList,C_MES_MANUFACTURE_PARAMETERS_T manufactureParameters,C_MES_PRODUCTION_T production
+		WHERE productionProcess.LINE_ID=line.ID AND productionProcess.MATERIAL_LIST_ID = materialList.ID AND
+		productionProcess.MF_PARAMETER_ID=manufactureParameters.ID AND productionProcess.PRODUCTON_ID=production.ID
+	</select>
+
+    <!-- 根据ID查询工艺配置 -->
+    <select id="findProcessByid" resultType="CMesProductionProcessT">
+        select * from C_MES_PRODUCTION_PROCESS_T where id=#{id}
+    </select>
+
+    <!-- 添加 -->
+    <insert id="addProcess">
+        INSERT INTO C_MES_PRODUCTION_PROCESS_T(LINE_ID,MATERIAL_LIST_ID,MF_PARAMETER_ID,PRODUCTON_ID,DT)
+        VALUES (#{lineId},#{materialListId},#{mfParameterId},#{productonId},NOW())
+    </insert>
+
+    <!-- 修改 -->
+    <update id="updateProcess">
+        UPDATE C_MES_PRODUCTION_PROCESS_T SET LINE_ID = #{lineId},MATERIAL_LIST_ID=#{materialListId},
+        MF_PARAMETER_ID=#{mfParameterId},PRODUCTON_ID=#{productonId},DT=NOW() WHERE ID = #{id}
+    </update>
+
+    <!-- 删除 -->
+    <delete id="delProcess">
+        delete from C_MES_PRODUCTION_PROCESS_T where id=#{id}
+    </delete>
+
+    <!-- 查询总成类型列表 -->
+    <select id="findAllAssembly" resultType="CMesAssemblyType">
+		SELECT assemblyType.*,line.NAME AS lineName from C_MES_ASSEMBLY_TYPE assemblyType,C_MES_LINE_T line WHERE assemblyType.LINE_ID=line.ID
+	</select>
+
+    <!-- 根据ID查询 -->
+    <select id="findAssemblyByid" resultType="CMesAssemblyType">
+        select * from C_MES_ASSEMBLY_TYPE where id=#{id}
+    </select>
+
+    <!-- 添加 -->
+    <insert id="addAssmbly">
+        INSERT INTO C_MES_ASSEMBLY_TYPE(ASSEMBLY_TYPE_NO,ASSEMBLY_TYPE_NAME,ASSEMBLY_TYPE_DIS,DT,LINE_ID)
+        VALUES(#{assemblyTypeNo},#{assemblyTypeName},#{assemblyTypeDis},NOW(),#{lineId})
+    </insert>
+
+    <!-- 修改 -->
+    <update id="updateAssmebly">
+        UPDATE C_MES_ASSEMBLY_TYPE SET ASSEMBLY_TYPE_NO = #{assemblyTypeNo},
+        ASSEMBLY_TYPE_NAME=#{assemblyTypeName},ASSEMBLY_TYPE_DIS=#{assemblyTypeDis},DT=NOW(),LINE_ID=#{lineId}
+        WHERE ID = #{id}
+    </update>
+
+    <!-- 删除 -->
+    <delete id="delAssmebly">
+        delete from C_MES_ASSEMBLY_TYPE where id=#{id}
+    </delete>
+
+    <!-- 查询所有物料id+name -->
+    <select id="findIdNameAll" resultType="CMesJlMaterialT">
+		select id,MATERIAL_NAME from c_mes_jl_material_t
+	</select>
+
+    <insert id="addMaterialXT355_356_357">
+        insert into c_mes_jl_material_t(
+        BOM_ID,MATERIAL_NAME,DESCRIPTION,SPECIFICATIONS,
+        MATERIAL_LENGTH,MATERIAL_WIDTH,MATERIAL_HIGHT,MATERIAL_VOLUME,
+        MATERIAL_WEIGHT,MATERIAL_LT,MATERIAL_INCOM_TYPE,MATERIAL_LOW_LIMITMATERIAL,
+        MATERIAL_BATCH,DAYS_OF_FAILURE
+        )
+        value(
+        #{bomId},#{materialName},#{description},#{specifications},
+        #{materialLength},#{materialWidth},#{materialHight},#{materialVolume},
+        #{materialWeight},#{materialLt},#{materialIncomType},#{materialLowLimitmaterial},
+        #{materialBatch},#{daysOfFailure}
+        )
+    </insert>
+
+    <!-- 查询物料列表 -->
+    <select id="findAllMaterialXT355_356_357" resultType="CMesJlMaterialT">
+        select
+        ID,BOM_ID,MATERIAL_NAME,DESCRIPTION,SPECIFICATIONS,MATERIAL_LENGTH,MATERIAL_WIDTH,MATERIAL_HIGHT,MATERIAL_VOLUME,MATERIAL_WEIGHT,MATERIAL_LT,MATERIAL_INCOM_TYPE,MATERIAL_LOW_LIMITMATERIAL,MATERIAL_BATCH,DAYS_OF_FAILURE
+        from C_MES_JL_MATERIAL_T where 1=1
+        <if test="materialName!=null and materialName!=''">
+            and MATERIAL_NAME like '%${materialName}%'
+        </if>
+        <if test="bomId!=null and bomId!=''">
+            and BOM_ID=#{bomId}
+        </if>
+        order by id
+    </select>
+
+    <!-- 修改 -->
+    <update id="updateMaterialXT355_356_357">
+        update C_MES_JL_MATERIAL_T set BOM_ID=#{bomId},
+        MATERIAL_NAME=#{materialName},
+        DESCRIPTION=#{description},
+        SPECIFICATIONS=#{specifications},
+        MATERIAL_LENGTH=#{materialLength},
+        MATERIAL_WIDTH=#{materialWidth},
+        MATERIAL_HIGHT=#{materialHight},
+        MATERIAL_VOLUME=#{materialVolume},
+        MATERIAL_WEIGHT=#{materialWeight},
+        MATERIAL_LT=#{materialLt},
+        MATERIAL_INCOM_TYPE=#{materialIncomType},
+        MATERIAL_LOW_LIMITMATERIAL=#{materialLowLimitmaterial},
+        MATERIAL_BATCH=#{materialBatch},
+        DAYS_OF_FAILURE=#{daysOfFailure}
+        where id=#{id}
+    </update>
+
+    <select id="checkMaterialNo" resultType="java.lang.Integer">
+        select COUNT(*) from c_mes_jl_material_t
+        where VIEW_MODE = 1
+        and BOM_ID = #{materialNo}
+    </select>
+
+    <select id="checkMaterialName" resultType="java.lang.Integer">
+        select COUNT(*) from c_mes_jl_material_t
+        where VIEW_MODE = 1
+        and MATERIAL_NAME = #{materialName}
+    </select>
+
+    <update id="deleteMaterial">
+        update c_mes_jl_material_t
+        set VIEW_MODE = 0
+        where id = #{id}
+    </update>
+    <select id="findMaterialCodeList" resultType="com.skeqi.mes.pojo.CMesJlMaterialT">
+		select *,m.MATERIAL_TYPE as typeName from
+		C_MES_JL_MATERIAL_T t,c_mes_material_type_t m where 1=1 and t.MATERIAL_TYPE=m.id and VIEW_MODE=1
+	</select>
+
+
+    <select id="findProductMaterialList" resultType="com.skeqi.mes.pojo.CMesJlMaterialT">
+        select m.*,t.MATERIAL_TYPE as typeName from c_mes_jl_material_t m, C_MES_MATERIAL_TYPE_T t
+        <where>
+            m.MATERIAL_TYPE=t.ID
+            <if test="materialCode != null and materialCode != ''">
+                and m.BOM_ID=#{materialCode,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+    <select id="findMaterialByMaterialCode" resultType="com.skeqi.mes.pojo.CMesMaterialT">
+        select BOM_ID materialNo,TRACES_TYPE tracesType  from c_mes_jl_material_t
+         <where>
+             <foreach collection="list" item="list" open="BOM_ID in(" close=")" separator=",">
+                 #{list,jdbcType=VARCHAR}
+             </foreach>
+        </where>
+    </select>
+    <!-- 查询物料列表 -->
+    <select id="findAllMaterialList" resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CMesJlMaterialTRsp">
+        SELECT BOM_ID bomId,MATERIAL_NAME materialName
+        FROM c_mes_jl_material_t
+        <where>
+            <if test="bomId!=null and bomId!='' ">
+                BOM_ID  like concat('%',#{bomId,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="materialName!=null and materialName!='' ">
+                and MATERIAL_NAME  like concat('%',#{materialName,jdbcType=VARCHAR},'%')
+            </if>
+            and VIEW_MODE=1
+        </where>
+
+    </select>
+</mapper>
+
+

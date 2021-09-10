@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.wjp.ProductManagementDao">
+	<!-- 产品列表 -->
+	<select id="findAll" resultType="CMesProductionT">
+		SELECT
+	b.*,
+	labelManager.LABEL_NAME AS productionGroupName
+FROM
+	(
+	SELECT
+		a.*,
+		labelManager.LABEL_NAME AS productionSystemName
+	FROM
+		(
+		SELECT
+			production.*,
+			labelManager.LABEL_NAME AS productionPrintName
+		FROM
+			C_MES_PRODUCTION_T production,
+			C_MES_LABEL_MANAGER_T labelManager
+		WHERE
+			production.PRODUCTION_PRINT_ID = labelManager.ID
+		) a,
+		C_MES_LABEL_MANAGER_T labelManager
+	WHERE
+		a.PRODUCTION_SYSTEM_ID = labelManager.ID
+	) b,
+	C_MES_LABEL_MANAGER_T labelManager
+WHERE
+	b.PRODUCTION_GROUP_ID = labelManager.ID
+	</select>
+	<!-- 产品新增 -->
+	<insert id="addProduction" parameterType="CMesProductionT"  keyProperty="id" useGeneratedKeys="false">
+		INSERT INTO
+		C_MES_PRODUCTION_T(PRODUCTION_NAME,PRODUCTION_TYPE,PRODUCTION_TRADEMARK,PRODUCTION_SERIES,PRODUCTION_VR,
+		PRODUCTION_DISCRIPTION,STATION_NAME,PRODUCTION_ET,PRODUCTION_GT,PRODUCTION_STE,PRODUCTION_PRINT_ID,PRODUCTION_SYSTEM_ID,PRODUCTION_GROUP_ID,PATH)
+		VALUES
+		(#{productionName},#{productionType},#{productionTrademark,jdbcType=VARCHAR},
+		#{productionSeries,jdbcType=VARCHAR},#{productionVr,jdbcType=VARCHAR},#{productionDiscription,jdbcType=VARCHAR},
+		#{stationName,jdbcType=VARCHAR},#{productionEt,jdbcType=VARCHAR},
+		#{productionGt,jdbcType=VARCHAR},
+		#{productionSte,jdbcType=VARCHAR},#{productionPrintId},#{productionSystemId},#{productionGroupId},#{path,jdbcType=VARCHAR})
+	</insert>
+	<!-- 名称和类型不能重 -->
+	<select id="NoRepeat" resultType="int">
+		SELECT COUNT(*) from C_MES_PRODUCTION_T WHERE Production_Name=#{productionName}
+	</select>
+	<select id="NoRepeats"  resultType="int">
+		SELECT COUNT(*) from C_MES_PRODUCTION_T WHERE Production_Type=#{productionType}
+	</select>
+
+	<!-- 根据id查询 -->
+	<select id="findProductionById" parameterType="int" resultType="CMesProductionT">
+		SELECT * FROM C_MES_PRODUCTION_T WHERE
+		ID=#{id}
+	</select>
+
+	<!-- 产品修改 -->
+	<update id="updateProduction" parameterType="CMesProductionT">
+		UPDATE
+		C_MES_PRODUCTION_T SET
+		PRODUCTION_NAME=#{productionName},PRODUCTION_SERIES=#{productionSeries},PRODUCTION_TYPE=#{productionType},
+		PRODUCTION_STE=#{productionSte},PRODUCTION_VR=#{productionVr},PRODUCTION_DISCRIPTION=#{productionDiscription},
+		PRODUCTION_PRINT_ID=#{labelTypeId}
+		WHERE ID=#{id}
+	</update>
+	<!-- 产品删除 -->
+	<delete id="deleteProduction" parameterType="int">
+		DELETE FROM C_MES_PRODUCTION_T WHERE ID=#{ID}
+	</delete>
+
+
+	<select id="countProductionProcessByProductionId" resultType="int">
+		SELECT COUNT(*) FROM C_MES_PRODUCTION_PROCESS_T WHERE PRODUCTON_ID = #{id}
+	</select>
+	<select id="countBomByProductionId" resultType="int">
+		SELECT COUNT(*) FROM C_MES_BOM_T WHERE PRODUCTION_ID = #{id}
+	</select>
+	<select id="countRecipeByProductionId" resultType="int">
+		SELECT COUNT(*) FROM C_MES_PRODUCTION_RECIPE_T WHERE PRODUCTION_ID = #{id}
+	</select>
+	<select id="countPlanByProductionId" resultType="int">
+		SELECT COUNT(*) FROM R_MES_PLAN_T WHERE PRODUCTION_ID = #{id}
+	</select>
+	<select id="countBarCodeByProduction" resultType="int">
+		SELECT COUNT(*) FROM R_MES_PLAN_PRINT_T WHERE PRODUCTION_ID = #{id}
+	</select>
+
+</mapper>
+
+

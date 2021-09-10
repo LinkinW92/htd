@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wms.ApprovalDetailsDao">
+
+	<select id="findApprovalDetails" resultType="com.skeqi.mes.pojo.wms.CWmsApprovalDetailsT">
+		select * from c_wms_approval_details_t
+		where 1 = 1
+		<if test="id != null">
+			AND ID = #{id}
+		</if>
+		<if test="listNo != null">
+			AND LIST_NO = #{listNo}
+		</if>
+		<if test="approvalResult != null">
+			AND APPROVAL_RESULT = #{approvalResult}
+		</if>
+		<if test="userId != null">
+			AND USER_ID = #{userId}
+		</if>
+		<if test="reason != null">
+			AND REASON = #{reason}
+		</if>
+		<if test="approvalId != null">
+			AND APPROVAL_ID = #{approvalId}
+		</if>
+		<if test="dt != null">
+			AND DT = #{dt}
+		</if>
+		<if test="priorityLevel != null">
+			AND PRIORITY_LEVEL = #{priorityLevel}
+		</if>
+		<if test="ynApproved != null">
+			AND YN_APPROVED = #{ynApproved}
+		</if>
+		ORDER BY ID
+	</select>
+
+	<insert id="addApprovalDetails">
+		insert into c_wms_approval_details_t(
+		LIST_NO,APPROVAL_RESULT,USER_ID,REASON,
+		APPROVAL_ID,DT,PRIORITY_LEVEL,YN_APPROVED)
+		values(
+		#{listNo},#{approvalResult},#{userId},#{reason},
+		#{approvalId},now(),#{priorityLevel},#{ynApproved})
+	</insert>
+
+	<delete id="deleteApprovalDetails">
+		delete from c_wms_approval_details_t
+		where id = #{approvalDetailsId}
+	</delete>
+
+	<update id="updateApprovalDetails">
+		update c_wms_approval_details_t
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="listNo != null">LIST_NO = #{listNo},</if>
+			<if test="approvalResult != null">APPROVAL_RESULT = #{approvalResult},</if>
+			<if test="userId != null">USER_ID = #{userId},</if>
+			<if test="reason != null">REASON = #{reason},</if>
+			<if test="approvalId != null">APPROVAL_ID = #{approvalId},</if>
+			<if test="priorityLevel != null">PRIORITY_LEVEL = #{priorityLevel},</if>
+			<if test="ynApproved != null">YN_APPROVED = #{ynApproved},</if>
+		</trim>
+		where ID = #{id}
+	</update>
+
+	<select id="findShiFouZuiHouYiGeShenPiRen" resultType="com.skeqi.mes.pojo.wms.CWmsApprovalDetailsT">
+		select * from c_wms_approval_details_t
+		where LIST_NO = #{listNo}
+		and PRIORITY_LEVEL > #{priorityLevel}
+		GROUP BY PRIORITY_LEVEL
+	</select>
+
+	<update id="updateApprovalResult">
+		UPDATE c_wms_approval_details_t
+		set APPROVAL_RESULT = 1,
+		YN_APPROVED = 0
+		where id = #{id}
+	</update>
+
+	<update id="updateYnApproved">
+		UPDATE c_wms_approval_details_t
+		set YN_APPROVED = 1
+		where id = #{id}
+	</update>
+
+</mapper>

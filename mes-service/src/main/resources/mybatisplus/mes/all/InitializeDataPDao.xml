@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.all.InitializeDataPDao">
+
+	<insert id="batchlyInsert" parameterType="java.util.List" >
+		INSERT INTO r_mes_bolt_t(dt,transfer,bolt_mode,sn,st,t_limit,a_limit,bolt_name,bolt_num,rework_flag,MATERIAL_INSTANCE_ID)
+		VALUES
+		<foreach collection="list" item="item" index="index" separator="," >
+			(now(),0,0,#{item.snIni},#{item.tempStationName},#{item.cRecipesTLimit},#{item.cRecipesALimit},#{item.tempParamartersName},#{item.whileTemp},'0',#{item.MATERIAL_INSTANCE_ID})
+		</foreach>
+	</insert>
+
+</mapper>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.skeqi.mes.mapper.lcy.GetFlawRateDao">
+
+	<select id="getProductionNumber" resultType="int">
+	select count(*)
+    from p_Mes_Tracking_t tt
+    where 1=1
+    and tt.line_id =#{lineId}
+     <![CDATA[and dt >=#{startDate} and dt<#{endDate} ]]>
+
+	</select>
+
+
+	<select id="getFlawProductionNumber" resultType="int">
+	select count(*)
+	from P_MES_DEFECT_REASON_T tt
+    left join C_MES_DUTY_MANAGER_T dt
+    on tt.duty_id = dtt.id
+    left join C_MES_DEFECT_MANAGER_T dm
+    on tt.defect_id = dm.id
+    left join C_MES_DEFECT_RESION_T dr
+    on tt.resion_id = dr.id
+    left join P_MES_TRACKING_T p
+    on tt.sn = p.sn
+    where 1=1
+    and p.line_id=#{lineId}
+    <![CDATA[and p.dt >=#{startDate} and p.dt<#{endDate} ]]>
+
+	</select>
+
+
+</mapper>

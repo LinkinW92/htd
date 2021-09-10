@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.all.CMesRecipeTDAO">
+    <!-- 查询配方列表 -->
+    <select id="findAllRecipe" resultType="CMesRecipeT">
+        SELECT ID,RECIPE_NAME,RECIPE_DISCRIPTION FROM C_MES_RECIPE_T where 1=1
+        <if test="recipeName!=null and recipeName!='' ">
+            and binary RECIPE_NAME=#{recipeName}
+        </if>
+        <if test="lineId!=null and lineId!='' ">
+            and LINE_ID = #{lineId}
+        </if>
+        ORDER BY ID
+    </select>
+
+    <!-- 查询物料列表 -->
+    <select id="findAllMaterial" resultType="CMesJlMaterialT">
+		select * from c_mes_jl_material_t
+	</select>
+
+    <!-- 根据id查询配方列表 -->
+    <select id="findRecipeByid" resultType="CMesRecipeT">
+        SELECT ID,RECIPE_NAME,RECIPE_DISCRIPTION FROM C_MES_RECIPE_T where id=#{id}
+    </select>
+
+
+    <!-- 查询最大的配方id -->
+    <select id="findRecipeMaxid" resultType="Integer">
+		select max(id) from C_MES_RECIPE_T
+	</select>
+    <!-- 添加配方 -->
+    <insert id="addRecipe">
+        insert into C_MES_RECIPE_T(RECIPE_NAME,RECIPE_DISCRIPTION)
+        values(#{recipeName},#{recipeDiscription})
+    </insert>
+
+    <!-- 修改配方 -->
+    <update id="updateRecipe">
+        update C_MES_RECIPE_T set RECIPE_NAME=#{recipeName},
+        RECIPE_DISCRIPTION=#{recipeDiscription}
+        where id=#{id}
+    </update>
+
+
+    <update id="updateProRecipe">
+        update C_MES_PRODUCTION_RECIPE_T set PRODUCTION_ID=#{productionId},
+        RECIPE_ID=#{recipeId},STATION_ID = #{stationId}
+        where id=#{id}
+    </update>
+
+    <!-- 删除配方 -->
+    <delete id="delRecipe">
+        delete from C_MES_RECIPE_T where id=#{id}
+    </delete>
+
+    <!-- 查询配方产品绑定表 -->
+    <select id="findAllProRecipe" resultType="CMesProductionRecipeT">
+        SELECT T.ID,P.PRODUCTION_NAME,R.RECIPE_NAME,S.STATION_NAME,P.PRODUCTION_DISCRIPTION
+        FROM C_MES_PRODUCTION_T P,C_MES_RECIPE_T R,C_MES_PRODUCTION_RECIPE_T T,
+        C_MES_STATION_T S
+        WHERE R.ID=T.RECIPE_ID AND P.ID=T.PRODUCTION_ID AND S.ID=T.STATION_ID
+        <if test="recipeId!=null and recipeId=0">
+            and t.recipe_id=#{recipeId}
+        </if>
+    </select>
+
+    <!-- 根据id查询 -->
+    <select id="findProRecipeByid" resultType="CMesProductionRecipeT">
+        select p.*,t.RECIPE_DISCRIPTION as productionDiscription,t.RECIPE_NAME as recipeName
+        from C_MES_PRODUCTION_RECIPE_T p,C_MES_RECIPE_T t where p.RECIPE_id=t.id and p.id=#{id}
+    </select>
+    <!-- 添加产品配方绑定表 -->
+    <insert id="addProRecipe">
+        INSERT INTO C_MES_PRODUCTION_RECIPE_T(PRODUCTION_ID,RECIPE_ID,STATION_ID)
+        VALUES(#{productionId},#{recipeId},#{stationId})
+    </insert>
+
+    <!-- 删除配方产品绑定表 -->
+    <delete id="delProRecipe">
+        delete from C_MES_PRODUCTION_RECIPE_T where id=#{id}
+    </delete>
+
+    <!-- 配方类型列表 -->
+    <select id="findAllRecipeType" resultType="CMesRecipeTypeT">
+				SELECT * FROM
+		C_MES_RECIPE_TYPE_T ORDER by id
+	</select>
+
+    <!-- 查询配方明细列表 -->
+    <select id="findAllRecipeDatil" resultType="CMesRecipeDatilT">
+        SELECT datil.*,re.recipe_name,type.TYPE_NAME AS recipeTypeName
+        FROM
+        c_mes_recipe_t re,
+        c_mes_recipe_datil_t datil,
+        c_mes_recipe_type_t type
+        WHERE
+        re.ID = datil.RECIPE_ID
+        AND datil.STEP_CATEGORY = type.ID
+        <if test="id!=null and id!=''">
+            and datil.id = #{id}
+        </if>
+        <if test="recipeId!=null">
+            and datil.recipe_Id = #{recipeId}
+        </if>
+        <if test="stationId!=null">
+            and re.station_Id = #{stationId}
+        </if>
+        order by datil.STEPNO
+    </select>
+
+    <!-- 根据产品ID查询配方 -->
+    <select id="findAllRecipeByPid" resultType="CMesRecipeT">
+        select r.id as id,r.recipe_name as recipeName from C_MES_PRODUCTION_RECIPE_T t,C_MES_RECIPE_T r
+        WHERE t.recipe_id=r.id
+        <if test="id!=null and id!='' and id!=0">
+            and t.production_id=#{id}
+        </if>
+    </select>
+
+    <!-- 删除配方ID -->
+    <delete id="delRecipeDatil">
+        DELETE FROM C_MES_RECIPE_DATIL_T WHERE ID = #{id}
+    </delete>
+    <update id="updateRecipeDetailStep">
+        <![CDATA[update C_MES_RECIPE_DATIL_T set STEPNO = STEPNO-1 where RECIPE_ID = #{recipeId} and #{stepno,jdbcType=INTEGER} <= STEPNO]]>
+    </update>
+
+    <!-- 根据物料名称查询该物料是否存在 -->
+    <select id="findMaterialByid" resultType="integer">
+        select IFNULL(MAX(id),0) from c_mes_jl_material_t where material_name = #{name}
+    </select>
+
+    <!-- 添加配方 -->
+    <insert id="addRecipeDetail">
+        <!-- 扫描总成 -->
+        <if test="stepCategory==1 or stepCategory==16 or stepCategory==17">
+            insert into
+            c_mes_recipe_datil_t(STEP_CATEGORY,MATERIAL_NAME,CHEKORNO,BOLTEQS,RECIPE_ID,STEPNO,PATH_BINARY,FEACODE)
+            values(#{stepCategory},#{materialName},#{chekorno},#{bolteqs},#{recipeId},#{stepno},#{pathBinary,jdbcType=VARCHAR},#{feacode})
+        </if>
+        <!-- 扫描员工号 -->
+        <if test="stepCategory==2">
+            insert into
+            c_mes_recipe_datil_t(STEP_CATEGORY,MATERIAL_NAME,CHEKORNO,BOLTEQS,RECIPE_ID,STEPNO,PATH_BINARY,EXACTORNO,FEACODE)
+            values(#{stepCategory},#{materialName},#{chekorno},#{bolteqs},#{recipeId},#{stepno},#{pathBinary,jdbcType=VARCHAR},#{exactorno},#{feacode})
+        </if>
+        <!-- 扫描物料/扫描唯一物料 -->
+        <if test="stepCategory==3 or stepCategory==4">
+            insert into
+            c_mes_recipe_datil_t(STEP_CATEGORY,MATERIAL_NAME,CHEKORNO,BOLTEQS,RECIPE_ID,STEPNO,PATH_BINARY,EXACTORNO,FEACODE,MATERIAL_ID,NUMBERS,MATERIALPN)
+            values(#{stepCategory},#{materialName},#{chekorno},#{bolteqs},#{recipeId},#{stepno},#{pathBinary,jdbcType=VARCHAR},#{exactorno},#{feacode},#{materialId,jdbcType=VARCHAR},#{numbers},#{materialpn})
+        </if>
+        <!-- 扫描模组/扫描电芯 -->
+        <if test="stepCategory==5 or stepCategory==6">
+            insert into
+            c_mes_recipe_datil_t(STEP_CATEGORY,MATERIAL_NAME,CHEKORNO,BOLTEQS,RECIPE_ID,STEPNO,PATH_BINARY,EXACTORNO,FEACODE,NUMBERS)
+            values(#{stepCategory},#{materialName},#{chekorno},#{bolteqs},#{recipeId},#{stepno},#{pathBinary,jdbcType=VARCHAR},#{exactorno},#{feacode},#{numbers})
+        </if>
+        <!-- 拧紧 -->
+        <if test="stepCategory==7">
+            insert into
+            c_mes_recipe_datil_t(STEP_CATEGORY,MATERIAL_NAME,BOLTEQS,NUMBERS,GUN_NO,PROGRAM_NO,SLEEVE_NO,A_LIMIT,T_LIMIT,REWORKTIMES,RECIPE_ID,PATH_BINARY,STEPNO,MATERIALPN)
+            values(#{stepCategory},#{materialName},#{bolteqs},#{numbers},#{gunNo},#{programNo},#{sleeveNo},#{aLimit},#{tLimit},#{reworktimes},#{recipeId},#{pathBinary,jdbcType=VARCHAR},#{stepno},#{materialpn})
+        </if>
+
+        <!-- 气密性信息 -->
+        <if test="stepCategory==8 or stepCategory==9 or stepCategory==13 or stepCategory==15">
+            insert into
+            c_mes_recipe_datil_t(STEP_CATEGORY,MATERIAL_NAME,BOLTEQS,NUMBERS,PROGRAM_NO,RECIPE_ID,PATH_BINARY,STEPNO)
+            values(#{stepCategory},#{materialName},#{bolteqs},#{numbers},#{programNo},#{recipeId},#{pathBinary,jdbcType=VARCHAR},#{stepno})
+        </if>
+
+        <!-- 拍照  打印    -->
+        <if test="stepCategory==10 or stepCategory==11 or stepCategory==12 ">
+            insert into c_mes_recipe_datil_t(STEP_CATEGORY,MATERIAL_NAME,BOLTEQS,RECIPE_ID,PATH_BINARY,STEPNO)
+            values(#{stepCategory},#{materialName},#{bolteqs},#{recipeId},#{pathBinary,jdbcType=VARCHAR},#{stepno})
+        </if>
+
+        <!-- 结束   -->
+        <if test="stepCategory==14">
+            insert into c_mes_recipe_datil_t(STEP_CATEGORY,MATERIAL_NAME,RECIPE_ID,PATH_BINARY,STEPNO)
+            values(#{stepCategory},#{materialName},#{recipeId},#{pathBinary,jdbcType=VARCHAR},#{stepno})
+        </if>
+    </insert>
+
+    <!-- 根据配方ID获取最大的步序 -->
+    <select id="findMaxStepNo" resultType="integer">
+        select IFNULL(max(STEPNO),0) from c_mes_recipe_datil_t where RECIPE_ID = #{rid}
+    </select>
+
+    <!-- 根据ID查询配方明细 -->
+    <select id="findRecipeDetailByid" resultType="CMesRecipeDatilT">
+        select * from c_mes_recipe_datil_t where id=#{id}
+    </select>
+
+    <!-- 修改 -->
+    <update id="updateRecipeDetail">
+        <!-- 扫描总成 -->
+        <if test="stepCategory==1 or stepCategory==16 or stepCategory==17">
+            update c_mes_recipe_datil_t set
+            <if test="pathBinary!=null">PATH_BINARY=#{pathBinary},</if>
+            STEPNO=#{stepno},
+            MATERIAL_NAME=#{materialName},
+            BOLTEQS=#{bolteqs},
+            FEACODE=#{feacode},
+            CHEKORNO=#{chekorno}
+            where id=#{id}
+        </if>
+        <!-- 扫描员工号 -->
+        <if test="stepCategory==2">
+            update c_mes_recipe_datil_t set
+            <if test="pathBinary!=null">PATH_BINARY=#{pathBinary},</if>
+            STEPNO=#{stepno},
+            MATERIAL_NAME=#{materialName},
+            BOLTEQS=#{bolteqs},
+            FEACODE=#{feacode},
+            CHEKORNO=#{chekorno},
+            EXACTORNO=#{exactorno}
+            where id=#{id}
+        </if>
+        <!-- 扫描物料 -->
+        <if test="stepCategory==3 || stepCategory==4">
+            update c_mes_recipe_datil_t set
+            <if test="pathBinary!=null">PATH_BINARY=#{pathBinary},</if>
+            STEPNO=#{stepno},
+            MATERIAL_NAME=#{materialName},
+            BOLTEQS=#{bolteqs},
+            FEACODE=#{feacode},
+            CHEKORNO=#{chekorno},
+            EXACTORNO=#{exactorno},
+            NUMBERS=#{numbers},
+            MATERIALPN=#{materialpn},
+            MATERIAL_ID=#{materialId,jdbcType=INTEGER}
+            where id=#{id}
+        </if>
+        <!-- 扫描模组 -->
+        <if test="stepCategory==5 || stepCategory==6">
+            update c_mes_recipe_datil_t set
+            <if test="pathBinary!=null">PATH_BINARY=#{pathBinary},</if>
+            STEPNO=#{stepno},
+            MATERIAL_NAME=#{materialName},
+            BOLTEQS=#{bolteqs},
+            FEACODE=#{feacode},
+            CHEKORNO=#{chekorno},
+            EXACTORNO=#{exactorno},
+            NUMBERS=#{numbers}
+            where id=#{id}
+        </if>
+        <!-- 拧紧 -->
+        <if test="stepCategory==7">
+            update c_mes_recipe_datil_t set
+            <if test="pathBinary!=null">PATH_BINARY=#{pathBinary},</if>
+            STEPNO=#{stepno},
+            MATERIAL_NAME=#{materialName},
+            BOLTEQS=#{bolteqs},
+            NUMBERS=#{numbers},
+            GUN_NO=#{gunNo},
+            PROGRAM_NO=#{programNo},
+            SLEEVE_NO=#{sleeveNo},
+            A_LIMIT=#{aLimit},
+            T_LIMIT=#{tLimit},
+            REWORKTIMES=#{reworktimes},
+            MATERIALPN=#{materialpn}
+            where id=#{id}
+        </if>
+
+        <!-- 气密性信息 -->
+        <if test="stepCategory==8 or stepCategory==9 or stepCategory==13 or stepCategory==15">
+            update c_mes_recipe_datil_t set
+            <if test="pathBinary!=null">PATH_BINARY=#{pathBinary},</if>
+            STEPNO=#{stepno},
+            MATERIAL_NAME=#{materialName},
+            BOLTEQS=#{bolteqs},
+            NUMBERS=#{numbers},
+            PROGRAM_NO=#{programNo}
+            where id=#{id}
+        </if>
+        <!-- 拍照  打印 -->
+        <if test="stepCategory==10 or stepCategory==11 or stepCategory==12">
+            update c_mes_recipe_datil_t set
+            <if test="pathBinary!=null">PATH_BINARY=#{pathBinary},</if>
+            STEPNO=#{stepno},
+            MATERIAL_NAME=#{materialName},
+            BOLTEQS=#{bolteqs}
+            where id=#{id}
+        </if>
+        <!-- 结束 -->
+        <if test="stepCategory==14">
+            update c_mes_recipe_datil_t set
+            <if test="pathBinary!=null">PATH_BINARY=#{pathBinary},</if>
+            STEPNO=#{stepno},
+            MATERIAL_NAME=#{materialName}
+            where id=#{id}
+        </if>
+    </update>
+
+    <!-- 修改配方优先级 -->
+    <update id="updateRecipeStepNo">
+        <!-- 修改前的工序比修改后的工序小 -->
+        <if test="flag==0">
+            <![CDATA[
+			update c_mes_recipe_datil_t set STEPNO=STEPNO-1 where  RECIPE_ID=#{rid} and STEPNO>#{oldstepNO} and STEPNO<=#{newstepNo}
+			]]>
+        </if>
+        <!-- 修改前的工序比修改后的工序大-->
+        <if test="flag==1">
+            <![CDATA[
+			update c_mes_recipe_datil_t set STEPNO=STEPNO+1 where  RECIPE_ID=#{rid} and STEPNO<#{oldstepNO} and STEPNO>=#{newstepNo}
+			]]>
+        </if>
+    </update>
+    <!--根据recipeId或stepNo查询ID-->
+    <select id="findRecipeDetailId" resultType="CMesRecipeDatilT">
+        select ID id,STEPNO stepno from c_mes_recipe_datil_t
+        where 1=1
+        <if test="recipeId!=null and recipeId!=0">
+            and RECIPE_ID=#{recipeId}
+        </if>
+        <if test="stepno!=null and stepno!=''">
+            and STEPNO=#{stepno}
+        </if>
+    </select>
+
+	<select id="getTotalRecipe" resultType="java.util.Map">
+		select tr.*
+		from c_mes_recipe_datil_t rd
+		left join c_mes_recipe_t r on r.ID = rd.RECIPE_ID
+		left join c_mes_total_recipe_t tr on tr.ID = r.TOTAL_ID
+		where rd.ID = #{id}
+	</select>
+
+	<select id="getTotalRecipe2" resultType="java.util.Map">
+		select tr.*
+		from c_mes_recipe_t r
+		left join c_mes_total_recipe_t tr on tr.ID = r.TOTAL_ID
+		where r.ID = #{recipeId}
+	</select>
+
+	<insert id="insertTotalRecipe">
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+		SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+		insert into c_mes_total_recipe_t (TOTAL_RECIPE_NAME, TOTAL_RECIPE_DESCRIBE, LINE_ID, PRODUCTION_ID, STATUS)
+		values (#{TOTAL_RECIPE_NAME}, #{TOTAL_RECIPE_DESCRIBE}, #{LINE_ID}, #{PRODUCTION_ID}, 0)
+	</insert>
+
+	<select id="getLastRecipeName" resultType="java.lang.String">
+		select TOTAL_RECIPE_NAME from c_mes_total_recipe_t where TOTAL_RECIPE_NAME like concat(#{TOTAL_RECIPE_NAME}, '%') order by ID desc limit 1
+	</select>
+
+	<select id="findRecipeByTotalId" resultType="java.util.Map">
+		select * from c_mes_recipe_t where TOTAL_ID = #{ID}
+	</select>
+
+	<insert id="insertRecipeCopy">
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+		SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+		insert into c_mes_recipe_t (TOTAL_ID, RECIPE_NAME, RECIPE_DISCRIPTION, STATION_ID)
+		values(#{TOTAL_ID}, #{RECIPE_NAME}, #{RECIPE_DISCRIPTION}, #{STATION_ID})
+	</insert>
+
+	<select id="findRecipeDetailListByRecipeId" resultType="java.util.Map">
+		select * from c_mes_recipe_datil_t where RECIPE_ID = #{ID}
+	</select>
+
+
+	<insert id="insertRecipeDetailCopy">
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+		SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+		insert into c_mes_recipe_datil_t (STEP_CATEGORY, MATERIAL_NAME, GUN_NO, PROGRAM_NO, PHOTO_NO, SLEEVE_NO, REWORKTIMES,
+		FEACODE, CHEKORNO, REVIEWORNO, EXACTORNO, MATERIALPN, BOLTEQS, A_LIMIT, T_LIMIT, RECIPE_ID, UPLOAD_CODE, STEPNO, NUMBERS,
+		PICTURN_PATH, BOLT_JSON, PATH_BINARY, MATERIAL_ID)
+		values(#{STEP_CATEGORY}, #{MATERIAL_NAME}, #{GUN_NO}, #{PROGRAM_NO}, #{PHOTO_NO}, #{SLEEVE_NO}, #{REWORKTIMES}
+		, #{FEACODE}, #{CHEKORNO}, #{REVIEWORNO}, #{EXACTORNO}, #{MATERIALPN}, #{BOLTEQS}, #{A_LIMIT}, #{T_LIMIT}, #{RECIPE_ID}, #{UPLOAD_CODE}, #{STEPNO}, #{NUMBERS}
+		, #{PICTURN_PATH}, #{BOLT_JSON}, #{PATH_BINARY}, #{MATERIAL_ID})
+	</insert>
+
+	<update id="updateWorkorderRecipe">
+		update r_mes_workorder_detail_t set TOTAL_RECIPE_ID = #{id} where ID = #{workorderId}
+	</update>
+
+</mapper>

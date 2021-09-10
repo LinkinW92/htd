@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.chenj.srm.CSrmInvitationForBidsScoreTRMapper">
+  <resultMap id="BaseResultMap" type="com.skeqi.mes.pojo.chenj.srm.CSrmInvitationForBidsScoreTR">
+    <!--@mbg.generated-->
+    <!--@Table c_srm_invitation_for_bids_score_t_r-->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="template_number" jdbcType="VARCHAR" property="templateNumber" />
+    <result column="scoring_elements" jdbcType="VARCHAR" property="scoringElements" />
+    <result column="weight" jdbcType="VARCHAR" property="weight" />
+    <result column="index" jdbcType="VARCHAR" property="index" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, template_number, scoring_elements, weight, `index`, create_time, update_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select
+    <include refid="Base_Column_List" />
+    from c_srm_invitation_for_bids_score_t_r
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <!--@mbg.generated-->
+    delete from c_srm_invitation_for_bids_score_t_r
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmInvitationForBidsScoreTR" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into c_srm_invitation_for_bids_score_t_r (template_number, scoring_elements,
+      weight, `index`, create_time,
+      update_time)
+    values (#{templateNumber,jdbcType=VARCHAR}, #{scoringElements,jdbcType=VARCHAR},
+      #{weight,jdbcType=VARCHAR}, #{index,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
+      #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmInvitationForBidsScoreTR" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into c_srm_invitation_for_bids_score_t_r
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="templateNumber != null">
+        template_number,
+      </if>
+      <if test="scoringElements != null">
+        scoring_elements,
+      </if>
+      <if test="weight != null">
+        weight,
+      </if>
+      <if test="index != null">
+        `index`,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="templateNumber != null">
+        #{templateNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="scoringElements != null">
+        #{scoringElements,jdbcType=VARCHAR},
+      </if>
+      <if test="weight != null">
+        #{weight,jdbcType=VARCHAR},
+      </if>
+      <if test="index != null">
+        #{index,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmInvitationForBidsScoreTR">
+    <!--@mbg.generated-->
+    update c_srm_invitation_for_bids_score_t_r
+    <set>
+      <if test="templateNumber != null">
+        template_number = #{templateNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="scoringElements != null">
+        scoring_elements = #{scoringElements,jdbcType=VARCHAR},
+      </if>
+      <if test="weight != null">
+        weight = #{weight,jdbcType=VARCHAR},
+      </if>
+      <if test="index != null">
+        `index` = #{index,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmInvitationForBidsScoreTR">
+    <!--@mbg.generated-->
+    update c_srm_invitation_for_bids_score_t_r
+    set template_number = #{templateNumber,jdbcType=VARCHAR},
+      scoring_elements = #{scoringElements,jdbcType=VARCHAR},
+      weight = #{weight,jdbcType=VARCHAR},
+      `index` = #{index,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateBatch" parameterType="java.util.List">
+    <!--@mbg.generated-->
+    update c_srm_invitation_for_bids_score_t_r
+    <trim prefix="set" suffixOverrides=",">
+      <trim prefix="template_number = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.templateNumber,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="scoring_elements = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.scoringElements,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="weight = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.weight,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="`index` = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.index,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="create_time = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.createTime,jdbcType=TIMESTAMP}
+        </foreach>
+      </trim>
+      <trim prefix="update_time = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.updateTime,jdbcType=TIMESTAMP}
+        </foreach>
+      </trim>
+    </trim>
+    where id in
+    <foreach close=")" collection="list" item="item" open="(" separator=", ">
+      #{item.id,jdbcType=INTEGER}
+    </foreach>
+  </update>
+  <update id="updateBatchSelective" parameterType="java.util.List">
+    <!--@mbg.generated-->
+    update c_srm_invitation_for_bids_score_t_r
+    <trim prefix="set" suffixOverrides=",">
+      <trim prefix="template_number = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.templateNumber != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.templateNumber,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="scoring_elements = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.scoringElements != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.scoringElements,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="weight = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.weight != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.weight,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="`index` = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.index != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.index,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="create_time = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.createTime != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.createTime,jdbcType=TIMESTAMP}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="update_time = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.updateTime != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.updateTime,jdbcType=TIMESTAMP}
+          </if>
+        </foreach>
+      </trim>
+    </trim>
+    where id in
+    <foreach close=")" collection="list" item="item" open="(" separator=", ">
+      #{item.id,jdbcType=INTEGER}
+    </foreach>
+  </update>
+  <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into c_srm_invitation_for_bids_score_t_r
+    (template_number, scoring_elements, weight, `index`, create_time, update_time)
+    values
+    <foreach collection="list" item="item" separator=",">
+      (#{item.templateNumber,jdbcType=VARCHAR}, #{item.scoringElements,jdbcType=VARCHAR},
+        #{item.weight,jdbcType=VARCHAR}, #{item.index,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP},
+        #{item.updateTime,jdbcType=TIMESTAMP})
+    </foreach>
+  </insert>
+  <insert id="insertOrUpdate" keyColumn="id" keyProperty="id" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmInvitationForBidsScoreTR" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into c_srm_invitation_for_bids_score_t_r
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      template_number,
+      scoring_elements,
+      weight,
+      `index`,
+      create_time,
+      update_time,
+    </trim>
+    values
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      #{templateNumber,jdbcType=VARCHAR},
+      #{scoringElements,jdbcType=VARCHAR},
+      #{weight,jdbcType=VARCHAR},
+      #{index,jdbcType=VARCHAR},
+      #{createTime,jdbcType=TIMESTAMP},
+      #{updateTime,jdbcType=TIMESTAMP},
+    </trim>
+    on duplicate key update
+    <trim suffixOverrides=",">
+      <if test="id != null">
+        id = #{id,jdbcType=INTEGER},
+      </if>
+      template_number = #{templateNumber,jdbcType=VARCHAR},
+      scoring_elements = #{scoringElements,jdbcType=VARCHAR},
+      weight = #{weight,jdbcType=VARCHAR},
+      `index` = #{index,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+    </trim>
+  </insert>
+  <insert id="insertOrUpdateSelective" keyColumn="id" keyProperty="id" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmInvitationForBidsScoreTR" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into c_srm_invitation_for_bids_score_t_r
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="templateNumber != null">
+        template_number,
+      </if>
+      <if test="scoringElements != null">
+        scoring_elements,
+      </if>
+      <if test="weight != null">
+        weight,
+      </if>
+      <if test="index != null">
+        `index`,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    values
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="templateNumber != null">
+        #{templateNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="scoringElements != null">
+        #{scoringElements,jdbcType=VARCHAR},
+      </if>
+      <if test="weight != null">
+        #{weight,jdbcType=VARCHAR},
+      </if>
+      <if test="index != null">
+        #{index,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+    on duplicate key update
+    <trim suffixOverrides=",">
+      <if test="id != null">
+        id = #{id,jdbcType=INTEGER},
+      </if>
+      <if test="templateNumber != null">
+        template_number = #{templateNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="scoringElements != null">
+        scoring_elements = #{scoringElements,jdbcType=VARCHAR},
+      </if>
+      <if test="weight != null">
+        weight = #{weight,jdbcType=VARCHAR},
+      </if>
+      <if test="index != null">
+        `index` = #{index,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+</mapper>

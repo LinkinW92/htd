@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.skeqi.mes.mapper.lcy.SpcMapper">
+
+	<select id="querySPCSite" resultType="string">
+		select tt.bolt_name from p_mes_bolt_t tt
+		where tt.st = #{spcStation}
+		group by tt.bolt_name
+	</select>
+
+	<select id="querySPCStation" resultType="string">
+		select tt.st from p_mes_bolt_t tt
+		group by st
+	</select>
+
+
+	<select id="querySPCCoeffic" resultType="CMesSPCCoeffic">
+		select tt.id,tt.spc_number,tt.a2,tt.d3,tt.d4,tt.d2,tt.a3,tt.e2,tt.b3,tt.b4
+ 		from C_MES_SPC_COEFFIC tt
+ 		where tt.spc_number =#{sampleSize}
+	</select>
+
+	<select id="querySpcBoltList" resultType="PMesBoltT">
+		<![CDATA[
+  	  SELECT @rownum:=@rownum+1 AS bolt_num, p.dt,p.sn,p.st,p.t,p.t_limit,p.bolt_name
+    FROM (SELECT @rownum:=0) r, (select tt.dt,tt.sn,tt.st,tt.t,tt.t_limit,tt.bolt_name
+  	from p_Mes_Bolt_t tt
+  	where tt.dt between #{startTime}
+  	and #{endTime}
+  	and tt.st = #{station}
+  	and tt.bolt_name = #{site}
+  	and tt.t_limit is not null
+  	and tt.t_limit != 0
+	order by tt.dt desc
+	limit 0,${sampleNumber}) p;
+
+
+	]]>
+	</select>
+
+
+
+
+
+</mapper>

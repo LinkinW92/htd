@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.chenj.CMesApiDictionariesDao">
+
+    <!--查询操作日志表-->
+    <select id="findApiOperationList" resultType="java.util.Map">
+        select id,actionurl,params,dt,module,module2,methods,apiAnnotation from `qihang`.`c_mes_operation_log_t`
+        where 1=1
+        <if test="username != null and username != ''">
+            and username like concat('%', #{username}, '%')
+        </if>
+        <if test="module != null and module != ''">
+            and module = #{module}
+        </if>
+        <if test="module2 != null and module2 != ''">
+            and module2 like concat('%', #{module2}, '%')
+        </if>
+        <if test="params != null and params != ''">
+            and params like concat('%', #{params}, '%')
+        </if>
+        <if test="beginTime != null and beginTime != ''">
+            and dt &gt;= date_format(#{beginTime}, '%Y-%m-%d 00:00:00')
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and dt &lt;= date_format(#{endTime}, '%Y-%m-%d 23:59:59')
+        </if>
+        and is_delete=0
+        order by dt asc
+    </select>
+    <!--逻辑删除日志记录-->
+    <update id="delApiOperationData" parameterType="int">
+        update c_mes_operation_log_t set is_delete=#{isDelete} where id in
+        <foreach item="idItem" collection="ids" open="(" separator="," close=")">
+            #{idItem}
+        </foreach>
+    </update>
+
+
+
+    <insert id="addApiDictionaries">
+        INSERT INTO `c_mes_api_dictionaries_t`(`actionurl`, `commitType`, `paramsType`) VALUES (#{actionUrl}, #{commitType}, #{paramsType})
+    </insert>
+
+    <select id="selectApiDictionaries" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM `c_mes_api_dictionaries_t` WHERE actionurl=#{actionUrl};
+    </select>
+    <!--查询Api字典表-->
+    <select id="findApiDictionariesList" resultType="java.util.Map">
+        select actionurl, commitType, paramsType
+        from c_mes_api_dictionaries_t
+        where 1=1
+        <if test="actionUrl!=null and actionUrl!=''">
+          and  actionurl = #{actionUrl}
+        </if>
+    </select>
+
+
+
+</mapper>

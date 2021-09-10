@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.basicinformation.cashflow.TGlCashFlowMapper">
+
+    <resultMap type="com.skeqi.finance.domain.basicinformation.cashflow.TGlCashFlow" id="TGlCashFlowResult">
+        <result property="fId" column="f_id"/>
+        <result property="fNumber" column="f_number"/>
+        <result property="fName" column="f_name"/>
+        <result property="fDescription" column="f_description"/>
+        <result property="fParentId" column="f_parent_id"/>
+        <result property="fLevel" column="f_level"/>
+        <result property="fDirection" column="f_direction"/>
+        <result property="fItemTypeid" column="f_item_typeid"/>
+        <result property="fIsdetail" column="f_isdetail"/>
+        <result property="fCashFlowItemTable" column="f_cash_flow_item_table"/>
+        <result property="fCreateOrgid" column="f_create_orgid"/>
+        <result property="fCreatorid" column="f_creatorid"/>
+        <result property="fCreateDate" column="f_create_date"/>
+        <result property="fUseOrgid" column="f_use_orgid"/> 
+        <result property="fModifierid" column="f_modifierid"/>
+        <result property="fModifyDate" column="f_modify_date"/>
+        <result property="fDocumentStatus" column="f_document_status"/>
+        <result property="fAuditorid" column="f_auditorid"/>
+        <result property="fAuditDate" column="f_audit_date"/>
+        <result property="fForbidStatus" column="f_forbid_status"/>
+        <result property="fForbidderid" column="f_forbidderid"/>
+        <result property="fForbidDate" column="f_forbid_date"/>
+        <result property="fIssysPreset" column="f_issys_preset"/>
+        <result property="fMasterId" column="f_master_id"/>
+    </resultMap>
+    <select id="queryPageList" resultType="com.skeqi.finance.pojo.vo.basicinformation.cashflow.TGlCashFlowVo">
+        SELECT
+        tgcf.*,
+        tgcft.f_name fParentName,
+        tgcft.f_item_groupid
+        FROM
+        t_gl_cash_flow tgcf
+        LEFT JOIN t_gl_cash_flow_type tgcft on tgcf.f_parent_id = tgcft.f_item_typeid
+        <where>
+            tgcf.f_document_status <![CDATA[ != ]]> '-1'
+            <if test="bo.fNumber != null and bo.fNumber != ''">
+                and tgcf.f_number = #{bo.fNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="bo.fName != null and bo.fName != ''">
+                and tgcf.f_name = #{bo.fName,jdbcType=VARCHAR}
+            </if>
+            <if test="bo.fDescription != null and bo.fDescription != ''">
+                and tgcf.f_description = #{bo.fDescription,jdbcType=VARCHAR}
+            </if>
+            <if test="bo.fParentId != null">
+                and tgcf.f_parent_id = #{bo.fParentId,jdbcType=INTEGER}
+            </if>
+            <if test="bo.fLevel != null and bo.fLevel != ''">
+                and tgcf.f_level = #{bo.fLevel,jdbcType=VARCHAR}
+            </if>
+            <if test="bo.fDirection != null and bo.fDirection != ''">
+                and tgcf.f_direction = #{bo.fDirection,jdbcType=VARCHAR}
+            </if>
+            <if test="bo.fItemTypeid != null">
+                and tgcf.f_item_typeid = #{bo.fItemTypeid,jdbcType=INTEGER}
+            </if>
+            <if test="bo.fIsdetail != null and bo.fIsdetail != ''">
+                and tgcf.f_isdetail = #{bo.fIsdetail,jdbcType=VARCHAR}
+            </if>
+            <if test="bo.fCashFlowItemTable != null and bo.fCashFlowItemTable != ''">
+                and tgcf.f_cash_flow_item_table = #{bo.fCashFlowItemTable,jdbcType=INTEGER}
+            </if>
+            <if test="bo.fCreateOrgid != null">
+                and tgcf.f_create_orgid = #{bo.fCreateOrgid,jdbcType=INTEGER}
+            </if>
+            <if test="bo.fCreatorid != null">
+                and tgcf.f_creatorid = #{bo.fCreatorid,jdbcType=INTEGER}
+            </if>
+            <if test="bo.fCreateDate != null">
+                and tgcf.f_create_date = #{bo.fCreateDate,jdbcType=TIMESTAMP}
+            </if>
+            <if test="bo.fUseOrgid != null ">
+                and tgcf.f_use_orgid = #{bo.fUseOrgid,jdbcType=INTEGER}
+            </if>
+            <if test="bo.fModifierid != null ">
+                and tgcf.f_modifierid = #{bo.fModifierid,jdbcType=INTEGER}
+            </if>
+            <if test="bo.fModifyDate != null ">
+                and tgcf.f_modify_date = #{bo.fModifyDate,jdbcType=TIMESTAMP}
+            </if>
+            <if test="bo.fDocumentStatus != null ">
+                and tgcf.f_document_status = #{bo.fDocumentStatus,jdbcType=VARCHAR}
+            </if>
+            <if test="bo.fAuditorid != null ">
+                and tgcf.f_auditorid = #{bo.fAuditorid,jdbcType=INTEGER}
+            </if>
+            <if test="bo.fAuditDate != null ">
+                and tgcf.f_audit_date = #{bo.fAuditDate,jdbcType=TIMESTAMP}
+            </if>
+            <if test="bo.fForbidStatus != null">
+                and tgcf.f_forbid_status = #{bo.fForbidStatus,jdbcType=VARCHAR}
+            </if>
+            <if test="bo.fForbidderid != null ">
+                and tgcf.f_forbidderid = #{bo.fForbidderid,jdbcType=INTEGER}
+            </if>
+            <if test="bo.fForbidDate != null ">
+                and tgcf.f_forbidderid = #{bo.fForbidDate,jdbcType=TIMESTAMP}
+            </if>
+            <if test="bo.fIssysPreset != null ">
+                and tgcf.f_issys_preset = #{bo.fIssysPreset,jdbcType=INTEGER}
+            </if>
+            <if test="bo.fMasterId != null">
+                and tgcf.f_master_id = #{bo.fMasterId,jdbcType=INTEGER}
+            </if>
+            <if test="bo.fItemGroupid != null">
+                and tgcft.f_item_groupid = #{bo.fItemGroupid,jdbcType=INTEGER}
+            </if>
+        </where>
+        order by  tgcf.f_number
+    </select>
+
+
+</mapper>

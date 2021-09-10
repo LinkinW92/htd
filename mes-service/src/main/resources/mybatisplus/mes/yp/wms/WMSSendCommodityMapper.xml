@@ -1,0 +1,441 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.yp.wms.WMSSendCommodityDao">
+
+	<!-- 查询 -->
+	<select id="list" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			a.delivery_number AS listNo,
+			a.factoryId,
+			a.locationId,
+			a.creator,
+			DATE_FORMAT( a.create_time, '%Y-%m-%d %H:%i:%s' ) AS createTime,
+			a.consignee,
+			DATE_FORMAT( a.receivingGoodsDt, '%Y-%m-%d %H:%i:%s' ) AS receivingGoodsDt,
+			a.consignee_name as consigneeName,
+			a.`status`,
+			a.dis,
+			a.checkUserId,
+			b.LOCATION_NAME as locationName,
+			c.factoryName
+		FROM
+			c_srm_send_commodity_h a
+			LEFT JOIN c_wms_location_t b on a.locationId = b.id
+			left join c_mes_factory_t c on a.factoryId = c.id
+		WHERE
+			a.is_delete = 0
+		<if test="startRreceivingGoodsDt != null and startRreceivingGoodsDt != '' and endRreceivingGoodsDt != null and endRreceivingGoodsDt != ''">
+		and DATE_FORMAT(a.receivingGoodsDt,'%Y-%m-%d') between #{startRreceivingGoodsDt} and #{endRreceivingGoodsDt}
+		</if>
+		<if test="factoryId != null and factoryId != ''">
+		and a.factoryId = #{factoryId}
+		</if>
+		<if test="listNo != null and listNo != ''">
+		and a.delivery_number like '%${listNo}%'
+		</if>
+		<if test="creator != null and creator != ''">
+		and a.creator like '%${creator}%'
+		</if>
+		<if test="status != null and status != ''">
+		and a.status = #{status}
+		</if>
+		<if test="id != null and id != ''">
+		and a.id = #{id}
+		</if>
+		ORDER BY a.create_time desc
+	</select>
+
+	<!-- 新增 -->
+	<insert id="add" useGeneratedKeys="true" keyProperty="id"  keyColumn="id">
+		<!-- 单号、收货人、创建人、状态、创建时间、库位ID、工厂Id、收货时间、删除标记 -->
+		insert into c_srm_send_commodity_h(delivery_number,creator,status,create_time,locationId,factoryId,is_delete,dis,wQIS)
+		value(#{listNo},#{creator},#{status},now(),#{locationId},#{factoryId},0,#{dis},#{wQIS})
+	</insert>
+
+	<!-- 更新 -->
+	<update id="update">
+		UPDATE c_srm_send_commodity_h
+		<trim prefix="set" suffixOverrides=",">
+			dis = #{dis},
+			locationId = #{locationId},
+			factoryId = #{factoryId},
+			<if test="consignee != null and consignee != ''">
+				consignee = #{consignee},
+			</if>
+			<if test="creator != null and creator != ''">
+				creator = #{creator},
+			</if>
+			<if test="status != null and status != ''">
+				status = #{status},
+			</if>
+			<if test="consignee != null and consignee != ''">
+				receivingGoodsDt = now(),
+			</if>
+			<if test="consigneeName != null and consigneeName != ''">
+				consignee_name = #{consigneeName},
+			</if>
+			<if test="isDelete != null and isDelete != ''">
+				is_delete = #{isDelete},
+			</if>
+			<if test="wQIS != null and wQIS != ''">
+				wQIS = #{wQIS},
+			</if>
+		</trim>
+		WHERE is_delete = 0
+		and id = #{id}
+	</update>
+	
+	<!-- 更新 -->
+	<update id="updateTop">
+		UPDATE c_srm_send_commodity_h
+		<trim prefix="set" suffixOverrides=",">
+			<if test="dis != null and dis != ''">
+				dis = #{dis},
+			</if>
+			<if test="locationId != null and locationId != ''">
+				locationId = #{locationId},
+			</if>
+			<if test="factoryId != null and factoryId != ''">
+				factoryId = #{factoryId},
+			</if>
+			<if test="consignee != null and consignee != ''">
+				consignee = #{consignee},
+			</if>
+			<if test="creator != null and creator != ''">
+				creator = #{creator},
+			</if>
+			<if test="status != null and status != ''">
+				status = #{status},
+			</if>
+			<if test="consignee != null and consignee != ''">
+				receivingGoodsDt = now(),
+			</if>
+			<if test="consigneeName != null and consigneeName != ''">
+				consignee_name = #{consigneeName},
+			</if>
+			<if test="isDelete != null and isDelete != ''">
+				is_delete = #{isDelete},
+			</if>
+			<if test="wQIS != null and wQIS != ''">
+				wQIS = #{wQIS},
+			</if>
+		</trim>
+		WHERE is_delete = 0
+		and delivery_number = #{listNo}
+	</update>
+	
+	<!-- 更新 -->
+	<update id="updateStatus">
+		UPDATE c_srm_send_commodity_h
+		set 
+		status = #{status}
+		WHERE is_delete = 0
+		and delivery_number = #{listNo}
+	</update>
+
+	<!-- 查询行 -->
+	<select id="listRow" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			id,
+			delivery_number AS deliveryNumber,
+			line_item_no AS lineItemNo,
+			material_code AS materialCode,
+			count,
+			paid_in_number AS paidInNumber,
+			unit,
+			purchase_order_no AS purchaseOrderNo,
+			create_time AS createTime,
+			update_time AS updateTime,
+			commodity_id AS commodityId,
+			is_delete AS isDelete
+		FROM
+			c_srm_send_commodity_r
+		where is_delete = 0
+		<if test="commodityId != null and commodityId != ''">
+		and commodity_id = #{commodityId}
+		</if>
+		<if test="listNo != null and listNo != ''">
+		and delivery_number = #{listNo}
+		</if>
+		<if test="id != null and id != ''">
+		and id = #{id}
+		</if>
+		<if test="purchaseOrderNo != null and purchaseOrderNo != ''">
+		and purchase_order_no = #{purchaseOrderNo}
+		</if>
+	</select>
+
+	<!-- 新增行 -->
+	<insert id="addRow">
+		insert into c_srm_send_commodity_r
+		(
+			delivery_number,line_item_no,material_code,count,
+			paid_in_number,unit,purchase_order_no,create_time,
+			commodity_id,is_delete
+		)
+		value
+		(
+			#{listNo},#{lineItemNo},#{materialCode},#{count},
+			#{paidInNumber},#{unit},#{purchaseOrderNo},now(),
+			#{commodityId},0
+		)
+	</insert>
+
+	<!-- 更新行 -->
+	<update id="updateRow">
+		UPDATE c_srm_send_commodity_r
+		<trim prefix="set" suffixOverrides=",">
+			<if test="lineItemNo != null and lineItemNo != ''">
+				line_item_no = #{lineItemNo},
+			</if>
+			<if test="materialCode != null and materialCode != ''">
+				material_code = #{materialCode},
+			</if>
+			<if test="count != null and count != ''">
+				count = #{count},
+			</if>
+			<if test="paidInNumber != null">
+				paid_in_number = #{paidInNumber},
+			</if>
+			<if test="unit != null and unit != ''">
+				unit = #{unit},
+			</if>
+			<if test="purchaseOrderNo != null and purchaseOrderNo != ''">
+				purchase_order_no = #{purchaseOrderNo},
+			</if>
+			<if test="createTime != null and createTime != ''">
+				create_time = #{createTime},
+			</if>
+			<if test="commodityId != null and commodityId != ''">
+				commodity_id = #{commodityId},
+			</if>
+			<if test="isDelete != null and isDelete != ''">
+				is_delete = #{isDelete},
+			</if>
+			<if test="true">
+				update_time = now(),
+			</if>
+		</trim>
+		WHERE is_delete = 0
+		and id = #{id}
+	</update>
+	
+	<!-- 删除行 -->
+	<delete id="deleteRow">
+		delete from c_srm_send_commodity_r
+		where id = #{id}
+	</delete>
+
+	<!-- 查询详情 -->
+	<select id="listD" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			id,
+			DATE_FORMAT( dt, '%Y-%m-%d %H:%i:%s' ) AS dt,
+			packingId,
+			`code`,
+			unitQuantity,
+			numberOfPackages,
+			supplierBatchCode,
+			DATE_FORMAT( productionDt, '%Y-%m-%d %H:%i:%s' ) AS productionDt,
+			DATE_FORMAT( termOfValidityDt, '%Y-%m-%d %H:%i:%s' ) AS termOfValidityDt,
+			listNo,
+			rowId
+		FROM
+			c_srm_send_commodity_d
+		WHERE 1 = 1
+		<if test="listNo != null and listNo !=''">
+		and listNo = #{listNo}
+		</if>
+		<if test="rowId != null and rowId !=''">
+		and rowId = #{rowId}
+		</if> 
+		<if test="packingId != null and packingId !=''">
+		and packingId = #{packingId}
+		</if> 
+		<if test="code != null and code !=''">
+		and code = #{code}
+		</if>
+	</select>
+
+	<!-- 新增详情 -->
+	<insert id="addD">
+		INSERT INTO c_srm_send_commodity_d
+		(
+			dt,packingId,`code`,unitQuantity,
+			numberOfPackages,supplierBatchCode,productionDt,termOfValidityDt,
+			listNo,rowId,InspectionMethod,checkNumber,
+			qualifiedNumber
+		)
+		value(
+			now(),#{packingId},#{code},#{unitQuantity},
+			#{numberOfPackages},#{supplierBatchCode},#{productionDt},#{termOfValidityDt},
+			#{listNo},#{rowId},#{InspectionMethod},#{checkNumber},
+			#{qualifiedNumber}
+		)
+	</insert>
+
+	<!-- 更新详情 -->
+	<update id="updateD">
+		UPDATE c_srm_send_commodity_d
+		<trim prefix="set" suffixOverrides=",">
+			<if test="packingId != null and packingId != ''">
+				packingId = #{packingId},
+			</if>
+			<if test="code != null and code != ''">
+				code = #{code},
+			</if>
+			<if test="unitQuantity != null and unitQuantity != ''">
+				unitQuantity = #{unitQuantity},
+			</if>
+			<if test="numberOfPackages != null and numberOfPackages != ''">
+				numberOfPackages = #{numberOfPackages},
+			</if>
+			<if test="supplierBatchCode != null and supplierBatchCode != ''">
+				supplierBatchCode = #{supplierBatchCode},
+			</if>
+			<if test="productionDt != null and productionDt != ''">
+				productionDt = #{productionDt},
+			</if>
+			<if test="termOfValidityDt != null and termOfValidityDt != ''">
+				termOfValidityDt = #{termOfValidityDt},
+			</if>
+			<if test="listNo != null and listNo != ''">
+				listNo = #{listNo},
+			</if>
+			<if test="rowId != null and rowId != ''">
+				rowId = #{rowId},
+			</if>
+		</trim>
+		WHERE id = #{id}
+	</update>
+
+	<!-- 删除详情 -->
+	<delete id="deleteD">
+		delete from c_srm_send_commodity_d
+		where id = #{id}
+	</delete>
+	
+	<!-- 通过行ID删除详情 -->
+	<delete id="deleteDByRId">
+		delete from c_srm_send_commodity_d
+		where rowId = #{rId}
+	</delete>
+
+	<!-- 查询需要过账的数据 -->
+	<select id="queryTheDataToBePosted" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.delivery_number AS listNo,
+			a.factoryId,
+			a.locationId,
+			c.packingId,
+			c.`code`,
+			c.unitQuantity,
+			c.numberOfPackages,
+			b.unit,
+			c.supplierBatchCode,
+			c.productionDt,
+			c.termOfValidityDt,
+			d.BOM_ID AS materialNo,
+			d.id as materialId,
+			d.material_name AS materialName,
+			b.purchase_order_no AS purchaseOrderNo,
+			c.InspectionMethod,
+			c.checkNumber,
+			c.qualifiedNumber 
+		FROM
+			c_srm_send_commodity_h a
+			JOIN c_srm_send_commodity_r b ON a.delivery_number = b.delivery_number
+			LEFT JOIN c_srm_send_commodity_d c ON b.id = c.rowId
+			LEFT JOIN c_mes_jl_material_t d ON b.material_code = d.BOM_ID 
+		where a.delivery_number = #{listNo}
+	</select>
+
+	<!-- 获取总实收数量 -->
+	<select id="getTheTotalQuantityReceived" resultType="int">
+		select ifnull(sum(b.paid_in_number),0) from c_srm_send_commodity_h a
+		join c_srm_send_commodity_r b on a.delivery_number = b.delivery_number
+		where a.`status` = 5
+		and b.purchase_order_no = #{purchaseOrderNo}
+		and b.material_code = #{materialNo}
+	</select>
+
+	<!-- 获取订单应收数量 -->
+	<select id="getOrderReceivableQuantity" resultType="int">
+		select ifnull(sum(count),0) from c_srm_purchase_order_r
+		where order_number = #{purchaseOrderNo}
+		and material_code = #{materialNo}
+	</select>
+
+	<!-- type：实体类 id：在resultMap引用-->
+	<resultMap type="com.alibaba.fastjson.JSONObject" id="rdMap">
+		<!-- column：数据库查询出来的列  property：实体类属性的值 -->
+		<result column="id" property="id"/>
+		<result column="listNo" property="listNo"/>
+		<result column="materialId" property="materialId"/>
+		<result column="count" property="count"/>
+		<result column="paidInNumber" property="paidInNumber"/>
+		<result column="unit" property="unit"/>
+		<result column="materialName" property="materialName"/>
+		<result column="materialNo" property="materialNo"/>
+		<!-- collection：一对多  property：实体类里的 ofType：实体类 -->
+		<collection property="d" javaType="list" ofType="com.alibaba.fastjson.JSONObject">
+			<result column="dId" property="id"/>
+			<result column="packingId" property="packingId"/>
+			<result column="code" property="code"/>
+			<result column="unitQuantity" property="unitQuantity"/>
+			<result column="numberOfPackages" property="numberOfPackages"/>
+			<result column="supplierBatchCode" property="supplierBatchCode"/>
+			<result column="productionDt" property="productionDt"/>
+			<result column="termOfValidityDt" property="termOfValidityDt"/>
+		</collection>
+	</resultMap>
+	<!-- 查询R跟D表数据 -->
+	<select id="findRAndD" resultMap="rdMap">
+		SELECT
+			a.id,
+			a.purchase_order_no AS listNo,
+			a.count,
+			a.paid_in_number AS paidInNumber,
+			a.unit,
+			c.MATERIAL_NAME AS materialName,
+			c.BOM_ID AS materialNo,
+			c.id as materialId,
+			b.id AS dId,
+			b.packingId,
+			b.`code`,
+			b.unitQuantity,
+			b.numberOfPackages,
+			b.supplierBatchCode,
+			DATE_FORMAT( b.productionDt, '%Y-%m-%d %H:%i:%s' ) AS productionDt,
+			DATE_FORMAT( b.termOfValidityDt, '%Y-%m-%d %H:%i:%s' ) AS termOfValidityDt 
+		FROM
+			c_srm_send_commodity_r a
+			LEFT JOIN c_srm_send_commodity_d b ON a.id = b.rowId
+			JOIN c_mes_jl_material_t c ON a.material_code = c.BOM_ID
+		WHERE
+			a.delivery_number = #{listNo}
+	</select>
+	
+	<!-- 查询已收数 -->
+	<select id="queryReceivedData" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			b.material_code as materialNo,
+			sum(b.count) as count,
+			sum(b.paid_in_number) as paidInNumber
+		FROM
+			c_srm_send_commodity_h a
+			join c_srm_send_commodity_r b on a.delivery_number = b.delivery_number
+			join c_srm_send_commodity_d c on b.id = c.rowId
+			where b.purchase_order_no = #{purchaseOrderNo}
+			and a.`status` = 5
+			GROUP BY b.material_code
+	</select>
+	
+	<!-- 通过id查询用户 -->
+	<select id="findUserById" resultType="com.alibaba.fastjson.JSONObject">
+		select id,USER_NAME as userName,`name` as fullName from c_mes_user_t
+		where id = #{id}
+	</select>
+
+</mapper>

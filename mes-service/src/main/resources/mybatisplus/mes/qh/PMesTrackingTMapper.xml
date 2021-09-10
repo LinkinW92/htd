@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.qh.PMesTrackingTMapper">
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    ID, DT, ST, BST, SN, ENGINESN, GEARBOXSN, TYPENAME, TRAYNUM, PRODUCTNUM, `STATUS`,
+    DIS, PLAN_ID, OFFLINE_DT, REWORK_FLAG, PRODUCTION_ID, LINE_ID, WORK_ORDER_ID
+  </sql>
+
+  <select id="findSNByLineId" resultType="java.util.Map">
+      select *
+      from p_mes_tracking_t
+      <where>
+        LINE_ID = #{lineId,jdbcType=VARCHAR}
+        and OFFLINE_DT
+        between
+        DATE_FORMAT((date_sub(now(),interval 2 day)),'%Y-%m-%d 00:00:00')
+        AND
+        DATE_FORMAT(now(),'%Y-%m-%d 23:59:59')
+      </where>
+  </select>
+
+  <!--按sn修改状态-->
+  <update id="editPMesTrackingBySN">
+        update p_mes_tracking_t set `STATUS` = #{start,jdbcType=VARCHAR}
+    where SN = #{sn,jdbcType=VARCHAR}
+  </update>
+</mapper>

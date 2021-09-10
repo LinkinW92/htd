@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.skeqi.mes.mapper.dzb.market.MkDao">
+    <insert id="colMaxIdIncreas">
+        update mk_table
+        set maxId =maxId + 1
+        where id = #{tableId}
+    </insert>
+    <insert id="saveMkTableCol">
+        INSERT INTO `mk_table_col`(`table_id`, `col_name`, `col_type`, `show_name`)
+        VALUES (#{tableId}, #{colName}, #{colType}, #{showName});
+
+    </insert>
+    <insert id="backUpMkTableData">
+        insert into ${table}(pj_no,`status`,create_time
+        <foreach collection="listCol" item="col">
+            ,${col}
+        </foreach>
+        )
+        select pj_no,`status`+1,create_time
+        <foreach collection="listCol" item="col">
+            ,${col}
+        </foreach>
+        from ${table} where pj_no = #{pjNO} and status=0;
+    </insert>
+    <insert id="saveMkTableData">
+        INSERT INTO ${table}(`pj_no`, `status`, `create_time`, ${col})
+        VALUES (#{pjNo}, 0, now(), #{value});
+    </insert>
+    <insert id="initMkTableData">
+        INSERT INTO ${table}(`pj_no`, `status`)
+        VALUES (#{pjNo}, 0);
+    </insert>
+    <insert id="saveRoleCol">
+        INSERT INTO `mk_table_role`(`role_id`, `col_id`, `auth_id`)
+        VALUES (#{roleId}, #{colId}, #{authId});
+    </insert>
+    <insert id="batchSaveMkTableData">
+        INSERT INTO ${tableName }(`status`, `create_time`,`pj_no`
+        <foreach item="col" index="index" collection="cols">
+            ,${col}
+        </foreach>
+        ) VALUES
+
+        <foreach item="row" index="index2" collection="data" separator=",">
+            ( 0,now()
+            <foreach item="d" index="index3" collection="row">
+                ,#{d}
+            </foreach>
+            )
+        </foreach>
+    </insert>
+    <insert id="insertDelete">
+
+    </insert>
+    <update id="exceSql">
+        ${sql}
+    </update>
+    <update id="updateMkTableData">
+        update ${table}
+        set create_time = now(),
+            ${col}=#{value}
+        where pj_no = #{pjNo}
+          and `status` = '0';
+    </update>
+    <delete id="deleteRoleCol">
+        delete
+        from `mk_table_role`
+        where `role_id` = #{roleId}
+          and `col_id` = #{colId}
+          and `auth_id` = #{authId}
+    </delete>
+    <update id="deleteData">
+        update ${table}
+        set `status`    = 1,
+            create_time = now()
+        where pj_no = #{pjNo}
+          and `status` = 0
+    </update>
+    <select id="getTableColMaxId" resultType="java.lang.Integer">
+        select maxId
+        from mk_table
+        where id = #{tableId}
+    </select>
+    <select id="getMkTalbe" resultType="java.util.Map">
+        select table_name tableName, maxId
+        from mk_table
+        where id = #{tableId}
+    </select>
+    <select id="listTable" resultType="java.util.Map">
+        select id, show_name showName
+        from mk_table
+    </select>
+    <select id="getMkTableName" resultType="java.lang.String">
+        select table_name
+        from mk_table
+        where id = #{tableId}
+    </select>
+    <select id="getMkTableColName" resultType="java.lang.String">
+        select col_name
+        from mk_table_col
+        where id = #{colId}
+    </select>
+    <select id="listMkTableColName" resultType="java.lang.String">
+        select col_name
+        from mk_table_col
+        where table_id = #{tableId};
+    </select>
+    <select id="listMkTable" resultType="java.util.Map">
+        select id, table_name, show_name `name`
+        from mk_table
+        order by order_no
+    </select>
+    <select id="listMkTableCol" resultType="java.util.Map">
+        select t1.id, show_name label, col_name prop, col_type, t3.auth_id authId
+        from mk_table_col t1,
+             mk_table_role t2
+                 left join mk_table_role t3 on t2.col_id = t3.col_id and t3.role_id = #{roleId} and t3.auth_id = 2
+        where table_id = #{tableId}
+          and t1.id = t2.col_id
+          and t2.role_id = #{roleId}
+          and t2.auth_id = 1;
+    </select>
+    <select id="data" resultType="java.util.Map">
+        ${sql}
+    </select>
+    <select id="getMkTableNameElse" resultType="java.lang.String">
+        select table_name
+        from mk_table
+        where id !=#{tableId}
+    </select>
+    <select id="listRole" resultType="java.util.Map">
+        select id, role_name label
+        from c_qh_role;
+    </select>
+    <select id="listCol" resultType="java.util.Map">
+        select id, show_name authName
+        from mk_table_col
+    </select>
+    <select id="listRoleAuth" resultType="java.util.Map">
+        select colId, roleId, auth_id authId
+        from (select t1.id colId, t2.id roleId
+              from mk_table_col t1,
+                   c_qh_role t2) tt1
+                 INNER JOIN mk_table_role t3 on tt1.colId = t3.col_id and tt1.roleId = t3.role_id
+    </select>
+    <select id="listTableIdAndCol" resultType="java.util.Map">
+        select id, table_id, col_name
+        from mk_table_col
+        where id in (${cols})
+        order by table_id
+    </select>
+</mapper>

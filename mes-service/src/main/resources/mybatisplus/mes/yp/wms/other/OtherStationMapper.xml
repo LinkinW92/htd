@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.yp.wms.other.OtherStationDao">
+
+	<!-- 通过产线查询工位 -->
+	<select id="findStationByLineId" resultType="com.alibaba.fastjson.JSONObject">
+		select id,STATION_NAME as stationName from c_mes_station_t
+		where LINE_ID = #{lineId}
+	</select>
+
+</mapper>

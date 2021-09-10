@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.zl.CMesPurchaseOrderFormDao">
+	<!-- 查询全部 -->
+	<select id="findAllPurchaseOrderForm" resultType="CMesPurchaseOrderForm">
+	SELECT * FROM c_mes_purchase_order_form where 1=1
+	</select>
+				<!-- 查询供应商列表 -->
+	<select id="purchaseList" resultType="CMesPurchaseOrderForm">
+				select * FROM c_mes_purchase_order_form where 1=1
+		<if test="supplier!=null and supplier!=''">
+			and SUPPLIER like '%${supplier}%'
+		</if>
+		<if test="contacts!=null and contacts!=''">
+			and CONTACTS like '%${contacts}%'
+		</if>
+	</select>
+				<!-- 查询采购订单列表 -->
+	<select id="purchaseOrderList" resultType="CMesPurchaseOrderForm">
+				select * FROM c_mes_purchase_order_form where 1=1
+		<if test="supplier!=null and supplier!=''">
+			and SUPPLIER like '%${supplier}%'
+		</if>
+		<if test="contacts!=null and contacts!=''">
+			and CONTACTS like '%${contacts}%'
+		</if>
+		<if test="purchaseOrderNo!=null and purchaseOrderNo!=''">
+			and PURCHASE_ORDER_NO like '%${purchaseOrderNo}%'
+		</if>
+	</select>
+
+	<select id="countPurchaseOrderForm" resultType="int">
+		SELECT COUNT(*) FROM
+		c_mes_purchase_order_form WHERE PURCHASE_ORDER_NO = #{purchaseOrderNo}
+	</select>
+		<insert id="addPurchaseOrderForm">
+		INSERT INTO c_mes_purchase_order_form(
+		PURCHASE_ORDER_NO,RELATED_SALES_ORDER,ITEM_CODE,SUPPLIER,
+		CUSTOMER_ORDER_NUMBER,SHARE_ORDER_OR_NOT,CONTACTS,MANAGER_TELE,FAX_NUMBER,ORDER_DATE,DUE_DATE,PURCHASING_REASON,BUYER,PAYMENT_METHOD,
+		PAYMENT_DATE,ORDER_DESCRIPTION,
+		DELIVERY_ADDRESS,
+		RELATED_PROVISIONS,AUDIT_OPINION,TOTAL_ORDER_AMOUNT,CURRENCY,PICTURN_PATH,UNPAID,UNPAID_INVOICES,INVOICE_STATUS,ORDER_STATUS)
+		VALUES(
+		#{purchaseOrderNo},#{relatedSalesOrder},#{itemCode},#{supplier},#{customerOrderNumber},#{shareOrderOrNot},#{contacts},
+		#{managerTele},#{faxNumber},#{orderDate},#{dueDate},#{purchasingReason},
+		#{buyer},#{paymentMethod},#{paymentDate}
+		,#{orderDescription},#{deliveryAddress},#{relatedProvisions},#{auditOpinion},#{totalOrderAmount},#{currency},#{picturnPath},#{unpaid}
+		,#{unpaidInvoices},#{invoiceStatus},#{orderStatus})
+	</insert>
+		<select id="findPurchaseOrderFormId" resultType="CMesPurchaseOrderForm">
+			select * from c_mes_purchase_order_form where id=#{id}
+	</select>
+		<update id="editPurchaseOrderForm">
+		UPDATE c_mes_purchase_order_form SET
+		PURCHASE_ORDER_NO =#{purchaseOrderNo},RELATED_SALES_ORDER=#{relatedSalesOrder},ITEM_CODE=#{itemCode},
+		SUPPLIER=#{supplier},CUSTOMER_ORDER_NUMBER=#{customerOrderNumber},SHARE_ORDER_OR_NOT=#{shareOrderOrNot},CONTACTS=#{contacts}
+		,MANAGER_TELE=#{managerTele},FAX_NUMBER=#{faxNumber},ORDER_DATE=#{orderDate},DUE_DATE=#{dueDate},PURCHASING_REASON=#{purchasingReason},BUYER=#{buyer}
+		,PAYMENT_METHOD=#{paymentMethod},PAYMENT_DATE=#{paymentDate},ORDER_DESCRIPTION=#{orderDescription},DELIVERY_ADDRESS=#{deliveryAddress},
+		RELATED_PROVISIONS=#{relatedProvisions},AUDIT_OPINION=#{auditOpinion}
+		,TOTAL_ORDER_AMOUNT=#{totalOrderAmount},CURRENCY=#{currency},PICTURN_PATH=#{picturnPath},UNPAID=#{unpaid}
+		,UNPAID_INVOICES=#{unpaidInvoices},INVOICE_STATUS=#{invoiceStatus},ORDER_STATUS=#{orderStatus}
+		WHERE ID = #{id}
+	</update>
+	<delete id="delPurchaseOrderForm">
+		DELETE FROM c_mes_purchase_order_form WHERE ID = #{id}
+	</delete>
+			<insert id="addPurchaseOrderFormL">
+		INSERT INTO c_mes_purchase_order_form(
+		PURCHASE_ORDER_NO,RELATED_SALES_ORDER,ITEM_CODE,SUPPLIER,
+		CUSTOMER_ORDER_NUMBER,SHARE_ORDER_OR_NOT,CONTACTS,MANAGER_TELE,FAX_NUMBER,ORDER_DATE,DUE_DATE,PURCHASING_REASON,BUYER,PAYMENT_METHOD,
+		PAYMENT_DATE,ORDER_DESCRIPTION,
+		DELIVERY_ADDRESS,
+		RELATED_PROVISIONS,AUDIT_OPINION,TOTAL_ORDER_AMOUNT,CURRENCY,PICTURN_PATH,UNPAID,UNPAID_INVOICES,INVOICE_STATUS,ORDER_STATUS)
+		VALUES(
+		#{purchaseOrderNo},#{relatedSalesOrder},#{itemCode},#{supplier},#{customerOrderNumber},#{shareOrderOrNot},#{contacts},
+		#{managerTele},#{faxNumber},#{orderDate},#{dueDate},#{purchasingReason},
+		#{buyer},#{paymentMethod},#{paymentDate}
+		,#{orderDescription},#{deliveryAddress},#{relatedProvisions},#{auditOpinion},#{totalOrderAmount},#{currency},#{picturnPath},#{unpaid}
+		,#{unpaidInvoices},#{invoiceStatus},#{orderStatus})
+	</insert>
+</mapper>

@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.basicinformation.accountingpolicies.TFaAcctPolicyAssetMapper">
+
+    <resultMap type="com.skeqi.finance.domain.basicinformation.accountingpolicies.TFaAcctPolicyAsset" id="TFaAcctPolicyAssetResult">
+        <result property="fEntryId" column="f_entry_id"/>
+        <result property="fSeq" column="f_seq"/>
+        <result property="fAcctpolicyId" column="f_acctpolicy_id"/>
+        <result property="fAssetTypeid" column="f_asset_typeid"/>
+        <result property="fLegalDepryears" column="f_legal_depryears"/>
+        <result property="fEntDepryears" column="f_ent_depryears"/>
+        <result property="fResidualType" column="f_residual_type"/>
+        <result property="fLegalResidualRate" column="f_legal_residual_rate"/>
+        <result property="fEntResidualRate" column="f_ent_residual_rate"/>
+        <result property="fResidualAmount" column="f_residual_amount"/>
+        <result property="fDeprMethod" column="f_depr_method"/>
+        <result property="fDeprPolicyId" column="f_depr_policy_id"/>
+        <result property="fWorkLoadunitId" column="f_work_loadunit_id"/>
+        <result property="fEntdeprWorkload" column="f_entdepr_workload"/>
+        <result property="fLegalDeprWorkload" column="f_legal_depr_workload"/>
+    </resultMap>
+    <insert id="insertByAddBoList">
+        insert into
+        <trim prefix="t_fa_acct_policy_asset(" suffix=")" suffixOverrides=",">
+            f_acctpolicy_id,
+            f_asset_typeid,
+            f_legal_depryears,
+            f_ent_depryears,
+            f_residual_type,
+            f_legal_residual_rate,
+            f_ent_residual_rate,
+            f_residual_amount,
+            f_depr_method,
+            f_depr_policy_id,
+            f_work_loadunit_id,
+            f_entdepr_workload,
+            f_legal_depr_workload
+        </trim>
+        <foreach collection="list" item="item" open="VALUES" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                #{item.fAcctpolicyId,jdbcType=INTEGER},
+                #{item.fAssetTypeid,jdbcType=INTEGER},
+                #{item.fLegalDepryears,jdbcType=DECIMAL},
+                #{item.fEntDepryears,jdbcType=DECIMAL},
+                #{item.fResidualType,jdbcType=VARCHAR},
+                #{item.FLegalResidualRate,jdbcType=DECIMAL},
+                #{item.FEntResidualRate,jdbcType=DECIMAL},
+                #{item.FResidualAmount,jdbcType=DECIMAL},
+                #{item.FDeprMethod,jdbcType=VARCHAR},
+                #{item.FDeprPolicyId,jdbcType=INTEGER},
+                #{item.FWorkLoadunitId,jdbcType=INTEGER},
+                #{item.FEntdeprWorkload,jdbcType=DECIMAL},
+                #{item.FLegalDeprWorkload,jdbcType=DECIMAL}
+            </trim>
+        </foreach>
+    </insert>
+    <update id="updateByEditList">
+        update t_fa_acct_policy_asset
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="f_asset_typeid = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.fAssetTypeid != null">
+                        when f_entry_id = #{item.FEntryId,jdbcType=INTEGER}
+                        then #{item.fAssetTypeid,jdbcType=INTEGER}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="f_legal_depryears = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.FLegalDepryears != null">
+                        when f_entry_id = #{item.FEntryId,jdbcType=INTEGER}
+                        then #{item.FLegalDepryears,jdbcType=DECIMAL}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="f_ent_depryears = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.FEntDepryears != null">
+                        when f_entry_id = #{item.FEntryId,jdbcType=INTEGER}
+                        then #{item.FEntDepryears,jdbcType=DECIMAL}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="f_residual_type = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.FResidualType != null">
+                        when f_entry_id = #{item.FEntryId,jdbcType=INTEGER}
+                        then #{item.FResidualType,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="f_legal_residual_rate = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.FLegalResidualRate != null">
+                        when f_entry_id = #{item.FEntryId,jdbcType=INTEGER}
+                        then #{item.FLegalResidualRate,jdbcType=DECIMAL}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="f_ent_residual_rate = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.FEntResidualRate != null">
+                        when f_entry_id = #{item.FEntryId,jdbcType=INTEGER}
+                        then #{item.FEntResidualRate,jdbcType=DECIMAL}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="f_residual_amount = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.FResidualAmount != null">
+                        when f_entry_id = #{item.FEntryId,jdbcType=INTEGER}
+                        then #{item.FResidualAmount,jdbcType=DECIMAL}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="f_depr_method = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.FDeprMethod != null">
+                        when f_entry_id = #{item.FEntryId,jdbcType=INTEGER}
+                        then #{item.FDeprMethod,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="f_depr_policy_id = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.FDeprPolicyId != null">
+                        when f_entry_id = #{item.FEntryId,jdbcType=INTEGER}
+                        then #{item.FDeprPolicyId,jdbcType=INTEGER}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="f_work_loadunit_id = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.FWorkLoadunitId != null">
+                        when f_entry_id = #{item.FEntryId,jdbcType=INTEGER}
+                        then #{item.FWorkLoadunitId,jdbcType=INTEGER}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="f_entdepr_workload = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.FEntdeprWorkload != null">
+                        when f_entry_id = #{item.FEntryId,jdbcType=INTEGER}
+                        then #{item.FEntdeprWorkload,jdbcType=DECIMAL}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="f_legal_depr_workload = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.FLegalDeprWorkload != null">
+                        when f_entry_id = #{item.FEntryId,jdbcType=INTEGER}
+                        then #{item.FLegalDeprWorkload,jdbcType=DECIMAL}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where f_entry_id in
+        <foreach  collection="list" item="item" open="(" separator=", " close=")">
+            #{item.FEntryId,jdbcType=INTEGER}
+        </foreach>
+    </update>
+
+    <select id="queryListByFAcctpolicyId"
+            resultType="com.skeqi.finance.pojo.vo.basicinformation.accountingpolicies.TFaAcctPolicyAssetVo">
+            select * from t_fa_acct_policy_asset where f_acctpolicy_id = #{fAcctpolicyId,jdbcType=INTEGER}
+    </select>
+
+
+</mapper>

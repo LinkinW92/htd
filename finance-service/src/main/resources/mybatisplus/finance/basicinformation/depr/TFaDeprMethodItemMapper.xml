@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.TFaDeprMethodItemMapper">
+
+    <resultMap type="com.skeqi.finance.domain.TFaDeprMethodItem" id="TFaDeprMethodItemResult">
+        <result property="fId" column="f_id"/>
+        <result property="fFieldType" column="f_field_type"/>
+        <result property="fFormulaType" column="f_formula_type"/>
+        <result property="fNumber" column="f_number"/>
+    </resultMap>
+
+
+</mapper>

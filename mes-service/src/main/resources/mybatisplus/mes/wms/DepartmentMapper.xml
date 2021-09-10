@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wms.DepartmentDao">
+
+	<!-- 查询 -->
+	<select id="list" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			id,
+			DM_NAME AS `name`,
+			superiorId,
+			executive
+		FROM
+			c_wms_department_t
+		ORDER BY id
+	</select>
+
+	<!-- 新增 -->
+	<insert id="add">
+		insert into c_wms_department_t(DM_NAME,MODIFY_TIME,superiorId,executive)
+		values(#{name},now(),#{superiorId},"[]")
+	</insert>
+
+	<!-- 更新 -->
+	<update id="update">
+		update c_wms_department_t
+		set
+		DM_NAME = #{name},
+		MODIFY_TIME = now(),
+		superiorId = #{superiorId},
+		executive = #{executive}
+		where id = #{id}
+	</update>
+
+	<!-- 删除 -->
+	<delete id="delete">
+		delete from c_wms_department_t
+		where id = #{id}
+	</delete>
+
+	<!-- 查询公司 -->
+	<select id="findCompany" resultType="com.alibaba.fastjson.JSONObject">
+		select * from c_mes_company_t
+		ORDER BY id
+	</select>
+
+	<!-- 查询部门编号存在得数量 -->
+	<select id="findCountNumber" resultType="int">
+		select count(*) from c_wms_department_t
+		where DM_NUMBER = #{number}
+		and VIEW_MODE = 1
+		<if test="id != null and id != ''">
+		and id != #{id}
+		</if>
+	</select>
+
+	<!-- 查询归属公司下部门名称存在得数量 -->
+	<select id="findCountName" resultType="int">
+		SELECT count(*)  FROM c_wms_department_t
+		WHERE DM_NAME = #{name}
+		AND superiorId = #{superiorId}
+		<if test="id != null and id != ''">
+		AND id != #{id}
+		</if>
+	</select>
+
+	<!-- 通过id查询部门 -->
+	<select id="findDepartmentById" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			id,
+			DM_NUMBER AS number,
+			DM_NAME as `name`,
+			hierarchy
+		FROM
+			c_wms_department_t
+		WHERE
+			id = #{id}
+	</select>
+
+	<!-- 通过部门id查询有多少用户 -->
+	<select id="findUserCountByDepartmentId" resultType="int">
+		select count(*) from c_mes_user_t
+		where DEPARTMENT = #{departmentId}
+		and viewMode = 1
+	</select>
+
+	<!-- 通过部门id查询有多少下级部门 -->
+	<select id="findDepartmentCountBySuperiorId" resultType="int">
+		select count(*) from c_wms_department_t
+		where superiorId = #{superiorId}
+	</select>
+
+	<!-- 更新部门组织路径 -->
+	<update id="updateDepartmentOrganizationalPath">
+		update c_wms_department_t
+		set
+		organizationalPath = #{organizationalPath},
+		superiorName = #{superiorName}
+		where id = #{id}
+	</update>
+
+	<!-- 通过部门ID查询用户 -->
+	<select id="findUserByDepartmentId" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			a.USER_NAME AS userName,
+			a.`status`,
+			a.DEPARTMENT AS departmentId,
+			a.ROLE_ID AS roleId,
+			a.USER_NUMBER AS userNumber,
+			a.mobile,
+			a.position,
+			a.email,
+			a.reportsTo,
+			a.`name`,
+			b.USER_NAME AS reportsToName,
+			c.departmentId AS sf,
+			d.role_name AS roleNmae,
+			e.id as rankId,
+			e.rankName,
+			e.grade
+		FROM
+			c_mes_user_t a
+			LEFT JOIN c_mes_user_t b ON a.reportsTo = b.id
+			LEFT JOIN c_qh_head_of_department_t c ON a.id = c.userId
+			LEFT JOIN c_qh_role d ON a.ROLE_ID = d.id
+			LEFT JOIN c_qh_rank_t e ON a.rankId = e.id
+		WHERE
+			a.DEPARTMENT = #{departmentId}
+		and a.viewMode = 1
+		ORDER BY
+			a.id
+	</select>
+
+	<!-- 新增部门主管  -->
+	<insert id="addHeadOfDepartment">
+		insert into c_qh_head_of_department_t(departmentId,userId,`order`)
+		value(#{departmentId},#{userId},#{order})
+	</insert>
+
+	<!-- 删除部门主管  -->
+	<delete id="deleteHeadOfDepartment">
+		delete from c_qh_head_of_department_t
+		where departmentId = #{departmentId}
+	</delete>
+
+	<!-- 通过上级部门id查询部门 -->
+	<select id="findDepartmentBySuperiorId" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			id,
+			DM_NAME AS `name`,
+			superiorId,
+			executive 
+		FROM
+			c_wms_department_t
+		where superiorId = #{superiorId}
+		ORDER BY id
+	</select>
+
+	<!-- 通过用户名查询用户 -->
+	<select id="findUserByUserName" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			id,
+			user_name AS userName,
+			DEPARTMENT AS departmentId,
+			`name`,
+			mobile,
+			email,
+			position,
+			`name`,
+			`status`
+		FROM
+			c_mes_user_t
+		where user_name = #{userName}
+		and viewMode = 1
+	</select>
+
+	<!-- 新增用户 -->
+	<insert id="addUser">
+		insert into c_mes_user_t(USER_NAME,USER_PWD,`STATUS`,DEPARTMENT,ROLE_ID,mobile,position,email,`name`,reportsTo,viewMode,rankId)
+		value(#{userName},#{password},#{status},#{departmentId},#{roleId},#{mobile},#{position},#{email},#{name},#{reportsTo},1,#{rankId})
+	</insert>
+
+	<!-- 更新用户 -->
+	<update id="updateUser">
+		update c_mes_user_t
+		set
+		DEPARTMENT = #{departmentId},
+		ROLE_ID = #{roleId},
+		mobile = #{mobile},
+		position = #{position},
+		email = #{email},
+		`name` = #{name},
+		rankId = #{rankId}
+		<if test="reportsTo != null and reportsTo != ''">
+		,reportsTo = #{reportsTo}
+		</if>
+		<if test="password != null and password != ''">
+		,USER_PWD = #{password}
+		</if>
+		WHERE ID = #{id}
+	</update>
+
+	<!-- 查询所有角色 -->
+	<select id="findRoleAll" resultType="com.alibaba.fastjson.JSONObject">
+		select id,role_name as roleName from c_qh_role
+	</select>
+
+	<!-- 删除用户 -->
+	<update id="deleteUser">
+		update c_mes_user_t
+		set
+		viewMode = 0
+		where id = #{userId}
+	</update>
+
+	<!-- 查询所有职级 -->
+	<select id="findRankAll" resultType="com.alibaba.fastjson.JSONObject">
+		select * from c_qh_rank_t
+		ORDER BY grade
+	</select>
+
+	<!-- 新增职级 -->
+	<insert id="addRank" useGeneratedKeys="true" keyProperty="id" parameterType="com.alibaba.fastjson.JSONObject">
+		insert into c_qh_rank_t(dt,rankName,grade)
+		value(now(),#{rankName},#{grade})
+	</insert>
+
+</mapper>

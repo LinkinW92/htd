@@ -1,0 +1,489 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wms.StockInventoryDao">
+
+	<select id="findMaterialNumber" resultType="java.lang.Integer">
+		SELECT ifnull(sum(MATERIAL_NUMBER),0) FROM c_wms_material_number_t
+		WHERE LOCATION_ID = #{locationId}
+		AND PROJECT_ID = #{projectId}
+		AND MATERIAL_ID = #{materialId}
+	</select>
+
+	<insert id="addInventory">
+		insert into c_wms_inventory_t(LIST_NO,DT,USER_ID,STATE,DIS)
+		VALUES(#{listNo},now(),#{userId},#{state},#{dis})
+	</insert>
+
+	<insert id="addInventoryDetail">
+		insert into c_wms_inventory_detail_t(INVENTORY_ID,MATERIAL_ID,INVENTORY_NO,STOCK_NO,DIFFERENCE_NO,LOCATION_ID,PROJECT_ID,TRAY_CODE)
+		VALUES(#{inventoryId},#{materialId},#{inventoryNo},#{stockNo},#{differenceNo},#{locationId},#{projectId},#{trayCode})
+	</insert>
+
+	<resultMap type="com.skeqi.mes.pojo.wms.InventoryT" id="inventoryMap">
+		<result column="ID" property="id"/>
+		<result column="LIST_NO" property="listNo"/>
+		<result column="DT" property="dt"/>
+		<result column="USER_ID" property="userId"/>
+		<result column="STATE" property="state"/>
+		<result column="DIS" property="dis"/>
+		<association property="approval" javaType="com.skeqi.mes.pojo.wms.CWmsApprovalT">
+				<result column="approvalState" property="state" />
+		</association>
+		<association property="user" javaType="com.skeqi.mes.pojo.CMesUserT">
+			<result column="USER_NAME" property="userName" />
+			<association property="dep" javaType="com.skeqi.mes.pojo.wms.CWmsDepartmentT">
+				<result column="DM_NAME" property="dmName" />
+			</association>
+		</association>
+	</resultMap>
+	<select id="findInventoryList" resultMap="inventoryMap">
+		select inventory.*,user.USER_NAME,dep.DM_NAME,approval.STATE as approvalState from c_wms_inventory_t inventory
+		join c_mes_user_t user on inventory.USER_ID = user.id
+		join c_wms_department_t dep on user.DEPARTMENT = dep.ID
+		join c_wms_approval_t approval on inventory.LIST_NO = approval.LIST_NO
+		where 1 = 1
+		<if test="listNo != null and listNo != ''">
+			and inventory.LIST_NO = #{listNo}
+		</if>
+		ORDER BY dt desc
+	</select>
+
+	<resultMap type="com.skeqi.mes.pojo.wms.InventoryDetailT" id="inventoryDetailTMap">
+		<result column="ID" property="id"/>
+		<result column="INVENTORY_ID" property="inventoryId"/>
+		<result column="MATERIAL_ID" property="materialId"/>
+		<result column="INVENTORY_NO" property="inventoryNo"/>
+		<result column="STOCK_NO" property="stockNo"/>
+		<result column="DIFFERENCE_NO" property="differenceNo"/>
+		<result column="LOCATION_ID" property="locationId"/>
+		<result column="PROJECT_ID" property="projectId"/>
+		<result column="TRAY_CODE" property="trayCode"/>
+		<result column="listNo" property="listNo"/>
+		<association property="material" javaType="com.skeqi.mes.pojo.CMesJlMaterialT">
+			<result column="MATERIAL_NAME" property="materialName" />
+		</association>
+		<association property="location" javaType="com.skeqi.mes.pojo.wms.CWmsLocationT">
+			<result column="LOCATION_NAME" property="locationName" />
+		</association>
+		<association property="project" javaType="com.skeqi.mes.pojo.wms.CWmsProject">
+			<result column="PROJECT_NAME" property="projectName" />
+		</association>
+	</resultMap>
+	<select id="findInventoryDetailList" resultMap="inventoryDetailTMap">
+		select det.*,material.MATERIAL_NAME,project.PROJECT_NAME,location.LOCATION_NAME,inv.LIST_NO as listNo from c_wms_inventory_detail_t det
+		join c_mes_jl_material_t material on det.MATERIAL_ID = material.id
+		join c_wms_project_t project on det.PROJECT_ID = project.id
+		join c_wms_location_t location on det.LOCATION_ID = location.id
+		join c_wms_inventory_t inv on det.INVENTORY_ID = inv.id
+		where 1 = 1
+		<if test="inventoryId != null and inventoryId != ''">
+			and det.INVENTORY_ID = #{inventoryId}
+		</if>
+		<if test="listNo != null and listNo != ''">
+			and inv.LIST_NO = #{listNo}
+		</if>
+		<if test="inventoryId != null and inventoryId != ''">
+			and inv.id = #{inventoryId}
+		</if>
+	</select>
+
+	<update id="updtaeInventory">
+		update c_wms_inventory_t set STATE = #{state}
+		where ID = #{id}
+	</update>
+
+	<update id="updatematerialNumber">
+		update c_wms_material_number_t set MATERIAL_NUMBER = #{materialNumber}
+		where PROJECT_ID = #{projectId}
+		and MATERIAL_ID = #{materialId}
+		and LOCATION_ID = #{locationId}
+	</update>
+
+	<select id="queryWhetherThereIsInventory" resultType="java.lang.Integer">
+		select count(*) from c_wms_inventory_t inventory
+		join c_wms_approval_t approval on inventory.LIST_NO = approval.LIST_NO
+		where inventory.STATE = 0
+		and approval.STATE!=3
+		and approval.STATE!=4
+	</select>
+
+	<select id="findOutgoingQueue" resultType="java.lang.Integer">
+		select count(*) from r_wms_out_taskqueue_t
+	</select>
+
+	<select id="findWarehousingQueue" resultType="java.lang.Integer">
+		select count(*) from r_wms_in_taskqueue_t
+	</select>
+
+	<!-- 通过用户id查询用户信息 -->
+	<select id="findUserById" resultType="com.skeqi.mes.pojo.CMesUserT">
+		select * from c_mes_user_t
+		where viewMode = 1
+		and id = #{userId}
+	</select>
+
+	<!-- 查询审批流程 -->
+	<select id="findProcessApproval" resultType="com.skeqi.mes.pojo.wms.ProcessApproval">
+		select * from c_wms_process_approval_t
+		where 1 = 1
+		<if test="id != null">
+			AND ID = #{id}
+		</if>
+		<if test="deptId != null">
+			AND DEPT_ID = #{deptId}
+		</if>
+		<if test="roleId != null">
+			AND ROLE_ID = #{roleId}
+		</if>
+		<if test="typeId != null">
+			AND TYPE_ID = #{typeId}
+		</if>
+		<if test="dt != null">
+			AND DT = #{dt}
+		</if>
+		<if test="dis != null">
+			AND DIS = #{dis}
+		</if>
+		ORDER BY ID
+	</select>
+
+	<!-- 新增审批单据-->
+	<insert id="addApproval">
+		insert into c_wms_approval_t(
+		LIST_NO,DT,PROCESS_ID,USER_ID,STATE,NOTE)
+		values(
+		#{listNo},now(),#{processId},#{userId},#{state},#{note})
+	</insert>
+
+	<!-- 通过单号查询审批记录 -->
+	<select id="findApprovalByListNo" resultType="com.skeqi.mes.pojo.wms.CWmsApprovalT">
+		select * from
+		c_wms_approval_t
+		where LIST_NO = #{listNo}
+	</select>
+
+	<!-- 新增审批详情数据 -->
+	<insert id="addApprovalDetails">
+		insert into c_wms_approval_details_t(
+		LIST_NO,APPROVAL_RESULT,USER_ID,REASON,
+		APPROVAL_ID,DT,PRIORITY_LEVEL,YN_APPROVED)
+		values(
+		#{listNo},#{approvalResult},#{userId},#{reason},
+		#{approvalId},now(),#{priorityLevel},#{ynApproved})
+	</insert>
+
+	<resultMap type="com.skeqi.mes.pojo.wms.ProcessApprovalDetail" id="detailMap">
+		<result column="ID" property="id"/>
+		<result column="USER_ID" property="userId"/>
+		<result column="PRIORITY_LEVEL" property="priorityLevel"/>
+		<result column="DT" property="dt"/>
+		<result column="PROCESS_ID" property="processId"/>
+		<result column="DIS" property="dis"/>
+		<association  property="user" javaType="com.skeqi.mes.pojo.CMesUserT">
+			<result column="user_id" property="id" />
+			<result column="USER_NAME" property="userName" />
+		</association>
+		<association  property="department" javaType="com.skeqi.mes.pojo.wms.CWmsDepartmentT">
+			<result column="dm_id" property="id" />
+			<result column="DM_NAME" property="dmName" />
+		</association>
+		<association  property="role" javaType="com.skeqi.mes.pojo.CMesRoleT">
+			<result column="role_id" property="rid" />
+			<result column="ROLE_NAME" property="roleName" />
+		</association>
+		<association  property="processType" javaType="com.skeqi.mes.pojo.wms.ProcessType">
+			<result column="PROCESS_type_id" property="id" />
+			<result column="PROCESS_TYPE_NAME" property="processType" />
+		</association>
+	</resultMap>
+
+	<!-- 查询流程详情 -->
+	<select id="findProcessApprovalDetailList" resultMap="detailMap">
+		SELECT xq.*,us.USER_NAME,bm.ID as dm_id,bm.DM_NAME,ro.id as role_id,ro.ROLE_NAME,lx.id as PROCESS_type_id,lx.PROCESS_TYPE as PROCESS_TYPE_NAME
+		FROM C_WMS_PROCESS_APPROVAL_DETAIL xq
+		JOIN c_mes_user_t us ON xq.USER_ID = us.id
+		JOIN c_wms_department_t bm ON us.DEPARTMENT = bm.ID
+		JOIN c_qh_role ro ON us.ROLE_ID = ro.ID
+		JOIN C_WMS_PROCESS_APPROVAL_T lc ON xq.PROCESS_ID = lc.ID
+		JOIN C_WMS_PROCESS_TYPE_T lx ON lc.TYPE_ID = lx.ID
+		WHERE 1 =1
+		<if test="roleId != null and roleId != ''">
+			AND ro.ID = #{roleId}
+		</if>
+		<if test="deptId != null and deptId != ''">
+			AND bm.ID = #{deptId}
+		</if>
+		<if test="typeId != null and typeId != ''">
+			AND lx.ID = #{typeId}
+		</if>
+		<if test="id != null and id != ''">
+			AND xq.ID = #{id}
+		</if>
+		<if test="userId != null and userId != ''">
+			AND xq.USER_ID = #{userId}
+		</if>
+		<if test="priorityLevel != null and priorityLevel != ''">
+			AND xq.PRIORITY_LEVEL = #{priorityLevel}
+		</if>
+		<if test="dt != null and dt != ''">
+			AND xq.DT = #{dt}
+		</if>
+		<if test="processId != null and processId != ''">
+			AND xq.PROCESS_ID = #{processId}
+		</if>
+		<if test="dis != null and dis != ''">
+			AND xq.DIS = #{dis}
+		</if>
+		ORDER BY xq.PRIORITY_LEVEL
+	</select>
+
+	<!-- 查询所有仓库 -->
+	<select id="findWarehouseAll" resultType="com.alibaba.fastjson.JSONObject">
+		select id,`name` from c_wms_warehouse_t
+		where VIEW_MODE = 1
+		ORDER BY id
+	</select>
+
+	<!-- 通过仓库id查询区域 -->
+	<select id="findAreaAllByWarehouseId" resultType="com.alibaba.fastjson.JSONObject">
+		select id,AREA_NAME as `name` from c_wms_area_t
+		where VIEW_MODE = 1
+		and WAREHOUSE_ID = #{warehouseId}
+		ORDER BY id
+	</select>
+
+	<!-- 通过区域id查询库区 -->
+	<select id="findReservoirAreaAllByAeraId" resultType="com.alibaba.fastjson.JSONObject">
+		select id,RA_NAME as `name` from c_wms_reservoir_area_t
+		where VIEW_MODE = 1
+		and AREA_ID = #{areaId}
+		ORDER BY id
+	</select>
+
+	<!-- 通过库区id查询库位 -->
+	<select id="findLocationAllByReservoirAreaId" resultType="com.alibaba.fastjson.JSONObject">
+		select id,LOCATION_NAME as `name` from c_wms_location_t
+		where VIEW_MODE = 1
+		and RESERVOIR_AREA_ID = #{reservoirAreaId}
+		ORDER BY id
+	</select>
+
+	<!-- 查询所有物料 -->
+	<select id="findMaterialAll" resultType="com.alibaba.fastjson.JSONObject">
+		select id,MATERIAL_NAME as `name` from c_mes_jl_material_t
+		where VIEW_MODE = 1
+		and MATERIAL_NAME like '%${materialName}%'
+		ORDER BY id
+		limit 0,100
+	</select>
+
+	<!-- 查询所有项目 -->
+	<select id="findProjectAll" resultType="com.alibaba.fastjson.JSONObject">
+		select id,PROJECT_NAME as `name` from c_wms_project_t
+		where VIEW_MODE = 1
+		and PROJECT_NAME like '%${projectName}%'
+		ORDER BY id
+		limit 0,100
+	</select>
+
+	<!-- 通过单号查询盘点详情 -->
+	<select id="findInventoryDetailByListNo" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			b.MATERIAL_NAME as materialName,
+			d.PROJECT_NAME as projectName,
+			c.LOCATION_NAME as locationName,
+			a.INVENTORY_NO as inventoryNo,
+			a.STOCK_NO as stockNo,
+			a.DIFFERENCE_NO as differenceNo
+		FROM
+			`c_wms_inventory_detail_t` a
+			JOIN c_mes_jl_material_t b ON a.MATERIAL_ID = b.id
+			JOIN c_wms_location_t c ON a.LOCATION_ID = c.id
+			JOIN c_wms_project_t d ON a.PROJECT_ID = d.id
+			join c_wms_inventory_t e on a.INVENTORY_ID = e.id
+			where e.LIST_NO = #{listNo}
+	</select>
+
+	<!-- 通过id查询盘点单信息 -->
+	<select id="findInventoryById" resultType="com.alibaba.fastjson.JSONObject">
+		select id,LIST_NO as listNo,dt,USER_ID as userId,state from c_wms_inventory_t
+		where id = #{id}
+	</select>
+
+	<!-- 修改盘点表状态 -->
+	<update id="updateInventoryState">
+		update c_wms_inventory_t
+		set STATE = #{state}
+		where id = #{id}
+	</update>
+
+	<!-- 新增永久库存详情表信息 -->
+	<insert id="addPInventoryDetails">
+		INSERT INTO p_wms_storage_detail_t(DT,MATERIAL_ID,MATERIAL_NUMBER,AREA_ID,RESERVOIR_AREA_ID,LOCATION_ID,LIST_NO,PROJECT_ID,TRAY,WAREHOUSE_ID,YN_SHIFT,ISSUE_OR_RECEIPT,MATERIAL_NAME,WAREHOUSE_NAME,AREA_NAME,RESERVOIR_AREA_NAME,LOCATION_NAME,PROJECT_NAME)
+		${sql}
+	</insert>
+
+	<!-- 新增物料库存 -->
+	<insert id="addMaterialNumber">
+		INSERT INTO c_wms_material_number_t(MATERIAL_NO,MATERIAL_NAME,MATERIAL_NUMBER,PROJECT_ID,MATERIAL_ID,WAREHOUSE_ID,AREA_ID,LOCATION_ID,RESERVOIR_AREA_ID,LMMINENT_RELEASE,DT,TRAY,bar_code)
+		${sql}
+	</insert>
+
+	<!-- 通过库位id查询物料库存信息 -->
+	<select id="findMaterialNumberByLocationId" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			WAREHOUSE_ID as warehouseId,
+			AREA_ID as areaId,
+			RESERVOIR_AREA_ID as reservoirAreaId,
+			tray
+		FROM
+			c_wms_material_number_t
+		WHERE
+			id = (
+				SELECT
+					max( id )
+				FROM
+					c_wms_material_number_t
+				WHERE
+				LOCATION_ID = 1
+			)
+	</select>
+
+	<!-- 通过库位id查询 库区、区域、仓库id -->
+	<select id="findWARByLocationId" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			d.id as warehouseId,
+			d.`name` as warehouseName,
+			c.id as areaId,
+			c.AREA_NAME as areaName,
+			b.id as reservoirAreaId,
+			b.RA_NAME as reservoirAreaName,
+			a.id as locationId,
+			a.LOCATION_NAME as locationName
+		FROM
+			c_wms_location_t a
+			JOIN c_wms_reservoir_area_t b ON a.RESERVOIR_AREA_ID = b.id
+			JOIN c_wms_area_t c ON b.AREA_ID = c.id
+			JOIN c_wms_warehouse_t d ON c.WAREHOUSE_ID = d.id
+		where a.id = #{locationId}
+	</select>
+
+	<!-- 通过物料id查询物料部分信息 -->
+	<select id="findMaterialById" resultType="com.alibaba.fastjson.JSONObject">
+		select BOM_ID as materialNo,MATERIAL_NAME as materialName from c_mes_jl_material_t
+		where VIEW_MODE = 1
+		and id = #{materialId}
+	</select>
+
+	<!-- 查过库位查询物料库存id -->
+	<select id="findMaterialNumberIdByLocationId" resultType="java.lang.Integer">
+		select id from c_wms_material_number_t
+		where LOCATION_ID = #{locationId}
+	</select>
+
+	<!-- 删除物料库存 -->
+	<delete id="deleteMaterialNumber">
+		delete from c_wms_material_number_t
+		where id = #{id}
+	</delete>
+
+	<!-- 更新库位状态 -->
+	<update id="updateLocationState">
+		update c_wms_location_t
+		set LOCATION_STATUS = #{state}
+		where id = #{id}
+	</update>
+
+	<!-- 更新库位托盘码 -->
+	<update id="updateLocationTrayCode">
+		update c_wms_location_t
+		set TRAY = #{trayCode}
+		where id = #{id}
+	</update>
+
+	<!-- 新 -->
+	<!-- 查询盘点详情 -->
+	<select id="findInventoryDetail" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a1.LIST_NO as listNo,
+			a.INVENTORY_NO AS inventoryNo,
+			a.INVENTORY_NO AS materialNumber,
+			a.STOCK_NO AS stockNo,
+			a.DIFFERENCE_NO AS differenceNo,
+			a.TRAY_CODE AS trayCode,
+			a.MATERIAL_ID AS materialId,
+			a.PROJECT_ID AS projectId,
+			a.LOCATION_ID AS locationId,
+			b.MATERIAL_NAME AS materialName,
+			c.PROJECT_NAME AS projectName,
+			g.id AS warehouseId,
+			g.`name` AS warehouseName,
+			f.id AS areaId,
+			f.AREA_NAME AS areaName,
+			e.id AS raId,
+			e.RA_NAME AS raName,
+			d.LOCATION_NAME AS locationName
+		FROM
+			`c_wms_inventory_detail_t` a
+			join c_wms_inventory_t a1 on a.INVENTORY_ID = a1.id
+			JOIN c_mes_jl_material_t b ON a.MATERIAL_ID = b.id
+			JOIN c_wms_project_t c ON a.PROJECT_ID = c.id
+			JOIN c_wms_location_t d ON a.LOCATION_ID = d.id
+			JOIN c_wms_reservoir_area_t e ON d.RESERVOIR_AREA_ID = e.id
+			JOIN c_wms_area_t f ON e.AREA_ID = f.id
+			JOIN c_wms_warehouse_t g ON f.WAREHOUSE_ID = g.id
+		where a.INVENTORY_ID = #{INVENTORY_ID}
+	</select>
+
+	<!-- 新 -->
+	<!-- 新增永久库存详情表记录 -->
+	<insert id="addRStorageDetail">
+		insert into p_wms_storage_detail_t(DT,MATERIAL_ID,MATERIAL_NUMBER,AREA_ID,RESERVOIR_AREA_ID,LOCATION_ID,LIST_NO,PROJECT_ID,TRAY,WAREHOUSE_ID,YN_SHIFT,ISSUE_OR_RECEIPT,MATERIAL_NAME,WAREHOUSE_NAME,AREA_NAME,RESERVOIR_AREA_NAME,LOCATION_NAME,PROJECT_NAME)
+		value ${sql}
+	</insert>
+
+	<!-- 新 -->
+	<!-- 更新物料库存 -->
+	<update id="updateStockMaterialNumber">
+		update c_wms_material_number_t
+		set MATERIAL_NUMBER = #{materialNumber},
+		TRAY = #{trayCode}
+		where PROJECT_ID = #{projectId}
+		and MATERIAL_ID = #{materialId}
+		and LOCATION_ID = #{locationId}
+	</update>
+
+	<!-- 新 -->
+	<!-- 删除物料库存 -->
+	<delete id="deleteStockMaterialNumber">
+		delete from c_wms_material_number_t
+		where PROJECT_ID = #{projectId}
+		and MATERIAL_ID = #{materialId}
+		and LOCATION_ID = #{locationId}
+	</delete>
+
+	<!-- 新 -->
+	<!-- 通过库位查询是否还有物料库存 -->
+	<select id="findStockMaterialNumberByLocationId" resultType="int">
+		select count(*) from c_wms_material_number_t
+		where LOCATION_ID = #{locationId}
+	</select>
+
+	<!-- 新 -->
+	<!-- 更新库位状态跟托盘码 -->
+	<update id="updateLocationStateAndTrayCode">
+		update c_wms_location_t
+		set LOCATION_STATUS = #{state},
+		TRAY = #{trayCode}
+		where id = #{locationId}
+	</update>
+
+	<!-- 新 -->
+	<!-- 更新盘点主表状态 -->
+	<update id="newUpdateInventoryState">
+		update c_wms_inventory_t
+		set STATE = 1
+		where id = #{id}
+	</update>
+
+</mapper>

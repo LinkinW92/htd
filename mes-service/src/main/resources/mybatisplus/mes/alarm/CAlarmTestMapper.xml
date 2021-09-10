@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.alarm.CAlarmTestDao">
+
+	<insert id="addProblem">
+		INSERT INTO r_alarm_problems(problem,establish_time,establish_user_id,problem_level_id,event_id)
+		value(#{problem},now(),#{establishUserId},#{problemLevelId},#{eventId})
+	</insert>
+
+	<select id="findUserByName" resultType="com.skeqi.mes.pojo.CMesUserT">
+		select id,USER_NAME from c_mes_user_t
+		where viewMode = 1
+		and USER_NAME = #{userName}
+	</select>
+
+	<select id="findProblemLevelList" resultType="com.skeqi.mes.pojo.alarm.CAlarmProblemLevel">
+		select * from c_alarm_problem_level
+		ORDER BY id
+	</select>
+
+	<select id="findAlarmEventList" resultType="com.skeqi.mes.pojo.alarm.CAlarmEvent">
+		select * from c_alarm_event
+		ORDER BY id
+	</select>
+
+</mapper>
+
+

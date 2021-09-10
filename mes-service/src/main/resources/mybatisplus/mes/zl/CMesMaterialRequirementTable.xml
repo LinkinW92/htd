@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.zl.CMesMaterialRequirementDao">
+	<!-- 查询全部 -->
+	<select id="findAllMaterialRequirement" resultType="CMesMaterialRequirementTable">
+	SELECT * FROM c_mes_material_requirement_table where 1=1
+	</select>
+	<select id="countMaterialRequirement" resultType="int">
+		SELECT COUNT(*) FROM
+		c_mes_material_requirement_table WHERE SERIAL_NUMBER = #{serialNumber}
+	</select>
+		<insert id="addMaterialRequirement">
+		INSERT INTO c_mes_material_requirement_table(
+		PROCESSING_ORDER_NO,QUANTITY_PRODUCTION,MATERIAL_CATEGORY,SERIAL_NUMBER,
+		NAME_GOODS,MATERIAL_PROPERTIES,AGGREGATE_DEMAND,COMPANY,CURRENT_INVENTORY,NOTE)
+		VALUES(
+		#{processingOrderNo},#{quantityProduction},#{materialCategory},#{serialNumber},#{nameGoods},#{materialProperties},#{aggregateDemand},
+		#{company},#{currentInventory},#{note})
+	</insert>
+		<select id="findMaterialRequirementId" resultType="CMesMaterialRequirementTable">
+			select * from c_mes_material_requirement_table where ID=#{id}
+	</select>
+		<update id="editMaterialRequirement">
+		UPDATE c_mes_material_requirement_table SET
+		PROCESSING_ORDER_NO =#{processingOrderNo},QUANTITY_PRODUCTION=#{quantityProduction},MATERIAL_CATEGORY=#{materialCategory},
+		SERIAL_NUMBER=#{serialNumber},NAME_GOODS=#{nameGoods},MATERIAL_PROPERTIES=#{materialProperties},AGGREGATE_DEMAND=#{aggregateDemand}
+		,COMPANY=#{company},CURRENT_INVENTORY=#{currentInventory},NOTE=#{note}
+		WHERE ID = #{id}
+	</update>
+	<delete id="delMaterialRequirement">
+		DELETE FROM c_mes_material_requirement_table WHERE ID = #{id}
+	</delete>
+
+</mapper>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.skeqi.mes.mapper.dzb.market.TableColDao">
+    <delete id="deleteTablcCol">
+        delete
+        from mk_table_col
+        where id = #{id}
+    </delete>
+    <select id="listTableCol" resultType="java.util.Map">
+        select tc.id,t.show_name tableName,tc.show_name colName,tc.col_type colType from mk_table_col tc,mk_table t
+        where tc.table_id = t.id
+        <if test="tableId != null">
+            and tc.table_id = #{tableId}
+        </if>
+        <if test="colName != null and colName != ''">
+            and tc.show_name like concat(concat("%",#{colName}),"%")
+        </if>
+    </select>
+    <select id="getTableCol" resultType="java.util.Map">
+        select t.table_name tableName, col_name colName
+        from mk_table_col tc,
+             mk_table t
+        where tc.table_id = t.id
+          and tc.id = #{colId};
+    </select>
+
+    <insert id="saveTableCol" useGeneratedKeys="true" keyProperty="id">
+        <selectKey resultType="INTEGER" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO `mk_table_col`(`table_id`, `col_name`, `col_type`, `show_name`)
+        VALUES (#{tableId}, #{colName}, #{colType}, #{showName});
+    </insert>
+    <update id="exceSql">
+        ${sql}
+    </update>
+    <update id="updateTablcCol">
+        update mk_table_col
+        set show_name = #{showName}
+        <if test="colType != null">
+            ,col_type = #{colType}
+        </if>
+        where id = #{id}
+    </update>
+</mapper>

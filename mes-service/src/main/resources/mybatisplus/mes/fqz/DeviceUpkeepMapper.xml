@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.fqz.DeviceUpkeepDAO">
+
+	<select id="findAll" resultType="CMesDeviceUpkeep">
+		select t.*,l.name as lineName
+				from C_MES_DEVICE_UPKEEP t,c_mes_line_t l
+				where l.id=t.line_id
+			<if test="deviceName!=null and deviceName!=''">
+				and t.device_name like '%${deviceName}%'
+			</if>
+			<if test="lineId!=0 ">
+				and l.id=#{lineId}
+			</if>
+	</select>
+
+	<select id="findTime" resultType="Integer">
+		SELECT to_days(endtime)-to_days(now()) from C_MES_DEVICE_UPKEEP where id=#{id}
+	</select>
+
+	<insert id="insertUpkeep">
+		insert into C_MES_DEVICE_UPKEEP(DT,DEVICE_NAME,LINE_ID,EMP,UPKEEP_PERSON,NOTE,MAINTAIN_CYCLE,ENDTIME)
+		values(NOW(),#{deviceName},#{lineId},#{emp},#{upkeepPerson},#{note,jdbcType=VARCHAR},${maintainCycle},date_add(now(),interval ${maintainCycle} day))
+	</insert>
+
+	<update id="updateupkeep">
+		update C_MES_DEVICE_UPKEEP set dt=NOW(),
+									   DEVICE_NAME=#{deviceName},
+									   LINE_ID=#{lineId},
+									   EMP=#{emp},
+									   UPKEEP_PERSON=#{upkeepPerson},
+									   NOTE=#{note,jdbcType=VARCHAR},
+									   MAINTAIN_CYCLE=#{maintainCycle}
+							where    id=#{id}
+	</update>
+
+	<delete id="deleteupkeep">
+		delete from C_MES_DEVICE_UPKEEP where id=#{id}
+	</delete>
+
+	<select id="findByid" resultType="CMesDeviceUpkeep">
+		select * from C_MES_DEVICE_UPKEEP where id=#{id}
+	</select>
+
+	<update id="updateDate">
+		update C_MES_DEVICE_UPKEEP set dt=NOW(),
+<!-- 											  ENDTIME=NOW()+${value} -->
+										ENDTIME=date_add(now(),interval ${value} day)
+											where id=#{id}
+	</update>
+</mapper>

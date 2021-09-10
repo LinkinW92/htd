@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.fqz.IQCCheckDAO">
+
+	<select id="findAll" resultType="CMesIqcCheckT">
+		select * from C_MES_IQC_CHECK_T where 1=1
+		<if test="factoryNo!=null and factoryNo!='' ">
+			and FACTORY_NO = #{factoryNo}
+		</if>
+		<if test="materialVoucher !=null and materialVoucher!=''">
+			and MATERIAL_VOUCHER=#{materialVoucher}
+		</if>
+		<if test="checkBatch!=null and checkBatch!='' ">
+			and CHECK_BATCH=#{checkBatch}
+		</if>
+		<if test="otigin!=null and otigin!=''">
+			and OTIGIN=#{otigin}
+		</if>
+		<if test="materialNo!=null and materialNo!=''">
+			and MATERIAL_NO=#{materialNo}
+		</if>
+		<if test="supplierName!=null and supplierName!='' ">
+			and SUPPLIER_NAME=#{supplierName}
+		</if>
+		<if test="emp!=null and emp!='' ">
+			and EMP=#{emp}
+		</if>
+		<if test="checkPerson!=null and checkPerson!='' ">
+			and CHECK_PERSON=#{checkPerson}
+		</if>
+		<if test="status!=null and status!=''">
+			and STATUS=#{status}
+		</if>
+		<if test="productionHandie!=null and productionHandie!='' ">
+			and PRODUCTION_HANDIE=#{productionHandie}
+		</if>
+		<if test="starttime!=null and starttime!='' and endtime!=null and endtime!=''">
+			and dt between #{starttime}
+                          and #{endtime}
+		</if>
+		<if test="starttimes!=null and starttimes!='' and endtimes!=null and endtimes!=''">
+			and CHECK_DT between #{starttime}
+                          and #{endtime}
+		</if>
+		<if test="materialName!=null and materialName!=''">
+			and MATERIAL_NAME like '%${materialName}%'
+		</if>
+		order by id
+	</select>
+
+	<insert id="insertIQC">
+		insert into C_MES_IQC_CHECK_T(FACTORY_NO,MATERIAL_VOUCHER,CHECK_BATCH,
+		OTIGIN,MATERIAL_NO,MATERIAL_DESCRIBE,CHECK_NUM,NG_NUM,SEQ_NG_NUM,CALCULATE_UNIT,
+		SUPPLIER_NAME,EMP,DT,CHECK_PERSON,PRODUCTION_HANDIE,STATUS,MATERIAL_NAME,FREEZE)
+		values(#{factoryNo},#{materialVoucher},#{checkBatch},#{otigin},#{materialNo},#{materialDescribe,jdbcType=VARCHAR},#{checkNum},
+		#{ngNum},#{seqNgNum},#{calculateUnit},#{supplierName},#{emp},NOW(),#{checkPerson},1,1,#{materialName},1)
+	</insert>
+
+	<delete id="deleteIQC">
+		delete from C_MES_IQC_CHECK_T where id=#{id}
+	</delete>
+
+	<select id="findByid" resultType="CMesIqcCheckT">
+		select * from C_MES_IQC_CHECK_T where id=#{id}
+	</select>
+
+	<update id="updateIQC">
+		update C_MES_IQC_CHECK_T set FACTORY_NO=#{factoryNo},
+										    MATERIAL_VOUCHER=#{materialVoucher},
+										    CHECK_BATCH=#{checkBatch},
+										    OTIGIN=#{otigin},
+										    MATERIAL_NO=#{materialNo},
+										    MATERIAL_DESCRIBE=#{materialDescribe,jdbcType=VARCHAR},
+										    CHECK_NUM=#{checkNum},
+										    NG_NUM=#{ngNum},
+										    SEQ_NG_NUM=#{seqNgNum},
+										    CALCULATE_UNIT=#{calculateUnit},
+										    SUPPLIER_NAME=#{supplierName},
+										    CHECK_PERSON=#{checkPerson},
+										    EMP = #{emp},
+										    dt= NOW(),
+										    MATERIAL_NAME=#{materialName}
+										 where id=#{id}
+
+	</update>
+
+	<update id="fuhe">
+		update C_MES_IQC_CHECK_T set STATUS=2,PRODUCTION_HANDIE=#{name},
+									        CHECK_DT=NOW()
+									    where id=#{id}
+	</update>
+
+	<select id="findMaterial" resultType="CMesMaterialT">
+		select id,MATERIAL_NAME as materialName from C_MES_MATERIAL_T
+	</select>
+
+	<update id="freezes">
+		update C_MES_IQC_CHECK_T set FREEZE=#{status}
+										where id=#{id}
+	</update>
+</mapper>

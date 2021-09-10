@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wf.linesidelibrary.productOffline.LslProductOfflineDetailedTMapper">
+  <resultMap id="BaseResultMap" type="com.skeqi.mes.pojo.wf.linesidelibrary.productOffline.LslProductOfflineDetailedT">
+    <!--@mbg.generated-->
+    <!--@Table c_lsl_product_offline_detailed_t-->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="number" jdbcType="VARCHAR" property="number" />
+    <result column="offline_number" jdbcType="VARCHAR" property="offlineNumber" />
+    <result column="quantity" jdbcType="INTEGER" property="quantity" />
+    <result column="material_code" jdbcType="VARCHAR" property="materialCode" />
+    <result column="cdt" jdbcType="TIMESTAMP" property="cdt" />
+    <result column="udt" jdbcType="TIMESTAMP" property="udt" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, `number`, offline_number, quantity, material_code, cdt, udt
+  </sql>
+  <insert id="insertByList">
+    insert into c_lsl_product_offline_detailed_t
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      `number`,
+      offline_number,
+      quantity,
+      material_code,
+      cdt,
+      udt
+    </trim>
+    <foreach collection="detailedTList" item="item" separator="," open="values">
+      (
+      #{item.number,jdbcType=VARCHAR},
+      #{item.offlineNumber,jdbcType=VARCHAR},
+      #{item.quantity,jdbcType=INTEGER},
+      #{item.materialCode,jdbcType=VARCHAR},
+      #{item.cdt,jdbcType=TIMESTAMP},
+      #{item.udt,jdbcType=TIMESTAMP}
+      )
+    </foreach>
+  </insert>
+  <delete id="deleteDetailedByOfflineNumber">
+    delete from c_lsl_product_offline_detailed_t where offline_number = #{number,jdbcType=VARCHAR}
+  </delete>
+  <select id="selectAll" resultType="com.skeqi.mes.pojo.wf.linesidelibrary.productOffline.LslProductOfflineDetailedT">
+      select
+        <include refid="Base_Column_List"/>
+      from c_lsl_product_offline_detailed_t
+      where offline_number = #{offlineNumber,jdbcType=VARCHAR}
+    </select>
+  <select id="selectByPrimaryKey"
+          resultType="com.skeqi.mes.pojo.wf.linesidelibrary.productOffline.LslProductOfflineDetailedT">
+    select
+    <include refid="Base_Column_List"/>
+    from c_lsl_product_offline_detailed_t
+    where `number` = #{number,jdbcType=VARCHAR}
+  </select>
+</mapper>

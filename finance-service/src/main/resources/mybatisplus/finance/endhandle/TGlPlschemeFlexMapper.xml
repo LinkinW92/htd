@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.endhandle.TGlPlschemeFlexMapper">
+
+    <resultMap type="com.skeqi.finance.domain.endhandle.TGlPlschemeFlex" id="TGlPlschemeFlexResult">
+        <result property="fEntryId" column="f_entry_id"/>
+        <result property="fId" column="f_id"/>
+        <result property="fFlexId" column="f_flex_id"/>
+        <result property="fFlexValue" column="f_flex_value"/>
+        <result property="fFlexName" column="f_flex_name"/>
+    </resultMap>
+
+    <select id="queryFlexById" resultMap="TGlPlschemeFlexResult">
+        select * from t_gl_plscheme_flex where f_id=#{fId}
+    </select>
+
+</mapper>

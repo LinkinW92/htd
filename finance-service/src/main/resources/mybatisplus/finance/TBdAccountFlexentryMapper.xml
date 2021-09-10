@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.TBdAccountFlexentryMapper">
+
+    <resultMap type="com.skeqi.finance.domain.TBdAccountFlexentry" id="TBdAccountFlexentryResult">
+        <result property="fEntryId" column="f_entry_id"/>
+        <result property="fAcctId" column="f_acct_id"/>
+        <result property="fFlexitempropertyId" column="f_flexitemproperty_id"/>
+        <result property="fAcctitemisvalid" column="f_acctitemisvalid"/>
+        <result property="fInputType" column="f_input_type"/>
+        <result property="fDataFieldname" column="f_data_fieldname"/>
+        <result property="fSeq" column="f_seq"/>
+        <result property="fMasterId" column="f_master_id"/>
+    </resultMap>
+
+
+</mapper>

@@ -1,0 +1,34 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.dzb.report.EquipmentOEEDao">
+	<!--	查询所有班组-->
+    <select id="getShiftsTeamList" resultType="CMesShiftsTeamT">
+		select * from C_MES_SHIFTS_TEAM_T
+		where line_id =#{lineId}
+	</select>
+	<!--	计算产线的工作时间-->
+	<select id="getTime" resultType = "int">
+		    select TIMESTAMPDIFF(SECOND,min(dt),DATE_FORMAT(max(dt), '%Y-%m-%d %H:%i:%S')) from P_MES_TRACKING_T
+    		where
+		    to_days(dt) = to_days(#{date})
+		    and line_id =#{lineId}
+	</select>
+	<select id="getSnCount" resultType="int">
+		select count(sn)
+		from P_MES_TRACKING_T
+		where line_id=#{lineId}
+		and  to_days(dt) = to_days(#{date})
+		<if test="status != null and status != ''">
+			and status =#{status}
+		</if>
+	</select>
+
+
+	<select id="listLine" resultType="java.util.Map">
+        select id,name from c_mes_line_t
+    </select>
+
+</mapper>
+
+
+

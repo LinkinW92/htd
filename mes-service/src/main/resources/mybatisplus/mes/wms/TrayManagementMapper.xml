@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wms.TrayManagementDao">
+
+	<select id="findList" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			id,
+			LOCATION_NAME AS locationName,
+			LOCATION_TYPE AS locationType,
+			LOCATION_X AS x,
+			LOCATION_Y AS y,
+			LOCATION_Z AS z,
+			tray AS tray,
+			LOCATION_STATUS AS state
+		FROM
+			c_wms_location_t
+		WHERE
+			1 = 1
+		<if test="state != null">
+			and LOCATION_STATUS = #{state}
+		</if>
+		<if test="locationId != null and locationId != ''">
+			and id = #{locationId}
+		</if>
+		<if test="tray != null and tray != ''">
+			and TRAY like '%${tray}%'
+		</if>
+		GROUP BY id
+	</select>
+
+	<select id="findLocationListIdAndName" resultType="com.skeqi.mes.pojo.wms.CWmsLocationT">
+		select id,LOCATION_NAME from c_wms_location_t
+		GROUP BY id
+	</select>
+
+	<select id="findMaterialNumberList" resultType="com.alibaba.fastjson.JSONObject">
+		select
+		m.MATERIAL_NAME as materialName,
+		p.PROJECT_NAME as projectName,
+		sum(mn.MATERIAL_NUMBER) as materialNumber,
+		w.`NAME` as wName,
+		a.AREA_NAME as rName,
+		ra.RA_NAME as raName,
+		l.LOCATION_NAME as locationName,
+		mn.DT as dt
+		from c_wms_material_number_t mn
+		join c_mes_jl_material_t m on mn.MATERIAL_ID = m.id
+		join c_wms_project_t p on mn.PROJECT_ID = p.id
+		join c_wms_location_t l on mn.LOCATION_ID = l.id
+		join c_wms_reservoir_area_t ra on l.RESERVOIR_AREA_ID = ra.id
+		join c_wms_area_t a on ra.AREA_ID = a.id
+		join c_wms_warehouse_t w on a.WAREHOUSE_ID = w.id
+		where mn.LOCATION_ID = #{locationId}
+		GROUP BY mn.MATERIAL_ID
+	</select>
+
+	<select id="findLocation" resultType="com.skeqi.mes.pojo.wms.CWmsLocationT">
+		select * from c_wms_location_t
+		where id = #{locationId}
+	</select>
+
+	<update id="updateLocation">
+		update c_wms_location_t
+		set
+		tray = #{tray},
+		LOCATION_STATUS = #{state}
+		where id = #{locationId}
+	</update>
+
+</mapper>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.TFaAssetTypeMapper">
+
+    <resultMap type="com.skeqi.finance.domain.asset.TFaAssetType" id="TFaAssetTypeResult">
+        <result property="fId" column="f_id"/>
+        <result property="fNumber" column="f_number"/>
+        <result property="fGroup" column="f_group"/>
+        <result property="fCodeRule" column="f_code_rule"/>
+        <result property="fAssetCodeRule" column="f_asset_code_rule"/>
+        <result property="fUnitId" column="f_unit_id"/>
+        <result property="fIncludeTax" column="f_include_tax"/>
+        <result property="fCardSwiftNumber" column="f_card_swift_number"/>
+        <result property="fAssetSwiftNumber" column="f_asset_swift_number"/>
+        <result property="fCodeRuleId" column="f_code_rule_id"/>
+        <result property="fAssetCodeRuleid" column="f_asset_code_ruleid"/>
+        <result property="fCreateOrgid" column="f_create_orgid"/>
+        <result property="fCreatorid" column="f_creatorid"/>
+        <result property="fCreateDate" column="f_create_date"/>
+        <result property="fUseOrgid" column="f_use_orgid"/>
+        <result property="fModifierid" column="f_modifierid"/>
+        <result property="fModifyDate" column="f_modify_date"/>
+        <result property="fDocumentStatus" column="f_document_status"/>
+        <result property="fAuditorid" column="f_auditorid"/>
+        <result property="fAuditDate" column="f_audit_date"/>
+        <result property="fForbidStatus" column="f_forbid_status"/>
+        <result property="fForbidderid" column="f_forbidderid"/>
+        <result property="fForbidDate" column="f_forbid_date"/>
+        <result property="fIssysPreset" column="f_issys_preset"/>
+        <result property="fMasterId" column="f_master_id"/>
+    </resultMap>
+    <select id="queryPageList" resultType="com.skeqi.finance.pojo.vo.asset.TFaAssetTypeVo">
+        select at.*,atg.f_number fAssetTypeGroupNumber,atg.f_name fAssetTypeGroupName,tbu.f_name fUnitName
+        from t_fa_asset_type at
+        left join t_fa_asset_type_group atg on atg.f_id = at.f_group
+        left join t_bd_unit tbu on tbu.f_unit_id = at.f_unit_id
+        ${ew.customSqlSegment}
+    </select>
+
+
+</mapper>

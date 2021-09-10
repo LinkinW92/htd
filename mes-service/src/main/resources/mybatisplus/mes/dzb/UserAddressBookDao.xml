@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.skeqi.mes.mapper.dzb.UserAddressBookDao">
+    <select id="listCompany" resultType="java.util.Map">
+        select id, companyName name
+        from c_mes_company_t;
+    </select>
+    <select id="listDepartment" resultType="java.util.Map">
+        select id, DM_NAME name
+        from c_wms_department_t
+        where superiorId = 0
+          and companyId = ${companyId}
+    </select>
+    <select id="listDepartment2" resultType="java.util.Map">
+        select id, DM_NAME name
+        from c_wms_department_t
+        where superiorId = #{superiorId}
+    </select>
+    <select id="listUserByDepartmentId" resultType="java.util.Map">
+        SELECT user.id,`user`.USER_NAME userName,
+        `user`.mobile,
+        `user`.email
+        FROM c_mes_user_t `user`
+        inner JOIN c_wms_department_t department
+        ON `user`.department = department.id
+        WHERE
+         `user`.viewMode = 1
+        <if test="departmentId != null">
+            and department.id =#{departmentId}
+        </if>
+        <if test="name != null and name != ''">
+            and name like '%'#{name}'%'
+        </if>
+    </select>
+    <select id="listUserByCompanyIdId" resultType="java.util.Map">
+        SELECT `user`.USER_NAME userName,
+        `user`.mobile,
+        `user`.email
+        FROM c_mes_user_t `user`
+        inner JOIN c_wms_department_t department
+        ON `user`.department = department.id
+        inner JOIN c_mes_company_t company
+        ON department.companyId = company.id
+        WHERE
+        `user`.viewMode = 1
+        <if test="companyId != null">
+            and company.id=#{companyId}
+        </if>
+        <if test="name != null and name != ''">
+            and name like '%'#{name}'%'
+        </if>
+    </select>
+
+</mapper>

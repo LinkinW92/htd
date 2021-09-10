@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.dzb.monitor.AllMonDao">
+    <!--<editor-fold desc="看板json">-->
+    <!-- 获取看板json   -->
+    <select id="findKanbanById" resultType="java.util.Map">
+        select json
+        from ${kanban}
+        where id = #{id}
+    </select>
+    <select id="getFlag" resultType="java.lang.Integer">
+        select id
+        from kanban_flag
+    </select>
+    <select id="getAuthFlag" resultType="java.lang.Integer">
+        select id
+        from kanban_editauth
+    </select>
+    <!-- 获取看板集合   -->
+    <select id="findKanbanList" resultType="java.util.Map">
+        select id, `name`, content, imagesByte
+        from ${kanban}
+    </select>
+    <!--查询是否有图面    -->
+    <select id="haveImage" resultType="int">
+        select count(`name`)
+        from ${kanban}
+        where id = #{id}
+          and imagesByte != null
+    </select>
+    <!--添加看板-->
+    <insert id="saveKanban" useGeneratedKeys="true" keyProperty="id">
+        <selectKey resultType="INTEGER" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into ${kanban}(`name`,content,json) values(#{name},#{content},#{json})
+    </insert>
+    <!--    复制看板-->
+    <insert id="copyKanban" >
+        INSERT INTO ${kanban}(`name`, `content`, `json`, `imagesByte`)
+        SELECT `name`, `content`, `json`, `imagesByte`
+        FROM ${kanban}
+        where id = #{id}
+    </insert>
+    <!--更新看板    -->
+    <update id="updateKanban">
+        update
+        ${kanban}
+        <set>
+            <if test="name != null">
+                `name`=#{name},
+            </if>
+
+            <if test="content != null">
+                content=#{content},
+            </if>
+            <if test="json != null">
+                json=#{json},
+            </if>
+            <if test="imagesByte != null">
+                imagesByte=#{imagesByte},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+    <delete id="removeKanban">
+        delete
+        from ${kanban}
+        where id = #{id}
+    </delete>
+    <!--看板背景图添加    -->
+    <insert id="saveBgimg">
+        INSERT INTO `kanban_bgimg`(`user`, `imagePath`)
+        VALUES ('1', #{path});
+    </insert>
+    <!--看板背景图查询    -->
+    <select id="listBgImg" resultType="java.lang.String">
+        select imagePath
+        from kanban_bgimg
+    </select>
+    <delete id="removeBgImg">
+        delete
+        from kanban_bgimg
+        where imagePath = #{path}
+    </delete>
+    <!--</editor-fold>-->
+
+
+    <!--<editor-fold desc="订单信息">-->
+    <!--    订单信息：  客户名称，计划交货时间，实际交货时间，交货信息，需求总量-->
+    <select id="orderInfo" resultType="java.util.Map">
+        SELECT WORKORDER_ID                                                                          工单编号,
+               ORDER_NUMBER                                                                          订单数量,
+               ONLINE_NUMBER                                                                         上线数量,
+               OFFLINE_NUMBER                                                                        下线数量,
+               pr.PRODUCTION_NAME                                                                    产品名称,
+               (select count(*) from p_mes_tracking_t where WORK_ORDER_ID = wd.id and STATUS = 'OK') 完成数量,
+               sa.CUSTOMER_NAME                                                                      客户名称,
+               DELIVERY_PLAN_TIME                                                                    计划交货时间,
+               DELIVERY_ACTUAL_TIME                                                                  实际交货时间,
+               DELIVERY_INFORMATION                                                                  交货信息
+        from r_mes_workorder_detail_t wd,
+             c_mes_salesorder_t sa,
+             c_mes_production_t pr
+        where sa.id = wd.ORDER_ID
+          and wd.PRODUCT_ID = pr.ID
+          and wd.`STATUS` = 3
+        order by wd.DT desc
+        limit 1
+    </select>
+    <select id="listOrder" resultType="java.util.Map">
+        SELECT WORKORDER_ID                                                                          工单编号,
+               ORDER_NUMBER                                                                          订单数量,
+               ONLINE_NUMBER                                                                         上线数量,
+               OFFLINE_NUMBER                                                                        下线数量,
+               pr.PRODUCTION_NAME                                                                    产品名称,
+               (select count(*) from p_mes_tracking_t where WORK_ORDER_ID = wd.id and STATUS = 'OK') 完成数量,
+               sa.CUSTOMER_NAME                                                                      客户名称,
+               DELIVERY_PLAN_TIME                                                                    计划交货时间,
+               DELIVERY_ACTUAL_TIME                                                                  实际交货时间,
+               DELIVERY_INFORMATION                                                                  交货信息
+        from r_mes_workorder_detail_t wd,
+             c_mes_salesorder_t sa,
+             c_mes_production_t pr
+        where sa.id = wd.ORDER_ID
+          and wd.PRODUCT_ID = pr.ID
+        order by wd.DT desc
+        limit 4
+    </select>
+    <!--</editor-fold>-->
+
+    <!--<editor-fold desc="与下线相关">-->
+    <!--获取当天某时的下线数量-->
+    <select id="outputByHourAndLine" resultType="java.lang.Integer">
+        select count(DISTINCT SN) from p_mes_tracking_t where 1=1
+        <if test="condits != null and condits != ''">
+            ${condits}
+        </if>
+        and TO_DAYS(OFFLINE_DT) = TO_DAYS(NOW()) and hour(OFFLINE_DT)= #{hourNo}
+    </select>
+    <select id="okByHourAndLine" resultType="java.lang.Integer">
+        select count(DISTINCT SN) from p_mes_tracking_t where 1=1
+        <if test="condits != null and condits != ''">
+            ${condits}
+        </if>
+        and STATUS='OK'
+        and TO_DAYS(OFFLINE_DT) = TO_DAYS(NOW())
+        and hour(OFFLINE_DT)= #{hourNo}
+    </select>
+    <select id="ngByHourAndLine" resultType="java.lang.Integer">
+        select count(DISTINCT SN) from p_mes_tracking_t where 1=1
+        <if test="condits != null and condits != ''">
+            ${condits}
+        </if>
+        and STATUS='NG'
+        and TO_DAYS(OFFLINE_DT) = TO_DAYS(NOW())
+        and hour(OFFLINE_DT)= #{hourNo}
+    </select>
+
+    <select id="outputByDayAndLine" resultType="java.lang.Integer">
+        select count(DISTINCT SN) from p_mes_tracking_t where 1=1
+        <if test="condits != null and condits != ''">
+            ${condits}
+        </if>
+        and year(OFFLINE_DT) = year(NOW())
+        and month(OFFLINE_DT) = month(NOW())
+        and day(OFFLINE_DT)= #{dayNo}
+    </select>
+    <select id="okByDayAndLine" resultType="java.lang.Integer">
+        select count(DISTINCT SN)
+        from p_mes_tracking_t
+        where LINE_ID = #{lineId}
+          and STATUS = 'OK'
+          and year(OFFLINE_DT) = year(NOW())
+          and month(OFFLINE_DT) = month(NOW())
+          and day(OFFLINE_DT) = #{dayNo}
+    </select>
+    <select id="ngByDayAndLine" resultType="java.lang.Integer">
+        select count(DISTINCT SN)
+        from p_mes_tracking_t
+        where LINE_ID = #{lineId}
+          and STATUS = 'NG'
+          and year(OFFLINE_DT) = year(NOW())
+          and month(OFFLINE_DT) = month(NOW())
+          and day(OFFLINE_DT) = #{dayNo}
+    </select>
+
+
+    <select id="okByMonthAndLine" resultType="java.lang.Integer">
+        select count(DISTINCT SN) from p_mes_tracking_t where 1=1
+        <if test="condits != null and condits != ''">
+            ${condits}
+        </if>
+        and STATUS='OK'
+        and year(OFFLINE_DT) = year(NOW())
+        and month(OFFLINE_DT) = #{monthNo}
+    </select>
+    <select id="ngByMonthAndLine" resultType="java.lang.Integer">
+        select count(DISTINCT SN) from p_mes_tracking_t where 1=1
+        <if test="condits != null and condits != ''">
+            ${condits}
+        </if>
+        and STATUS='NG'
+        and year(OFFLINE_DT) = year(NOW())
+        and month(OFFLINE_DT) = #{monthNo}
+    </select>
+    <select id="okByYearAndLine" resultType="java.lang.Integer">
+        select count(DISTINCT SN) from p_mes_tracking_t where 1=1
+        <if test="condits != null and condits != ''">
+            ${condits}
+        </if>
+        and STATUS='OK'
+        and year(OFFLINE_DT) = #{yearNo}
+    </select>
+    <select id="ngByYearAndLine" resultType="java.lang.Integer">
+        select count(DISTINCT SN) from p_mes_tracking_t where 1=1
+        <if test="condits != null and condits != ''">
+            ${condits}
+        </if>
+        and STATUS='NG'
+        and year(OFFLINE_DT) = #{yearNo}
+    </select>
+    <!--</editor-fold>-->
+
+
+    <insert id="addSn">
+        INSERT INTO `p_mes_tracking_t`(`DT`, `ST`, `BST`, `SN`, `ENGINESN`, `GEARBOXSN`, `TYPENAME`, `TRAYNUM`,
+                                       `PRODUCTNUM`, `STATUS`,
+                                       `DIS`, `PLAN_ID`, `OFFLINE_DT`, `REWORK_FLAG`, `PRODUCTION_ID`, `LINE_ID`,
+                                       `WORK_ORDER_ID`)
+        VALUES (now(), 'TEST', NULL, #{barcode}, '0', NULL, NULL, NULL, NULL, #{status}, NULL, NULL, now(), NULL, NULL,
+                112, NULL);
+    </insert>
+
+    <!--<editor-fold desc="看板配置参数">-->
+    <select id="getObjName" resultType="java.lang.String">
+        select `name`
+        from kanban_obj
+        where id = (select objId
+                    from kanban_attr
+                    where id = (select attrId from kanban_eleattr where eleId = #{eleId} limit 1)
+                    limit 1)
+    </select>
+
+    <select id="listAttr" resultType="java.lang.String">
+        select `name`
+        from kanban_attr ka,
+             kanban_eleattr ke
+        where ka.ID = ke.attrId
+          and eleId = #{eleId}
+    </select>
+    <select id="listCondit" resultType="java.lang.String">
+        select CONCAT(' and ', (select whereName from kanban_objwhere where id = whereId), '=''', whereValue,
+                      '''') condit
+        from kanban_elewhere
+        where eleId = #{eleId};
+    </select>
+
+    <!--获取当前 对象的id-->
+    <select id="getObjIdByEleId" resultType="java.lang.Integer">
+        select objId
+        from kanban_attr
+        where id = (
+            select attrId
+            from kanban_eleattr
+            where eleId = #{eleId}
+            limit 0,1)
+    </select>
+    <!-- 获取当前 属性的od   -->
+    <select id="listAttrIdsByEleId" resultType="java.lang.Integer">
+        select attrId
+        from kanban_eleattr
+        where eleId = #{eleId}
+    </select>
+
+    <!-- 获取元素 的所有对象   -->
+    <select id="listObjsByEleName" resultType="java.util.Map">
+        select o.ID id, o.`name`
+        from kanban_eleobj eo,
+             kanban_obj o
+        where eleName = #{eleName}
+          and eo.objId = o.id;
+    </select>
+    <!-- 获取对象 的所有属性   -->
+    <select id="listAttrsByObjId" resultType="java.util.Map">
+        select id, `name`
+        from kanban_attr
+        where objId = #{objId}
+    </select>
+
+    <!--    删除元素的原有属性-->
+    <delete id="remarkEleAttrByEleId">
+        delete
+        from kanban_eleattr
+        where eleId = #{eleId}
+    </delete>
+    <!--    添加现在属性-->
+    <insert id="saveEleAttrs">
+        insert into kanban_eleattr(`eleId`,`attrId`) values
+        <foreach collection="attrs" item="attr" separator=",">
+            (
+            #{eleId},
+            #{attr}
+            )
+        </foreach>
+    </insert>
+    <select id="getMaxEleId" resultType="java.lang.Integer">
+        select max(eleId)
+        from kanban_eleattr
+    </select>
+    <select id="getApiByAttrId" resultType="java.lang.String">
+        select api
+        from kanban_obj
+        where id = (select objId from kanban_attr where id = #{arrtId})
+    </select>
+    <delete id="removeAttrsByEleId">
+        delete
+        from kanban_eleattr
+        where eleId = #{eleId}
+    </delete>
+
+    <!--</editor-fold>-->
+    <insert id="saveMune">
+        INSERT INTO `c_qh_menu`(`menu_grade`, `superior_menu_id`, `menu_name`, `if_enable`, `path`, `icon`, `order`)
+        VALUES ( 2,
+        <if test="kanban == 'kanban_v1'">
+            160,
+        </if>
+        <if test="kanban == 'kanban_test2'">
+            198,
+        </if>
+        #{name}, 'true',
+        <if test="kanban == 'kanban_v1'">
+            '/kanban/kanban/index?id=${id}',
+        </if>
+        <if test="kanban == 'kanban_test2'">
+            '/kanban/kanbanv2/index?id=${id}',
+        </if>
+        'more', 1);
+    </insert>
+
+    <update id="updateMenu">
+        UPDATE `c_qh_menu` SET `menu_name` =#{name}
+        WHERE
+        <if test="kanban == 'kanban_v1'">
+            path = '/kanban/kanban/index?id=${id}'
+        </if>
+        <if test="kanban == 'kanban_test2'">
+            path = '/kanban/kanbanv2/index?id=${id}'
+        </if>
+    </update>
+    <delete id="removeMenu">
+        delete from `c_qh_menu` where
+        <if test="kanban == 'kanban_v1'">
+            path = '/kanban/kanban/index?id=${id}'
+        </if>
+        <if test="kanban == 'kanban_test2'">
+            path = '/kanban/kanbanv2/index?id=${id}'
+        </if>
+    </delete>
+</mapper>

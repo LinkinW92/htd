@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wms.ReservoirAreaDao">
+
+	<resultMap type="com.skeqi.mes.pojo.wms.CWmsReservoirAreaT" id="areaMap">
+		<result column="ID" property="id"/>
+		<result column="RA_NO" property="raNo"/>
+		<result column="RA_NAME" property="raName"/>
+		<result column="RA_TYPE" property="raType"/>
+		<result column="RA_LOCATION_LIMIT" property="raLocationLimit"/>
+		<result column="RA_ALARM_LIMIT" property="raAlarmLimit"/>
+		<result column="RA_PRINT_ADD" property="raPrintAdd"/>
+		<result column="AREA_ID" property="areaId"/>
+		<result column="MODIFY_TIME" property="modifyTime"/>
+		<association property="area" javaType="com.skeqi.mes.pojo.wms.CWmsAreaT">
+			<result column="AREA_NAME" property="areaName" />
+		</association>
+		<association property="warehouse" javaType="com.skeqi.mes.pojo.wms.WarehouseT">
+			<result column="warehouseId" property="id" />
+			<result column="NAME" property="name" />
+		</association>
+	</resultMap>
+
+	<!-- 查询 -->
+	<select id="findreservoirAreaList" resultMap="areaMap">
+		select reservoir.*,area.AREA_NAME,warehouse.`NAME`,warehouse.id as warehouseId from c_wms_reservoir_area_t reservoir
+		join c_wms_area_t area on reservoir.AREA_ID = area.id
+		join c_wms_warehouse_t warehouse on area.WAREHOUSE_ID = warehouse.id
+		where reservoir.VIEW_MODE = 1
+		ORDER BY ID
+	</select>
+
+	<!-- 查询所有仓库ID、NAME -->
+	<select id="findWarehouseAll" resultType="com.skeqi.mes.pojo.wms.WarehouseT">
+		select ID,NAME from c_wms_warehouse_t
+		where VIEW_MODE = 1
+		ORDER BY ID
+	</select>
+
+	<!-- 通过仓库ID查询区域 -->
+	<select id="findAreaIdAndNameByWarehouseId" resultType="com.skeqi.mes.pojo.wms.CWmsAreaT">
+		select ID,AREA_NAME from c_wms_area_t
+		where VIEW_MODE = 1
+		and WAREHOUSE_ID = #{warehouseId}
+		ORDER BY ID
+	</select>
+
+	<!-- 通过编号查询数量 -->
+	<select id="findCountByNo" resultType="int">
+		select count(*) from c_wms_reservoir_area_t
+		where VIEW_MODE = 1
+		and id != #{id}
+		and RA_NO = #{raNo}
+	</select>
+
+	<!-- 通过名称查询数量 -->
+	<select id="findCountByName" resultType="int">
+		select count(*) from c_wms_reservoir_area_t
+		where VIEW_MODE = 1
+		and id != #{id}
+		and RA_NAME = #{raName}
+	</select>
+
+	<!-- 新增 -->
+	<insert id="addreservoirArea">
+		insert into c_wms_reservoir_area_t(
+		RA_NO,RA_NAME,RA_TYPE,
+		RA_LOCATION_LIMIT,RA_ALARM_LIMIT,RA_PRINT_ADD,AREA_ID,
+		MODIFY_TIME)
+		values(
+		#{raNo},#{raName},#{raType},
+		#{raLocationLimit},#{raAlarmLimit},#{raPrintAdd},#{areaId},
+		now())
+	</insert>
+
+	<!-- 删除  -->
+	<delete id="deletereservoirArea">
+		delete from c_wms_reservoir_area_t
+		where id = #{reservoirAreaId}
+	</delete>
+
+	<!-- 更新 -->
+	<update id="updatereservoirArea">
+		update c_wms_reservoir_area_t
+			<trim prefix="SET" suffixOverrides=",">
+				<if test="raNo != null">RA_NO = #{raNo},</if>
+				<if test="raName != null">RA_NAME = #{raName},</if>
+				<if test="raType != null">RA_TYPE = #{raType},</if>
+				<if test="raLocationLimit != null">RA_LOCATION_LIMIT = #{raLocationLimit},</if>
+				<if test="raAlarmLimit != null">RA_ALARM_LIMIT = #{raAlarmLimit},</if>
+				<if test="raPrintAdd != null">RA_PRINT_ADD = #{raPrintAdd},</if>
+				<if test="areaId != null">AREA_ID = #{areaId},</if>
+				<if test="viewMode != null">VIEW_MODE = #{viewMode},</if>
+				MODIFY_TIME = now()
+			</trim>
+		where ID = #{id}
+	</update>
+
+</mapper>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.wll.RegisterTDao">
+	<select id="registerTList"  resultType="RegisterT" >
+	select r.*,s.station_Name as stationName,l.name as lineName from S_MES_REGISTER_T r, C_MES_STATION_T s,C_MES_LINE_T l
+	where r.station_id=s.id and r.line_id=l.id
+	<if test="id!=null">
+		 and r.id=#{id}
+	</if>
+	order by r.dt desc
+	</select>
+
+
+   <insert id="addRegisterT" keyProperty="id" useGeneratedKeys="false">
+         INSERT INTO  S_MES_REGISTER_T(DT,IP,MAC,HOSTNAME,LINE_ID,STATION_ID)
+		 VALUES (#{date},#{ip},#{mac},#{hostName},#{lineId},#{stationId})
+	</insert>
+
+	<update id="updateregisterT">
+		UPDATE S_MES_REGISTER_T SET IP = #{ip},DT=#{date},HOSTNAME=#{hostName},station_id=#{stationId},
+		line_id=#{lineId} where ID=#{id}
+	</update>
+	<delete id="delregisterT">
+		DELETE FROM S_MES_REGISTER_T WHERE ID = #{id}
+	</delete>
+
+	<select id="queryRegisterT" resultType="int">
+
+	select count(*) from S_MES_REGISTER_T t where 1=1 and hostName = #{hostName}
+
+	</select>
+
+	<select id="queryHostName" resultType="string">
+	select hostName from S_MES_REGISTER_T t where 1=1 and id = #{id}
+	</select>
+
+</mapper>

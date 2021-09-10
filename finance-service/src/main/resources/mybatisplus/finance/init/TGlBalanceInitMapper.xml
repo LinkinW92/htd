@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.TGlBalanceInitMapper">
+
+    <resultMap type="com.skeqi.finance.domain.TGlBalanceInit" id="TGlBalanceInitResult">
+        <result property="fAccountBookId" column="f_account_book_id"/>
+        <result property="fAccountId" column="f_account_id"/>
+        <result property="dimensionCode" column="dimension_code"/>
+        <result property="fDetailCode" column="f_detail_code"/>
+        <result property="fCurrencyId" column="f_currency_id"/>
+        <result property="fPeriod" column="f_period"/>
+        <result property="fYear" column="f_year"/>
+        <result property="fDc" column="f_dc"/>
+        <result property="fBeginBalancefor" column="f_begin_balancefor"/>
+        <result property="fBeginBalance" column="f_begin_balance"/>
+        <result property="fDebitFor" column="f_debit_for"/>
+        <result property="fDebit" column="f_debit"/>
+        <result property="fCreditFor" column="f_credit_for"/>
+        <result property="fCredit" column="f_credit"/>
+        <result property="fYtdDebitfor" column="f_ytd_debitfor"/>
+        <result property="fYtdDebit" column="f_ytd_debit"/>
+        <result property="fYtdCreditfor" column="f_ytd_creditfor"/>
+        <result property="fYtdCredit" column="f_ytd_credit"/>
+        <result property="fEndBalancefor" column="f_end_balancefor"/>
+        <result property="fEndBalance" column="f_end_balance"/>
+        <result property="fAdjustPeriod" column="f_adjust_period"/>
+        <result property="fYearPeriod" column="f_year_period"/>
+    </resultMap>
+    <resultMap type="com.skeqi.finance.pojo.vo.init.TGlBalanceInitVo" id="TGlBalanceInitVoResult">
+        <result property="fAccountBookId" column="f_account_book_id"/>
+        <result property="fAccountId" column="f_account_id"/>
+        <result property="dimensionCode" column="dimension_code"/>
+        <result property="fDetailId" column="f_detail_id"/>
+        <result property="fCurrencyId" column="f_currency_id"/>
+        <result property="fPeriod" column="f_period"/>
+        <result property="fYear" column="f_year"/>
+        <result property="fDc" column="f_dc"/>
+        <result property="fBeginBalancefor" column="f_begin_balancefor"/>
+        <result property="fBeginBalance" column="f_begin_balance"/>
+        <result property="fDebitFor" column="f_debit_for"/>
+        <result property="fDebit" column="f_debit"/>
+        <result property="fCreditFor" column="f_credit_for"/>
+        <result property="fCredit" column="f_credit"/>
+        <result property="fYtdDebitfor" column="f_ytd_debitfor"/>
+        <result property="fYtdDebit" column="f_ytd_debit"/>
+        <result property="fYtdCreditfor" column="f_ytd_creditfor"/>
+        <result property="fYtdCredit" column="f_ytd_credit"/>
+        <result property="fEndBalancefor" column="f_end_balancefor"/>
+        <result property="fEndBalance" column="f_end_balance"/>
+        <result property="fAdjustPeriod" column="f_adjust_period"/>
+        <result property="fYearPeriod" column="f_year_period"/>
+        <!--        新加-->
+        <result property="fAccountName" column="fAccountName"/>
+        <result property="fNumber" column="fNumber"/>
+        <result property="fAccoutDc" column="fAccoutDc"/>
+        <result property="flexCount" column="flexCount"/>
+    </resultMap>
+
+
+    <insert id="endInit">
+        insert into `t_gl_balance`(`f_account_book_id`, `f_currency_id`, `dimension_code`, `f_account_id`,
+                                   `f_detail_code`, `f_period`, `f_year`, `f_begin_balancefor`, `f_begin_balance`,
+                                   `f_debit_for`, `f_debit`, `f_credit_for`, `f_credit`, `f_ytd_debitfor`,
+                                   `f_ytd_debit`, `f_ytd_creditfor`, `f_ytd_credit`, `f_end_balancefor`,
+                                   `f_end_balance`, `f_adjust_period`, `f_year_period`)
+        select `f_account_book_id`,
+               `f_currency_id`,
+               `dimension_code`,
+               `f_account_id`,
+               `f_detail_code`,
+               `f_period`,
+               `f_year`,
+               `f_begin_balancefor`,
+               `f_begin_balance`,
+               `f_debit_for`,
+               `f_debit`,
+               `f_credit_for`,
+               `f_credit`,
+               `f_ytd_debitfor`,
+               `f_ytd_debit`,
+               `f_ytd_creditfor`,
+               `f_ytd_credit`,
+               `f_end_balancefor`,
+               `f_end_balance`,
+               `f_adjust_period`,
+               `f_year_period`
+        from t_gl_balance_init
+        where f_account_book_id = #{fAccountBookId}
+    </insert>
+    <delete id="notendInit">
+        delete
+        from t_gl_balance
+        where f_account_book_id = #{fAccountBookId}
+    </delete>
+
+
+    <select id="queryOne2" resultMap="TGlBalanceInitVoResult">
+        select t1.*, t2.f_number fAcctgroupNumber, t2.f_name fAcctgroupName
+        from t_bd_account_table t1,
+             t_bd_account_group_table t2
+        where t1.f_acct_group_tblid = t2.f_acctgroup_tblid
+          and t1.f_id = #{fId}
+    </select>
+    <select id="queryList2" resultMap="TGlBalanceInitVoResult">
+        select t2.f_acct_id                                                                    f_account_id,
+               t2.f_number                                                                     fNumber,
+               sum(t1.f_begin_balance)                                                         f_begin_balance,
+               sum(t1.f_ytd_debit)                                                             f_ytd_debit,
+               sum(t1.f_ytd_credit)                                                            f_ytd_credit,
+               t2.f_name                                                                       fAccountName,
+               t2.f_dc                                                                         fAccoutDc,
+               (select count(*) from t_bd_account_flexentry where f_acct_id = t1.f_account_id) flexCount
+        from t_bd_account_book t0
+                 INNER JOIN
+             t_bd_account t2 on t0.f_accttable_id = t2.f_accttblid
+                 left join
+             t_gl_balance_init t1
+             on t1.f_account_id = t2.f_acct_id
+        where t0.f_book_id = #{bo.fAccountBookId}
+        group by t1.f_account_id,
+                 fAccountName, fAccoutDc
+
+        order by t2.f_acct_id
+    </select>
+    <select id="queryList3" resultMap="TGlBalanceInitVoResult">
+        select t1.f_account_id,
+               t1.f_detail_id,
+               t1.f_begin_balance,
+               t1.f_ytd_debit,
+               t1.f_ytd_credit,
+        from t_gl_balance_init t1
+        where t1.f_account_book_id = #{bo.fAccountBookId}
+          and t1.f_account_id = #{bo.fAccountId}
+    </select>
+</mapper>

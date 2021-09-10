@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wf.productionQuality.ncCodeManager.config.MesNcCodeConfigTMapper">
+  <resultMap id="BaseResultMap" type="com.skeqi.mes.pojo.wf.productionQuality.ncCodeManager.config.MesNcCodeConfigT">
+    <!--@mbg.generated-->
+    <!--@Table c_mes_nc_code_t-->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
+    <result column="describe" jdbcType="VARCHAR" property="describe" />
+    <result column="category" jdbcType="VARCHAR" property="category" />
+    <result column="process" jdbcType="INTEGER" property="process" />
+    <result column="special_control" jdbcType="INTEGER" property="specialControl" />
+    <result column="cdt" jdbcType="TIMESTAMP" property="cdt" />
+    <result column="udt" jdbcType="TIMESTAMP" property="udt" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, code, `describe`, category, `process`, special_control, cdt, udt
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select
+    <include refid="Base_Column_List" />
+    from c_mes_nc_code_config_t
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+    <select id="selectAll" resultType="com.skeqi.mes.pojo.wf.productionQuality.ncCodeManager.config.MesNcCodeConfigT">
+      <!--@mbg.generated-->
+      select
+      <include refid="Base_Column_List" />
+      from c_mes_nc_code_config_t
+      <where>
+        <if test="code != null and code != ''">
+          code = #{code,jdbcType=VARCHAR}
+        </if>
+      </where>
+    </select>
+  <select id="verifySn" resultType="com.skeqi.mes.pojo.wf.productionQuality.ncCodeManager.config.MesNcCodeConfigT">
+    select * FROM c_mes_nc_code_config_t c
+    WHERE c.special_control = 1
+    and c.`code` in (
+    select nc_code
+    FROM c_mes_nc_code_record_t r
+    WHERE
+    r.sn = #{sn,jdbcType=VARCHAR}
+    and `status` = 0
+    )
+  </select>
+  <delete id="deleteByPrimaryKey">
+    <!--@mbg.generated-->
+    delete from c_mes_nc_code_config_t
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insertSelective" parameterType="com.skeqi.mes.pojo.wf.productionQuality.ncCodeManager.config.MesNcCodeConfigT" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into c_mes_nc_code_config_t
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="code != null">
+        code,
+      </if>
+      <if test="describe != null">
+        `describe`,
+      </if>
+      <if test="category != null">
+        category,
+      </if>
+      <if test="process != null">
+        `process`,
+      </if>
+      <if test="specialControl != null">
+        special_control,
+      </if>
+      <if test="cdt != null">
+        cdt,
+      </if>
+      <if test="udt != null">
+        udt,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="code != null">
+        #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="describe != null">
+        #{describe,jdbcType=VARCHAR},
+      </if>
+      <if test="category != null">
+        #{category,jdbcType=VARCHAR},
+      </if>
+      <if test="process != null">
+        #{process,jdbcType=VARCHAR},
+      </if>
+      <if test="specialControl != null">
+        #{specialControl,jdbcType=INTEGER},
+      </if>
+      <if test="cdt != null">
+        #{cdt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="udt != null">
+        #{udt,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.skeqi.mes.pojo.wf.productionQuality.ncCodeManager.config.MesNcCodeConfigT">
+    <!--@mbg.generated-->
+    update c_mes_nc_code_config_t
+    <set>
+      <if test="code != null">
+        code = #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="describe != null">
+        `describe` = #{describe,jdbcType=VARCHAR},
+      </if>
+      <if test="category != null">
+        category = #{category,jdbcType=VARCHAR},
+      </if>
+        `process` = #{process,jdbcType=VARCHAR},
+      <if test="specialControl != null">
+        special_control = #{specialControl,jdbcType=INTEGER},
+      </if>
+      <if test="cdt != null">
+        cdt = #{cdt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="udt != null">
+        udt = #{udt,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

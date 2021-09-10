@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.basicinformation.cashflow.TGlCashFlowItemTableMapper">
+
+    <resultMap type="com.skeqi.finance.domain.basicinformation.cashflow.TGlCashFlowItemTable" id="TGlCashFlowItemTableResult">
+        <result property="fId" column="f_id"/>
+        <result property="fNumber" column="f_number"/>
+        <result property="fName" column="f_name"/>
+        <result property="fAcctGroupTblid" column="f_acct_group_tblid"/>
+        <result property="fCreatorid" column="f_creatorid"/>
+        <result property="fCreateDate" column="f_create_date"/>
+        <result property="fModifierid" column="f_modifierid"/>
+        <result property="fModifyDate" column="f_modify_date"/>
+    </resultMap>
+
+
+</mapper>

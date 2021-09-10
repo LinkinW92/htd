@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.all.CMesImportRecipeDAO">
+
+	<!-- 查询所有产品 -->
+	<select id="findAllProduction" resultType="CMesProductionT">
+		select * from c_mes_production_t where 1=1
+		<if test="productionVr!=null and productionVr!=''  ">
+			and PRODUCTION_VR = #{productionVr}
+		</if>
+		<if test="id!=null and id!='' ">
+			and id=#{id}
+		</if>
+	</select>
+
+	<!-- 查询配方版本 -->
+	<select id="findAllRecipeVersion" resultType="CMesRecipeVersion">
+		select * from c_mes_recipe_version where 1=1
+		<if test="recipeName!=null and recipeName!='' ">
+			and RECIPE_NAME = #{recipeName}
+		</if>
+		<if test="productionVr!=null and productionVr!='' ">
+			and PRODUCTION_VR = #{productionVr}
+		</if>
+		<if test="productionId!=null and productionId!='' ">
+			and PRODUCTION_ID=#{productionId}
+		</if>
+		order by RECIPE_ID desc
+	</select>
+
+	<!-- 查询配方版本详情 -->
+	<select id="findAllRecipeVersionDetail" resultType="CMesRecipeVersionDetail">
+		select * from c_mes_recipe_version_detail where 1=1
+		<if test="id!=null and id!=0">
+			and VERSION_ID = #{id}
+		</if>
+	</select>
+
+	<!-- 查询当前配方 -->
+	<select id="findAllRecipeDetail" resultType="CMesRecipeDatilT">
+		SELECT
+		datil.*,
+		p.PRODUCTION_NAME AS productionName,
+		p.PRODUCTION_VR AS productionVr,
+		station.STATION_NAME AS stationName,
+		type.TYPE_NAME AS stepCategory
+		FROM
+		c_mes_recipe_t recipe,
+		c_mes_production_recipe_t pt,
+		c_mes_recipe_datil_t datil,
+		c_mes_production_t p,
+		c_mes_station_t station,
+		c_mes_recipe_type_t type
+		WHERE
+		recipe.ID = pt.RECIPE_ID
+		AND type.id = datil.STEP_CATEGORY
+		AND station.id = pt.station_id
+		AND recipe.ID = datil.RECIPE_ID
+		AND p.id = pt.PRODUCTION_ID
+		AND pt.PRODUCTION_ID = #{id}
+	</select>
+
+	<!-- 根据类型名称查询类型 -->
+	<select id="findRecipeType" resultType="CMesRecipeTypeT">
+		select * from
+		c_mes_recipe_type_t where TYPE_NAME=#{name}
+	</select>
+
+	<!-- 根据工位名称查询工位信息 -->
+	<select id="findStation" resultType="CMesStationT">
+		select * from
+		c_mes_station_t where STATION_NAME=#{name}
+	</select>
+
+	<!-- 根据产品名称和产品规则查询是否存在 -->
+	<select id="findProduction" resultType="CMesProductionT">
+		select * from c_mes_production_t where 1=1
+		<if test="productionName!=null and productionName!='' ">
+			and PRODUCTION_NAME=#{productionName}
+		</if>
+		<if test="productionVr!=null and productionVr!='' ">
+			and PRODUCTION_VR=#{productionVr}
+		</if>
+		<if test="id!=null and id=!''  ">
+			and id=#{id}
+		</if>
+	</select>
+
+	<!-- 添加配方版本 -->
+	<insert id="addRecipeVersion">
+		insert into
+		c_mes_recipe_version(RECIPE_NAME,PRODUCTION_ID,PRODUCTION_NAME,PRODUCTION_VR)
+		values(#{recipeName},#{productionId},#{productionName},#{productionVr})
+	</insert>
+
+	<!-- 添加配方明细 -->
+	<insert id="addRecipeVersionDetail">
+		insert into
+		C_MES_RECIPE_VERSION_DETAIL(VERSION_ID,STEP_CATEGORY,MATERIAL_NAME,NUMBERS,GUN_NO,PROGRAM_NO,MATERIALPN,SLEEVE_NO,STEPNO,UPLOAD_CODE,FEACODE,BOLTEQS,STATION_NAME,PRODUCTION_NAME,PRODUCTION_VR,PHOTO_NO,REWORKTIMES,CHEKORNO,REVIEWORNO,EXACTORNO,A_LIMIT,T_LIMIT,PICTURN_PATH,BOLT_JSON,PATH_BINARY)
+		values(#{versionId,jdbcType=NUMERIC},#{stepCategory,jdbcType=VARCHAR},
+		#{materialName,jdbcType=VARCHAR},#{numbers,jdbcType=VARCHAR},#{gunNo,jdbcType=VARCHAR},#{programNo,jdbcType=VARCHAR},#{materialpn,jdbcType=VARCHAR},
+		#{sleeveNo,jdbcType=VARCHAR},#{stepno,jdbcType=NUMERIC},#{uploadCode,jdbcType=VARCHAR},#{feacode,jdbcType=VARCHAR},
+		#{bolteqs,jdbcType=VARCHAR},#{stationName,jdbcType=VARCHAR},#{productionName,jdbcType=VARCHAR},#{productionVr,jdbcType=VARCHAR},
+		#{photoNo,jdbcType=VARCHAR},#{reworktimes,jdbcType=VARCHAR},#{chekorno,jdbcType=VARCHAR},#{revieworno,jdbcType=VARCHAR},#{exactorno,jdbcType=VARCHAR},
+		#{aLimit,jdbcType=VARCHAR},#{tLimit,jdbcType=VARCHAR},#{picturnPath,jdbcType=VARCHAR},#{boltjson,jdbcType=VARCHAR},#{pathBinary,jdbcType=VARCHAR})
+	</insert>
+
+	<!-- 根据产品ID查询最大的版本号 -->
+	<select id="findMaxVersion" resultType="CMesRecipeVersion">
+		select * from
+		c_mes_recipe_version where RECIPE_NAME in (select
+		ifnull(max(RECIPE_NAME),0) from c_mes_recipe_version where
+		PRODUCTION_ID=#{id})
+	</select>
+
+	<!-- 根据版本ID删除版本表 -->
+	<delete id="deleteVersion">
+		delete from c_mes_recipe_version where
+		RECIPE_ID=#{id}
+	</delete>
+
+	<!-- 根据版本ID删除版本明细 -->
+	<delete id="deleteVersionDetail">
+		delete from c_mes_recipe_version_detail where
+		VERSION_ID=#{id}
+	</delete>
+
+	<!-- 根据产品和工位查询是否存在配方 -->
+	<select id="findProductionRecipe" resultType="CMesProductionRecipeT">
+		SELECT
+		DISTINCT pr.*
+		FROM
+		c_mes_production_recipe_t pr,
+		c_mes_production_t pro,
+		c_mes_station_t
+		sta
+		WHERE
+		pr.PRODUCTION_ID = pro.ID
+		AND pr.STATION_ID = sta.ID
+		AND pro.PRODUCTION_NAME = #{pname}
+		AND sta.STATION_NAME = #{sname}
+	</select>
+
+	<!-- 根据配方ID删除配方明细 -->
+	<delete id="delRecipeDetail">
+		delete from c_mes_recipe_datil_t where
+		RECIPE_ID=#{id}
+	</delete>
+
+	<!-- 添加配方明细 -->
+	<insert id="addRecipeDetail">
+		INSERT INTO c_mes_recipe_datil_t ( STEP_CATEGORY,
+		MATERIAL_NAME,GUN_NO,
+		PROGRAM_NO,PHOTO_NO,
+		SLEEVE_NO,REWORKTIMES,
+		FEACODE,CHEKORNO,
+		REVIEWORNO,EXACTORNO,
+		MATERIALPN,BOLTEQS,
+		A_LIMIT,T_LIMIT,
+		RECIPE_ID,UPLOAD_CODE,
+		STEPNO,NUMBERS,
+		PICTURN_PATH,BOLT_JSON,PATH_BINARY)
+		values(#{stepCategory},#{materialName},#{gunNo},#{programNo},#{photoNo},#{sleeveNo},#{reworktimes},#{feacode},#{chekorno},
+		#{revieworno},#{exactorno},#{materialpn},#{bolteqs},#{aLimit},#{tLimit},#{recipeId},#{uploadCode},#{stepno},#{numbers},#{picturnPath},#{boltjson},#{pathBinary,jdbcType=VARCHAR})
+	</insert>
+</mapper>

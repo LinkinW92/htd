@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.yp.equipment.repair.EquipmentRepairDao">
+
+	<!-- 查询 -->
+	<select id="list" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			DATE_FORMAT( a.dt, '%Y-%m-%d %H:%i:%s' ) AS dt,
+			a.equipmentId,
+			a.repairman,
+			a.personInCharge,
+			a.reason,
+			a.remarks,
+			b.`name` as equipmentName,
+			c.`name` as lineName
+		FROM
+			c_qh_equipment_repair_t a
+			join c_qh_equipment_information b on a.equipmentId = b.id
+			join c_mes_line_t c on b.lineId = c.id
+		where 1=1
+		<if test="lineId != null and lineId != ''">
+			and c.id = #{lineId}
+		</if>
+		<if test="equipmentId != null and equipmentId != ''">
+			and a.equipmentId = #{equipmentId}
+		</if>
+		<if test="repairman != null and repairman != ''">
+			and a.repairman like '%${repairman}%'
+		</if>
+		<if test="personInCharge != null and personInCharge != ''">
+			and a.personInCharge like '%${personInCharge}%'
+		</if>
+		<if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+			and a.dt between #{startTime} and #{endTime}
+		</if>
+		ORDER BY
+			a.dt DESC
+	</select>
+
+	<!-- 新增 -->
+	<insert id="add">
+		INSERT INTO c_qh_equipment_repair_t(dt,equipmentId,repairman,personInCharge,reason,remarks)
+		VALUE(#{dt},#{equipmentId},#{repairman},#{personInCharge},#{reason},#{remarks})
+	</insert>
+
+	<!-- 更新 -->
+	<update id="update">
+		UPDATE c_qh_equipment_repair_t
+		SET dt = #{dt},
+		repairman = #{repairman},
+		personInCharge = #{personInCharge},
+		reason = #{reason},
+		remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+
+	<!-- 删除 -->
+	<delete id="delete">
+		delete from c_qh_equipment_repair_t
+		WHERE id = #{id}
+	</delete>
+
+	<resultMap type="com.alibaba.fastjson.JSONObject" id="lineMap">
+		<result column="lineId" property="lineId" />
+		<result column="lineName" property="lineName" />
+		<!-- collection：一对多 property：实体类里的 ofType：实体类 -->
+		<collection property="equipment" javaType="list" ofType="com.alibaba.fastjson.JSONObject">
+			<result column="equipmentId" property="equipmentId" />
+			<result column="equipmentName" property="equipmentName" />
+		</collection>
+	</resultMap>
+	<!-- 查询所有产线跟设备 -->
+	<select id="lineAndEquipment" resultMap="lineMap">
+		SELECT
+			a.id AS
+			lineId,
+			a.`NAME` AS lineName,
+			b.id AS equipmentId,
+			b.`name` AS
+			equipmentName
+		FROM c_mes_line_t a
+		JOIN c_qh_equipment_information b ON a.id = b.lineId
+		ORDER BY a.id
+	</select>
+
+</mapper>

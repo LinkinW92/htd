@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.skeqi.mes.mapper.dzb.report.MTTRDao">
+
+    <select id="listEqu" resultType="java.util.Map">
+        select  id,`name` from c_qh_equipment_information
+    </select>
+    <select id="listAndon" resultType="java.util.Map">
+
+        select ESTABLISH_DT,SOLVE_DT from c_mes_andon_fault_t where TOOL_ID = #{equId}
+        <if test="start != null">
+            and ESTABLISH_DT>=#{start}
+        </if>
+        <if test="end != null">
+            <![CDATA[ and ESTABLISH_DT <= #{end}]]>
+        </if>
+    </select>
+
+
+    <select id="listAndon2" resultType="java.util.Map">
+
+        select ESTABLISH_DT,SOLVE_DT from c_mes_andon_fault_t where TOOL_ID = #{equId}
+        <if test="start != null">
+            and ESTABLISH_DT>=#{start}
+        </if>
+        <if test="end != null">
+            <![CDATA[ and ESTABLISH_DT <= #{end}]]>
+        </if>
+    </select>
+    <select id="getmaxid" resultType="java.lang.Integer">
+    select max(id) from p_mes_tracking_t
+    where TO_DAYS(dt) = TO_DAYS(now())
+    </select>
+
+    <select id="getmaxid2" resultType="java.lang.Integer">
+    select max(id) from P_MES_BOLT_T
+    where TO_DAYS(dt) = TO_DAYS(now())
+    </select>
+
+    <select id="getmaxid3" resultType="java.lang.Integer">
+    select max(id) from p_mes_station_pass_t
+    where TO_DAYS(dt) = TO_DAYS(now())
+    </select>
+    <update id="udpate">
+        update p_mes_tracking_t set dt = #{date},OFFLINE_DT= #{date}
+        <![CDATA[where id+2000 > #{maxID} and  id <= #{maxID};]]>
+        <if test="maxID2 != null">
+            update P_MES_BOLT_T set dt = #{date}
+            <![CDATA[where id+4000 > #{maxID2} and  id <= #{maxID2};]]>
+        </if>
+        <if test="maxID3 != null">
+            update p_mes_station_pass_t set dt = #{date}
+            <![CDATA[where id+8000 > #{maxID3} and  id <= #{maxID3};]]>
+        </if>
+            commit;
+    </update>
+
+</mapper>

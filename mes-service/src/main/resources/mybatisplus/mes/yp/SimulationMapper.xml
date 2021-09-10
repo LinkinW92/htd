@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.yp.SimulationDao">
+
+	<!-- 查询所有产线 -->
+	<select id="findLineAll"
+		resultType="com.alibaba.fastjson.JSONObject">
+		select id,`NAME` from c_mes_line_t
+		ORDER BY id
+	</select>
+
+	<!-- 查询工位 -->
+	<select id="findStation"
+		resultType="com.alibaba.fastjson.JSONObject">
+		select id,STATION_NAME,'false'as hide from c_mes_station_t
+		where LINE_ID = #{lineId}
+		ORDER BY id
+	</select>
+
+	<!-- 查询正在进行的工单 -->
+	<select id="findWorkOrder"
+		resultType="com.alibaba.fastjson.JSONObject">
+		select a.id,a.WORKORDER_ID,b.`name` from
+		r_mes_workorder_detail_t a
+		join c_mes_line_t b on a.LINE_ID = b.id
+		where a.`STATUS` = 1
+		and a.LINE_ID = #{lineId}
+		ORDER BY a.id
+	</select>
+
+	<!-- 查询sn -->
+	<select id="findSn" resultType="java.lang.String">
+		select sn from r_mes_plan_print_t
+		where WORK_ORDER_ID = #{workOrderId}
+		and sn not in (
+			select sn from p_mes_tracking_t
+		)
+		and sn not in (
+			select sn from r_mes_tracking_t
+		)
+		ORDER BY id
+	</select>
+
+	<resultMap type="com.alibaba.fastjson.JSONObject" id="map">
+		<result column="STATION_ID" property="stationId" />
+		<result column="STATION_NAME" property="stationName" />
+		<result column="STEP_NO" property="stepNo" />
+		<result column="sn" property="sn" />
+		<result column="emp" property="emp" />
+		<collection property="recipe" javaType="list"
+			ofType="com.alibaba.fastjson.JSONObject">
+			<result column="STEPNO" property="stepNo" />
+			<result column="STEP_CATEGORY" property="stepCategory" />
+			<result column="MATERIAL_NAME" property="materialName" />
+			<result column="NUMBERS" property="numbers" />
+			<result column="MATERIALPN" property="materialPn" />
+			<result column="T_LIMIT" property="tLimit" />
+			<result column="A_LIMIT" property="aLimit" />
+
+			<result column="STATION_ID" property="stationId" />
+			<result column="STATION_NAME" property="stationName" />
+			<result column="STEP_NO" property="nowStepNo" />
+			<result column="sn" property="sn" />
+			<result column="emp" property="emp" />
+		</collection>
+
+
+	</resultMap>
+	<!-- -->
+	<select id="findlist" resultMap="map">
+		SELECT
+			c.STATION_ID,
+			e.STATION_NAME,
+			STEPNO,
+			d.STEP_CATEGORY,
+			d.MATERIAL_NAME,
+			(CASE WHEN d.NUMBERS > 0 THEN
+				d.NUMBERS - (
+					SELECT ifnull(sum(substring(BOLT_NAME,char_length(d.MATERIAL_NAME)+2,char_length(BOLT_NAME))),0) FROM r_mes_bolt_t
+					where id = (
+						select max(id) from r_mes_bolt_t
+						where sn = f.sn
+						and r = 'OK'
+					)
+				)
+			END) as NUMBERS,
+			d.MATERIALPN,
+			d.T_LIMIT,
+			d.A_LIMIT,
+			d.PROGRAM_NO,
+			f.sn,
+			g.STEP_NO,
+			g.emp
+		FROM
+			r_mes_workorder_detail_t a
+			JOIN c_mes_total_recipe_t b ON a.TOTAL_RECIPE_ID = b.id
+			JOIN c_mes_recipe_t c ON b.id = c.TOTAL_ID
+			JOIN c_mes_recipe_datil_t d ON c.id = d.RECIPE_ID
+			LEFT JOIN c_mes_station_t e ON c.STATION_ID = e.id
+			LEFT JOIN r_mes_tracking_t f ON e.STATION_NAME = f.ST
+			LEFT JOIN r_mes_step_t g ON f.sn = g.sn
+			join c_mes_production_way_t h on (h.ROUTING_ID = a.ROUTING_ID and h.ST_ID = e.id)
+		WHERE
+			a.id = #{workOrderId}
+		ORDER BY
+			h.SERIAL_NO,
+			c.STATION_ID,
+			STEPNO,
+			d.STEP_CATEGORY
+	</select>
+
+	<!-- 查询工单详情 -->
+	<select id="findWorkOrderDedetails" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			a.dt,
+			a.WORKORDER_ID AS workorderId,
+			a.ORDER_NUMBER AS orderNumber,
+			a.ONLINE_NUMBER AS onlineNumber,
+			a.OFFLINE_NUMBER AS offlineNumber,
+			a.`status`,
+			a.ALTER_DT AS alterDt
+		FROM
+			r_mes_workorder_detail_t a
+		WHERE
+			a.id = #{workOrderId}
+	</select>
+
+	<!-- 查询R螺栓数据 -->
+	<select id="findRBolt" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			sn,
+			DATE_FORMAT(dt, '%Y-%m-%d %H:%i:%s') AS dt,
+			t,
+			a,
+			r
+		FROM r_mes_bolt_t a
+		<if test="sn == null or sn == ''">
+			where a.sn in (
+				select sn from r_mes_plan_print_t b
+				where WORK_ORDER_ID = #{workOrderId}
+			)
+		</if>
+
+		<if test="sn != null and sn != ''">
+			where a.sn = #{sn}
+		</if>
+		and a.r is not null
+		ORDER BY dt desc
+	</select>
+
+	<!-- 查询P螺栓数据 -->
+	<select id="findPBolt" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			sn,
+			DATE_FORMAT(dt, '%Y-%m-%d %H:%i:%s') AS dt,
+			t,
+			a,
+			r
+		FROM p_mes_bolt_t a
+		<if test="sn == null or sn == ''">
+			where a.sn in (
+				select sn from r_mes_plan_print_t b
+				where WORK_ORDER_ID = #{workOrderId}
+			)
+		</if>
+
+		<if test="sn != null and sn != ''">
+			where a.sn = #{sn}
+		</if>
+		and a.r is not null
+		ORDER BY dt desc
+	</select>
+
+	<!-- 查询事件 -->
+	<select id="findEvent" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			DATE_FORMAT(a.dt, '%Y-%m-%d %H:%i:%s') AS dt,
+			a.OBJECT_ID AS sn,
+			a.PARAMETER2 as stationName,
+			a.`event` ,
+			b.`name` as lineName
+		FROM
+			`c_mes_event_t` a
+			JOIN c_mes_line_t b on a.PARAMETER1 = b.`code`
+		WHERE
+			OBJECT_TYPE = '成品'
+			<if test="lineName != null and lineName != ''">
+				and b.code = (
+					select `code` from c_mes_line_t
+					where `name` = #{lineName}
+				)
+			</if>
+			<if test="stationName != null and stationName != ''">
+				and a.PARAMETER2 = #{stationName}
+			</if>
+			<if test="sn != null and sn != ''">
+				and a.OBJECT_ID = #{sn}
+			</if>
+			ORDER BY a.dt desc
+	</select>
+
+	<!-- 查询工位对象 -->
+	<select id="findWorkingProcedureObject" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			c.stepNo,
+			c.STEP_CATEGORY as stepCategory,
+			c.MATERIAL_NAME as materialName,
+			c.numbers,
+			c.materialPn,
+			c.T_LIMIT as tLimit,
+			c.A_LIMIT as aLimit,
+			c.PROGRAM_NO as programNo
+		FROM
+			r_mes_workorder_detail_t a
+			JOIN c_mes_recipe_t b ON a.TOTAL_RECIPE_ID = b.TOTAL_ID
+			JOIN c_mes_recipe_datil_t c ON b.id = c.RECIPE_ID
+		WHERE
+			a.id = #{workOrderId}
+			AND b.STATION_ID = #{stationId}
+			ORDER BY c.STEPNO
+	</select>
+
+	<!-- 查询产品对象 -->
+	<select id="findProductObject" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			c.stepNo,
+			c.STEP_CATEGORY AS stepCategory,
+			c.MATERIAL_NAME AS materialName,
+			d.STATION_NAME as st
+		FROM
+			r_mes_workorder_detail_t a
+			JOIN c_mes_recipe_t b ON a.TOTAL_RECIPE_ID = b.TOTAL_ID
+			JOIN c_mes_recipe_datil_t c ON b.id = c.RECIPE_ID
+			JOIN c_mes_station_t d on b.STATION_ID = d.id
+		WHERE
+			a.id = ( SELECT WORK_ORDER_ID FROM r_mes_plan_print_t a WHERE sn = #{sn} )
+			AND b.STATION_ID = ( SELECT id FROM c_mes_station_t a WHERE a.STATION_NAME = ( SELECT st AS stepNo FROM r_mes_step_t a WHERE sn = #{sn} ) )
+			AND c.stepNo = (
+			SELECT
+				STEP_NO + 1
+			FROM
+				r_mes_step_t a
+			WHERE
+			sn = #{sn}
+			)
+	</select>
+
+	<!-- 查询bom -->
+	<select id="findBom" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			b.FIGURE_NO as figureNo,
+			b.MATERIAL_NO as materialNo,
+			b.MATERIAL_NAME as materialName,
+			b.MATERIAL_NUMBER as materialNumber
+		FROM
+			c_mes_material_list_t a
+			JOIN c_mes_material_list_detail_t b ON a.id = b.MATERILA_LIST_ID
+		WHERE
+			a.id = (
+			SELECT
+				b.BOM_ID
+			FROM
+				r_mes_plan_print_t a
+				JOIN r_mes_workorder_detail_t b ON a.WORK_ORDER_ID = b.id
+			WHERE
+			sn = #{sn}
+			)
+	</select>
+
+</mapper>

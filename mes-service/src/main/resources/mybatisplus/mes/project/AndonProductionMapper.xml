@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.project.CMesProductionDAO">
+
+	<select id="findAllPro" resultType="CMesProductionT">
+		select * from c_mes_production_t where 1=1
+		<if test="name!='' and name!=null">
+			and PRODUCTION_NAME=#{name}
+		</if>
+				ORDER BY  id DESC
+	</select>
+
+	<insert id="addPro">
+	insert into c_mes_production_t(PRODUCTION_NAME,PRODUCTION_TYPE,PRODUCTION_TRADEMARK,PRODUCTION_SERIES,PRODUCTION_VR,
+		PRODUCTION_DISCRIPTION,PRODUCTION_STE,PATH,code_Digit)
+		values(#{productionName},#{productionType},#{productionTrademark},#{productionSeries},#{productionVr},#{productionDiscription},
+		#{productionSte},#{path},#{codeDigit})
+	</insert>
+		<insert id="addProL">
+	insert into c_mes_production_t(PRODUCTION_NAME,PRODUCTION_TYPE,PRODUCTION_TRADEMARK,PRODUCTION_SERIES,PRODUCTION_DISCRIPTION,PRODUCTION_VR,code_Digit)
+		values(#{productionName},#{productionType},#{productionTrademark},#{productionSeries},#{productionDiscription},#{productionVr},#{codeDigit})
+	</insert>
+	<update id="updatePro">
+	update c_mes_production_t set PRODUCTION_NAME=#{productionName},PRODUCTION_TYPE=#{productionType},PRODUCTION_TRADEMARK=#{productionTrademark},
+		PRODUCTION_SERIES=#{productionSeries},PRODUCTION_VR=#{productionVr},PRODUCTION_DISCRIPTION=#{productionDiscription},PRODUCTION_STE=#{productionSte},PATH=#{path},code_Digit = #{codeDigit} where ID=#{id}
+	</update>
+
+	<delete id="delPro">
+		delete from c_mes_production_t where ID=#{id}
+	</delete>
+
+	<select id="findByProductionType" resultType="Integer">
+	 select count(*) from  c_mes_production_t where PRODUCTION_TYPE=#{name}
+	</select>
+		<select id="findByProductionTypeL" resultType="Integer">
+	 select count(*) from  c_mes_production_t where PRODUCTION_TYPE=#{productionType} and ID !=#{id}
+	</select>
+	<select id="findByProTypeL" resultType="CMesProductionT">
+	 select   *    from  c_mes_production_t where PRODUCTION_TYPE=#{productionType}
+	</select>
+
+	<select id="findProIdAndName" resultType="CMesProductionT">
+		select ID id,PRODUCTION_NAME productionName from c_mes_production_t
+		where 1=1
+		<if test="id!=null and id!=0">
+			and ID=#{id}
+		</if>
+		<if test="proName!=null and proName!=''">
+			and PRODUCTION_NAME=#{proName}
+		</if>
+	</select>
+
+</mapper>

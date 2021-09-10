@@ -1,0 +1,436 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.skeqi.mes.mapper.wf.CustomPropertyDao">
+    <resultMap id="CustomPropertyValue" type="com.skeqi.mes.pojo.qh.CMesCustomProperty">
+        <result property="id" column="kId"/>
+        <result property="propertyName" column="kName"/>
+        <result property="propertyEnglishName" column="kEName"/>
+        <result property="propertyType" column="KPType"/>
+        <result property="objectType" column="kOType"/>
+        <result property="bindScopeKey" column="kBSKey"/>
+        <result property="bindCondition" column="kBCondition"/>
+        <result property="bindScopeValue" column="kBSValue"/>
+        <result property="propertyGroup" column="kPGroup"/>
+        <result property="propertyExplain" column="kPExplain"/>
+        <result property="defaults" column="kDefault"/>
+
+        <collection property="valueList" ofType="com.skeqi.mes.pojo.qh.CMesCustomPropertyValue">
+            <result property="id" column="vId"/>
+            <result property="value" column="vValue"/>
+            <result property="propertyId" column="vPId"/>
+            <result property="objectType" column="vOType"/>
+            <result property="objectCode" column="vOCode"/>
+        </collection>
+    </resultMap>
+    <!--查询自定义属性-->
+    <select id="findCustomProperty" resultMap="CustomPropertyValue">
+      select
+        k.ID kId,
+        k.PROPERTY_NAME kName,
+        k.PROPERTY_ENGLISH_NAME kEName,
+        k.PROPERTY_TYPE KPType,
+        k.OBJECT_TYPE kOType,
+        k.BIND_SCOPE_KEY kBSKey,
+        k.BIND_CONDITION kBCondition,
+        k.BIND_SCOPE_VALUE kBSValue,
+        k.PROPERTY_GROUP kPGroup,
+        k.PROPERTY_EXPLAIN kPExplain,
+        k.DEFAULT kDefault,
+        v.ID as vId,
+        v.VALUE as vValue,
+        v.PROPERTY_ID as vPId,
+        v.OBJECT_TYPE as vOType,
+        v.OBJECT_CODE as vOCode
+      from c_mes_custom_property k
+      left join c_mes_custom_property_value v
+      on k.ID = v.PROPERTY_ID
+      <where>
+          <if test="objectType != null and propertyType != ''">
+              and k.OBJECT_TYPE = #{objectType,jdbcType=INTEGER}
+          </if>
+          <if test="bindScopeKey != null and bindScopeKey != ''">
+              and k.BIND_SCOPE_KEY = #{bindScopeKey,jdbcType=INTEGER}
+          </if>
+          <if test="bindCondition != null and bindCondition != ''">
+              and k.BIND_CONDITION = #{bindCondition,jdbcType=INTEGER}
+          </if>
+          <if test="bindScopeValue != null and bindScopeValue != ''">
+              and k.BIND_SCOPE_VALUE = #{bindScopeValue,jdbcType=INTEGER}
+          </if>
+      </where>
+        order by k.ID
+    </select>
+
+    <!--查询名称是否重复-->
+    <select id="selectByName" resultType="java.lang.Integer">
+        select count(1) from c_mes_custom_property
+        <where>
+            <if test="propertyName != null and propertyName != ''">
+                PROPERTY_NAME = #{propertyName,jdbcType=VARCHAR}
+            </if>
+            <if test="bindScopeValue != null and bindScopeValue != ''">
+                and BIND_SCOPE_VALUE = #{bindScopeValue,jdbcType=VARCHAR}
+            </if>
+            <if test="objectType != null and objectType != ''">
+                and OBJECT_TYPE = #{objectType,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <!--查询英文名称是否重复-->
+    <select id="selectByEnglishName" resultType="java.lang.Integer">
+        select count(1) from c_mes_custom_property
+        <where>
+            <if test="propertyEnglishName != null and propertyEnglishName != ''">
+                PROPERTY_ENGLISH_NAME = #{propertyEnglishName,jdbcType=VARCHAR}
+            </if>
+            <if test="bindScopeValue != null and bindScopeValue != ''">
+                and BIND_SCOPE_VALUE = #{bindScopeValue,jdbcType=VARCHAR}
+            </if>
+            <if test="bindScopeValue != null and bindScopeValue != ''">
+                and OBJECT_TYPE = #{objectType,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <!--查询所有id-->
+    <select id="selectCustomPropertyAllId" resultType="java.lang.Integer">
+        select ID from c_mes_custom_property
+        <where>
+            <trim prefix="(" suffix=")"  prefixOverrides="or">
+                <if test="propertyName != null and propertyName != ''">
+                    or PROPERTY_NAME = #{propertyName,jdbcType=VARCHAR}
+                </if>
+                <if test="propertyEnglishName != null and propertyEnglishName != ''">
+                    or PROPERTY_ENGLISH_NAME = #{propertyEnglishName,jdbcType=VARCHAR}
+                </if>
+            </trim>
+            <if test="bindScopeValue != null and bindScopeValue != ''">
+                and BIND_SCOPE_VALUE = #{bindScopeValue,jdbcType=VARCHAR}
+            </if>
+
+            <if test="objectType != null and objectType != ''">
+                and OBJECT_TYPE = #{objectType,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <!--新增自定义属性表-->
+    <insert id="addCustomProperty" useGeneratedKeys="true" keyProperty="id" parameterType="com.skeqi.mes.pojo.qh.CMesCustomProperty">
+        insert into c_mes_custom_property
+        <trim prefix="("  suffix=")" suffixOverrides=",">
+            <if test="propertyName != null and propertyName != ''">
+                PROPERTY_NAME,
+            </if>
+            <if test="propertyEnglishName != null and propertyEnglishName != ''">
+                PROPERTY_ENGLISH_NAME,
+            </if>
+            <if test="propertyType != null and propertyType != ''">
+                PROPERTY_TYPE,
+            </if>
+            <if test="objectType != null and objectType != ''">
+                OBJECT_TYPE,
+            </if>
+            <if test="bindScopeKey != null and bindScopeKey != ''">
+                BIND_SCOPE_KEY,
+            </if>
+            <if test="bindCondition != null and bindCondition != ''">
+                BIND_CONDITION,
+            </if>
+            <if test="bindScopeValue != null and bindScopeValue != ''">
+                BIND_SCOPE_VALUE,
+            </if>
+            <if test="propertyGroup != null and propertyGroup != ''">
+                PROPERTY_GROUP,
+            </if>
+            <if test="propertyExplain != null and propertyExplain != ''">
+                PROPERTY_EXPLAIN,
+            </if>
+            <if test="defaults != null and defaults != ''">
+                `DEFAULT`
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="propertyName != null and propertyName != ''">
+                #{propertyName,jdbcType=VARCHAR},
+            </if>
+            <if test="propertyEnglishName != null and propertyEnglishName != ''">
+                #{propertyEnglishName,jdbcType=VARCHAR},
+            </if>
+            <if test="propertyType != null and propertyType != ''">
+                #{propertyType},
+            </if>
+            <if test="objectType != null and objectType != ''">
+                #{objectType,jdbcType=VARCHAR},
+            </if>
+            <if test="bindScopeKey != null and bindScopeKey != ''">
+                #{bindScopeKey,jdbcType=VARCHAR},
+            </if>
+            <if test="bindCondition != null and bindCondition != ''">
+                #{bindCondition,jdbcType=VARCHAR},
+            </if>
+            <if test="bindScopeValue != null and bindScopeValue != ''">
+                #{bindScopeValue,jdbcType=VARCHAR},
+            </if>
+            <if test="propertyGroup != null and propertyGroup != ''">
+                #{propertyGroup,jdbcType=VARCHAR},
+            </if>
+            <if test="propertyExplain != null and propertyExplain != ''">
+                #{propertyExplain,jdbcType=VARCHAR},
+            </if>
+            <if test="defaults != null and defaults != ''">
+                #{defaults,jdbcType=VARCHAR}
+            </if>
+        </trim>
+    </insert>
+
+    <!--修改自定义属性-->
+    <update id="editCustomProperty">
+        update c_mes_custom_property
+        <set>
+            <if test="propertyName != null and propertyName != ''">
+                PROPERTY_NAME = #{propertyName,jdbcType=VARCHAR},
+            </if>
+                PROPERTY_ENGLISH_NAME = #{propertyEnglishName,jdbcType=VARCHAR},
+            <if test="propertyType != null and propertyType != ''">
+                PROPERTY_TYPE = #{propertyType,jdbcType=VARCHAR},
+            </if>
+            <if test="objectType != null and objectType != ''">
+                OBJECT_TYPE = #{objectType,jdbcType=VARCHAR},
+            </if>
+            <if test="bindScopeKey != null and bindScopeKey != ''">
+                BIND_SCOPE_KEY = #{bindScopeKey,jdbcType=VARCHAR},
+
+                BIND_CONDITION = #{bindCondition,jdbcType=VARCHAR},
+
+                BIND_SCOPE_VALUE = #{bindScopeValue,jdbcType=VARCHAR},
+            </if>
+            <if test="propertyGroup != null and propertyGroup != ''">
+                PROPERTY_GROUP = #{propertyGroup,jdbcType=VARCHAR},
+            </if>
+                PROPERTY_EXPLAIN = #{propertyExplain,jdbcType=VARCHAR},
+            <if test="defaults != null and defaults != ''">
+                `DEFAULT` = #{defaults,jdbcType=VARCHAR}
+            </if>
+        </set>
+        <where>
+            <if test="id != null and id >0">
+                ID = #{id,jdbcType=INTEGER}
+            </if>
+        </where>
+    </update>
+
+    <!--修改自定义属性值-->
+    <update id="editCustomPropertyValue">
+        update c_mes_custom_property_value
+        <set>
+                VALUE = #{value,jdbcType=VARCHAR}
+        </set>
+        <where>
+            <if test="id!=null and id!=''">
+                PROPERTY_ID = #{id}
+            </if>
+            <if test="objectType!=null and objectType!=''">
+                and OBJECT_TYPE = #{objectType,jdbcType=VARCHAR}
+            </if>
+            <if test="bindScopeValue!=null and bindScopeValue!=''">
+                and OBJECT_CODE = #{bindScopeValue,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </update>
+
+    <!--根据id删除自定义属性-->
+    <delete id="delCustomProperty">
+        delete from c_mes_custom_property
+        where
+        <foreach collection="idMap" item="id" open="ID in(" close=")" separator=",">
+            #{id,jdbcType=INTEGER}
+        </foreach>
+
+    </delete>
+
+    <!--外键绑定id删除自定义属性值-->
+    <delete id="delCustomPropertyValue">
+        delete from c_mes_custom_property_value
+        where
+        <foreach collection="idMap" item="id" open="PROPERTY_ID in(" close=")" separator=",">
+            #{id,jdbcType=INTEGER}
+        </foreach>
+
+        <if test="bindScopeValue != null and bindScopeValue != ''">
+            and OBJECT_CODE = #{bindScopeValue,jdbcType=VARCHAR}
+        </if>
+        <if test="objectType != null and objectType != ''">
+            and OBJECT_TYPE = #{objectType,jdbcType=VARCHAR}
+        </if>
+    </delete>
+
+
+    <!--查询本身对象-->
+    <select id="selectById" resultType="com.skeqi.mes.pojo.qh.CMesCustomProperty">
+        select * from c_mes_custom_property where ID = #{id,jdbcType=INTEGER} and OBJECT_TYPE = #{objectType,jdbcType=VARCHAR}
+    </select>
+
+    <delete id="delCustomPropertyValueAll">
+        delete from c_mes_custom_property_value
+        where PROPERTY_ID = #{propertyId,jdbcType=INTEGER}
+        and OBJECT_TYPE = #{objectType,jdbcType=VARCHAR}
+        and OBJECT_CODE &lt;&gt; #{objectCode,jdbcType=VARCHAR}
+        and BIND_SCOPE_KEY = #{bindScopeKey,jdbcType=VARCHAR}
+    </delete>
+
+    <!--修改自定义属性内容表的"所属范围"-->
+    <update id="editCustomPropertyValueByBindScopeKey">
+        update c_mes_custom_property_value
+        <set>
+            <if test="bindScopeKey !=null and bindScopeKey != ''">
+                BIND_SCOPE_KEY = #{bindScopeKey,jdbcType=VARCHAR}
+            </if>
+            <where>
+                <if test="propertyId!=null and propertyId!=''">
+                    PROPERTY_ID = #{propertyId}
+                </if>
+                <if test="objectType!=null and objectType!=''">
+                    and OBJECT_TYPE = #{objectType,jdbcType=VARCHAR}
+                </if>
+                <if test="objectCode!=null and objectCode!=''">
+                    and OBJECT_CODE = #{objectCode,jdbcType=VARCHAR}
+                </if>
+            </where>
+        </set>
+    </update>
+
+    <!--(新增自定义属性内容表)  OR  (添加属性范围为全部的默认值)-->
+    <insert id="addCustomPropertyValueByObjectCode">
+        insert into c_mes_custom_property_value
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="value !=null and value != ''">
+                VALUE,
+            </if>
+            <if test="propertyId !=null and propertyId != ''">
+                PROPERTY_ID,
+            </if>
+            <if test="objectType !=null and objectType !=''">
+                OBJECT_TYPE,
+            </if>
+            <if test="objectCode!=null and objectCode.size()&gt; 0">
+                OBJECT_CODE,
+            </if>
+            <if test="bindScopeKey !=null and bindScopeKey !=''">
+                BIND_SCOPE_KEY,
+            </if>
+        </trim>
+        values
+        <if test="objectCode!=null and objectCode.size()&gt; 0">
+            <foreach collection="objectCode" item="code" separator=",">
+                <trim prefix="(" suffix=")" suffixOverrides=",">
+                    <if test="value !=null and value != ''">
+                        #{value} ,
+                    </if>
+                    <if test="propertyId !=null and propertyId != ''">
+                        #{propertyId},
+                    </if>
+                    <if test="objectType !=null and objectType !=''">
+                        #{objectType},
+                    </if>
+                    <if test="code !=null and code !=''">
+                        #{code},
+                    </if>
+                    <if test="bindScopeKey !=null and bindScopeKey !=''">
+                        #{bindScopeKey},
+                    </if>
+                </trim>
+            </foreach>
+        </if>
+    </insert>
+
+
+    <update id="editCustomPropertyValueByObjectCode">
+        update c_mes_custom_property_value
+        <set>
+            <if test="objectCode !=null and objectCode != ''">
+                OBJECT_CODE = #{objectCode,jdbcType=VARCHAR}
+            </if>
+
+        </set>
+        <where>
+            <if test="propertyId!=null and propertyId!=''">
+                PROPERTY_ID = #{propertyId}
+            </if>
+            <if test="objectType!=null and objectType!=''">
+                and OBJECT_TYPE = #{objectType,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </update>
+
+
+    <insert id="addCustomPropertyValue">
+        insert into c_mes_custom_property_value
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                VALUE,
+                PROPERTY_ID,
+                OBJECT_TYPE,
+                OBJECT_CODE,
+                BIND_SCOPE_KEY,
+        </trim>
+        values
+        <if test="list!=null and list.size()&gt; 0">
+            <foreach collection="list" item="ls" separator=",">
+                <trim prefix="(" suffix=")" suffixOverrides=",">
+                    <if test="ls.value !=null and ls.value != ''">
+                        #{ls.value},
+                    </if>
+                    <if test="ls.propertyId !=null and ls.propertyId != ''">
+                        #{ls.propertyId},
+                    </if>
+                    <if test="ls.objectType !=null and ls.objectType !=''">
+                        #{ls.objectType},
+                    </if>
+                    <if test="ls.objectCode !=null and ls.objectCode !=''">
+                        #{ls.objectCode},
+                    </if>
+                    <if test="ls.bindScopeKey !=null and ls.bindScopeKey !=''">
+                        #{ls.bindScopeKey},
+                    </if>
+                </trim>
+            </foreach>
+        </if>
+    </insert>
+
+    <select id="selectCustomPropertyValueAll" resultType="java.lang.Integer">
+        select PROPERTY_ID from c_mes_custom_property_value
+        <where>
+            <if test="bindScopeValue != null and bindScopeValue != ''">
+                and OBJECT_CODE = #{bindScopeValue,jdbcType=VARCHAR}
+            </if>
+            <if test="objectType != null and objectType != ''">
+                and OBJECT_TYPE = #{objectType,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <select id="findCustomPropertyAll" resultMap="CustomPropertyValue">
+        select
+        k.ID kId,
+        k.PROPERTY_NAME kName,
+        k.PROPERTY_ENGLISH_NAME kEName,
+        k.PROPERTY_TYPE KPType,
+        k.OBJECT_TYPE kOType,
+        k.BIND_SCOPE_KEY kBSKey,
+        k.BIND_CONDITION kBCondition,
+        k.BIND_SCOPE_VALUE kBSValue,
+        k.PROPERTY_GROUP kPGroup,
+        k.PROPERTY_EXPLAIN kPExplain,
+        k.DEFAULT kDefault
+        from c_mes_custom_property k
+        <where>
+            <if test="propertyName != null and propertyName != ''">
+                PROPERTY_NAME like concat('%',#{propertyName,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="objectType != null and objectType != ''">
+                and OBJECT_TYPE = #{objectType,jdbcType=VARCHAR}
+            </if>
+        </where>
+        order by OBJECT_TYPE
+    </select>
+</mapper>

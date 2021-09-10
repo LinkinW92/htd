@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.skeqi.mes.mapper.qh.ClientAPIDAO">
+
+    <select id="UserLogin" resultType="integer">
+        select count(id) from c_mes_emp_t where   EMP_NAME=#{userName} and password=#{password}
+    </select>
+
+    <select id="findUserStation" resultType="java.util.Map">
+       select IS_WHOLE isWhole,STATION_ID stationId from c_mes_emp_t where  id=(select max(id) from c_mes_emp_t where EMP_NAME=#{userName} )
+    </select>
+
+    <select id="findStationName" resultType="java.lang.String">
+        select STATION_NAME stationName from c_mes_station_t where id=#{id}
+    </select>
+
+
+</mapper>

@@ -1,0 +1,622 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.chenj.srm.CSrmMakeOutAnInvoiceMapper">
+    <resultMap id="BaseResultMap" type="com.skeqi.mes.pojo.chenj.srm.CSrmMakeOutAnInvoice">
+        <!--@mbg.generated-->
+        <!--@Table c_srm_make_out_an_invoice-->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="the_number_of_he_invoice_application" jdbcType="VARCHAR"
+                property="theNumberOfHeInvoiceApplication"/>
+        <result column="delivery_number" jdbcType="VARCHAR" property="deliveryNumber"/>
+        <result column="status" jdbcType="VARCHAR" property="status"/>
+        <result column="creator" jdbcType="VARCHAR" property="creator"/>
+        <result column="confirmation_p" jdbcType="VARCHAR" property="confirmationP"/>
+        <result column="confirmation_time" jdbcType="TIMESTAMP" property="confirmationTime"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        id, `the_number_of_he_invoice_application`, delivery_number, `status`, creator,
+        confirmation_p, confirmation_time, create_time, update_time
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmMakeOutAnInvoice"
+            resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        select
+        <include refid="Base_Column_List"/>
+        from c_srm_make_out_an_invoice
+        <where>
+            <if test="theNumberOfHeInvoiceApplication != null and theNumberOfHeInvoiceApplication != ''">
+                `the_number_of_he_invoice_application`=#{theNumberOfHeInvoiceApplication,jdbcType=VARCHAR}
+            </if>
+            <if test="deliveryNumber != null and deliveryNumber != ''">
+                and delivery_number=#{deliveryNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="id != null">
+                and id=#{id,jdbcType=INTEGER}
+            </if>
+        </where>
+
+
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        <!--@mbg.generated-->
+        delete from c_srm_make_out_an_invoice
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmMakeOutAnInvoice"
+            useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_make_out_an_invoice (`the_number_of_he_invoice_application`, delivery_number,
+        `status`, creator, confirmation_p,
+        confirmation_time, create_time, update_time
+        )
+        values (#{theNumberOfHeInvoiceApplication,jdbcType=VARCHAR}, #{deliveryNumber,jdbcType=VARCHAR},
+        #{status,jdbcType=VARCHAR}, #{creator,jdbcType=VARCHAR}, #{confirmationP,jdbcType=VARCHAR},
+        #{confirmationTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+        )
+    </insert>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id"
+            parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmMakeOutAnInvoice" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_make_out_an_invoice
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="theNumberOfHeInvoiceApplication != null">
+                `the_number_of_he_invoice_application`,
+            </if>
+            <if test="deliveryNumber != null">
+                delivery_number,
+            </if>
+            <if test="status != null">
+                `status`,
+            </if>
+            <if test="creator != null">
+                creator,
+            </if>
+            <if test="confirmationP != null">
+                confirmation_p,
+            </if>
+            <if test="confirmationTime != null">
+                confirmation_time,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="theNumberOfHeInvoiceApplication != null">
+                #{theNumberOfHeInvoiceApplication,jdbcType=VARCHAR},
+            </if>
+            <if test="deliveryNumber != null">
+                #{deliveryNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="creator != null">
+                #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="confirmationP != null">
+                #{confirmationP,jdbcType=VARCHAR},
+            </if>
+            <if test="confirmationTime != null">
+                #{confirmationTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmMakeOutAnInvoice">
+        <!--@mbg.generated-->
+        update c_srm_make_out_an_invoice
+        <set>
+            <if test="theNumberOfHeInvoiceApplication != null">
+                `the_number_of_he_invoice_application` = #{theNumberOfHeInvoiceApplication,jdbcType=VARCHAR},
+            </if>
+            <if test="deliveryNumber != null">
+                delivery_number = #{deliveryNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                `status` = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="creator != null">
+                creator = #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="supplier != null">
+                supplier = #{supplier,jdbcType=VARCHAR},
+            </if>
+            <if test="confirmationP != null">
+                confirmation_p = #{confirmationP,jdbcType=VARCHAR},
+            </if>
+            <if test="confirmationTime != null">
+                confirmation_time = #{confirmationTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isCreated != null">
+                is_created=#{isCreated,jdbcType=INTEGER}
+            </if>
+        </set>
+        <where>
+            <if test="theNumberOfHeInvoiceApplication != null and theNumberOfHeInvoiceApplication != ''">
+                the_number_of_he_invoice_application=#{theNumberOfHeInvoiceApplication,jdbcType=VARCHAR}
+            </if>
+            <if test="supplier != null and supplier != ''">
+                and supplier=#{supplier,jdbcType=VARCHAR}
+            </if>
+            <if test="id != null">
+                and id=#{id,jdbcType=INTEGER}
+            </if>
+        </where>
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmMakeOutAnInvoice">
+        <!--@mbg.generated-->
+        update c_srm_make_out_an_invoice
+        set `the_number_of_he_invoice_application` = #{theNumberOfHeInvoiceApplication,jdbcType=VARCHAR},
+        delivery_number = #{deliveryNumber,jdbcType=VARCHAR},
+        `status` = #{status,jdbcType=VARCHAR},
+        creator = #{creator,jdbcType=VARCHAR},
+        confirmation_p = #{confirmationP,jdbcType=VARCHAR},
+        confirmation_time = #{confirmationTime,jdbcType=TIMESTAMP},
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+        update_time = #{updateTime,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateBatch" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update c_srm_make_out_an_invoice
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="`the_number_of_he_invoice_application` = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.theNumberOfHeInvoiceApplication,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="delivery_number = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.deliveryNumber,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="`status` = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.status,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="creator = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.creator,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="confirmation_p = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.confirmationP,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="confirmation_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.confirmationTime,jdbcType=TIMESTAMP}
+                </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.createTime,jdbcType=TIMESTAMP}
+                </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.updateTime,jdbcType=TIMESTAMP}
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    <update id="updateBatchSelective" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update c_srm_make_out_an_invoice
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="`the_number_of_he_invoice_application` = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.theNumberOfHeInvoiceApplication != null">
+                        when id = #{item.id,jdbcType=INTEGER} then
+                        #{item.theNumberOfHeInvoiceApplication,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delivery_number = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.deliveryNumber != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.deliveryNumber,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="`status` = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.status != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.status,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="creator = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.creator != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.creator,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="confirmation_p = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.confirmationP != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.confirmationP,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="confirmation_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.confirmationTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.confirmationTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.createTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.createTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.updateTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.updateTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_make_out_an_invoice
+        (`the_number_of_he_invoice_application`, delivery_number, `status`, creator, confirmation_p,
+        confirmation_time, create_time, update_time)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.theNumberOfHeInvoiceApplication,jdbcType=VARCHAR}, #{item.deliveryNumber,jdbcType=VARCHAR},
+            #{item.status,jdbcType=VARCHAR}, #{item.creator,jdbcType=VARCHAR}, #{item.confirmationP,jdbcType=VARCHAR},
+            #{item.confirmationTime,jdbcType=TIMESTAMP}, #{item.createTime,jdbcType=TIMESTAMP},
+            #{item.updateTime,jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
+    <insert id="insertOrUpdate" keyColumn="id" keyProperty="id"
+            parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmMakeOutAnInvoice" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_make_out_an_invoice
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            `the_number_of_he_invoice_application`,
+            delivery_number,
+            `status`,
+            creator,
+            confirmation_p,
+            confirmation_time,
+            create_time,
+            update_time,
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            #{theNumberOfHeInvoiceApplication,jdbcType=VARCHAR},
+            #{deliveryNumber,jdbcType=VARCHAR},
+            #{status,jdbcType=VARCHAR},
+            #{creator,jdbcType=VARCHAR},
+            #{confirmationP,jdbcType=VARCHAR},
+            #{confirmationTime,jdbcType=TIMESTAMP},
+            #{createTime,jdbcType=TIMESTAMP},
+            #{updateTime,jdbcType=TIMESTAMP},
+        </trim>
+        on duplicate key update
+        <trim suffixOverrides=",">
+            <if test="id != null">
+                id = #{id,jdbcType=INTEGER},
+            </if>
+            `the_number_of_he_invoice_application` = #{theNumberOfHeInvoiceApplication,jdbcType=VARCHAR},
+            delivery_number = #{deliveryNumber,jdbcType=VARCHAR},
+            `status` = #{status,jdbcType=VARCHAR},
+            creator = #{creator,jdbcType=VARCHAR},
+            confirmation_p = #{confirmationP,jdbcType=VARCHAR},
+            confirmation_time = #{confirmationTime,jdbcType=TIMESTAMP},
+            create_time = #{createTime,jdbcType=TIMESTAMP},
+            update_time = #{updateTime,jdbcType=TIMESTAMP},
+        </trim>
+    </insert>
+    <insert id="insertOrUpdateSelective" keyColumn="id" keyProperty="id"
+            parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmMakeOutAnInvoice" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_make_out_an_invoice
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="theNumberOfHeInvoiceApplication != null">
+                `the_number_of_he_invoice_application`,
+            </if>
+            <if test="deliveryNumber != null">
+                delivery_number,
+            </if>
+            <if test="status != null">
+                `status`,
+            </if>
+            <if test="creator != null">
+                creator,
+            </if>
+            <if test="supplier != null">
+                supplier,
+            </if>
+            <if test="companyCode != null">
+                company_code,
+            </if>
+            <if test="confirmationP != null">
+                confirmation_p,
+            </if>
+            <if test="confirmationTime != null">
+                confirmation_time,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="theNumberOfHeInvoiceApplication != null">
+                #{theNumberOfHeInvoiceApplication,jdbcType=VARCHAR},
+            </if>
+            <if test="deliveryNumber != null">
+                #{deliveryNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="creator != null">
+                #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="supplier != null and supplier != ''">
+                #{supplier,jdbcType=VARCHAR},
+            </if>
+            <if test="companyCode != null and companyCode != ''">
+                #{companyCode,jdbcType=VARCHAR},
+            </if>
+            <if test="confirmationP != null">
+                #{confirmationP,jdbcType=VARCHAR},
+            </if>
+            <if test="confirmationTime != null">
+                #{confirmationTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+        on duplicate key update
+        <trim suffixOverrides=",">
+            <if test="id != null">
+                id = #{id,jdbcType=INTEGER},
+            </if>
+            <if test="theNumberOfHeInvoiceApplication != null">
+                `the_number_of_he_invoice_application` = #{theNumberOfHeInvoiceApplication,jdbcType=VARCHAR},
+            </if>
+            <if test="deliveryNumber != null">
+                delivery_number = #{deliveryNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                `status` = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="creator != null">
+                creator = #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="supplier != null and supplier != ''">
+                supplier=#{supplier,jdbcType=VARCHAR},
+            </if>
+            <if test="companyCode != null and companyCode != ''">
+                company_code=#{companyCode,jdbcType=VARCHAR},
+            </if>
+            <if test="confirmationP != null">
+                confirmation_p = #{confirmationP,jdbcType=VARCHAR},
+            </if>
+            <if test="confirmationTime != null">
+                confirmation_time = #{confirmationTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <!--获取最后一条数据-->
+    <select id="selectFinallyData" resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        c_srm_make_out_an_invoice
+        ORDER BY
+        id DESC
+        LIMIT 1
+    </select>
+    <!--开票信息展示查询-->
+    <select id="findInvoicingApplication" resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CSrmMakeOutAnInvoiceRsp">
+        SELECT
+        i.the_number_of_he_invoice_application theNumberOfHeInvoiceApplication, i.`status` status,
+        h.client companyName,
+        h.supplier_code supplierCode,
+        (select s.`name` from c_srm_supplier s where s.supplier_code=h.supplier_code and h.is_delete=0) supplierName,
+        (select s.`address` from c_srm_supplier s where s.supplier_code=h.supplier_code and h.is_delete=0) address,
+        (r.unit_price * r.count) noTaxMoney,
+        i.delivery_number deliveryNumber,
+        sum(round(((r.unit_price * ty.count) * (1 + (r.tax_rate / 100))), 2)) taxMoney,
+        i.create_time,
+        i.update_time
+        FROM c_srm_the_number_audit_h i
+        LEFT JOIN c_srm_send_commodity_r ty ON ty.delivery_number = i.delivery_number and ty.is_delete=0
+        RIGHT JOIN c_srm_purchase_order_r r ON ty.purchase_order_no = r.order_number and
+        r.material_code=ty.material_code and
+        r.is_delete=0
+        RIGHT JOIN c_srm_send_commodity_h h ON h.delivery_number=ty.delivery_number and h.is_delete=0
+        <where>
+            <if test="theNumberOfHeInvoiceApplication != null and theNumberOfHeInvoiceApplication != ''">
+                i.the_number_of_he_invoice_application like
+                concat('%',#{theNumberOfHeInvoiceApplication,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="supplierCode != null and supplierCode != ''">
+                and i.supplier like concat('%',#{supplierCode,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="supplierName != null and supplierName != ''">
+                and i.supplier in (select `supplier_code` from c_srm_supplier s where s.name like
+                concat('%',#{supplierName,jdbcType=VARCHAR},'%'))
+            </if>
+            <if test="companyName != null and companyName != ''">
+                and h.client like concat('%',#{companyName,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="status != null and status != ''">
+                and i.status=#{status,jdbcType=VARCHAR}
+            </if>
+            <if test="isCreated != null">
+                and i.is_created=#{isCreated,jdbcType=INTEGER}
+            </if>
+            and i.is_delete=0
+        </where>
+        GROUP BY i.the_number_of_he_invoice_application
+        ORDER BY i.create_time desc
+    </select>
+
+    <!--查询非寄售开票单明细查询  头展示数据-->
+    <select id="findNoConsignmentInvoiceH" resultType="com.skeqi.mes.pojo.chenj.srm.rsp.NoConsignmentInvoiceHRsp">
+        SELECT
+        oh.order_number orderNumber,
+        s.name name,
+        oh.currency currency,
+        s.supplier_code supplier,
+        s.address address,
+        h.client companyName,
+        ( select `factoryName` from c_mes_factory_t ft where ft.factoryCode=
+        (select `shipping_address` from c_srm_purchase_order_r odr where yr.purchase_order_no=odr.order_number and
+        odr.is_delete=0 group by odr.order_number)) shippingAddress,
+        (select `name` from c_mes_user_t where ID=oh.buyer) buyer,
+        h.creator creator,
+        yr.delivery_number deliveryNumber
+        FROM c_srm_send_commodity_h h
+        left join c_srm_supplier s on s.supplier_code=h.supplier_code
+        join c_srm_send_commodity_r yr ON yr.delivery_number = h.delivery_number
+        join c_srm_purchase_order_h oh on oh.order_number=yr.purchase_order_no
+        <where>
+            <if test="orderNumber != null and orderNumber != ''">
+                oh.order_number=#{orderNumber,jdbcType=VARCHAR}
+            </if>
+        </where>
+        GROUP BY oh.order_number
+    </select>
+
+    <!--查询非寄售开票单明细查询  行展示数据-->
+    <select id="findNoConsignmentInvoiceR" resultType="com.skeqi.mes.pojo.chenj.srm.rsp.NoConsignmentInvoiceRRsp">
+
+        SELECT
+        r.order_number orderNumber,
+        r.unit unit,
+        r.material_code materialCode,
+        r.material_name materialName,
+        r.line_item_no lineItemNo,
+        r.count count,
+        r.unit_price unitPrice,
+        ( r.unit_price * r.count ) noTaxMoneyMoney,
+        r.tax_rate taxRate,
+        round( r.unit_price / (1+ ( r.tax_rate / 100 )) * r.tax_rate ) tax,
+        round((
+        r.unit_price / 1+ ( r.tax_rate / 100 ))) noUnitPrice,
+        round(( r.unit_price * r.count ), 2 ) unitMoney
+        FROM
+        c_srm_send_commodity_r cr
+        JOIN c_srm_purchase_order_r r ON cr.purchase_order_no = r.order_number
+        AND cr.material_code = r.material_code
+        <where>
+            <if test="lineItemNo != null and lineItemNo.size() != 0">
+                cr.line_item_no in
+                <foreach close=")" collection="lineItemNo" item="item" open="(" separator=", ">
+                    #{item,jdbcType=INTEGER}
+                </foreach>
+            </if>
+            <if test="orderNumber != null and orderNumber != ''">
+                and r.order_number=#{orderNumber,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+    <select id="findCreateApplicationOrder" resultType="com.skeqi.mes.pojo.chenj.srm.rsp.NoConsignmentInvoiceRRsp">
+        SELECT h.delivery_number deliveryNumber,
+        r.purchase_order_no orderNumber,
+        r.line_item_no lineItemNo,
+        r.material_code materialCode,
+        ord.material_name materialName,
+        r.unit unit,
+        h.client companyName,
+        r.paid_in_number paidInNumber,
+        ( ord.unit_price * ord.count ) noTaxMoney
+        FROM c_srm_send_commodity_r r
+        LEFT JOIN c_srm_purchase_order_r ord ON r.purchase_order_no = ord.order_number
+        AND r.material_code = ord.material_code
+        JOIN c_srm_send_commodity_h h ON h.delivery_number = r.delivery_number
+        <where>
+            <if test="deliveryNumber != null and deliveryNumber != ''">
+                r.delivery_number like concat('%',#{deliveryNumber,jdbcType=VARCHAR},'%') and r.is_delete=0
+            </if>
+            <if test="orderNumber != null and orderNumber != ''">
+                and r.purchase_order_no like concat('%',#{orderNumber,jdbcType=VARCHAR},'%') and r.is_delete=0
+            </if>
+            <if test="companyName != null and companyName != ''">
+                and h.client like concat('%',#{companyName,jdbcType=VARCHAR},'%') and h.is_delete=0
+            </if>
+            <if test="receivingGoodsDtStart != null and receivingGoodsDtStart != ''">
+                and h.receivingGoodsDt <![CDATA[ >= ]]>  #{receivingGoodsDtStart,jdbcType=VARCHAR}
+            </if>
+            <if test="receivingGoodsDtStop != null and receivingGoodsDtStop != ''">
+                and h.receivingGoodsDt  <![CDATA[ <= ]]> #{receivingGoodsDtStop,jdbcType=VARCHAR}
+            </if>
+            <if test="supplierCode != null and supplierCode != ''">
+                and h.supplier_code=#{supplierCode,jdbcType=VARCHAR}
+            </if>
+            and h.is_delete=0 and h.is_open_ticket='0' and h.status='5'
+        </where>
+        GROUP BY r.material_code
+        order by r.line_item_no
+    </select>
+
+</mapper>

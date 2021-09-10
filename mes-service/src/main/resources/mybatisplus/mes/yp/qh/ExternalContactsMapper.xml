@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.yp.qh.ExternalContactsDao">
+
+	<!-- 查询 -->
+	<select id="list" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			id,
+			DATE_FORMAT( dt, '%Y-%m-%d %H:%i:%s' ) AS dt,
+			`name`,
+			phone,
+			company,
+			position,
+			mailbox,
+			address,
+			dis,
+			personInCharge,
+			sharer,
+			tag
+		FROM
+			c_qh_external_contacts_t
+		where 1 = 1
+		<if test="selected != null and selected != ''">
+			${selected}
+		</if>
+		ORDER BY
+			dt DESC
+	</select>
+
+	<!-- 新增 -->
+	<insert id="add">
+		INSERT INTO c_qh_external_contacts_t (dt,`name`,phone,company,position,mailbox,address,dis,personInCharge,sharer,tag)
+		value (now(),#{name},#{phone},#{company},#{position},#{mailbox},#{address},#{dis},#{personInCharge},#{sharer},#{tag})
+	</insert>
+
+	<!-- 更新 -->
+	<update id="update">
+		update c_qh_external_contacts_t
+		set
+		dt = now(),
+		`name` = #{name},
+		phone = #{phone},
+		company = #{company},
+		position = #{position},
+		mailbox = #{mailbox},
+		address = #{address},
+		dis = #{dis},
+		personInCharge = #{personInCharge},
+		sharer = #{sharer},
+		tag = #{tag}
+		where id = #{id}
+	</update>
+
+
+	<!-- 删除 -->
+	<delete id="delete">
+		delete from c_qh_external_contacts_t
+		where id = #{id}
+	</delete>
+
+	<resultMap type="com.alibaba.fastjson.JSONObject" id="labelMap">
+		<result column="typeId" property="id" />
+		<result column="typeName" property="name" />
+		<result column="type" property="type" />
+		<!-- collection：一对多 property：实体类里的 ofType：实体类 -->
+		<collection property="list" javaType="list" ofType="com.alibaba.fastjson.JSONObject">
+			<result column="id" property="id" />
+			<result column="name" property="name" />
+		</collection>
+	</resultMap>
+	<!-- 查询标签 -->
+	<select id="findLabel" resultMap="labelMap">
+		SELECT
+			a.*,
+			b.`name` AS typeName,
+			b.type
+		FROM
+			c_qh_external_contact_tag_t a
+			JOIN c_qh_external_contact_tag_type_t b ON a.typeId = b.id
+		ORDER BY
+			a.typeId
+	</select>
+
+	<!-- 查询所有部门 -->
+	<select id="findDepartmentAll" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			id,
+			DM_NAME AS dmName,
+			superiorId,
+			superiorName,
+			organizationalPath
+		FROM c_wms_department_t
+		ORDER BY superiorId
+	</select>
+
+	<!-- 查询所有用户 -->
+	<select id="findUserByDepartmentId" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			id,
+			USER_NAME AS userName,
+			DEPARTMENT AS epartmentId
+		FROM c_mes_user_t
+		WHERE viewMode = 1
+		and DEPARTMENT = #{departmentId}
+		ORDER BY id
+	</select>
+
+</mapper>

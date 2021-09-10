@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.yp.ProductionsInformationDao">
+
+	<resultMap type="com.alibaba.fastjson.JSONObject" id="jsonMap">
+		<result column="lineId" property="lineId"/>
+		<result column="lineName" property="lineName"/>
+		<result column="status" property="status"/>
+		<result column="workName" property="workName"/>
+		<result column="surplusNumber" property="surplusNumber"/>
+		<result column="offlineNumber" property="offlineNumber"/>
+		<collection property="station" javaType="list" ofType="com.alibaba.fastjson.JSONObject">
+			<result column="stationId" property="stationId"/>
+			<result column="stationName" property="stationName"/>
+			<result column="ip" property="ip"/>
+			<result column="userName" property="userName"/>
+			<result column="password" property="password"/>
+			<result column="sn" property="sn"/>
+		</collection>
+	</resultMap>
+
+	<!-- 查询 -->
+	<select id="list" resultMap="jsonMap">
+		SELECT
+			line.id as lineId,
+			line.`NAME` AS lineName,
+			line.STATUS AS STATUS,
+			station.id AS stationId,
+			station.STATION_NAME AS stationName,
+			station.ip,
+			station.userName,
+			station.`password`,
+			flag.sn,
+			`work`.WORKORDER_ID AS workName,
+			`work`.ORDER_NUMBER - `work`.OFFLINE_NUMBER AS surplusNumber,
+			`work`.OFFLINE_NUMBER AS offlineNumber
+		FROM
+			c_mes_line_t line
+			JOIN c_mes_station_t station ON line.id = station.LINE_ID
+			LEFT JOIN ( SELECT sn, st, min( serial ) FROM r_mes_station_serial_flag_t WHERE flag = 0 GROUP BY sn ) flag ON station.id = flag.st
+			LEFT JOIN ( SELECT * FROM r_mes_workorder_detail_t AS `work` WHERE `work`.`STATUS` = 1 GROUP BY LINE_ID ) `work` ON `work`.LINE_ID = line.id
+			ORDER BY  line.id
+	</select>
+
+</mapper>

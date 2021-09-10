@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.yp.wms.WmsStockDao">
+
+	<!-- 查询 -->
+	<select id="list" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			DATE_FORMAT( a.dt, '%Y-%m-%d %H:%i:%s' ) AS dt,
+			a.factoryId,
+			a.packageId,
+			a.unitCode,
+			a.ItemNo,
+			a.batchNumber,
+			a.number,
+			a.numberOfPackages,
+			a.locationId,
+			a.shelfNumber,
+			a.toBeInspectedNumber,
+			a.frozenNumber,
+			a.pickingLockNumber,
+			a.shipmentLockingNumber,
+			a.unit,
+			a.supplierBatchNumber,
+			DATE_FORMAT( a.dateOfManufacture, '%Y-%m-%d' ) AS dateOfManufacture,
+			DATE_FORMAT( a.expiryDate, '%Y-%m-%d' ) AS expiryDate,
+			b.factoryName,
+			c.LOCATION_NAME as locationName
+		FROM c_qh_wms_stock_t a
+		JOIN c_mes_factory_t b ON a.factoryId = b.id
+		JOIN c_wms_location_t c on a.locationId = c.id
+		where 1 = 1
+		<if test="factoryId != null and factoryId != ''">
+			and a.factoryId = #{factoryId}
+		</if>
+		<if test="locationId != null and locationId != ''">
+			and a.locationId = #{locationId}
+		</if>
+		<if test="packageId != null and packageId != ''">
+			and a.packageId like '%${packageId}%'
+		</if>
+		<if test="code != null and code != ''">
+			and a.unitCode like '%${code}%'
+		</if>
+		<if test="materialNo != null and materialNo != ''">
+			and a.ItemNo like '%${materialNo}%'
+		</if>
+		<if test="startDt != null and startDt != '' and endDt != null and endDt != ''">
+			and DATE_FORMAT(a.dt,'%Y-%m-%d') between #{startDt} and #{endDt}
+		</if>
+	</select>
+
+	<!-- 新增 -->
+	<insert id="add">
+		INSERT INTO c_qh_wms_stock_t
+		(
+			dt,factoryId,packageId,unitCode,
+			ItemNo,batchNumber,number,numberOfPackages,
+			locationId,shelfNumber,toBeInspectedNumber,frozenNumber,
+			pickingLockNumber,shipmentLockingNumber,unit,supplierBatchNumber,
+			dateOfManufacture,expiryDate
+		)
+		value
+		(
+			now(),#{factoryId},#{packageId},#{unitCode},
+			#{ItemNo},#{batchNumber},#{number},#{numberOfPackages},
+			#{locationId},#{shelfNumber},#{toBeInspectedNumber},#{frozenNumber},
+			#{pickingLockNumber},#{shipmentLockingNumber},#{unit},#{supplierBatchNumber},
+			#{dateOfManufacture},#{expiryDate}
+		)
+	</insert>
+
+	<!-- 更新 -->
+	<update id="update">
+		update c_qh_wms_stock_t
+		<trim prefix="set" suffixOverrides=",">
+			<if test="factoryId != null and factoryId != ''">
+				factoryId = #{factoryId},
+			</if>
+			<if test="packageId != null and packageId != ''">
+				packageId = #{packageId},
+			</if>
+			<if test="unitCode != null and unitCode != ''">
+				unitCode = #{unitCode},
+			</if>
+			<if test="ItemNo != null and ItemNo != ''">
+				ItemNo = #{ItemNo},
+			</if>
+			<if test="batchNumber != null and batchNumber != ''">
+				batchNumber = #{batchNumber},
+			</if>
+			<if test="number != null">
+				number = #{number},
+			</if>
+			<if test="numberOfPackages != null">
+				numberOfPackages = #{numberOfPackages},
+			</if>
+			<if test="locationId != null and locationId != ''">
+				locationId = #{locationId},
+			</if>
+			<if test="shelfNumber != null and shelfNumber != ''">
+				shelfNumber = #{shelfNumber},
+			</if>
+			<if test="toBeInspectedNumber != null">
+				toBeInspectedNumber = #{toBeInspectedNumber},
+			</if>
+			<if test="frozenNumber != null">
+				frozenNumber = #{frozenNumber},
+			</if>
+			<if test="pickingLockNumber != null">
+				pickingLockNumber = #{pickingLockNumber},
+			</if>
+			<if test="shipmentLockingNumber != null">
+				shipmentLockingNumber = #{shipmentLockingNumber},
+			</if>
+			<if test="unit != null and unit != ''">
+				unit = #{unit},
+			</if>
+			<if test="supplierBatchNumber != null and supplierBatchNumber != ''">
+				supplierBatchNumber = #{supplierBatchNumber},
+			</if>
+			<if test="dateOfManufacture != null and dateOfManufacture != ''">
+				dateOfManufacture = #{dateOfManufacture},
+			</if>
+			<if test="expiryDate != null and expiryDate != ''">
+				expiryDate = #{expiryDate},
+			</if>
+		</trim>
+		where id = #{id}
+	</update>
+
+	<!-- 删除 -->
+	<delete id="delete">
+		delete from c_qh_wms_stock_t
+		where id = #{id}
+	</delete>
+
+	<!-- 通过单件码跟包装id查询库存 -->
+	<select id="findStockByUnitCodeAndPackingId" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			DATE_FORMAT( a.dt, '%Y-%m-%d %H:%i:%s' ) AS dt,
+			a.factoryId,
+			a.packageId,
+			a.unitCode,
+			a.ItemNo,
+			a.batchNumber,
+			a.number,
+			a.numberOfPackages,
+			a.locationId,
+			a.shelfNumber,
+			a.toBeInspectedNumber,
+			a.frozenNumber,
+			a.pickingLockNumber,
+			a.shipmentLockingNumber,
+			a.unit,
+			a.supplierBatchNumber,
+			DATE_FORMAT( a.dateOfManufacture, '%Y-%m-%d' ) AS dateOfManufacture,
+			DATE_FORMAT( a.expiryDate, '%Y-%m-%d' ) AS expiryDate,
+			b.factoryName,
+			c.BOM_ID AS materialNo,
+			c.MATERIAL_NAME AS materialName
+		FROM c_qh_wms_stock_t a
+		JOIN c_mes_factory_t b ON a.factoryId = b.id
+		JOIN c_mes_jl_material_t c ON a.ItemNo = c.BOM_ID 
+		where 1 = 1
+		<if test="unitCode != null and unitCode != ''">
+		and a.unitCode = #{unitCode}
+		</if>
+		<if test="packingId != null and packingId != ''">
+		and a.packageId = #{packingId}
+		</if>
+	</select>
+
+	<!-- 通过工厂id跟库位id查询库存 -->
+	<select id="findStockByFactoryIdAndLocationId" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			a.dt,
+			a.factoryId,
+			a.packageId,
+			a.unitCode,
+			a.ItemNo,
+			a.batchNumber,
+			a.number,
+			a.numberOfPackages,
+			a.locationId,
+			a.shelfNumber,
+			a.toBeInspectedNumber,
+			a.frozenNumber,
+			a.pickingLockNumber,
+			a.shipmentLockingNumber,
+			a.unit,
+			a.supplierBatchNumber,
+			a.dateOfManufacture,
+			a.expiryDate,
+			b.MATERIAL_NAME AS materialName,
+			b.BOM_ID AS materialNo
+		FROM
+			c_qh_wms_stock_t a
+			JOIN c_mes_jl_material_t b ON a.materialNo = b.BOM_ID
+		where a.factoryId = #{factoryId}
+		and a.locationId = #{locationId}
+	</select>
+
+
+</mapper>

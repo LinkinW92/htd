@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wms.MaterialUnitDao">
+
+	<select id="findMaterialUnitList" resultType="com.skeqi.mes.pojo.wms.CWmsMaterialUnitT">
+		select * from c_wms_material_unit_t
+		where 1 = 1
+		<if test="id != null">
+			AND ID = #{id}
+		</if>
+		<if test="modifyTime != null">
+			AND MODIFY_TIME = #{modifyTime}
+		</if>
+		<if test="unitNo != null">
+			AND UNIT_NO = #{unitNo}
+		</if>
+		<if test="unitName != null">
+			AND UNIT_NAME = #{unitName}
+		</if>
+		ORDER BY ID
+	</select>
+
+	<insert id="addMaterialUnit">
+		insert into c_wms_material_unit_t(
+		MODIFY_TIME,UNIT_NO,UNIT_NAME)
+		values(
+		now(),#{unitNo},#{unitName})
+	</insert>
+
+	<delete id="deleteMaterialUnit">
+		delete from c_wms_material_unit_t
+		where id = #{materialUnitId}
+	</delete>
+
+	<update id="updateMaterialUnit">
+		update c_wms_material_unit_t
+		<trim prefix="SET" suffixOverrides=",">  
+			<if test="unitNo != null">
+				UNIT_NO = #{unitNo},
+        	</if>
+			<if test="unitName != null">
+				UNIT_NAME = #{unitName},
+        	</if>
+			MODIFY_TIME = now()
+        </trim>  
+		where ID = #{id}
+	</update>
+
+</mapper>

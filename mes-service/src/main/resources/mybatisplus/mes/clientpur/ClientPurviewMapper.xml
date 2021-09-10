@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.clientpur.ClientPurviewDao">
+
+	<!-- 新增 -->
+	<insert id="addClientPurview" keyProperty="id" useGeneratedKeys="false">
+		INSERT INTO C_MES_CLIENT_PURVIEW_T(DT,FUN_NO,OWN_PASSWORD,FUN_NAME,DIS)
+		VALUES (#{dt},#{funNo},#{ownPassword},#{dis},#{funName})
+	</insert>
+
+	<!-- 查询客户端功能模块 -->
+	<select id="clientPurviewList" resultType="CMesClientPurviewT" parameterType="map">
+		select * from C_MES_CLIENT_PURVIEW_T WHERE 1 = 1
+		<choose>
+			<when test="funNo != null">
+			 	and FUN_NO = #{funNo}
+			</when>
+			<when test="id != null">
+			 	and ID = #{id}
+			</when>
+		</choose>
+		order by DT
+	</select>
+
+	<!-- 修改 -->
+	<update id="updateClientPur">
+	UPDATE C_MES_CLIENT_PURVIEW_T SET DT=#{dt},FUN_NO=#{funNo},OWN_PASSWORD=#{ownPassword},DIS=#{dis},FUN_NAME=#{funName}
+      	WHERE ID = #{id}
+	</update>
+
+	<!-- 删除 -->
+	<delete id="delClientPur">
+		DELETE FROM C_MES_CLIENT_PURVIEW_T WHERE ID = #{id}
+	</delete>
+
+</mapper>

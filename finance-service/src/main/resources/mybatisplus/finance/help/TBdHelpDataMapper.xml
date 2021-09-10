@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.TBdHelpDataMapper">
+
+    <resultMap type="com.skeqi.finance.domain.help.TBdHelpData" id="TBdHelpDataResult">
+        <result property="fId" column="f_id"/>
+        <result property="fName" column="f_name"/>
+        <result property="fNumber" column="f_number"/>
+        <result property="fRemark" column="f_remark"/>
+        <result property="fSort" column="f_sort"/>
+        <result property="fTypeId" column="f_type_id"/>
+        <result property="fTypeName" column="f_type_name"/>
+        <result property="fCreateOrgid" column="f_create_orgid"/>
+        <result property="fUseOrgid" column="f_use_orgid"/>
+        <result property="fCreatorid" column="f_creatorid"/>
+        <result property="fCreateDate" column="f_create_date"/>
+        <result property="fModifierid" column="f_modifierid"/>
+        <result property="fModifyDate" column="f_modify_date"/>
+        <result property="fDocumentStatus" column="f_document_status"/>
+        <result property="fAuditorid" column="f_auditorid"/>
+        <result property="fAuditDate" column="f_audit_date"/>
+        <result property="fForbidStatus" column="f_forbid_status"/>
+        <result property="fForbidderid" column="f_forbidderid"/>
+        <result property="fForbidDate" column="f_forbid_date"/>
+        <result property="fIssysPreset" column="f_issys_preset"/>
+        <result property="fMasterId" column="f_master_id"/>
+    </resultMap>
+
+    <select id="queryPageGroup" parameterType="com.skeqi.finance.pojo.bo.help.TBdHelpDataQueryBo" resultType="com.skeqi.finance.pojo.vo.basicinformation.help.TBdHelpDataVo">
+        select * from (
+            SELECT
+            *
+            FROM
+            t_bd_help_data
+            WHERE
+            f_type_id IN (
+            SELECT
+            t4.f_id
+            FROM
+            (
+            SELECT
+            *
+            FROM
+            (
+            SELECT
+            t1.*,
+            IF
+            ( find_in_set( f_parent_id, @pids ) > 0, @pids := concat( @pids, ',', f_id ), 0 ) AS ischild
+            FROM
+            ( SELECT f_id, f_number, f_business_area_name, f_business_area, f_type_name, f_description, f_parent_id, f_issys_preset FROM t_bd_help_type t ORDER BY f_parent_id, f_id ) t1,
+            ( SELECT @pids := #{bo.fTypeId} ) t2
+            ) t3
+            WHERE
+            ischild != 0
+            ) t4) or f_type_id= #{bo.fTypeId}
+        ) t5
+        <where>
+            <if test="bo.fNumber != null and bo.fNumber  != ''">
+                AND t5.f_number like concat('%', #{bo.fNumber}, '%')
+            </if>
+            <if test="bo.fName != null and bo.fName != ''">
+                AND t5.f_name = #{bo.fName}
+            </if>
+            <if test="bo.fIssysPreset != null and bo.fIssysPreset != ''">
+                AND t5.f_issys_preset = #{bo.fIssysPreset}
+            </if>
+        </where>
+        limit #{bo.pageNum},#{bo.pageSize}
+    </select>
+
+
+    <select id="queryPageGroupCount" parameterType="com.skeqi.finance.pojo.bo.help.TBdHelpDataQueryBo" resultType="java.lang.Integer">
+        select count(1) from (
+        SELECT
+        *
+        FROM
+        t_bd_help_data
+        WHERE
+        f_type_id IN (
+        SELECT
+        t4.f_id
+        FROM
+        (
+        SELECT
+        *
+        FROM
+        (
+        SELECT
+        t1.*,
+        IF
+        ( find_in_set( f_parent_id, @pids ) > 0, @pids := concat( @pids, ',', f_id ), 0 ) AS ischild
+        FROM
+        ( SELECT f_id, f_number, f_business_area_name, f_business_area, f_type_name, f_description, f_parent_id, f_issys_preset FROM t_bd_help_type t ORDER BY f_parent_id, f_id ) t1,
+        ( SELECT @pids := #{bo.fTypeId} ) t2
+        ) t3
+        WHERE
+        ischild != 0
+        ) t4) or f_type_id= #{bo.fTypeId}
+        ) t5
+        <where>
+            <if test="bo.fNumber != null and bo.fNumber  != ''">
+                AND t5.f_number like concat('%', #{bo.fNumber}, '%')
+            </if>
+            <if test="bo.fName != null and bo.fName != ''">
+                AND t5.f_name = #{bo.fName}
+            </if>
+            <if test="bo.fIssysPreset != null and bo.fIssysPreset != ''">
+                AND t5.f_issys_preset = #{bo.fIssysPreset}
+            </if>
+        </where>
+    </select>
+
+</mapper>

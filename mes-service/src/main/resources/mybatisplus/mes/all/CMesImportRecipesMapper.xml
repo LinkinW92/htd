@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.all.CMesImportRecipesDAO">
+
+	<!-- 查询所有总配方 -->
+	<select id="findAllTotalRecipe" resultType="CMesTotalRecipeT">
+		select * from c_mes_total_recipe_t
+	</select>
+
+	<!-- 配方详情 -->
+	<select id="findAllRecipeDetail" resultType="java.util.HashMap">
+		SELECT
+			datil.A_LIMIT AS aLimit,
+			datil.BOLT_JSON AS boltjson,
+			datil.BOLTEQS AS bolteqs,
+			datil.CHEKORNO AS chekorno,
+			datil.EXACTORNO AS exactorno,
+			datil.FEACODE AS feacode,
+			datil.GUN_NO AS gunNo,
+			datil.MATERIAL_NAME AS materialName,
+			datil.MATERIALPN AS materialpn,
+			datil.NUMBERS AS numbers,
+			datil.PATH_BINARY AS pathBinary,
+			datil.PHOTO_NO AS photoNo,
+			datil.PROGRAM_NO AS programNo,
+			datil.REVIEWORNO AS revieworno,
+			datil.REWORKTIMES AS reworktimes,
+			datil.SLEEVE_NO AS sleeveNo,
+			datil.STEPNO AS stepno,
+			datil.T_LIMIT AS tLimit,
+			recipe.RECIPE_NAME AS recipeName,
+			total.id AS id,
+			pro.PRODUCTION_NAME AS productionName,
+			line.NAME AS lineName,
+			station.STATION_NAME AS stationName,
+			total.TOTAL_RECIPE_NAME AS totalName,
+			type.TYPE_NAME AS stepCategory
+		FROM
+			c_mes_total_recipe_t total,
+			c_mes_production_t pro,
+			c_mes_line_t line,
+			c_mes_recipe_t recipe,
+			c_mes_recipe_datil_t datil,
+			c_mes_station_t station,
+			c_mes_recipe_type_t type
+		WHERE
+			total.ID = recipe.TOTAL_ID
+			AND recipe.ID = datil.RECIPE_ID
+			AND station.ID = recipe.STATION_ID
+			AND type.ID = datil.STEP_CATEGORY
+			AND total.PRODUCTION_ID = pro.ID
+			AND total.LINE_ID = line.ID
+		<if test="id!=null and id!='' ">
+			and total.id=#{id}
+		</if>
+	</select>
+
+	<select id="findAllRecipeDetailTwo" resultType="CMesImportT">
+		SELECT
+			datil.A_LIMIT AS aLimit,
+			datil.BOLT_JSON AS boltjson,
+			datil.BOLTEQS AS bolteqs,
+			datil.CHEKORNO AS chekorno,
+			datil.EXACTORNO AS exactorno,
+			datil.FEACODE AS feacode,
+			datil.GUN_NO AS gunNo,
+			datil.MATERIAL_NAME AS materialName,
+			datil.MATERIALPN AS materialpn,
+			datil.NUMBERS AS numbers,
+			datil.PATH_BINARY AS pathBinary,
+			datil.PHOTO_NO AS photoNo,
+			datil.PROGRAM_NO AS programNo,
+			datil.REVIEWORNO AS revieworno,
+			datil.REWORKTIMES AS reworktimes,
+			datil.SLEEVE_NO AS sleeveNo,
+			datil.STEPNO AS stepno,
+			datil.T_LIMIT AS tLimit,
+			recipe.RECIPE_NAME AS recipeName,
+			total.id AS id,
+			pro.PRODUCTION_NAME AS productionName,
+			line.NAME AS lineName,
+			station.STATION_NAME AS stationName,
+			total.TOTAL_RECIPE_NAME AS totalName,
+			type.TYPE_NAME AS stepCategory
+		FROM
+			c_mes_total_recipe_t total,
+			c_mes_production_t pro,
+			c_mes_line_t line,
+			c_mes_recipe_t recipe,
+			c_mes_recipe_datil_t datil,
+			c_mes_station_t station,
+			c_mes_recipe_type_t type
+		WHERE
+			total.ID = recipe.TOTAL_ID
+			AND recipe.ID = datil.RECIPE_ID
+			AND station.ID = recipe.STATION_ID
+			AND type.ID = datil.STEP_CATEGORY
+			AND total.PRODUCTION_ID = pro.ID
+			AND total.LINE_ID = line.ID
+		<if test="_parameter !=null and _parameter !='' ">
+			and total.id=#{_parameter}
+		</if>
+	</select>
+
+	<!-- 根据工位名称查询此工位是否存在 -->
+	<select id="findByNameStation" resultType="java.lang.Integer">
+		select id from c_mes_station_t where BINARY STATION_NAME = #{name} and LINE_ID=#{lineId}
+	</select>
+
+	<!-- 根据操作类别名称查询ID -->
+	<select id="findByNameType" resultType="java.lang.Integer">
+		select id from c_mes_recipe_type_t where TYPE_NAME = #{name}
+	</select>
+
+	<!-- 添加总配方 -->
+	<insert id="addTotalRecipe">
+		insert into c_mes_total_recipe_t(TOTAL_RECIPE_NAME,LINE_ID,PRODUCTION_ID,TOTAL_RECIPE_DESCRIBE,STATUS)
+					values(#{totalRecipeName},#{lineId},#{productionId},#{totalRecipeDescribe,jdbcType=VARCHAR},#{status})
+	</insert>
+
+	<!-- 查询最大的配方ID -->
+	<select id="findTotalId" resultType="java.lang.Integer">
+		select max(id) from c_mes_total_recipe_t
+	</select>
+
+	<!-- 添加配方 -->
+	<insert id="addRecipe">
+		insert into c_mes_recipe_t(TOTAL_ID,RECIPE_NAME,RECIPE_DISCRIPTION,STATION_ID)
+		values(#{totalId},#{recipeName},#{recipeDiscription},#{stationId})
+	</insert>
+
+	<!-- 查询最大的工位配方 -->
+	<select id="findRecipeId" resultType="java.lang.Integer">
+		select max(id) from c_mes_recipe_t
+	</select>
+
+	<!-- 添加配方明细 -->
+	<insert id="addRecipeDatil">
+	INSERT INTO c_mes_recipe_datil_t (STEP_CATEGORY,
+											MATERIAL_NAME,GUN_NO,
+											PROGRAM_NO,PHOTO_NO,
+											SLEEVE_NO,REWORKTIMES,
+											FEACODE,CHEKORNO,
+											REVIEWORNO,EXACTORNO,
+											MATERIALPN,BOLTEQS,
+											A_LIMIT,T_LIMIT,
+											RECIPE_ID,UPLOAD_CODE,
+											STEPNO,NUMBERS,
+											PICTURN_PATH,BOLT_JSON,PATH_BINARY)
+								values(#{stepCategory},#{materialName},#{gunNo,jdbcType=VARCHAR},#{programNo,jdbcType=VARCHAR},#{photoNo,jdbcType=VARCHAR},#{sleeveNo,jdbcType=VARCHAR},#{reworktimes,jdbcType=VARCHAR},#{feacode,jdbcType=VARCHAR},#{chekorno,jdbcType=VARCHAR},
+								#{revieworno,jdbcType=VARCHAR},#{exactorno,jdbcType=VARCHAR},#{materialpn,jdbcType=VARCHAR},#{bolteqs,jdbcType=VARCHAR},#{aLimit,jdbcType=VARCHAR},#{tLimit,jdbcType=VARCHAR},#{recipeId},#{uploadCode,jdbcType=VARCHAR},#{stepno},
+								#{numbers,jdbcType=VARCHAR},#{picturnPath,jdbcType=VARCHAR},#{boltjson,jdbcType=VARCHAR},#{pathBinary,jdbcType=VARCHAR})
+	</insert>
+
+	<!-- 根据名称查询总配方是否重复 -->
+	<select id="findByNameTotal" resultType="java.lang.Integer">
+		select count(id) from c_mes_total_recipe_t where TOTAL_RECIPE_NAME=#{name}
+	</select>
+
+	<!-- 根据名称查询工位配方是否重复 -->
+	<select id="findByNameRecipe" resultType="java.lang.Integer">
+		select count(id) from c_mes_recipe_t where RECIPE_NAME=#{name} and TOTAL_ID=#{id}
+	</select>
+
+	<!-- 根据产品名称查询ID  -->
+	<select id="findProductionId" resultType="java.lang.Integer">
+		select id from c_mes_production_t where PRODUCTION_NAME=#{pname}
+	</select>
+
+	<!-- 根据产线名称查询ID -->
+	<select id="findLineId" resultType="java.lang.Integer">
+		select id from c_mes_line_t where name=#{lname}
+	</select>
+
+	<!-- 根据总配方名称查询数量（判断是否重复） -->
+	<select id="findCountByTotalName" resultType="java.lang.Integer">
+		select count(*) from  where TOTAL_RECIPE_NAME=#{totalName}
+	</select>
+</mapper>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.TBdCurrencyMapper">
+
+    <resultMap type="com.skeqi.finance.domain.TBdCurrency" id="TBdCurrencyResult">
+        <result property="fCurrencyId" column="f_currency_id"/>
+        <result property="fName" column="f_name"/>
+        <result property="fNumber" column="f_number"/>
+        <result property="fCode" column="f_code"/>
+        <result property="fSysmbol" column="f_sysmbol"/>
+        <result property="fPricedigits" column="f_pricedigits"/>
+        <result property="fAmountdigits" column="f_amountdigits"/>
+        <result property="fPriority" column="f_priority"/>
+        <result property="fIstrans" column="f_istrans"/>
+        <result property="fMasterId" column="f_master_id"/>
+        <result property="fIsshowCsymbol" column="f_isshow_csymbol"/>
+        <result property="fCurrencySymbolid" column="f_currency_symbolid"/>
+        <result property="fFormatOrder" column="f_format_order"/>
+        <result property="fCreateOrgid" column="f_create_orgid"/>
+        <result property="fCreatorid" column="f_creatorid"/>
+        <result property="fCreateDate" column="f_create_date"/>
+        <result property="fUseOrgid" column="f_use_orgid"/>
+        <result property="fModifierid" column="f_modifierid"/>
+        <result property="fModifyDate" column="f_modify_date"/>
+        <result property="fDocumentStatus" column="f_document_status"/>
+        <result property="fAuditorid" column="f_auditorid"/>
+        <result property="fAuditDate" column="f_audit_date"/>
+        <result property="fForbidStatus" column="f_forbid_status"/>
+        <result property="fForbidderid" column="f_forbidderid"/>
+        <result property="fForbidDate" column="f_forbid_date"/>
+        <result property="fIssysPreset" column="f_issys_preset"/>
+        <result property="fSettleType" column="f_settle_type"/>
+    </resultMap>
+
+
+</mapper>

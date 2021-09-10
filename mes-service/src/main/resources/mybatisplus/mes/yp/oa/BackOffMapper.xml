@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.yp.oa.BackOffDao">
+
+	<!-- 查询审批详情 -->
+	<select id="findApprovalDetailed" resultType="com.alibaba.fastjson.JSONObject">
+		select * from c_oa_approval_record_detailed_t
+		where listNo = #{listNo}
+	</select>
+
+	<!-- 更新审批详情步骤 -->
+	<update id="updateApprovalDetailedStep">
+		update c_oa_approval_record_detailed_t
+		set
+		step = #{step}
+		where listNo = #{listNo}
+	</update>
+
+	<!-- 新增审批记录 -->
+	<insert id="addAapprovalNote">
+		insert into c_oa_approval_record_note_t(dt,dis,listNo,userId,state,type,step,list)
+		value(now(),#{dis},#{listNo},#{userId},#{state},#{type},#{step},#{list})
+	</insert>
+
+	<!-- 通过id查询用户 -->
+	<select id="findUserById" resultType="com.alibaba.fastjson.JSONObject">
+		select id,USER_NAME as userName from c_mes_user_t
+		where viewMode = 1
+		and id = #{id}
+	</select>
+
+	<!-- 删除待审批记录 -->
+	<delete id="deleteApprovalWith">
+		delete from c_oa_approval_record_with_t
+		where listNo = #{listNo}
+		<if test="userId != null and userId != ''">
+		and userId = #{userId}
+		</if>
+	</delete>
+
+	<!-- 新增待审批记录 -->
+	<insert id="addApprovalWith">
+		insert into c_oa_approval_record_with_t(dt,userId,listNo)
+		value(now(),#{userId},#{listNo})
+	</insert>
+
+
+</mapper>

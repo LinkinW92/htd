@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.TGlInitDimensionMapper">
+
+    <resultMap type="com.skeqi.finance.domain.TGlInitDimension" id="TGlInitDimensionResult">
+        <result property="fId" column="f_id"/>
+        <result property="fAcctId" column="f_acct_id"/>
+        <result property="fBookId" column="f_book_id"/>
+        <result property="fDimensionId" column="f_dimension_id"/>
+        <result property="fDimensionName" column="f_dimension_name"/>
+        <result property="fBeginBalancefor" column="f_begin_balancefor"/>
+        <result property="fBeginBalance" column="f_begin_balance"/>
+        <result property="fDebitFor" column="f_debit_for"/>
+        <result property="fDebit" column="f_debit"/>
+        <result property="fCreditFor" column="f_credit_for"/>
+        <result property="fCredit" column="f_credit"/>
+        <result property="fYtdDebitfor" column="f_ytd_debitfor"/>
+        <result property="fYtdDebit" column="f_ytd_debit"/>
+        <result property="fYtdCreditfor" column="f_ytd_creditfor"/>
+        <result property="fYtdCredit" column="f_ytd_credit"/>
+        <result property="fEndBalancefor" column="f_end_balancefor"/>
+        <result property="fEndBalance" column="f_end_balance"/>
+        <result property="fCreateOrgid" column="f_create_orgid"/>
+        <result property="fCreatorid" column="f_creatorid"/>
+        <result property="fCreateDate" column="f_create_date"/>
+        <result property="fUseOrgid" column="f_use_orgid"/>
+        <result property="fModifierid" column="f_modifierid"/>
+        <result property="fModifyDate" column="f_modify_date"/>
+        <result property="fDocumentStatus" column="f_document_status"/>
+        <result property="fAuditorid" column="f_auditorid"/>
+        <result property="fAuditDate" column="f_audit_date"/>
+        <result property="fForbidStatus" column="f_forbid_status"/>
+        <result property="fForbidderid" column="f_forbidderid"/>
+        <result property="fForbidDate" column="f_forbid_date"/>
+        <result property="fIssysPreset" column="f_issys_preset"/>
+        <result property="fMasterId" column="f_master_id"/>
+    </resultMap>
+
+
+</mapper>

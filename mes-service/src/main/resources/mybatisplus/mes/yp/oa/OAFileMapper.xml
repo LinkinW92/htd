@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.yp.oa.OAFileDao">
+
+	<!-- 查询 -->
+	<select id="list" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			a.`name`,
+			a.type,
+			a.path,
+			DATE_FORMAT( a.establishTime, '%Y-%m-%d %H:%i:%s' ) AS establishTime,
+			DATE_FORMAT( a.updateTime, '%Y-%m-%d %H:%i:%s' ) AS updateTime,
+			a.userId,
+			a.size,
+			b.USER_NAME as userName
+		FROM
+			c_oa_file_t a
+			join c_mes_user_t b on a.userId = b.id
+			where a.path = #{path}
+	</select>
+
+	<!-- 新增 -->
+	<insert id="add" useGeneratedKeys="true" keyProperty="id"  keyColumn="id">
+		INSERT into c_oa_file_t(`name`,type,path,establishTime,updateTime,userId,size)
+		value(#{name},#{type},#{path},now(),now(),#{userId},#{size})
+	</insert>
+
+	<!-- 查询相同路径下文件名字相同的conut -->
+	<select id="findFileCountName" resultType="int">
+		SELECT count(*) FROM `c_oa_file_t`
+		where path = #{path}
+		and `name` = #{name}
+		<if test="id != null and id != ''">
+		and id != #{id}
+		</if>
+	</select>
+
+	<!-- 通过id查询 -->
+	<select id="findFileById" resultType="com.alibaba.fastjson.JSONObject">
+		select * from c_oa_file_t
+		where id = #{id}
+	</select>
+
+	<!-- 通过id删除文件 -->
+	<delete id="deleteFileById">
+		delete from c_oa_file_t
+		where id = #{id}
+	</delete>
+
+	<!-- 通过路径删除文件 -->
+	<delete id="deleteFileByPath">
+		delete from c_oa_file_t
+		where path like '${path}%'
+	</delete>
+
+	<!-- 通过路径跟文件名查询count数量 -->
+	<select id="findFileCountByPathAndName" resultType="int">
+		SELECT count(*) FROM `c_oa_file_t`
+		where `name` = #{name}
+		and path = #{path}
+		<if test="id != null and id != ''">
+		and id != #{id}
+		</if>
+	</select>
+
+	<!-- 更新文件名称 -->
+	<update id="updateFileName">
+		update c_oa_file_t
+		set
+		`name` = #{name},
+		updateTime = now()
+		where id = #{id}
+	</update>
+
+	<!-- 更新文件路径 -->
+	<update id="updateFilePath">
+		update c_oa_file_t
+		set
+		path = #{path2},
+		updateTime = now()
+		where path = #{path1}
+	</update>
+
+	<!-- 修改文件类型 -->
+	<update id="updateFileType">
+		update c_oa_file_t
+		set
+		type = #{type}
+		where id = #{id}
+	</update>
+
+	<resultMap type="com.alibaba.fastjson.JSONObject" id="fileAuthorityMap">
+		<result column="keyId" property="keyId" />
+		<result column="name" property="name" />
+		<result column="userOrRole" property="userOrRole" />
+		<!-- collection：一对多 property：实体类里的 ofType：实体类 -->
+		<collection property="state" javaType="list" ofType="com.alibaba.fastjson.JSONObject">
+			<result column="type" property="type" />
+		</collection>
+	</resultMap>
+	<!-- 查询文件权限 -->
+	<select id="findFileAuthorityUser" resultMap="fileAuthorityMap">
+		SELECT
+			a.id AS keyId,
+			a.USER_NAME AS `name`,
+			b.type,
+			b.userOrRole
+		FROM
+			c_mes_user_t a
+			LEFT JOIN c_oa_file_authority_t b ON a.id = b.keyId
+			AND path = #{path} and userOrRole = 'user'
+		where a.viewMode = 1
+		ORDER BY
+			a.id
+	</select>
+
+	<!-- 查询文件权限 -->
+	<select id="findFileAuthorityRole" resultMap="fileAuthorityMap">
+		SELECT
+			a.role_id AS keyId,
+			a.role_name AS `name`,
+			b.type,
+			b.userOrRole 
+		FROM
+			sys_role a
+			LEFT JOIN c_oa_file_authority_t b ON a.role_id = b.keyId 
+			AND path = #{path} and userOrRole = 'role'
+		ORDER BY
+			a.role_id
+	</select>
+
+	<!-- 新增文件权限 -->
+	<insert id="addFileAuthority">
+		insert into c_oa_file_authority_t(path,keyId,type,name,userOrRole)
+		value(#{path},#{keyId},#{type},#{name},#{userOrRole})
+	</insert>
+
+	<!-- 删除文件权限 -->
+	<delete id="deleteFileAuthority">
+		delete from c_oa_file_authority_t
+		where path = #{path}
+	</delete>
+
+	<!-- 通过路径查询那些用户有这个权限 -->
+	<select id="findFileAuthorityByPath" resultType="com.alibaba.fastjson.JSONObject">
+		select userId,type from c_oa_file_authority_t
+		where path = #{path}
+	</select>
+
+	<!-- 查询用户权限 -->
+	<select id="findAuthorityByUserId" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT * FROM `c_oa_file_authority_t`
+		where userId = #{userId}
+	</select>
+
+	<!-- 查询权限清单 -->
+	<select id="findPermissionList" resultType="com.alibaba.fastjson.JSONObject">
+		select * from c_oa_file_authority_t
+		where path = #{path}
+	</select>
+
+	<!-- 通过路径查询路径前部分权限 -->
+	<select id="findFileAuthorityByLikePath" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT * FROM `c_oa_file_authority_t`
+		where path like '${path}%'
+	</select>
+
+	<!-- 更新权限清单路径 -->
+	<update id="updateFileAuthorityPath">
+		update c_oa_file_authority_t
+		set
+		path = #{path},
+		name = #{name}
+		where id = #{id}
+	</update>
+
+</mapper>

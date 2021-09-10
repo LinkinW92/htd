@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.zch.NextBarcodeDao">
+
+	<select id="getLineByID" resultType="java.util.Map">
+		select * from c_mes_line_t where ID=#{lineId}
+	</select>
+
+	<select id="getHighPriorityWorkorderByLineId" resultType="java.util.Map">
+		select * from r_mes_workorder_detail_t where LINE_ID=#{lineId} and STATUS = 1 order by LEVEL_NO limit 1
+	</select>
+
+	<select id="getProductByID" resultType="java.util.Map">
+		select * from c_mes_production_t where ID=#{productId}
+	</select>
+
+	<select id="getLabelByID" resultType="java.util.Map">
+		select * from c_mes_label_manager_t where ID=#{labelId}
+	</select>
+
+	<select id="getLabelByIDAndNameAndLineId" resultType="java.util.Map">
+		select ID id,LABEL_NAME labelName,LINE_ID lineId from c_mes_label_manager_t
+		where 1=1
+		<if test="id!=null and id!=0">
+		and	ID=#{id}
+		</if>
+		<if test="labelName!=null and labelName!=''">
+			and	LABEL_NAME=#{labelName}
+		</if>
+		<if test="lineId!=null and lineId!=''">
+			and	LINE_ID=#{lineId}
+		</if>
+	</select>
+
+
+	<select id="getMaxPrintR" resultType="java.util.Map">
+		select t.* from (select * from r_mes_plan_print_t where DATE_FORMAT(DT,'%Y-%m-%d') = DATE_FORMAT(now(),'%Y-%m-%d')) t GROUP BY t.ID HAVING t.LINE_ID = #{lineId} order by t.SERIAL_NO desc limit 1
+	</select>
+
+	<select id="getMaxPrintP" resultType="java.util.Map">
+		select t.* from (select * from p_mes_plan_print_t where DATE_FORMAT(DT,'%Y-%m-%d') = DATE_FORMAT(now(),'%Y-%m-%d')) t GROUP BY t.ID HAVING t.LINE_ID = #{lineId} order by t.SERIAL_NO desc limit 1
+	</select>
+
+	<insert id="insertPrint">
+		INSERT INTO r_mes_plan_print_t(DT, SN, LINE_ID, PRODUCTION_ID, SERIAL_NO, PRINT_FLAG, WORK_ORDER_ID, quantity)
+		VALUES (now(), #{SN}, #{LINE_ID}, #{PRODUCTION_ID}, #{SERIAL_NO}, #{printFlag}, #{WORK_ORDER_ID}, #{num});
+	</insert>
+
+	<update id="updatePrintNumber">
+		update r_mes_workorder_detail_t set PRINTE_NUMBER = PRINTE_NUMBER + 1 where ID = #{workorderId}
+	</update>
+
+	<update id="updatePrintFlag">
+		update r_mes_plan_print_t set PRINT_FLAG = 1 where SN = #{SN}
+	</update>
+
+	<select id="getLineByIDAndName" resultType="java.util.Map">
+		select * from c_mes_line_t where ID=#{lineId} or NAME=#{lineName}
+	</select>
+
+</mapper>

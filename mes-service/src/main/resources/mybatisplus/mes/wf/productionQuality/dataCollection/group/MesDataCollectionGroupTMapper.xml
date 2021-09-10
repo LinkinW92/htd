@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wf.productionQuality.dataCollection.group.MesDataCollectionGroupTMapper">
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, `number`, `name`, `range`, cdt, udt,`name`
+  </sql>
+  <select id="selectByPrimaryKey" resultType="com.skeqi.mes.pojo.wf.productionQuality.dataCollection.group.MesDataCollectionGroupT">
+    <!--@mbg.generated-->
+    select
+    <include refid="Base_Column_List" />
+    from c_mes_data_collection_group_t
+    where `number` = #{number,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectAll" resultType="com.skeqi.mes.pojo.wf.productionQuality.dataCollection.group.MesDataCollectionGroupT">
+    select
+      g.id, g.`number`, g.`name`, g.`range`, g.cdt,g.udt,r.name rangeName
+    from c_mes_data_collection_group_t g
+    left join c_mes_data_collection_range_t r
+    on r.`number` = g.`range`
+  </select>
+  <delete id="deleteByPrimaryKey">
+    <!--@mbg.generated-->
+    delete from c_mes_data_collection_group_t
+    where `number` = #{number,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insertSelective" parameterType="com.skeqi.mes.pojo.wf.productionQuality.dataCollection.group.MesDataCollectionGroupT" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into c_mes_data_collection_group_t
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="number != null">
+        `number`,
+      </if>
+      <if test="name != null">
+        `name`,
+      </if>
+      <if test="range != null">
+        `range`,
+      </if>
+      <if test="cdt != null">
+        cdt,
+      </if>
+      <if test="udt != null">
+        udt,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="number != null">
+        #{number,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="range != null">
+        #{range,jdbcType=VARCHAR},
+      </if>
+      <if test="cdt != null">
+        #{cdt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="udt != null">
+        #{udt,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.skeqi.mes.pojo.wf.productionQuality.dataCollection.group.MesDataCollectionGroupT">
+    <!--@mbg.generated-->
+    update c_mes_data_collection_group_t
+    <set>
+      <if test="name != null">
+        `name` = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="range != null">
+        `range` = #{range,jdbcType=VARCHAR},
+      </if>
+      <if test="udt != null">
+        udt = #{udt,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where `number` = #{number,jdbcType=VARCHAR}
+  </update>
+</mapper>

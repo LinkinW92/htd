@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.endhandle.TGlAmortizationSchemeMapper">
+
+    <resultMap type="com.skeqi.finance.domain.endhandle.amortization.TGlAmortizationScheme" id="TGlAmortizationSchemeResult">
+        <result property="fSchemeId" column="f_scheme_id"/>
+        <result property="fNumber" column="f_number"/>
+        <result property="fName" column="f_name"/>
+        <result property="fDescription" column="f_description"/>
+        <result property="fIsamort" column="f_isamort"/>
+        <result property="fAccountBookId" column="f_account_book_id"/>
+        <result property="fVoucherGroupId" column="f_voucher_group_id"/>
+        <result property="fCurrencyId" column="f_currency_id"/>
+        <result property="fExchangeRateType" column="f_exchange_rate_type"/>
+        <result property="fExplanation" column="f_explanation"/>
+        <result property="fPeddingAmortAmount" column="f_pedding_amort_amount"/>
+        <result property="fAmortedAmount" column="f_amorted_amount"/>
+        <result property="fEndBalance" column="f_end_balance"/>
+        <result property="fLastExecuteTime" column="f_last_execute_time"/>
+        <result property="fStatus" column="f_status"/>
+        <result property="fForbidStatus" column="f_forbid_status"/>
+        <result property="fForbidderId" column="f_forbidder_id"/>
+        <result property="fForbidDate" column="f_forbid_date"/>
+    </resultMap>
+
+
+    <select id="queryPageList" resultType="com.skeqi.finance.pojo.vo.endhandle.TGlAmortizationSchemeVo">
+        SELECT s.*,b.f_book_name as f_account_book_name,c.f_name as f_currency_name from t_gl_amortization_scheme s
+        LEFT JOIN t_bd_account_book b ON b.f_book_id=s.f_account_book_id
+        LEFT JOIN t_bd_currency c ON c.f_currency_id=s.f_currency_id
+        <where>
+            <if test="bo.fAccountBookName!=null and bo.fAccountBookName!=''">
+                b.f_book_name=#{bo.fAccountBookName}
+            </if>
+        </where>
+    </select>
+
+    <select id="getInfo" resultType="com.skeqi.finance.pojo.vo.endhandle.TGlAmortizationSchemeVo">
+         SELECT s.*,b.f_book_name as f_account_book_name,c.f_name as f_currency_name,rt.f_name,vg.f_voucher_words as f_voucher_group_name from t_gl_amortization_scheme s
+        LEFT JOIN t_bd_account_book b ON b.f_book_id=s.f_account_book_id
+        LEFT JOIN t_bd_currency c ON c.f_currency_id=s.f_currency_id
+        LEFT JOIN t_bd_rate_type rt ON rt.f_rate_type_id=s.f_exchange_rate_type
+        LEFT JOIN t_bd_voucher_group vg ON vg.f_vchgroup_id=s.f_voucher_group_id
+        where s.f_scheme_id =#{fSchemeId}
+    </select>
+</mapper>

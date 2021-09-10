@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.fqz.CMesModuleTableDAO">
+
+	<!-- 查询模组记录表 -->
+	<select id="findAllModuleTable" resultType="CMesModuleTableT">
+		select * from C_MES_MODULE_TABLE_T where 1=1
+		<if test="id!=null and id!=0">
+			and id=#{id}
+		</if>
+		order by id
+	</select>
+
+	<select id="findAll" resultType="java.util.HashMap">
+		<if test="id==1">
+			select * from C_MES_OCV_TESTING_T  where 1=1
+			<if test="sn!=null and sn!='' ">
+				and  BATTERIES_NUM=#{sn}
+			</if>
+			order by id
+		</if>
+		<if test="id==2">
+			select * from C_MES_ROBOT_T where 1=1
+			<if test="sn!=null and sn!='' ">
+				and	 BARCODE=#{sn}
+			</if>
+				order by id
+		</if>
+		<if test="id==3">
+			select * from C_MES_CCD_PHOTOGRAPH_T where 1=1
+			<if test="sn!=null and sn!='' ">
+				and	 CCD_PHOTOGRAPH_NUM=#{sn}
+			</if>
+				order by id
+		</if>
+		<if test="id==4">
+			select * from C_MES_BUSBAR_T where 1=1
+			<if test="sn!=null and sn!='' ">
+			 and busbar_num=#{sn}
+			</if>
+				order by id
+		</if>
+		<if test="id==5">
+			select * from C_MES_FPC_LASER_T where 1=1
+			<if test="sn!=null and sn!='' ">
+			and  FPC_NUM=#{sn}
+			</if>
+				order by id
+		</if>
+		<if test="id==6">
+			select * from C_MES_ISO_T  where 1=1
+			<if test="sn!=null and sn!='' ">
+			and	 BARCODE=#{sn}
+			</if>
+				order by id
+		</if>
+		<if test="id==7">
+			select * from C_MES_EOL_T where 1=1
+			<if test="sn!=null and sn!='' ">
+				and	 BARCODE=#{sn}
+			</if>
+				order by id
+		</if>
+		<if test="id==8">
+			select * from C_MES_FPC_T where 1=1
+			<if test="sn!=null and sn!='' ">
+			 and BARCODE=#{sn}
+			</if>
+				order by id
+		</if>
+		<if test="id==9">
+			select * from R_MES_MOUDLE_TRACKING_T where 1=1
+			<if test="sn!=null and sn!='' ">
+			and  sn=#{sn}
+			</if>
+				order by id
+		</if>
+		<if test="id==10">
+			select * from P_MES_MOUDLE_TRACKING_T where 1=1
+			<if test="sn!=null and sn!='' ">
+				and  sn=#{sn}
+			</if>
+				order by id
+		</if>
+		<if test="id==11">
+			select * from R_MES_MOUDLE_KEYPART_T where 1=1
+			<if test="sn!=null and sn!='' ">
+				and  sn=#{sn}
+			</if>
+				order by id
+		</if>
+		<if test="id==12">
+			select * from R_MES_MOTOR_TRACKING_T where 1=1
+			<if test="sn!=null and sn!='' ">
+				and  sn=#{sn}
+			</if>
+				order by id
+		</if>
+		<if test="id==13">
+			select * from P_MES_MOTOR_TRACKING_T where 1=1
+			<if test="sn!=null and sn!='' ">
+				and  sn=#{sn}
+			</if>
+				order by id
+		</if>
+		<if test="id==14">
+			select * from R_MES_MOTOR_KEYPART_T where 1=1
+			<if test="sn!=null and sn!='' ">
+				and  sn=#{sn}
+			</if>
+				order by id
+		</if>
+		<if test="id==15">
+			select * from R_MES_EMP_INPUT_T where 1=1
+			<if test="sn!=null and sn!='' ">
+				and  sn=#{sn}
+			</if>
+		</if>
+		<if test="id==16">
+			select * from R_MES_MOUDLE_LEAKAGE_T where 1=1
+			<if test="sn!=null and sn!='' ">
+				and  sn=#{sn}
+			</if>
+		</if>
+		<if test="id==17">
+			select * from R_MES_MOTOR_LEAKAGE_T where 1=1
+			<if test="sn!=null and sn!='' ">
+				and  sn=#{sn}
+			</if>
+		</if>
+	</select>
+</mapper>

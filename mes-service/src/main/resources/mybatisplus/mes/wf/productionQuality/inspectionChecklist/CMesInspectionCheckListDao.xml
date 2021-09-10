@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wf.productionQuality.inspectionCheckList.CMesInspectionCheckListDao">
+
+    <select id="findCheckList" resultType="java.util.Map">
+        select
+        c.*,
+        cd.*,
+        (select COUNT(*) from c_mes_inspection_checklist_detail_t cdd where cdd.CHECK_LIST_CODE=c.CODE) as  count
+        FROM c_mes_inspection_checklist_t c
+        LEFT JOIN c_mes_inspection_checklist_detail_t cd
+        on c.CODE = cd.CHECK_LIST_CODE and cd.`START`=1
+        <where>
+            <if test="name != null and name != ''">
+                c.NAME = #{name,jdbcType=VARCHAR}
+            </if>
+            <if test="code != null and code != ''">
+                and c.CODE = #{code,jdbcType=VARCHAR}
+            </if>
+            <if test="produceType != null and produceType != ''">
+                and c.PRODUCE_TYPE = #{produceType,jdbcType=VARCHAR}
+            </if>
+            <if test="type != null and type != ''">
+                and c.TYPE = #{type,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <select id="findCheckListDetail" resultType="java.util.Map">
+        select cd.*,c.NAME checkListName from c_mes_inspection_checklist_detail_t cd
+        LEFT JOIN c_mes_inspection_checklist_t c
+        on c.CODE = cd.CHECK_LIST_CODE
+        <where>
+                cd.CHECK_LIST_CODE = #{checkListCode,jdbcType=VARCHAR}
+        </where>
+        order by cd.START desc,cd.DT
+    </select>
+
+    <select id="getNextCheckListCode" resultType="java.lang.Integer">
+        SELECT Auto_increment FROM information_schema.`TABLES` WHERE Table_Schema='qihang' AND table_name = 'c_mes_inspection_checklist_t' limit 1;
+    </select>
+
+    <select id="selectCheckListByCode" resultType="java.lang.Integer">
+        select count(1) from c_mes_inspection_checklist_t where CODE = #{code,jdbcType=VARCHAR}
+    </select>
+    <select id="selectCheckListDetailByVersions" resultType="java.util.Map">
+        select * from c_mes_inspection_checklist_detail_t
+        <where>
+            <if test="versions!=null and versions!=''">
+                VERSIONS = #{versions,jdbcType=VARCHAR}
+            </if>
+            <if test="code!=null and code!=''">
+                and CHECK_LIST_CODE = #{code,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <select id="findCheckListDetailAll" resultType="java.util.Map">
+        select * from c_mes_inspection_checklist_detail_t
+        <where>
+            CHECK_LIST_CODE
+            <foreach collection ="list" item="item" index= "index" open=" in (" close=")" separator =",">
+                #{item,jdbcType=VARCHAR}
+            </foreach>
+        </where>
+    </select>
+    <!--按版本和清单编号查询详情是否存在-->
+    <select id="findCheckListDetailByCodeAndVersions" resultType="java.lang.Integer">
+        select count(1) from c_mes_inspection_checklist_detail_t
+        <where>
+            CHECK_LIST_CODE = #{CHECK_LIST_CODE,jdbcType=VARCHAR}
+            and
+            VERSIONS = #{VERSIONS,jdbcType=VARCHAR}
+        </where>
+    </select>
+    <!--按编号和类型查询清单-->
+    <select id="findCheckListByCodeAndType" resultType="java.lang.Integer">
+        select count(1) from c_mes_inspection_checklist_t
+        <where>
+            CODE = #{CODE,jdbcType=VARCHAR}
+            and
+            TYPE = #{TYPE,jdbcType=VARCHAR}
+        </where>
+    </select>
+
+    <insert id="addCheckList">
+        insert into c_mes_inspection_checklist_t(
+            NAME,CODE,PRODUCE_TYPE,DT,TYPE
+        )
+        values(
+                #{name,jdbcType=VARCHAR},
+                #{code,jdbcType=VARCHAR},
+                #{produceType,jdbcType=VARCHAR},
+                #{dt,jdbcType=VARCHAR},
+                #{type,jdbcType=VARCHAR}
+              )
+
+    </insert>
+
+    <insert id="addCheckListDetail">
+        insert into c_mes_inspection_checklist_detail_t(
+            DT,
+            VERSIONS,
+            START,
+            <if test="content!=null and content!=''">
+                CONTENT,
+            </if>
+            CHECK_LIST_CODE
+        )
+        values (
+            #{dt,jdbcType=VARCHAR},
+            #{versions,jdbcType=VARCHAR},
+            #{start,jdbcType=VARCHAR},
+            <if test="content!=null and content!=''">
+                #{content,jdbcType=VARCHAR},
+            </if>
+            #{code,jdbcType=VARCHAR}
+        )
+    </insert>
+
+    <!--批量插入清单-->
+    <insert id="addCheckListBatch">
+        insert into c_mes_inspection_checklist_t(
+        NAME,CODE,PRODUCE_TYPE,DT,TYPE
+        )
+        values
+        <foreach collection ="list" item="item" index= "index" separator =",">
+            (
+            #{item.NAME},
+            #{item.CODE},
+            #{item.PRODUCE_TYPE},
+            #{item.DT},
+            #{item.TYPE}
+            )
+        </foreach >
+    </insert>
+    <!--批量插入清单详情-->
+    <insert id="addCheckListDetailBatch">
+        insert into c_mes_inspection_checklist_detail_t(
+        DT,VERSIONS,START,CONTENT,CHECK_LIST_CODE
+        )
+        values
+        <foreach collection ="list" item="item" index= "index" separator =",">
+            (
+            #{item.DT},
+            #{item.VERSIONS},
+            #{item.START},
+            #{item.CONTENT},
+            #{item.CHECK_LIST_CODE}
+            )
+        </foreach >
+    </insert>
+
+
+    <update id="editCheckListDetail">
+        update
+            c_mes_inspection_checklist_detail_t
+        set
+
+            CHECK_LIST_CODE = #{code,jdbcType=VARCHAR},
+            CONTENT = #{content,jdbcType=VARCHAR},
+            `START` = #{start,jdbcType=VARCHAR}
+        <where>
+            <if test="versions!=null and versions!=''">
+                VERSIONS = #{versions,jdbcType=VARCHAR}
+            </if>
+            <if test="code!=null and code!=''">
+                and CHECK_LIST_CODE = #{code,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </update>
+
+    <update id="editCheckListDetailByVersions">
+        update
+        c_mes_inspection_checklist_detail_t
+        set
+        `START` = 0
+        WHERE
+        VERSIONS in
+        <foreach item="version" index="index" collection="versions"
+                 open="(" separator="," close=")">
+            #{version}
+        </foreach>
+        and
+        CHECK_LIST_CODE =#{code,jdbcType=VARCHAR}
+    </update>
+    <update id="editCheckListDetailByStart">
+        update
+            c_mes_inspection_checklist_detail_t
+        set
+            `START` = #{start,jdbcType=VARCHAR}
+        WHERE ID = #{id,jdbcType=INTEGER}
+    </update>
+
+    <!--删除清单置空版本-->
+    <update id="updateCheckListDetail">
+        update
+            c_mes_inspection_checklist_detail_t
+        set
+            CHECK_LIST_CODE = '',
+                `START` = 0
+        where
+            CHECK_LIST_CODE = #{code,jdbcType=VARCHAR}
+    </update>
+
+    <!--切换详情所属清单-->
+    <update id="editCheckListDetailById">
+       update c_mes_inspection_checklist_detail_t
+        set
+            <if test="dt!=null and dt!=''">
+                DT=#{dt,jdbcType=VARCHAR},
+            </if>
+        <if test="versions!=null and versions!=''">
+            VERSIONS=#{versions,jdbcType=VARCHAR},
+        </if>
+        <if test="start!=null and start!=''">
+            START=#{start,jdbcType=VARCHAR},
+        </if>
+        <if test="content!=null and content!=''">
+            CONTENT=#{content,jdbcType=VARCHAR},
+        </if>
+        <if test="code!=null and code!=''">
+            CHECK_LIST_CODE=#{code,jdbcType=VARCHAR}
+        </if>
+        <where>
+            <if test="id!=null and id!=''">
+                ID=#{id,jdbcType=INTEGER}
+            </if>
+        </where>
+
+    </update>
+    <!--编辑清单-->
+    <update id="editCheckList">
+        update c_mes_inspection_checklist_t
+        set NAME = #{name,jdbcType=VARCHAR},PRODUCE_TYPE = #{produceType,jdbcType=VARCHAR}
+        where
+        CODE = #{code,jdbcType=VARCHAR}
+        and TYPE = #{type,jdbcType=VARCHAR}
+    </update>
+
+    <delete id="deleteCheckList">
+        delete from c_mes_inspection_checklist_t
+        where CODE = #{code,jdbcType=VARCHAR}
+    </delete>
+    <delete id="deleteCheckListDetail">
+        delete from c_mes_inspection_checklist_detail_t
+        <where>
+            <if test="code!=null and code !=''">
+                CHECK_LIST_CODE = #{code,jdbcType=VARCHAR}
+            </if>
+            <if test="id!=null and id !=''">
+                and ID = #{id,jdbcType=INTEGER}
+            </if>
+        </where>
+    </delete>
+    <!--按产品型号查询清单是否存在-->
+    <select id="findCheckListByProduceType" resultType="java.util.Map">
+        select * from c_mes_inspection_checklist_t
+        <where>
+            PRODUCE_TYPE = #{produceType,jdbcType=VARCHAR}
+            and
+            TYPE = #{type,jdbcType=VARCHAR}
+        </where>
+    </select>
+</mapper>

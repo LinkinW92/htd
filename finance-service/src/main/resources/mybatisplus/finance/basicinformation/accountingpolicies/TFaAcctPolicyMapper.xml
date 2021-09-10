@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.basicinformation.accountingpolicies.TFaAcctPolicyMapper">
+
+    <resultMap type="com.skeqi.finance.domain.basicinformation.accountingpolicies.TFaAcctPolicy" id="TFaAcctPolicyResult">
+        <result property="fAcctpolicyId" column="f_acctpolicy_id"/>
+        <result property="fName" column="f_name"/>
+        <result property="fNumber" column="f_number"/>
+        <result property="fDescription" column="f_description"/>
+        <result property="fCurrencyId" column="f_currency_id"/>
+        <result property="fAcctcalendarId" column="f_acctcalendar_id"/>
+        <result property="fAcctgroupId" column="f_acctgroup_id"/>
+        <result property="fRatetypeId" column="f_rate_type_id"/>
+        <result property="fIscalbyexpItem" column="f_iscalbyexp_item"/>
+        <result property="fIstaxAmount" column="f_istax_amount"/>
+        <result property="fIscalbyactualCost" column="f_iscalbyactual_cost"/>
+        <result property="fIsdefault" column="f_isdefault"/>
+        <result property="fCreateOrgid" column="f_create_orgid"/>
+        <result property="fCreatorid" column="f_creatorid"/>
+        <result property="fCreateDate" column="f_create_date"/>
+        <result property="fUseOrgid" column="f_use_orgid"/>
+        <result property="fModifierid" column="f_modifierid"/>
+        <result property="fModifyDate" column="f_modify_date"/>
+        <result property="fDocumentStatus" column="f_document_status"/>
+        <result property="fAuditorid" column="f_auditorid"/>
+        <result property="fAuditDate" column="f_audit_date"/>
+        <result property="fForbidStatus" column="f_forbid_status"/>
+        <result property="fForbidderid" column="f_forbidderid"/>
+        <result property="fForbidDate" column="f_forbid_date"/>
+        <result property="fIssysPreset" column="f_issys_preset"/>
+        <result property="fMasterId" column="f_master_id"/>
+    </resultMap>
+    <select id="queryPageList"
+            resultType="com.skeqi.finance.pojo.vo.basicinformation.accountingpolicies.TFaAcctPolicyVo">
+        select tfap.*,
+        tbc.f_name fCurrencyName,
+        tbc.f_number fCurrencyNumber,
+        tbac.f_name fAcctcalendarName,
+        tbac.f_number fAcctcalendarNumber,
+        tbagt.f_name fAcctgroupName,
+        tbagt.f_number fAcctgroupNumber,
+        tbrt.f_name  fRatetypeName,
+        tbrt.f_number fRatetypeNumber,
+        so.name fCreateOrgName,
+        so.org_code fCreateOrgNumber
+        from t_fa_acct_policy tfap
+        left join sys_organization so on so.id = tfap.f_create_orgid
+        left join t_bd_currency tbc on tbc.f_currency_id= tfap.f_currency_id
+        left join t_bd_account_calendar tbac on tbac.f_id= tfap.f_acctcalendar_id
+        left join t_bd_account_group_table tbagt on tbagt.f_acctgroup_tblid= tfap.f_acctgroup_id
+        left join t_bd_rate_type tbrt on tbrt.f_rate_type_id= tfap.f_ratetype_id
+        <where>
+            tfap.f_document_status <![CDATA[ <> ]]> '-1'
+            <if test="bo.fName != null and bo.fName != ''">
+                and tfap.f_name = #{bo.fName,jdbcType=VARCHAR}
+            </if>
+            <if test="bo.fNumber != null and bo.fNumber != ''">
+                and tfap.f_number = #{bo.fNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="bo.fDescription !=null and bo.fDescription != ''">
+                and tfap.f_description = #{bo.fDescription,jdbcType=VARCHAR}
+            </if>
+            <if test="bo.fCurrencyId != null">
+                and tfap.f_currency_id = #{bo.fCurrencyId,jdbcType=INTEGER}
+            </if>
+            <if test="bo.fAcctcalendarId != null">
+                and tfap.f_acctcalendar_id = #{bo.fAcctcalendarId,jdbcType=INTEGER}
+            </if>
+            <if test="bo.fAcctgroupId != null">
+                and tfap.f_acctgroup_id = #{bo.fAcctgroupId,jdbcType=INTEGER}
+            </if>
+            <if test="bo.fRatetypeId != null">
+                and tfap.f_ratetype_id = #{bo.fRatetypeId,jdbcType=INTEGER}
+            </if>
+            <if test="bo.fIscalbyexpItem != null ">
+                and tfap.f_iscalbyexp_item = #{bo.fIscalbyexpItem,jdbcType=VARCHAR}
+            </if>
+            <if test="bo.fIstaxAmount != null ">
+                and tfap.f_istax_amount = #{bo.fIstaxAmount,jdbcType=VARCHAR}
+            </if>
+            <if test="bo.fIscalbyactualCost != null">
+                and tfap.f_iscalbyactual_cost = #{bo.fIscalbyactualCost,jdbcType=VARCHAR}
+            </if>
+            <if test="bo.fIsdefault != null">
+                and tfap.f_isdefault = #{bo.fIsdefault,jdbcType=VARCHAR}
+            </if>
+            <if test="bo.fCreateOrgid != null">
+                and tfap.f_create_orgid = #{bo.fCreateOrgid,jdbcType=INTEGER}
+            </if>
+            <if test="bo.fCreatorid != null">
+                and tfap.f_creatorid = #{bo.fCreatorid,jdbcType=INTEGER}
+            </if>
+            <if test="bo.fCreateDate !=null ">
+                and tfap.f_create_date = #{bo.fCreateDate,jdbcType=TIMESTAMP}
+            </if>
+            <if test="bo.fUseOrgid != null">
+                and tfap.f_use_orgid = #{bo.fUseOrgid,jdbcType=INTEGER}
+            </if>
+            <if test="bo.fModifierid != null">
+                and tfap.f_modifierid = #{bo.fModifierid,jdbcType=INTEGER}
+            </if>
+            <if test="bo.fModifyDate !=null ">
+                and tfap.f_modify_date = #{bo.fModifyDate,jdbcType=TIMESTAMP}
+            </if>
+            <if test="bo.fDocumentStatus != null ">
+                and tfap.f_document_status = #{bo.fDocumentStatus,jdbcType=VARCHAR}
+            </if>
+            <if test="bo.fAuditorid != null">
+                and tfap.f_auditorid = #{bo.fAuditorid,jdbcType=INTEGER}
+            </if>
+            <if test="bo.fAuditDate !=null ">
+                and tfap.f_audit_date = #{bo.fAuditDate,jdbcType=TIMESTAMP}
+            </if>
+            <if test="bo.fForbidStatus != null ">
+                and tfap.f_forbid_status = #{bo.fForbidStatus,jdbcType=VARCHAR}
+            </if>
+            <if test="bo.fForbidderid != null">
+                and tfap.f_forbidderid = #{bo.fForbidderid,jdbcType=INTEGER}
+            </if>
+            <if test="bo.fForbidDate !=null ">
+                and tfap.f_forbid_date = #{bo.fForbidDate,jdbcType=TIMESTAMP}
+            </if>
+            <if test="bo.fIssysPreset != null">
+                and tfap.f_issys_preset = #{bo.fIssysPreset,jdbcType=INTEGER}
+            </if>
+            <if test="bo.fMasterId != null">
+                and tfap.#{bo.fMasterId,jdbcType=INTEGER}
+            </if>
+        </where>
+
+    </select>
+
+
+</mapper>

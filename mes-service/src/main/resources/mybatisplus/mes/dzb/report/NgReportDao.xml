@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.skeqi.mes.mapper.dzb.report.NgReportDao">
+
+    <select id="data" resultType="java.util.Map">
+        select
+            <if test="col=='dayNo'">
+                to_days(sp.dt) dayNo,
+            </if>
+            <if test="col=='hourNo'">
+                DATE_FORMAT(sp.dt,'%h') hourNo,
+            </if>
+        sp.`STATUS`,
+        sum( PLAN_NUM ) qty
+        FROM p_mes_station_pass_t sp,
+        (select sn, PRODUCTION_ID, PLAN_NUM
+        FROM p_mes_tracking_t
+        UNION
+        select sn, PRODUCTION_ID, PLAN_NUM
+        FROM r_mes_tracking_t) track,
+        c_mes_line_t l,
+        c_mes_plant_t p
+        WHERE sp.PASS_FLAG = 2
+        and sp.line_id = l.id
+        and l.plantCode = p.plantCode
+        and track.sn = sp.sn
+        <if test="start != null and start != ''">
+            and sp.DT >= #{start}
+        </if>
+        <if test="end != null and end != ''">
+            <![CDATA[
+            and sp.DT< #{end}
+            ]]>
+        </if>
+        <foreach collection="whereList" item="value" index="key">
+            and ${key} in
+            <foreach collection="value" item="v" open="(" separator="," close=")">
+                (#{v})
+            </foreach>
+        </foreach>
+        group by ${col},sp.`STATUS`
+
+    </select>
+
+</mapper>

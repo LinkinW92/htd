@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.skeqi.mes.mapper.dgl.CMesDeviceDao">
+	<!-- 设备管理查询 -->
+	<select id="findDeviceList" resultType="CMesDeviceT" parameterType="map">
+		SELECT D.*,L.NAME AS deviceLineName,S.STATION_NAME FROM C_MES_DEVICE_T D
+		JOIN C_MES_STATION_T S ON S.ID = D.DEVICE_STATION
+		JOIN C_MES_LINE_T L ON L.ID = D.DEVICE_LINE
+		<where>
+			<if test="deviceName != null and deviceName != ''">
+				DEVICE_NAME = #{deviceName}
+			</if>
+			<if test="deviceStation != null and deviceStation != ''">
+				AND DEVICE_STATION=#{deviceStation}
+			</if>
+		</where>
+	</select>
+
+	<!-- 查询所有工位名称，ID -->
+	<select id="StationNameList" resultType="CMesStationT">
+		SELECT ID,STATION_NAME FROM C_MES_STATION_T
+	</select>
+
+	<!-- 查询所有产线名称，ID -->
+	<select id="lineList" resultType="CMesLineT">
+		SELECT ID,NAME FROM C_MES_LINE_T
+	</select>
+
+	<!-- 判断设备名称是否重复-->
+	<select id="findByDeviceName" resultType="CMesDeviceT">
+		SELECT * FROM C_MES_DEVICE_T WHERE DEVICE_NAME=#{deviceName}
+	</select>
+
+	<!-- 新增设备管理 -->
+	<insert id="addCMesDevice" keyProperty="id" useGeneratedKeys="false">
+		INSERT INTO C_MES_DEVICE_T(DEVICE_NAME,DEVICE_TYPE,DEVICE_IP,DEVICE_CID,DEVICE_PORT,DEVICE_COM,DEVICE_LINE,DEVICE_STATION,DEVICE_NUMBER)
+    	values(#{deviceName},#{deviceType},#{deviceIp},#{deviceCid},#{devicePort},#{deviceCom},#{deviceLine},#{deviceStation},#{deviceNumber})
+	</insert>
+
+	<!-- 根据ID删除 -->
+	<delete id="delDevice">
+		DELETE FROM C_MES_DEVICE_T WHERE ID = #{id}
+	</delete>
+
+	<!-- 根据ID查询，回显 -->
+	<select id="findByDeviceId" resultType="CMesDeviceT">
+		SELECT * FROM C_MES_DEVICE_T WHERE ID=#{id}
+	</select>
+
+	<!-- 修改 -->
+	<update id="updateDevice">
+		UPDATE C_MES_DEVICE_T SET
+			DEVICE_NAME=#{deviceName},DEVICE_IP=#{deviceIp},DEVICE_CID=#{deviceCid},DEVICE_PORT=#{devicePort},DEVICE_COM=#{deviceCom},
+			DEVICE_LINE=#{deviceLine},DEVICE_STATION=#{deviceStation},DEVICE_NUMBER=#{deviceNumber}
+      	WHERE ID = #{id}
+	</update>
+</mapper>

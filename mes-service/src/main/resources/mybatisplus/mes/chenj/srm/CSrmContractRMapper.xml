@@ -1,0 +1,1121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.chenj.srm.CSrmContractRMapper">
+    <resultMap id="BaseResultMap" type="com.skeqi.mes.pojo.chenj.srm.CSrmContractR">
+        <!--@mbg.generated-->
+        <!--@Table c_srm_contract_r-->
+        <result column="contract_no" jdbcType="VARCHAR" property="contractNo"/>
+        <result column="line_item_no" jdbcType="VARCHAR" property="lineItemNo"/>
+        <result column="material_code" jdbcType="VARCHAR" property="materialCode"/>
+        <result column="count" jdbcType="VARCHAR" property="count"/>
+        <result column="unit" jdbcType="VARCHAR" property="unit"/>
+        <result column="currency" jdbcType="VARCHAR" property="currency"/>
+        <result column="tax_rate" jdbcType="VARCHAR" property="taxRate"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="contract_id" jdbcType="INTEGER" property="contractId"/>
+        <result column="material_name" jdbcType="VARCHAR" property="materialName"/>
+        <result column="material_classification" jdbcType="VARCHAR" property="materialClassification"/>
+        <result column="specifications" jdbcType="VARCHAR" property="specifications"/>
+        <result column="model" jdbcType="VARCHAR" property="model"/>
+        <result column="tax_category" jdbcType="VARCHAR" property="taxCategory"/>
+        <result column="tax_amount" jdbcType="VARCHAR" property="taxAmount"/>
+        <result column="unit_price_of_taxIn_original_currency" jdbcType="VARCHAR"
+                property="unitPriceOfTaxInOriginalCurrency"/>
+        <result column="unit_price_excluding_tax" jdbcType="VARCHAR" property="unitPriceExcludingTax"/>
+        <result column="amountIncluding_tax" jdbcType="VARCHAR" property="amountIncludingTax"/>
+        <result column="amount_excluding_tax" jdbcType="VARCHAR" property="amountExcludingTax"/>
+        <result column="payment_date" jdbcType="TIMESTAMP" property="paymentDate"/>
+        <result column="attribute" jdbcType="VARCHAR" property="attribute"/>
+        <result column="buyer" jdbcType="VARCHAR" property="buyer"/>
+        <result column="custodian" jdbcType="VARCHAR" property="custodian"/>
+        <result column="acceptance_person" jdbcType="VARCHAR" property="acceptancePerson"/>
+        <result column="cost_bearing_department" jdbcType="VARCHAR" property="costBearingDepartment"/>
+        <result column="place" jdbcType="VARCHAR" property="place"/>
+        <result column="project_number" jdbcType="VARCHAR" property="projectNumber"/>
+        <result column="entr_name" jdbcType="VARCHAR" property="entrName"/>
+        <result column="remarks" jdbcType="VARCHAR" property="remarks"/>
+        <result column="source_document_number" jdbcType="VARCHAR" property="sourceDocumentNumber"/>
+        <result column="source_document_line_number" jdbcType="VARCHAR" property="sourceDocumentLineNumber"/>
+        <result column="is_delete" jdbcType="BIT" property="isDelete"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        id, contract_no, line_item_no, `material_code`, `count`, unit, currency, tax_rate,
+        create_time, update_time, contract_id, material_name, material_classification, specifications,
+        model, tax_category, tax_amount, unit_price_of_taxIn_original_currency, unit_price_excluding_tax,
+        amountIncluding_tax, amount_excluding_tax, payment_date, `attribute`, buyer, custodian,
+        acceptance_person, cost_bearing_department, place, project_number, entr_name, remarks,
+        source_document_number, source_document_line_number
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmContractR" resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        select
+        <include refid="Base_Column_List"/>
+        from c_srm_contract_r
+        <where>
+            <if test="contractNo != null and contractNo != ''">
+                contract_no=#{contractNo,jdbcType=VARCHAR}
+            </if>
+            <if test="lineItemNo != null and lineItemNo != ''">
+                and line_item_no=#{lineItemNo,jdbcType=VARCHAR}
+            </if>
+            <if test="id != null">
+                and id=#{id,jdbcType=INTEGER}
+            </if>
+            and is_delete=0
+        </where>
+        order by create_time desc
+    </select>
+    <select id="selectFinallyData" resultType="com.skeqi.mes.pojo.chenj.srm.CSrmContractR">
+        SELECT line_item_no
+        FROM c_srm_contract_r
+        where contract_no=#{contractNo,jdbcType=VARCHAR}
+        ORDER BY id DESC
+        LIMIT 1
+    </select>
+    <select id="selectByPrimaryList" resultType="com.skeqi.mes.pojo.chenj.srm.req.ContractObjectReq">
+        select
+        contract_no, line_item_no, `material_code`, `count`, unit, currency, tax_rate,
+        create_time, update_time, contract_id, material_name, material_classification, specifications,
+        model, tax_category, tax_amount, unit_price_of_taxIn_original_currency, unit_price_excluding_tax,
+        amountIncluding_tax, amount_excluding_tax, payment_date, `attribute`, buyer, custodian,
+        acceptance_person, cost_bearing_department, place, project_number, entr_name, remarks,
+        source_document_number, source_document_line_number
+        from c_srm_contract_r
+        <where>
+            <if test="contractNo != null and contractNo != ''">
+                contract_no like concat('%',#{contractNo,jdbcType=VARCHAR},'%')
+            </if>
+            and is_delete=0
+        </where>
+        order by create_time desc
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        <!--@mbg.generated-->
+        delete from c_srm_contract_r
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmContractR"
+            useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_contract_r (contract_no, line_item_no, `material_code`,
+        `count`, unit, currency,
+        tax_rate, create_time, update_time
+        )
+        values (#{contractNo,jdbcType=VARCHAR}, #{lineItemNo,jdbcType=VARCHAR}, #{materialCode,jdbcType=VARCHAR},
+        #{count,jdbcType=VARCHAR}, #{unit,jdbcType=VARCHAR}, #{currency,jdbcType=VARCHAR},
+        #{taxRate,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+        )
+    </insert>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmContractR"
+            useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_contract_r
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="contractNo != null">
+                contract_no,
+            </if>
+            <if test="lineItemNo != null">
+                line_item_no,
+            </if>
+            <if test="materialCode != null">
+                `material_code`,
+            </if>
+            <if test="count != null">
+                `count`,
+            </if>
+            <if test="unit != null">
+                unit,
+            </if>
+            <if test="currency != null">
+                currency,
+            </if>
+            <if test="taxRate != null">
+                tax_rate,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="contractId != null">
+                contract_id,
+            </if>
+            <if test="materialName != null">
+                material_name,
+            </if>
+            <if test="materialClassification != null">
+                material_classification,
+            </if>
+            <if test="specifications != null">
+                specifications,
+            </if>
+            <if test="model != null">
+                model,
+            </if>
+            <if test="taxCategory != null">
+                tax_category,
+            </if>
+            <if test="taxAmount != null">
+                tax_amount,
+            </if>
+            <if test="unitPriceOfTaxInOriginalCurrency != null">
+                unit_price_of_taxIn_original_currency,
+            </if>
+            <if test="unitPriceExcludingTax != null">
+                unit_price_excluding_tax,
+            </if>
+            <if test="amountIncludingTax != null">
+                amountIncluding_tax,
+            </if>
+            <if test="amountExcludingTax != null">
+                amount_excluding_tax,
+            </if>
+            <if test="paymentDate != null">
+                payment_date,
+            </if>
+            <if test="attribute != null">
+                `attribute`,
+            </if>
+            <if test="buyer != null">
+                buyer,
+            </if>
+            <if test="custodian != null">
+                custodian,
+            </if>
+            <if test="acceptancePerson != null">
+                acceptance_person,
+            </if>
+            <if test="costBearingDepartment != null">
+                cost_bearing_department,
+            </if>
+            <if test="place != null">
+                place,
+            </if>
+            <if test="projectNumber != null">
+                project_number,
+            </if>
+            <if test="entrName != null">
+                entr_name,
+            </if>
+            <if test="remarks != null">
+                remarks,
+            </if>
+            <if test="sourceDocumentNumber != null">
+                source_document_number,
+            </if>
+            <if test="sourceDocumentLineNumber != null">
+                source_document_line_number,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="contractNo != null">
+                #{contractNo,jdbcType=VARCHAR},
+            </if>
+            <if test="lineItemNo != null">
+                #{lineItemNo,jdbcType=VARCHAR},
+            </if>
+            <if test="materialCode != null">
+                #{materialCode,jdbcType=VARCHAR},
+            </if>
+            <if test="count != null">
+                #{count,jdbcType=VARCHAR},
+            </if>
+            <if test="unit != null">
+                #{unit,jdbcType=VARCHAR},
+            </if>
+            <if test="currency != null">
+                #{currency,jdbcType=VARCHAR},
+            </if>
+            <if test="taxRate != null">
+                #{taxRate,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="contractId != null">
+                #{contractId,jdbcType=INTEGER},
+            </if>
+            <if test="materialName != null">
+                #{materialName,jdbcType=VARCHAR},
+            </if>
+            <if test="materialClassification != null">
+                #{materialClassification,jdbcType=VARCHAR},
+            </if>
+            <if test="specifications != null">
+                #{specifications,jdbcType=VARCHAR},
+            </if>
+            <if test="model != null">
+                #{model,jdbcType=VARCHAR},
+            </if>
+            <if test="taxCategory != null">
+                #{taxCategory,jdbcType=VARCHAR},
+            </if>
+            <if test="taxAmount != null">
+                #{taxAmount,jdbcType=VARCHAR},
+            </if>
+            <if test="unitPriceOfTaxInOriginalCurrency != null">
+                #{unitPriceOfTaxInOriginalCurrency,jdbcType=VARCHAR},
+            </if>
+            <if test="unitPriceExcludingTax != null">
+                #{unitPriceExcludingTax,jdbcType=VARCHAR},
+            </if>
+            <if test="amountIncludingTax != null">
+                #{amountIncludingTax,jdbcType=VARCHAR},
+            </if>
+            <if test="amountExcludingTax != null">
+                #{amountExcludingTax,jdbcType=VARCHAR},
+            </if>
+            <if test="paymentDate != null">
+                #{paymentDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="attribute != null">
+                #{attribute,jdbcType=VARCHAR},
+            </if>
+            <if test="buyer != null">
+                #{buyer,jdbcType=VARCHAR},
+            </if>
+            <if test="custodian != null">
+                #{custodian,jdbcType=VARCHAR},
+            </if>
+            <if test="acceptancePerson != null">
+                #{acceptancePerson,jdbcType=VARCHAR},
+            </if>
+            <if test="costBearingDepartment != null">
+                #{costBearingDepartment,jdbcType=VARCHAR},
+            </if>
+            <if test="place != null">
+                #{place,jdbcType=VARCHAR},
+            </if>
+            <if test="projectNumber != null">
+                #{projectNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="entrName != null">
+                #{entrName,jdbcType=VARCHAR},
+            </if>
+            <if test="remarks != null">
+                #{remarks,jdbcType=VARCHAR},
+            </if>
+            <if test="sourceDocumentNumber != null">
+                #{sourceDocumentNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="sourceDocumentLineNumber != null">
+                #{sourceDocumentLineNumber,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmContractR">
+        <!--@mbg.generated-->
+        update c_srm_contract_r
+        <set>
+            <if test="contractNo != null">
+                contract_no = #{contractNo,jdbcType=VARCHAR},
+            </if>
+            <if test="lineItemNo != null">
+                line_item_no = #{lineItemNo,jdbcType=VARCHAR},
+            </if>
+            <if test="materialCode != null">
+                `material_code` = #{materialCode,jdbcType=VARCHAR},
+            </if>
+            <if test="count != null">
+                `count` = #{count,jdbcType=VARCHAR},
+            </if>
+            <if test="unit != null">
+                unit = #{unit,jdbcType=VARCHAR},
+            </if>
+            <if test="currency != null">
+                currency = #{currency,jdbcType=VARCHAR},
+            </if>
+            <if test="taxRate != null">
+                tax_rate = #{taxRate,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="contractId != null">
+                contract_id = #{contractId,jdbcType=INTEGER},
+            </if>
+            <if test="materialName != null">
+                material_name = #{materialName,jdbcType=VARCHAR},
+            </if>
+            <if test="materialClassification != null">
+                material_classification = #{materialClassification,jdbcType=VARCHAR},
+            </if>
+            <if test="specifications != null">
+                specifications = #{specifications,jdbcType=VARCHAR},
+            </if>
+            <if test="model != null">
+                model = #{model,jdbcType=VARCHAR},
+            </if>
+            <if test="taxCategory != null">
+                tax_category = #{taxCategory,jdbcType=VARCHAR},
+            </if>
+            <if test="taxAmount != null">
+                tax_amount = #{taxAmount,jdbcType=VARCHAR},
+            </if>
+            <if test="unitPriceOfTaxInOriginalCurrency != null">
+                unit_price_of_taxIn_original_currency = #{unitPriceOfTaxInOriginalCurrency,jdbcType=VARCHAR},
+            </if>
+            <if test="unitPriceExcludingTax != null">
+                unit_price_excluding_tax = #{unitPriceExcludingTax,jdbcType=VARCHAR},
+            </if>
+            <if test="amountIncludingTax != null">
+                amountIncluding_tax = #{amountIncludingTax,jdbcType=VARCHAR},
+            </if>
+            <if test="amountExcludingTax != null">
+                amount_excluding_tax = #{amountExcludingTax,jdbcType=VARCHAR},
+            </if>
+            <if test="paymentDate != null">
+                payment_date = #{paymentDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="attribute != null">
+                `attribute` = #{attribute,jdbcType=VARCHAR},
+            </if>
+            <if test="buyer != null">
+                buyer = #{buyer,jdbcType=VARCHAR},
+            </if>
+            <if test="custodian != null">
+                custodian = #{custodian,jdbcType=VARCHAR},
+            </if>
+            <if test="acceptancePerson != null">
+                acceptance_person = #{acceptancePerson,jdbcType=VARCHAR},
+            </if>
+            <if test="costBearingDepartment != null">
+                cost_bearing_department = #{costBearingDepartment,jdbcType=VARCHAR},
+            </if>
+            <if test="place != null">
+                place = #{place,jdbcType=VARCHAR},
+            </if>
+            <if test="projectNumber != null">
+                project_number = #{projectNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="entrName != null">
+                entr_name = #{entrName,jdbcType=VARCHAR},
+            </if>
+            <if test="remarks != null">
+                remarks = #{remarks,jdbcType=VARCHAR},
+            </if>
+            <if test="sourceDocumentNumber != null">
+                source_document_number = #{sourceDocumentNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="sourceDocumentLineNumber != null">
+                source_document_line_number = #{sourceDocumentLineNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="isDelete != null">
+                is_delete=#{isDelete,jdbcType=INTEGER},
+            </if>
+        </set>
+        <where>
+            <if test="contractNo != null and contractNo != ''">
+                contract_no=#{contractNo,jdbcType=VARCHAR}
+            </if>
+            <if test="lineItemNo != null and lineItemNo != ''">
+                and line_item_no=#{lineItemNo,jdbcType=VARCHAR}
+            </if>
+            <if test="id != null">
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+        </where>
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmContractR">
+        <!--@mbg.generated-->
+        update c_srm_contract_r
+        set contract_no = #{contractNo,jdbcType=VARCHAR},
+        line_item_no = #{lineItemNo,jdbcType=VARCHAR},
+        `material_code` = #{materialCode,jdbcType=VARCHAR},
+        `count` = #{count,jdbcType=VARCHAR},
+        unit = #{unit,jdbcType=VARCHAR},
+        currency = #{currency,jdbcType=VARCHAR},
+        tax_rate = #{taxRate,jdbcType=VARCHAR},
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+        update_time = #{updateTime,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateBatch" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update c_srm_contract_r
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="contract_no = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.contractNo,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="line_item_no = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.lineItemNo,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="`material_code` = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.materialCode,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="`count` = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.count,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="unit = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.unit,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="currency = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.currency,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="tax_rate = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.taxRate,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.createTime,jdbcType=TIMESTAMP}
+                </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.updateTime,jdbcType=TIMESTAMP}
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    <update id="updateBatchSelective" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update c_srm_contract_r
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="material_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.materialCode != null">
+                        when line_item_no = #{item.lineItemNo,jdbcType=VARCHAR} then
+                        #{item.materialCode,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="`count` = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.count != null">
+                        when line_item_no = #{item.lineItemNo,jdbcType=VARCHAR} then #{item.count,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="unit = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.unit != null">
+                        when line_item_no = #{item.lineItemNo,jdbcType=VARCHAR} then #{item.unit,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="currency = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.currency != null">
+                        when line_item_no = #{item.lineItemNo,jdbcType=VARCHAR} then #{item.currency,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="tax_rate = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.taxRate != null">
+                        when line_item_no = #{item.lineItemNo,jdbcType=VARCHAR} then #{item.taxRate,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.createTime != null">
+                        when line_item_no = #{item.lineItemNo,jdbcType=VARCHAR} then
+                        #{item.createTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.updateTime != null">
+                        when line_item_no = #{item.lineItemNo,jdbcType=VARCHAR} then
+                        #{item.updateTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="contract_id = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.contractId != null">
+                        when line_item_no = #{item.lineItemNo,jdbcType=VARCHAR} then #{item.contractId,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="material_name = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.materialName != null">
+                        when line_item_no = #{item.lineItemNo,jdbcType=VARCHAR} then
+                        #{item.materialName,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="material_classification = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.materialClassification != null">
+                        when line_item_no = #{item.lineItemNo,jdbcType=VARCHAR} then
+                        #{item.materialClassification,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="specifications = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.specifications != null">
+                        when line_item_no = #{item.lineItemNo,jdbcType=VARCHAR} then
+                        #{item.specifications,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="model = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.model != null">
+                        when line_item_no = #{item.lineItemNo,jdbcType=VARCHAR} then #{item.model,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="tax_category = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.taxCategory != null">
+                        when line_item_no = #{item.lineItemNo,jdbcType=VARCHAR} then
+                        #{item.taxCategory,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="tax_amount = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.taxAmount != null">
+                        when line_item_no = #{item.lineItemNo,jdbcType=VARCHAR} then #{item.taxAmount,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="unit_price_of_taxIn_original_currency = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.unitPriceOfTaxInOriginalCurrency != null">
+                        when line_item_no = #{item.lineItemNo,jdbcType=VARCHAR} then
+                        #{item.unitPriceOfTaxInOriginalCurrency,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="unit_price_excluding_tax = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.unitPriceExcludingTax != null">
+                        when line_item_no = #{item.lineItemNo,jdbcType=VARCHAR} then
+                        #{item.unitPriceExcludingTax,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="amountIncluding_tax = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.amountIncludingTax != null">
+                        when line_item_no = #{item.lineItemNo,jdbcType=VARCHAR} then
+                        #{item.amountIncludingTax,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="amount_excluding_tax = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.amountExcludingTax != null">
+                        when line_item_no = #{item.lineItemNo,jdbcType=VARCHAR} then
+                        #{item.amountExcludingTax,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="payment_date = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.paymentDate != null">
+                        when line_item_no = #{item.lineItemNo,jdbcType=VARCHAR} then
+                        #{item.paymentDate,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="`attribute` = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.attribute != null">
+                        when line_item_no = #{item.lineItemNo,jdbcType=VARCHAR} then #{item.attribute,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="buyer = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.buyer != null">
+                        when line_item_no = #{item.lineItemNo,jdbcType=VARCHAR} then #{item.buyer,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="custodian = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.custodian != null">
+                        when line_item_no = #{item.lineItemNo,jdbcType=VARCHAR} then #{item.custodian,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="acceptance_person = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.acceptancePerson != null">
+                        when line_item_no = #{item.lineItemNo,jdbcType=VARCHAR} then
+                        #{item.acceptancePerson,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="cost_bearing_department = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.costBearingDepartment != null">
+                        when line_item_no = #{item.lineItemNo,jdbcType=VARCHAR} then
+                        #{item.costBearingDepartment,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="place = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.place != null">
+                        when line_item_no = #{item.lineItemNo,jdbcType=VARCHAR} then #{item.place,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="project_number = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.projectNumber != null">
+                        when line_item_no = #{item.lineItemNo,jdbcType=VARCHAR} then
+                        #{item.projectNumber,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="entr_name = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.entrName != null">
+                        when line_item_no = #{item.lineItemNo,jdbcType=VARCHAR} then #{item.entrName,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="remarks = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.remarks != null">
+                        when line_item_no = #{item.lineItemNo,jdbcType=VARCHAR} then #{item.remarks,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="source_document_number = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.sourceDocumentNumber != null">
+                        when line_item_no = #{item.lineItemNo,jdbcType=VARCHAR} then
+                        #{item.sourceDocumentNumber,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="source_document_line_number = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.sourceDocumentLineNumber != null">
+                        when line_item_no = #{item.lineItemNo,jdbcType=VARCHAR} then
+                        #{item.sourceDocumentLineNumber,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="is_delete = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.isDelete != null">
+                        when line_item_no = #{item.lineItemNo,jdbcType=VARCHAR} then #{item.isDelete,jdbcType=BIT}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where line_item_no in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.lineItemNo,jdbcType=VARCHAR}
+        </foreach>
+    </update>
+    <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_contract_r
+        (contract_no, line_item_no, `material_code`, `count`, unit, currency, tax_rate, create_time,
+        update_time)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.contractNo,jdbcType=VARCHAR}, #{item.lineItemNo,jdbcType=VARCHAR},
+            #{item.materialCode,jdbcType=VARCHAR},
+            #{item.count,jdbcType=VARCHAR}, #{item.unit,jdbcType=VARCHAR}, #{item.currency,jdbcType=VARCHAR},
+            #{item.taxRate,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP},
+            #{item.updateTime,jdbcType=TIMESTAMP}
+            )
+        </foreach>
+    </insert>
+    <insert id="insertOrUpdate" keyColumn="id" keyProperty="id" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmContractR"
+            useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_contract_r
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            contract_no,
+            line_item_no,
+            `material_code`,
+            `count`,
+            unit,
+            currency,
+            tax_rate,
+            create_time,
+            update_time,
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            #{contractNo,jdbcType=VARCHAR},
+            #{lineItemNo,jdbcType=VARCHAR},
+            #{materialCode,jdbcType=VARCHAR},
+            #{count,jdbcType=VARCHAR},
+            #{unit,jdbcType=VARCHAR},
+            #{currency,jdbcType=VARCHAR},
+            #{taxRate,jdbcType=VARCHAR},
+            #{createTime,jdbcType=TIMESTAMP},
+            #{updateTime,jdbcType=TIMESTAMP},
+        </trim>
+        on duplicate key update
+        <trim suffixOverrides=",">
+            <if test="id != null">
+                id = #{id,jdbcType=INTEGER},
+            </if>
+            contract_no = #{contractNo,jdbcType=VARCHAR},
+            line_item_no = #{lineItemNo,jdbcType=VARCHAR},
+            `material_code` = #{materialCode,jdbcType=VARCHAR},
+            `count` = #{count,jdbcType=VARCHAR},
+            unit = #{unit,jdbcType=VARCHAR},
+            currency = #{currency,jdbcType=VARCHAR},
+            tax_rate = #{taxRate,jdbcType=VARCHAR},
+            create_time = #{createTime,jdbcType=TIMESTAMP},
+            update_time = #{updateTime,jdbcType=TIMESTAMP},
+        </trim>
+    </insert>
+    <insert id="insertOrUpdateSelective" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmContractR" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_contract_r
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="contractNo != null">
+                contract_no,
+            </if>
+            <if test="lineItemNo != null">
+                line_item_no,
+            </if>
+            <if test="materialCode != null">
+                `material_code`,
+            </if>
+            <if test="count != null">
+                `count`,
+            </if>
+            <if test="unit != null">
+                unit,
+            </if>
+            <if test="currency != null">
+                currency,
+            </if>
+            <if test="taxRate != null">
+                tax_rate,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="contractId != null">
+                contract_id,
+            </if>
+            <if test="materialName != null">
+                material_name,
+            </if>
+            <if test="materialClassification != null">
+                material_classification,
+            </if>
+            <if test="specifications != null">
+                specifications,
+            </if>
+            <if test="model != null">
+                model,
+            </if>
+            <if test="taxCategory != null">
+                tax_category,
+            </if>
+            <if test="taxAmount != null">
+                tax_amount,
+            </if>
+            <if test="unitPriceOfTaxInOriginalCurrency != null">
+                unit_price_of_taxIn_original_currency,
+            </if>
+            <if test="unitPriceExcludingTax != null">
+                unit_price_excluding_tax,
+            </if>
+            <if test="amountIncludingTax != null">
+                amountIncluding_tax,
+            </if>
+            <if test="amountExcludingTax != null">
+                amount_excluding_tax,
+            </if>
+            <if test="paymentDate != null">
+                payment_date,
+            </if>
+            <if test="attribute != null">
+                `attribute`,
+            </if>
+            <if test="buyer != null">
+                buyer,
+            </if>
+            <if test="custodian != null">
+                custodian,
+            </if>
+            <if test="acceptancePerson != null">
+                acceptance_person,
+            </if>
+            <if test="costBearingDepartment != null">
+                cost_bearing_department,
+            </if>
+            <if test="place != null">
+                place,
+            </if>
+            <if test="projectNumber != null">
+                project_number,
+            </if>
+            <if test="entrName != null">
+                entr_name,
+            </if>
+            <if test="remarks != null">
+                remarks,
+            </if>
+            <if test="sourceDocumentNumber != null">
+                source_document_number,
+            </if>
+            <if test="sourceDocumentLineNumber != null">
+                source_document_line_number,
+            </if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="contractNo != null">
+                #{contractNo,jdbcType=VARCHAR},
+            </if>
+            <if test="lineItemNo != null">
+                #{lineItemNo,jdbcType=VARCHAR},
+            </if>
+            <if test="materialCode != null">
+                #{materialCode,jdbcType=VARCHAR},
+            </if>
+            <if test="count != null">
+                #{count,jdbcType=VARCHAR},
+            </if>
+            <if test="unit != null">
+                #{unit,jdbcType=VARCHAR},
+            </if>
+            <if test="currency != null">
+                #{currency,jdbcType=VARCHAR},
+            </if>
+            <if test="taxRate != null">
+                #{taxRate,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="contractId != null">
+                #{contractId,jdbcType=INTEGER},
+            </if>
+            <if test="materialName != null">
+                #{materialName,jdbcType=VARCHAR},
+            </if>
+            <if test="materialClassification != null">
+                #{materialClassification,jdbcType=VARCHAR},
+            </if>
+            <if test="specifications != null">
+                #{specifications,jdbcType=VARCHAR},
+            </if>
+            <if test="model != null">
+                #{model,jdbcType=VARCHAR},
+            </if>
+            <if test="taxCategory != null">
+                #{taxCategory,jdbcType=VARCHAR},
+            </if>
+            <if test="taxAmount != null">
+                #{taxAmount,jdbcType=VARCHAR},
+            </if>
+            <if test="unitPriceOfTaxInOriginalCurrency != null">
+                #{unitPriceOfTaxInOriginalCurrency,jdbcType=VARCHAR},
+            </if>
+            <if test="unitPriceExcludingTax != null">
+                #{unitPriceExcludingTax,jdbcType=VARCHAR},
+            </if>
+            <if test="amountIncludingTax != null">
+                #{amountIncludingTax,jdbcType=VARCHAR},
+            </if>
+            <if test="amountExcludingTax != null">
+                #{amountExcludingTax,jdbcType=VARCHAR},
+            </if>
+            <if test="paymentDate != null">
+                #{paymentDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="attribute != null">
+                #{attribute,jdbcType=VARCHAR},
+            </if>
+            <if test="buyer != null">
+                #{buyer,jdbcType=VARCHAR},
+            </if>
+            <if test="custodian != null">
+                #{custodian,jdbcType=VARCHAR},
+            </if>
+            <if test="acceptancePerson != null">
+                #{acceptancePerson,jdbcType=VARCHAR},
+            </if>
+            <if test="costBearingDepartment != null">
+                #{costBearingDepartment,jdbcType=VARCHAR},
+            </if>
+            <if test="place != null">
+                #{place,jdbcType=VARCHAR},
+            </if>
+            <if test="projectNumber != null">
+                #{projectNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="entrName != null">
+                #{entrName,jdbcType=VARCHAR},
+            </if>
+            <if test="remarks != null">
+                #{remarks,jdbcType=VARCHAR},
+            </if>
+            <if test="sourceDocumentNumber != null">
+                #{sourceDocumentNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="sourceDocumentLineNumber != null">
+                #{sourceDocumentLineNumber,jdbcType=VARCHAR},
+            </if>
+        </trim>
+        on duplicate key update
+        <trim suffixOverrides=",">
+            <if test="id != null">
+                id = #{id,jdbcType=INTEGER},
+            </if>
+            <if test="contractNo != null">
+                contract_no = #{contractNo,jdbcType=VARCHAR},
+            </if>
+            <if test="lineItemNo != null">
+                line_item_no = #{lineItemNo,jdbcType=VARCHAR},
+            </if>
+            <if test="materialCode != null">
+                `material_code` = #{materialCode,jdbcType=VARCHAR},
+            </if>
+            <if test="count != null">
+                `count` = #{count,jdbcType=VARCHAR},
+            </if>
+            <if test="unit != null">
+                unit = #{unit,jdbcType=VARCHAR},
+            </if>
+            <if test="currency != null">
+                currency = #{currency,jdbcType=VARCHAR},
+            </if>
+            <if test="taxRate != null">
+                tax_rate = #{taxRate,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="contractId != null">
+                contract_id = #{contractId,jdbcType=INTEGER},
+            </if>
+            <if test="materialName != null">
+                material_name = #{materialName,jdbcType=VARCHAR},
+            </if>
+            <if test="materialClassification != null">
+                material_classification = #{materialClassification,jdbcType=VARCHAR},
+            </if>
+            <if test="specifications != null">
+                specifications = #{specifications,jdbcType=VARCHAR},
+            </if>
+            <if test="model != null">
+                model = #{model,jdbcType=VARCHAR},
+            </if>
+            <if test="taxCategory != null">
+                tax_category = #{taxCategory,jdbcType=VARCHAR},
+            </if>
+            <if test="taxAmount != null">
+                tax_amount = #{taxAmount,jdbcType=VARCHAR},
+            </if>
+            <if test="unitPriceOfTaxInOriginalCurrency != null">
+                unit_price_of_taxIn_original_currency = #{unitPriceOfTaxInOriginalCurrency,jdbcType=VARCHAR},
+            </if>
+            <if test="unitPriceExcludingTax != null">
+                unit_price_excluding_tax = #{unitPriceExcludingTax,jdbcType=VARCHAR},
+            </if>
+            <if test="amountIncludingTax != null">
+                amountIncluding_tax = #{amountIncludingTax,jdbcType=VARCHAR},
+            </if>
+            <if test="amountExcludingTax != null">
+                amount_excluding_tax = #{amountExcludingTax,jdbcType=VARCHAR},
+            </if>
+            <if test="paymentDate != null">
+                payment_date = #{paymentDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="attribute != null">
+                `attribute` = #{attribute,jdbcType=VARCHAR},
+            </if>
+            <if test="buyer != null">
+                buyer = #{buyer,jdbcType=VARCHAR},
+            </if>
+            <if test="custodian != null">
+                custodian = #{custodian,jdbcType=VARCHAR},
+            </if>
+            <if test="acceptancePerson != null">
+                acceptance_person = #{acceptancePerson,jdbcType=VARCHAR},
+            </if>
+            <if test="costBearingDepartment != null">
+                cost_bearing_department = #{costBearingDepartment,jdbcType=VARCHAR},
+            </if>
+            <if test="place != null">
+                place = #{place,jdbcType=VARCHAR},
+            </if>
+            <if test="projectNumber != null">
+                project_number = #{projectNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="entrName != null">
+                entr_name = #{entrName,jdbcType=VARCHAR},
+            </if>
+            <if test="remarks != null">
+                remarks = #{remarks,jdbcType=VARCHAR},
+            </if>
+            <if test="sourceDocumentNumber != null">
+                source_document_number = #{sourceDocumentNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="sourceDocumentLineNumber != null">
+                source_document_line_number = #{sourceDocumentLineNumber,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <!--    删除合同行数据-->
+    <update id="deleteBatchSelective">
+        update c_srm_contract_r set is_delete=1 where line_item_no in
+        <foreach close=")" collection="array" item="item" open="(" separator=", ">
+            #{item,jdbcType=INTEGER}
+        </foreach>
+    </update>
+</mapper>

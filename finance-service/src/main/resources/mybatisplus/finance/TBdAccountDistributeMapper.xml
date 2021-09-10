@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.TBdAccountDistributeMapper">
+
+    <resultMap type="com.skeqi.finance.domain.TBdAccountDistribute" id="TBdAccountDistributeResult">
+        <result property="fEntryId" column="f_entry_id"/>
+        <result property="fAcctId" column="f_acct_id"/>
+        <result property="fDistributeOrgid" column="f_distribute_orgid"/>
+        <result property="fUseOrgid" column="f_use_orgid"/>
+        <result property="fDistributeorId" column="f_distributeor_id"/>
+        <result property="fDistributeDate" column="f_distribute_date"/>
+        <result property="fIsaddChild" column="f_isadd_child"/>
+        <result property="fForbidStatus" column="f_forbid_status"/>
+        <result property="fForbidderId" column="f_forbidder_id"/>
+        <result property="fForbidOrgid" column="f_forbid_orgid"/>
+        <result property="fForbidDate" column="f_forbid_date"/>
+        <result property="fIsredistribute" column="f_isredistribute"/>
+    </resultMap>
+
+
+</mapper>

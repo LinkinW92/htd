@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wf.CMesPlantTMapper">
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, plantCode, plantName, `describe`, factoryCode, areaCode
+  </sql>
+
+  <select id="findPlantAll" resultType="com.skeqi.mes.pojo.qh.CMesPlantT">
+    select
+    p.*,c.companyName as companyName,f.factoryName as factoryName,a.areaName as areaName
+    from c_mes_plant_t p,c_mes_company_t c,c_mes_factory_t f,c_mes_area_t a
+    where p.companyCode = c.companyCode and p.factoryCode = f.factoryCode and p.areaCode = a.areaCode
+    <if test="companyName != null and companyName != ''">
+      and companyName like concat('%',#{companyName},'%')
+    </if>
+    <if test="factoryName != null and factoryName != ''">
+      and factoryName like concat('%',#{factoryName},'%')
+    </if>
+    <if test="areaName != null and areaName != ''">
+      and areaName like concat('%',#{areaName},'%')
+    </if>
+    <if test="plantCode != null and plantCode != ''">
+      and plantCode like concat('%',#{plantCode},'%')
+    </if>
+    <if test="plantName != null and plantName != ''">
+      and plantName like concat('%',#{plantName},'%')
+    </if>
+  </select>
+  <!--按编号查询区域-->
+  <select id="selectPlantByCode" resultType="com.skeqi.mes.pojo.qh.CMesPlantT">
+    select
+    *
+    from c_mes_plant_t
+    where plantCode = #{plantCode,jdbcType=VARCHAR}
+  </select>
+  <!--新增车间-->
+  <insert id="addPlant">
+    insert into c_mes_plant_t
+    <trim  prefix="(" suffix=")" suffixOverrides=",">
+      <if test="companyCode != null and companyCode != ''">
+        companyCode,
+      </if>
+      <if test="factoryCode != null and factoryCode != ''">
+        factoryCode,
+      </if>
+      <if test="areaCode != null and areaCode != ''">
+        areaCode,
+      </if>
+      <if test="plantCode != null and plantCode != ''">
+        plantCode,
+      </if>
+      <if test="plantName != null and plantName != ''">
+        plantName,
+      </if>
+      <if test="describe != null and describe != ''">
+        `describe`,
+      </if>
+      <if test="dateTime != null and dateTime != ''">
+        dateTime,
+      </if>
+      <if test="alterDt != null and alterDt != ''">
+        alterDt,
+      </if>
+    </trim>
+    <trim  prefix="value (" suffix=")" suffixOverrides=",">
+      <if test="companyCode != null and companyCode != ''">
+        #{companyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="factoryCode != null and factoryCode != ''">
+        #{factoryCode,jdbcType=VARCHAR},
+      </if>
+      <if test="areaCode != null and areaCode != ''">
+        #{areaCode,jdbcType=VARCHAR},
+      </if>
+      <if test="plantCode != null and plantCode != ''">
+        #{plantCode,jdbcType=VARCHAR},
+      </if>
+      <if test="plantName != null and plantName != ''">
+        #{plantName,jdbcType=VARCHAR},
+      </if>
+      <if test="describe != null and describe != ''">
+        #{describe,jdbcType=VARCHAR},
+      </if>
+      <if test="dateTime != null and dateTime != ''">
+        #{dateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="alterDt != null and alterDt != ''">
+        #{alterDt,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+<!--  编辑车间-->
+  <update id="editPlant">
+    update c_mes_plant_t
+    <set>
+        `describe` = #{describe,jdbcType=VARCHAR},
+      <if test="plantName != null and plantName != ''">
+        plantName = #{plantName,jdbcType=VARCHAR},
+      </if>
+      <if test="dateTime != null and dateTime != ''">
+        dateTime = #{dateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="alterDt != null and alterDt != ''">
+        alterDt = #{alterDt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="companyCode != null and companyCode != ''">
+        companyCode = #{companyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="factoryCode != null and factoryCode != ''">
+        factoryCode = #{factoryCode,jdbcType=VARCHAR},
+      </if>
+      <if test="areaCode != null and areaCode != ''">
+        areaCode = #{areaCode,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <where>
+      <if test="id != null">
+        id = #{id,jdbcType=INTEGER}
+      </if>
+    </where>
+  </update>
+
+  <!--按指定条件修改车间-->
+  <update id="editPlantByAreaCode">
+    update c_mes_plant_t
+    <set>
+      <if test="afterCompanyCode != null and afterCompanyCode != ''">
+        companyCode = #{afterCompanyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="afterFactoryCode != null and afterCompanyCode != ''">
+        factoryCode = #{afterFactoryCode,jdbcType=VARCHAR}
+      </if>
+    </set>
+    <where>
+      <if test="beforeCompanyCode != null">
+        companyCode = #{beforeCompanyCode,jdbcType=INTEGER}
+      </if>
+      <if test="beforeFactoryCode != null">
+        and factoryCode = #{beforeFactoryCode,jdbcType=INTEGER}
+      </if>
+      <if test="areaCodeList!=null and areaCodeList.size()>0">
+        <foreach collection="areaCodeList" item="areaCode" open="and areaCode in(" close=")" separator=",">
+          #{areaCode}
+        </foreach>
+      </if>
+    </where>
+  </update>
+  <!--删除车间-->
+  <delete id="delPlantByIdAndCode">
+    delete from c_mes_plant_t
+    <where>
+      <if test="id != null">
+        id = #{id,jdbcType=INTEGER}
+      </if>
+      <if test="areaCode != null and areaCode != ''">
+        and areaCode = #{areaCode,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </delete>
+  <!--按区域编号查车间-->
+  <select id="selectPlantByAreaCode" resultType="com.skeqi.mes.pojo.qh.CMesPlantT">
+    select
+    *
+    from c_mes_plant_t
+    where areaCode = #{areaCode,jdbcType=VARCHAR}
+  </select>
+
+  <!--按公司编号查询车间-->
+  <select id="selectPlantByCompanyCode" resultType="com.skeqi.mes.pojo.qh.CMesPlantT">
+    select
+    *
+    from c_mes_plant_t
+    where companyCode = #{companyCode,jdbcType=VARCHAR}
+  </select>
+
+  <!--按公司编号删除车间-->
+  <delete id="delPlantByCompanyCode">
+    delete from c_mes_plant_t
+    <where>
+      <if test="companyCode != null and companyCode != ''">
+         companyCode = #{companyCode,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </delete>
+</mapper>

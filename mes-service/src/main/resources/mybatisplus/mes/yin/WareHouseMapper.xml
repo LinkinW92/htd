@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.yin.WareHouseDao">
+
+	<select id="inWareHouseList" resultType="CMesInWareHouse">
+		SELECT inWareHouse.*,material.MATERIAL_NAME,libraryPosition.POSITION_NAME
+		FROM C_MES_IN_WAREHOUSE inWareHouse,C_MES_MATERIAL_T material,C_MES_LIBRARY_POSITION_T libraryPosition
+		WHERE inWareHouse.MATERIAL_ID = material.ID AND libraryPosition.ID=inWareHouse.position_Id
+		<if test="id!=null">
+			AND inWareHouse.ID = #{id}
+		</if>
+		<if test="materialId!=null">
+			AND material.ID = #{materialId}
+		</if>
+		<if test="orderNumber!=null">
+			AND inWareHouse.ORDER_NUMBER=#{orderNumber}
+		</if>
+		ORDER BY IN_DATE DESC
+	</select>
+
+	<insert id="addPurchase" keyProperty="id" useGeneratedKeys="false">
+		<selectKey  keyProperty="id" resultType="int" order="BEFORE">
+            select nvl(max(id),0)+1 from C_MES_IN_WAREHOUSE
+        </selectKey>
+        <!-- (ID,ORDER_NUMBER,MATERIAL_ID,IN_DATE,POSITION,
+        MATERIAL_NUMBER,CHECK_NAME,OPERATOR_NAME,IN_WAREHOUSE_TYPE,SUPPLIER,DIS)  -->
+        INSERT INTO C_MES_IN_WAREHOUSE VALUES(#{id},#{orderNumber},#{materialId},NOW(),
+        #{positionId},#{materialNumber},#{checkName},#{operatorName},#{inWarehouseType},#{dis},#{supplier})
+	</insert>
+
+	<update id="editPurchase">
+		UPDATE C_MES_IN_WAREHOUSE SET MATERIAL_ID=#{materialId},
+		POSITION_ID=#{positionId},MATERIAL_NUMBER=#{materialNumber},CHECK_NAME=#{checkName},
+		OPERATOR_NAME=#{operatorName},IN_WAREHOUSE_TYPE=#{inWarehouseType},SUPPLIER=#{supplier},
+		DIS=#{dis},ORDER_NUMBER=#{orderNumber} WHERE ID = #{id}
+	</update>
+
+	<delete id="delPurchase">
+		DELETE C_MES_IN_WAREHOUSE WHERE ID = #{id}
+	</delete>
+
+	<select id="outWareHouseList" resultType="CMesOutWareHouse">
+		SELECT * FROM C_MES_OUT_WAREHOUSE WHERE 1=1
+		<if test="materialName!=null">
+			AND MATERIAL_NAME = #{materialName}
+		</if>
+		ORDER BY OUT_DATE DESC
+	</select>
+
+	<insert id="addShiments" keyProperty="id1" useGeneratedKeys="false">
+		<selectKey  keyProperty="id1" resultType="int" order="BEFORE">
+            select nvl(max(id),0)+1 from C_MES_OUT_WAREHOUSE
+        </selectKey>
+        INSERT INTO C_MES_OUT_WAREHOUSE VALUES(#{id1},#{materialName},NOW(),#{materialNumber},#{dis},#{outType})
+	</insert>
+
+	<update id="editShipments">
+		UPDATE C_MES_OUT_WAREHOUSE SET MATERIAL_ID=#{materialId},
+		MATERIAL_NUMBER=#{materialNumber},CHECK_NAME=#{checkName},
+		OPERATOR_NAME=#{operatorName},OUT_TYPE=#{outType},
+		DIS=#{dis},ORDER_NUMBER=#{orderNumber} WHERE ID = #{id}
+	</update>
+
+	<delete id="delShipments">
+		DELETE C_MES_OUT_WAREHOUSE WHERE ID = #{id}
+	</delete>
+
+	<select id="stockManager" resultType="CMesMaterialMessage">
+		SELECT materialMessage.*,material.MATERIAL_NAME as materielName,libraryPosition.position_Name
+		FROM C_MES_LIBRARY_POSITION_T libraryPosition,C_MES_MATERIAL_MESSAGE materialMessage,C_MES_MATERIAL_T material
+		WHERE materialMessage.MATERIEL_ID = material.ID AND libraryPosition.ID = materialMessage.position_Id
+		<if test="id!=null">
+			AND materialMessage.ID = #{id}
+		</if>
+		<if test="materialId!=null">
+			AND material.ID = #{materialId}
+		</if>
+		<if test="supplier!=null">
+			AND materialMessage.SUPPLIER = #{supplier}
+		</if>
+		<if test="position!=null">
+			AND materialMessage.POSITION_ID = #{position}
+		</if>
+	</select>
+
+	<insert id="addStockManager" keyProperty="id" useGeneratedKeys="false">
+		<selectKey  keyProperty="id" resultType="int" order="BEFORE">
+            select nvl(max(id),0)+1 from C_MES_MATERIAL_MESSAGE
+        </selectKey>
+        INSERT INTO C_MES_MATERIAL_MESSAGE values(#{id},#{materialId},#{materialNumber},
+        #{positionId},#{supplier},#{dis})
+	</insert>
+	<update id="editStockManager">
+		<if test="msg==-1">
+			UPDATE C_MES_MATERIAL_MESSAGE set MATERIEL_NUMBER = MATERIEL_NUMBER+#{materialNumber}
+			WHERE ID = #{id}
+		</if>
+		<if test="msg==1">
+			UPDATE C_MES_MATERIAL_MESSAGE set MATERIEL_NUMBER = MATERIEL_NUMBER-#{materialNumber}
+			WHERE ID = #{id}
+		</if>
+	</update>
+
+	<delete id="delStockManager">
+		DELETE C_MES_MATERIAL_MESSAGE WHERE ID = #{id}
+	</delete>
+
+	<select id="libraryPositionList" resultType="CMesLibraryPositionT">
+		SELECT b.*,wareHouse.warehouse_Name,wareHouse.warehouse_Address FROM (SELECT a.*,material.MATERIAL_NAME
+		FROM (SELECT
+		libraryPosition.*,materialMessage.Materiel_Number,materialMessage.Supplier
+		FROM C_MES_LIBRARY_POSITION_T libraryPosition,
+		C_MES_MATERIAL_MESSAGE materialMessage
+		WHERE libraryPosition.MATERIAL_ID = materialMessage.MATERIEL_ID(+)
+		) a,C_MES_MATERIAL_T material
+	 	WHERE a.MATERIAL_ID = material.ID(+))b,C_MES_WAREHOUSE_T wareHouse
+    	WHERE b.WAREHOUSE_ID = wareHouse.ID
+		<if test="id!=null">
+			AND b.ID = #{id}
+		</if>
+		<if test="positionNames!=null">
+			AND b.POSITION_NAME = #{positionNames}
+		</if>
+		ORDER BY b.id
+	</select>
+	<select id="repositoryManagement" resultType="CMesLibraryPositionT">
+		SELECT libraryPosition.*, wareHouse.WAREHOUSE_NAME
+		FROM C_MES_LIBRARY_POSITION_T libraryPosition,C_MES_WAREHOUSE_T wareHouse
+		WHERE libraryPosition.WAREHOUSE_ID = wareHouse.ID
+		<if test="id!=null">
+			AND libraryPosition.ID = #{id}
+		</if>
+		<if test="positionName!=null">
+			AND libraryPosition.POSITION_NAME = #{positionName}
+		</if>
+		<if test="warehouseId!=null">
+			AND libraryPosition.WAREHOUSE_ID = #{warehouseId}
+		</if>
+		ORDER BY libraryPosition.id
+	</select>
+	<select id="wareHouseList" resultType="CMesWareHouseT">
+		SELECT * FROM C_MES_WAREHOUSE_T
+	</select>
+
+	<update id="editLibraryPosition">
+		UPDATE C_MES_LIBRARY_POSITION_T SET MATERIAL_ID = #{materialId} WHERE ID = #{positionId}
+	</update>
+
+	<update id="editLibraryPosition2">
+		UPDATE C_MES_LIBRARY_POSITION_T SET MATERIAL_ID = '' WHERE ID = #{positionId}
+	</update>
+	<insert id="addRepositoryManagement" keyProperty="id" useGeneratedKeys="false">
+        INSERT INTO C_MES_LIBRARY_POSITION_T(POSITION_NAME,LAST_DATE,MATERIAL_ID,WAREHOUSE_ID,DIS)
+		values(#{positionName},NOW(),'',#{warehouseId},#{dis})
+	</insert>
+
+	<update id="editRepositoryManagement">
+		UPDATE C_MES_LIBRARY_POSITION_T SET position_name = #{positionName},warehouse_id=#{warehouseId},dis = #{dis},last_date=NOW()
+		WHERE ID = #{id}
+	</update>
+
+	<delete id="delRepositoryManagement">
+		DELETE FROM C_MES_LIBRARY_POSITION_T WHERE ID = #{id}
+	</delete>
+</mapper>

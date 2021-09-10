@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.all.TechnologyDAO">
+
+	<!-- 查询标签类型列表 -->
+	<select id="findAllLabelType" resultType="CMesLabelType">
+				SELECT * FROM C_MES_LABEL_TYPE WHERE 1 = 1
+		<if test="id!=null and id!='' ">
+			AND ID=#{id}
+		</if>
+		<if test="name!=null and name!=''">
+			AND NAME = #{name}
+		</if>
+	</select>
+
+	<!-- 根据id查询 -->
+	<select id="findLabelTypeByid" resultType="CMesLabelType">
+		select * from C_MES_LABEL_TYPE where id=#{id}
+	</select>
+
+	<!-- 添加 -->
+	<insert id="addLabelType">
+				INSERT INTO C_MES_LABEL_TYPE (DT,NAME,LABEL_VR,LABEL_DIS)
+		VALUES(NOW(),#{name},#{labelVr},#{labelDis})
+	</insert>
+
+	<!-- 修改 -->
+	<update id="updateLabelType">
+			UPDATE C_MES_LABEL_TYPE SET
+		DT=NOW(),NAME=#{name},LABEL_VR=#{labelVr},LABEL_DIS=#{labelDis}
+		WHERE ID = #{id}
+	</update>
+
+	<!-- 删除 -->
+	<delete id="delLabelType">
+		delete from C_MES_LABEL_TYPE where id=#{id}
+	</delete>
+
+	<!-- 查询标签列表 -->
+	<select id="findAllLabelManager" resultType="CMesLabelManagerT">
+		SELECT labelManager.*,line.NAME AS lineName ,labelType.NAME AS
+		labelTypeName
+		FROM C_MES_LABEL_MANAGER_T
+		labelManager,C_MES_LINE_T line,C_MES_LABEL_TYPE
+		labelType
+		WHERE labelManager.LINE_ID = line.ID AND
+		labelManager.LABEL_TYPE_ID=labelType.ID
+		<if test="id!=null">
+			AND labelManager.ID=#{id}
+		</if>
+		<if test="labelNumber!=null or labelName!=null">
+			AND (labelManager.LABEL_NUMBER = #{labelNumber} OR
+			labelManager.LABEL_NAME = #{labelName})
+		</if>
+		ORDER BY labelManager.LABEL_NUMBER
+	</select>
+
+	<!-- 根据id查询 -->
+	<select id="findLabelManagerByid" resultType="CMesLabelManagerT">
+		select c.*,ltype.`NAME` labelTypeName  from C_MES_LABEL_MANAGER_T c
+		LEFT JOIN c_mes_label_type ltype ON ltype.ID = c.LABEL_TYPE_ID
+		where c.id=#{id}
+	</select>
+
+	<insert id="addLabelManager">
+		INSERT INTO C_MES_LABEL_MANAGER_T(LABEL_NUMBER,LABEL_NAME,LABEL_RULES,LINE_ID,DIS,LABEL_DATE,LABEL_TYPE_ID)
+		VALUES (#{labelNumber},#{labelName},#{labelRules},#{lineId},#{dis},NOW(),#{labelTypeId})
+	</insert>
+
+	<update id="updateLabelManager">
+		UPDATE C_MES_LABEL_MANAGER_T SET
+		LABEL_NUMBER=#{labelNumber},LABEL_NAME=#{labelName},
+		LABEL_RULES=#{labelRules},LINE_ID=#{lineId},DIS=#{dis},LABEL_DATE=NOW(),LABEL_TYPE_ID=#{labelTypeId}
+		WHERE ID =#{id}
+	</update>
+
+	<delete id="delLabelManager">
+		delete from C_MES_LABEL_MANAGER_T where id=#{id}
+	</delete>
+
+	<select id="findAll" resultType="CMesLabelManagerT">
+	SELECT
+	c.*,
+	line.`NAME` lineName,
+	ltype.`NAME` labelTypeName
+FROM
+	c_mes_label_manager_t c
+	LEFT JOIN c_mes_line_t line ON line.ID = c.LINE_ID
+	LEFT JOIN c_mes_label_type ltype ON ltype.ID = c.LABEL_TYPE_ID
+
+	</select>
+</mapper>

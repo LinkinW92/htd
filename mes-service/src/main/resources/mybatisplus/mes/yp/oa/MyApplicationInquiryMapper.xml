@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.yp.oa.MyApplicationInquiryDao">
+
+	<!-- 查询 -->
+	<select id="list" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			DATE_FORMAT( a.dt, '%Y-%m-%d %H:%i:%s' ) AS dt,
+			a.userId,
+			a.`name`,
+			a.state,
+			a.listNo,
+			a.urgent,
+			b.USER_NAME as userName,
+			b.`name` as fullName
+		FROM
+			c_oa_approval_record_t a
+			join c_mes_user_t b on a.userId = b.id
+		WHERE
+			a.userId = #{userId}
+		<if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
+		and DATE_FORMAT(a.dt,'%Y-%m-%d') between #{startDate} and #{endDate}
+		</if>
+		<if test="listNo != null and listNo != ''">
+		and a.listNo like '%${listNo}%'
+		</if>
+		<if test="type != null and type != ''">
+		and a.name = #{type}
+		</if>
+		<if test="state != null and state != ''">
+		and a.state = #{state}
+		</if>
+		ORDER BY
+			IF ( a.state = '审核中', 0, 1 ),
+			a.urgent DESC,
+ 			a.dt desc
+	</select>
+
+	<!-- 查询明细 -->
+	<select id="queryDetails" resultType="com.alibaba.fastjson.JSONObject">
+		select * from c_oa_approval_record_detailed_t
+		where approvalRecordId = #{id}
+	</select>
+
+	<!-- 查询审批备注 -->
+	<select id="findApprovalRecordNote" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			DATE_FORMAT( a.dt, '%Y-%m-%d %H:%i:%s' ) AS dt,
+			a.dis,
+			a.approvalRecordId,
+			a.state,
+			b.USER_NAME AS userName,
+			b.`name` as fullName
+		FROM
+			c_oa_approval_record_note_t a
+			left JOIN c_mes_user_t b ON a.userId = b.id
+		where a.approvalRecordId = #{id}
+	</select>
+
+	<!-- 新增申请 -->
+	<insert id="addApprovalRecord" useGeneratedKeys="true" keyProperty="id"  keyColumn="id">
+		insert into c_oa_approval_record_t(dt,userId,type,state,actKey)
+		value(now(),#{userId},#{name},#{state},#{key})
+	</insert>
+
+	<!-- 新增明细 -->
+	<insert id="addDetailed">
+		insert into c_oa_approval_record_detailed_t(`key`,`value`,approvalRecordId)
+		value(#{key},#{value},#{approvalRecordId})
+	</insert>
+
+	<!-- 新增审批备注 -->
+	<insert id="addApprovalRecordNote">
+		insert into c_oa_approval_record_note_t(dt,dis,listNo,userId,state,type,step,list)
+		value(now(),#{dis},#{listNo},#{userId},#{state},#{type},#{step},#{list})
+	</insert>
+
+	<!-- 查询审批记录表表格 -->
+	<select id="findApprovalRecordTable" resultType="com.alibaba.fastjson.JSONObject">
+		select * from c_oa_approval_record_table_t
+		where approvalRecordId = #{approvalRecordId}
+	</select>
+
+	<!-- 查询Execution -->
+	<select id="findActRuExecution" resultType="com.alibaba.fastjson.JSONObject">
+		select * from act_ru_execution
+		where BUSINESS_KEY_ = #{businessKey}
+	</select>
+
+	<!-- 更新审批记录表状态 -->
+	<update id="updateApprovalRecordState">
+		update c_oa_approval_record_t
+		set
+		state = #{state}
+		where id = #{id}
+	</update>
+
+	<!-- 查询所有用户 -->
+	<select id="findUserAll" resultType="com.alibaba.fastjson.JSONObject">
+		select id,user_name as userName,`name` as fullName from c_mes_user_t
+		ORDER BY id
+	</select>
+
+	<!-- 查询现有的单据类型 -->
+	<select id="findType" resultType="com.alibaba.fastjson.JSONObject">
+		select * from c_oa_form_template_t
+	</select>
+
+	<!-- 通过单号查询单据信息 -->
+	<select id="findApprovalRecordByListNo" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT * FROM `c_oa_approval_record_t`
+		where listNo = #{listNo}
+	</select>
+
+	<!-- 通过单号删除待审批记录 -->
+	<delete id="deleteApprovalRecordWithByListNo">
+		delete from c_oa_approval_record_with_t
+		where listNo = #{listNo}
+	</delete>
+
+	<!-- 加急 -->
+	<update id="urgent">
+		update c_oa_approval_record_t
+		set
+		urgent = 'true'
+		where listNo = #{listNo}
+	</update>
+
+</mapper>

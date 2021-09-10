@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.sqq.RouteLineDao">
+
+	<select id="findAllStation" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT id,STATION_NAME as stationName FROM `c_mes_station_t`
+		where LINE_ID = #{lineId}
+		ORDER BY id
+	</select>
+
+	<select id="findAllLine" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT id,name  FROM `c_mes_line_t` ORDER BY id
+	</select>
+
+	<select id="findAllProduction" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT id, PRODUCTION_NAME as productinName FROM `c_mes_production_t` order by id
+	</select>
+
+	<select id="findAllRoute" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT id, name FROM `c_mes_routing_t`
+		where 1=1
+		<if test="lineId!=null and lineId!=''">
+			and LINE_ID = #{lineId}
+		</if>
+		<if test="productionId!=null and productionId!=''">
+			and PRODUCTION_ID = #{productionId}
+		</if>
+		order by id
+	</select>
+	<select id="findRoute" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			id,
+			PRODUCTION_ID as productionId,
+			LINE_ID as lineId,
+			ROUTE as route,
+			`name`,
+			VIEW_STATE as viewState,
+			default_route as defaultRoute,
+			json
+		FROM
+			`c_mes_routing_t`
+		where LINE_ID = #{lineId} and PRODUCTION_ID = #{productionId} and id = #{routeId}
+		order by id
+	</select>
+
+	<insert id="addRoute" useGeneratedKeys="true" keyProperty="id">
+				insert into c_mes_routing_t (LINE_ID,PRODUCTION_ID,`NAME`,json,default_route) values
+		(#{lineId},#{productionId},#{name},#{json},#{status})
+	</insert>
+
+	<delete id="deleteRoute">
+        delete from  c_mes_routing_t where id = #{routeId}
+    </delete>
+
+     <update id="updateRoute">
+       update c_mes_routing_t set json = #{json} where id = #{routeId}
+    </update>
+
+	<update id="updatestatus">
+		update c_mes_routing_t set default_route=0 where PRODUCTION_ID=#{pid} and LINE_ID=#{lined}
+	</update>
+    <select id="findRouteById" resultType="com.alibaba.fastjson.JSONObject">
+		select
+		*
+		from  c_mes_routing_t where id = #{routeId}
+	</select>
+
+	<select id="findRoutingIdAndName" resultType="com.alibaba.fastjson.JSONObject">
+		select
+		ID id,
+		NAME name,
+		LINE_ID lineId
+		from  c_mes_routing_t
+		where 1=1
+		<if test="id!=null and id!=0">
+			and	ID = #{id}
+		</if>
+		<if test="name!=null and name!=''">
+			and	NAME = #{name}
+		</if>
+		<if test="lineId!=null and lineId!=0">
+			and	LINE_ID = #{lineId}
+		</if>
+	</select>
+</mapper>

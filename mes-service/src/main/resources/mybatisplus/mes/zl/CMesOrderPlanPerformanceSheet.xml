@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.zl.CMesOrderPlanPerformanceSheetDao">
+	<!-- 查询全部 -->
+	<select id="findAllOrderPlanPerformanceSheet" resultType="CMesOrderPlanPerformanceSheet">
+	SELECT * FROM c_mes_order_plan_performance_sheet where 1=1
+	</select>
+	<select id="countOrderPlanPerformanceSheet" resultType="int">
+		SELECT COUNT(*) FROM
+		c_mes_order_plan_performance_sheet WHERE ORDER_NUMBER = #{orderNumber}
+	</select>
+	<insert id="addOrderPlanPerformanceSheet">
+		INSERT INTO c_mes_order_plan_performance_sheet(
+		ORDER_NUMBER,NAME_GOODS,PLANNED_PERFORMANCE,QUANTITY_PRODUCTION,
+		START_DATE,MATERIAL_ARRIVAL_DATE,PRODUCTION_START_DATE,PRODUCTION_END_DATE,SHIPMENT_DATE,CURRENT_COMPLETION_RATE)
+		VALUES(
+		#{orderNumber},#{nameGoods},#{plannedPerformance},#{quantityProduction},#{startDate},#{materialArrivalDate},#{productionStartDate},
+		#{productionEndDate},#{shipmentDate},#{currentCompletionRate})
+	</insert>
+		<select id="findOrderPlanPerformanceSheetId" resultType="CMesOrderPlanPerformanceSheet">
+			select * from c_mes_order_plan_performance_sheet where id=#{id}
+	</select>
+		<update id="editOrderPlanPerformanceSheet">
+		UPDATE c_mes_order_plan_performance_sheet SET
+		ORDER_NUMBER =#{orderNumber},NAME_GOODS=#{nameGoods},PLANNED_PERFORMANCE=#{plannedPerformance},
+		QUANTITY_PRODUCTION=#{quantityProduction},START_DATE=#{startDate},MATERIAL_ARRIVAL_DATE=#{materialArrivalDate},PRODUCTION_START_DATE=#{productionStartDate},
+		PRODUCTION_END_DATE=#{productionEndDate},
+		SHIPMENT_DATE=#{shipmentDate},CURRENT_COMPLETION_RATE=#{currentCompletionRate}
+		WHERE ID = #{id}
+	</update>
+	<delete id="delOrderPlanPerformanceSheet">
+		DELETE FROM c_mes_order_plan_performance_sheet WHERE ID = #{id}
+	</delete>
+
+</mapper>

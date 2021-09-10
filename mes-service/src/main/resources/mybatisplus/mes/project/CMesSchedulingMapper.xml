@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.project.CMesSchedulingDAO">
+
+	<resultMap type="java.util.Map" id="schedulingMap">
+		<result column="id" property="id" />
+		<result column="shiftName" property="shiftName" />
+		<result column="teamName" property="teamName" />
+		<result column="dt" property="dt" />
+		<result column="lineName" property="lineName" />
+		<collection property="plans" javaType="list" ofType="java.util.Map">
+			<result column="planName" property="planName" />
+			<result column="planNumber" property="planNumber" />
+			<result column="ActualNumber" property="ActualNumber" />
+		</collection>
+	</resultMap>
+
+	<!-- 排版列表 -->
+	<select id="findAllSchebuling" resultMap="schedulingMap">
+		SELECT
+		sche.id AS id,
+		wo.NUMBER AS planNumber,
+		wo.COMPLETE_NUMBER AS
+		ActualNumber,
+		shift.`NAME` AS shiftName,
+		line.NAME AS lineName,
+		team.`NAME` AS teamName,
+		sche.DT AS dt,
+		plan.PLAN_NAME AS planName
+		FROM
+		c_mes_scheduling_t sche
+		LEFT JOIN c_mes_shifts_team_t shift ON
+		sche.SHIFT_ID = shift.id
+		LEFT JOIN c_mes_team_t team ON sche.TEAM_ID =
+		team.ID
+		LEFT JOIN c_mes_line_t line ON sche.LINE_ID = line.ID
+		LEFT JOIN
+		c_mes_workorder_t wo ON sche.id = wo.SCHE_ID
+		LEFT JOIN r_mes_plan_t
+		plan ON wo.PLAN_ID = plan.id
+		WHERE 1=1
+		and plan.COMPLETE_FLAG  NOT IN(3,4)
+		<if test="lineId!=null and lineId!=''">
+			and sche.LINE_ID = #{lineId}     <!-- and and IFNULL(wo.COMPLETE_NUMBER,0)
+				&lt; wo.NUMBER -->
+		</if>
+		<if test="dt!=null">
+			and sche.dt > #{dt}
+		</if>
+		ORDER BY sche.id
+	</select>
+
+	<!-- 排版列表 -->
+	<select id="findAllSchebulingl" resultType="com.skeqi.mes.pojo.project.CMesSchedulingL">
+		SELECT
+			sche.id AS id,
+			wo.NUMBER AS planNumber,
+			wo.COMPLETE_NUMBER AS ActualNumber,
+			shift.`NAME` AS shiftName,
+			line.NAME AS lineName,
+			team.`NAME` AS teamName,
+			sche.DT AS dt,
+			plan.PLAN_NAME AS planName
+		FROM
+			c_mes_scheduling_t sche
+			LEFT JOIN c_mes_shifts_team_t shift ON sche.SHIFT_ID = shift.id
+			LEFT JOIN c_mes_team_t team ON sche.TEAM_ID = team.ID
+			LEFT JOIN c_mes_line_t line ON sche.LINE_ID = line.ID
+			LEFT JOIN c_mes_workorder_t wo ON sche.id = wo.SCHE_ID
+			LEFT JOIN r_mes_plan_t plan ON wo.PLAN_ID = plan.id
+		WHERE
+			1 =1
+		and	plan.PLAN_NAME is not null
+		and  team.`NAME` is not null
+		<if
+			test="startTime !=null and startTime !=''  and endTime !=null and endTime !=''  ">
+			and sche.Dt between #{startTime} and #{endTime}
+		</if>
+		ORDER BY sche.DT DESC
+	</select>
+
+   <!-- 根据计划ID查询排版-->
+	<select id="findPidByScheduling" resultMap="schedulingMap">
+		SELECT
+		sche.id AS id,
+		wo.NUMBER AS planNumber,
+		sche.ACTUAl_NUMBER AS ActualNumber,
+		shift.`NAME` AS shiftName,
+		line.NAME AS lineName,
+		team.`NAME` AS
+		teamName,
+		sche.DT AS dt,
+		plan.PLAN_NAME AS planName
+		FROM
+		c_mes_scheduling_t sche
+		LEFT JOIN c_mes_shifts_team_t shift ON
+		sche.SHIFT_ID = shift.id
+		LEFT JOIN c_mes_team_t team ON sche.TEAM_ID =
+		team.ID
+		LEFT JOIN c_mes_line_t line ON sche.LINE_ID = line.ID
+		LEFT JOIN
+		c_mes_workorder_t wo ON sche.id = wo.SCHE_ID
+		LEFT JOIN r_mes_plan_t
+		plan ON wo.PLAN_ID = plan.id
+		WHERE
+		plan.id = #{id}
+		ORDER BY
+		sche.id
+	</select>
+
+
+	<select id="findAllWorkL" resultType="java.util.Map">
+		SELECT
+		works.*,plan.PLAN_NAME as planName FROM `c_mes_workorder_t`
+		works
+		left join r_mes_plan_t plan on works.PLAN_ID=plan.ID
+		where
+		works.SCHE_ID=#{id}
+		<if test="planId!=null and planId!=''">
+			and PLAN_ID = #{planId}
+		</if>
+
+	</select>
+
+	<insert id="addScheduling" useGeneratedKeys="true"  keyProperty="id">
+	  insert into  c_mes_scheduling_t(DT,SHIFT_ID,TEAM_ID,LINE_ID,PLAN_NUMBER,ACTUAl_NUMBER)
+			values(#{dt},#{shiftId},#{teamId},#{lineId},#{planNumber},0)
+	</insert>
+
+	<!-- <select id="findwork" resultType="Integer"> select id from c_mes_workorder_t
+		where SCHE_ID =#{id} and PLAN_ID=#{pid} </select> -->
+
+
+	<resultMap type="com.skeqi.mes.pojo.project.CMesWorkorderT" id="workorderMap">
+		<result column="id" property="id" />
+		<result column="PLAN_ID" property="planId" />
+		<result column="WORK_NAME" property="workName" />
+		<result column="NUMBER" property="number" />
+		<result column="PRODUCT_MARK" property="productMark" />
+		<result column="SURPLUS_NUMBER" property="surplusNumber" />
+		<result column="COMPLETE_NUMBER" property="completeNumber" />
+		<result column="SCHE_ID" property="scheId" />
+		<result column="planName" property="planName" />
+		<result column="PRODUCTION_NAME" property="proName" />
+		<result column="PRODUCTION_SERIES" property="proType" />
+		<association  property="production" javaType="com.skeqi.mes.pojo.CMesProductionT">
+			<result column="PRODUCTION_NAME" property="productionName" />
+			<result column="PRODUCTION_SERIES" property="productionType" />
+		</association>
+	</resultMap>
+	<select id="findAllWork" resultMap="workorderMap">
+		SELECT
+			works.*,
+			plan.PLAN_NAME AS planName,
+			production.PRODUCTION_NAME,
+			production.PRODUCTION_SERIES
+		FROM
+			`c_mes_workorder_t` works
+			LEFT JOIN r_mes_plan_t plan ON works.PLAN_ID = plan.ID
+			left join c_mes_production_t production on plan.PRODUCTION_ID = production.id
+		WHERE
+			works.SCHE_ID = #{id}
+		<if test="planId!='' and planId!=null ">
+			and PLAN_ID = #{planId}
+		</if>
+	</select>
+
+</mapper>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.endhandle.TGlWithholdingPeriodMapper">
+
+    <resultMap type="com.skeqi.finance.domain.endhandle.withholding.TGlWithholdingPeriod" id="TGlWithholdingPeriodResult">
+        <result property="fSchemeId" column="f_scheme_id"/>
+        <result property="fYear" column="f_year"/>
+        <result property="fPeriod" column="f_period"/>
+        <result property="fYearPeriod" column="f_year_period"/>
+        <result property="fAmortAmount" column="f_amort_amount"/>
+        <result property="fAmorted" column="f_amorted"/>
+        <result property="fExpression" column="f_expression"/>
+    </resultMap>
+
+
+    <select id="queryList" resultType="com.skeqi.finance.pojo.vo.endhandle.TGlWithholdingPeriodVo">
+        select  * from t_gl_withholding_period where  f_scheme_id=#{fSchemeId}
+    </select>
+
+</mapper>

@@ -1,0 +1,499 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.chenj.srm.CSrmSupplierChangeRecordMapper">
+    <resultMap id="BaseResultMap" type="com.skeqi.mes.pojo.chenj.srm.CSrmSupplierChangeRecord">
+        <!--@mbg.generated-->
+        <!--@Table c_srm_supplier_change_record-->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="supplier_code" jdbcType="VARCHAR" property="supplierCode"/>
+        <result column="bank_name" jdbcType="VARCHAR" property="bankName"/>
+        <result column="bank_account" jdbcType="VARCHAR" property="bankAccount"/>
+        <result column="product_name" jdbcType="VARCHAR" property="productName"/>
+        <result column="product_type" jdbcType="VARCHAR" property="productType"/>
+        <result column="status" jdbcType="VARCHAR" property="status"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="is_delete" jdbcType="BIT" property="isDelete"/>
+        <result column="unify_code" jdbcType="VARCHAR" property="unifyCode"/>
+        <result column="enterprise_type" jdbcType="VARCHAR" property="enterpriseType"/>
+        <result column="registered_address" jdbcType="VARCHAR" property="registeredAddress"/>
+        <result column="particular_address" jdbcType="VARCHAR" property="particularAddress"/>
+        <result column="legal_representative" jdbcType="VARCHAR" property="legalRepresentative"/>
+        <result column="registered_capital" jdbcType="VARCHAR" property="registeredCapital"/>
+        <result column="register_date" jdbcType="DATE" property="registerDate"/>
+        <result column="upload_of_business_license" jdbcType="VARCHAR" property="uploadOfBusinessLicense"/>
+        <result column="business_nature" jdbcType="VARCHAR" property="businessNature"/>
+        <result column="products_or_services" jdbcType="VARCHAR" property="productsOrServices"/>
+        <result column="client" jdbcType="VARCHAR" property="client"/>
+        <result column="company_code" jdbcType="VARCHAR" property="companyCode"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        id, supplier_code, bank_name, bank_account, product_name, product_type, `status`,
+        create_time, update_time, is_delete, unify_code, enterprise_type, registered_address,
+        particular_address, legal_representative, registered_capital, register_date, upload_of_business_license,
+        business_nature, products_or_services, client, company_code,company_name
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        select
+        <include refid="Base_Column_List"/>
+        from c_srm_supplier_change_record
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id"
+            parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmSupplierChangeRecord" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_supplier_change_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="supplierCode != null">
+                supplier_code,
+            </if>
+            <if test="bankName != null">
+                bank_name,
+            </if>
+            <if test="bankAccount != null">
+                bank_account,
+            </if>
+            <if test="productName != null">
+                product_name,
+            </if>
+            <if test="productType != null">
+                product_type,
+            </if>
+            <if test="status != null">
+                `status`,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="isDelete != null">
+                is_delete,
+            </if>
+            <if test="unifyCode != null">
+                unify_code,
+            </if>
+            <if test="enterpriseType != null">
+                enterprise_type,
+            </if>
+            <if test="registeredAddress != null">
+                registered_address,
+            </if>
+            <if test="particularAddress != null">
+                particular_address,
+            </if>
+            <if test="legalRepresentative != null">
+                legal_representative,
+            </if>
+            <if test="registeredCapital != null">
+                registered_capital,
+            </if>
+            <if test="registerDate != null">
+                register_date,
+            </if>
+            <if test="uploadOfBusinessLicense != null">
+                upload_of_business_license,
+            </if>
+            <if test="businessNature != null">
+                business_nature,
+            </if>
+            <if test="productsOrServices != null">
+                products_or_services,
+            </if>
+            <if test="client != null">
+                client,
+            </if>
+            <if test="companyCode != null">
+                company_code,
+            </if>
+            <if test="companyName != null">
+                company_name,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="supplierCode != null">
+                #{supplierCode,jdbcType=VARCHAR},
+            </if>
+            <if test="bankName != null">
+                #{bankName,jdbcType=VARCHAR},
+            </if>
+            <if test="bankAccount != null">
+                #{bankAccount,jdbcType=VARCHAR},
+            </if>
+            <if test="productName != null">
+                #{productName,jdbcType=VARCHAR},
+            </if>
+            <if test="productType != null">
+                #{productType,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isDelete != null">
+                #{isDelete,jdbcType=BIT},
+            </if>
+            <if test="unifyCode != null">
+                #{unifyCode,jdbcType=VARCHAR},
+            </if>
+            <if test="enterpriseType != null">
+                #{enterpriseType,jdbcType=VARCHAR},
+            </if>
+            <if test="registeredAddress != null">
+                #{registeredAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="particularAddress != null">
+                #{particularAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="legalRepresentative != null">
+                #{legalRepresentative,jdbcType=VARCHAR},
+            </if>
+            <if test="registeredCapital != null">
+                #{registeredCapital,jdbcType=VARCHAR},
+            </if>
+            <if test="registerDate != null">
+                #{registerDate,jdbcType=DATE},
+            </if>
+            <if test="uploadOfBusinessLicense != null">
+                #{uploadOfBusinessLicense,jdbcType=VARCHAR},
+            </if>
+            <if test="businessNature != null">
+                #{businessNature,jdbcType=VARCHAR},
+            </if>
+            <if test="productsOrServices != null">
+                #{productsOrServices,jdbcType=VARCHAR},
+            </if>
+            <if test="client != null">
+                #{client,jdbcType=VARCHAR},
+            </if>
+            <if test="companyCode != null">
+                #{companyCode,jdbcType=VARCHAR},
+            </if>
+            <if test="companyName != null">
+                #{companyName,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmSupplierChangeRecord">
+        <!--@mbg.generated-->
+        update c_srm_supplier_change_record
+        <set>
+            <if test="bankName != null">
+                bank_name = #{bankName,jdbcType=VARCHAR},
+            </if>
+            <if test="bankAccount != null">
+                bank_account = #{bankAccount,jdbcType=VARCHAR},
+            </if>
+            <if test="productName != null">
+                product_name = #{productName,jdbcType=VARCHAR},
+            </if>
+            <if test="productType != null">
+                product_type = #{productType,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                `status` = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isDelete != null">
+                is_delete = #{isDelete,jdbcType=BIT},
+            </if>
+            <if test="unifyCode != null">
+                unify_code = #{unifyCode,jdbcType=VARCHAR},
+            </if>
+            <if test="enterpriseType != null">
+                enterprise_type = #{enterpriseType,jdbcType=VARCHAR},
+            </if>
+            <if test="registeredAddress != null">
+                registered_address = #{registeredAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="particularAddress != null">
+                particular_address = #{particularAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="legalRepresentative != null">
+                legal_representative = #{legalRepresentative,jdbcType=VARCHAR},
+            </if>
+            <if test="registeredCapital != null">
+                registered_capital = #{registeredCapital,jdbcType=VARCHAR},
+            </if>
+            <if test="registerDate != null">
+                register_date = #{registerDate,jdbcType=DATE},
+            </if>
+            <if test="uploadOfBusinessLicense != null">
+                upload_of_business_license = #{uploadOfBusinessLicense,jdbcType=VARCHAR},
+            </if>
+            <if test="businessNature != null">
+                business_nature = #{businessNature,jdbcType=VARCHAR},
+            </if>
+            <if test="productsOrServices != null">
+                products_or_services = #{productsOrServices,jdbcType=VARCHAR},
+            </if>
+            <if test="client != null">
+                client = #{client,jdbcType=VARCHAR},
+            </if>
+            <if test="companyName != null">
+                company_name = #{companyName,jdbcType=VARCHAR},
+            </if>
+        </set>
+        <where>
+            <if test="supplierCode != null and supplierCode != ''">
+                supplier_code=#{supplierCode,jdbcType=VARCHAR}
+            </if>
+            <if test="companyCode != null and companyCode != ''">
+                and company_code=#{companyCode,jdbcType=VARCHAR}
+            </if>
+            <if test="id != null">
+                and id=#{id,jdbcType=INTEGER}
+            </if>
+            and is_delete=0
+        </where>
+    </update>
+
+    <update id="updateByPrimaryKeySelectiveDel" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmSupplierChangeRecord">
+        <!--@mbg.generated-->
+        update c_srm_supplier_change_record
+        set is_delete=1, update_time=now()
+        <where>
+            <if test="supplierCode != null and supplierCode != ''">
+                supplier_code=#{supplierCode,jdbcType=VARCHAR}
+            </if>
+            <if test="companyCode != null and companyCode != ''">
+                and company_code=#{companyCode,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null and status != ''">
+                and status=#{status,jdbcType=VARCHAR}
+            </if>
+            and is_delete=0
+        </where>
+    </update>
+
+
+    <update id="updateBatchSelective" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update c_srm_supplier_change_record
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="supplier_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.supplierCode != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.supplierCode,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="bank_name = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.bankName != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.bankName,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="bank_account = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.bankAccount != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.bankAccount,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="product_name = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.productName != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.productName,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="product_type = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.productType != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.productType,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="`status` = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.status != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.status,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.createTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.createTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.updateTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.updateTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="is_delete = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.isDelete != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.isDelete,jdbcType=BIT}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="unify_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.unifyCode != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.unifyCode,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="enterprise_type = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.enterpriseType != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.enterpriseType,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="registered_address = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.registeredAddress != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.registeredAddress,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="particular_address = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.particularAddress != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.particularAddress,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="legal_representative = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.legalRepresentative != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.legalRepresentative,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="registered_capital = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.registeredCapital != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.registeredCapital,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="register_date = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.registerDate != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.registerDate,jdbcType=DATE}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="upload_of_business_license = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.uploadOfBusinessLicense != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.uploadOfBusinessLicense,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="business_nature = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.businessNature != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.businessNature,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="products_or_services = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.productsOrServices != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.productsOrServices,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="client = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.client != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.client,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="company_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.companyCode != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.companyCode,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_supplier_change_record
+        (supplier_code, bank_name, bank_account, product_name, product_type, `status`, create_time,
+        update_time, is_delete, unify_code, enterprise_type, registered_address, particular_address,
+        legal_representative, registered_capital, register_date, upload_of_business_license,
+        business_nature, products_or_services, client, company_code)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.supplierCode,jdbcType=VARCHAR}, #{item.bankName,jdbcType=VARCHAR},
+            #{item.bankAccount,jdbcType=VARCHAR},
+            #{item.productName,jdbcType=VARCHAR}, #{item.productType,jdbcType=VARCHAR}, #{item.status,jdbcType=VARCHAR},
+            #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.isDelete,jdbcType=BIT},
+            #{item.unifyCode,jdbcType=VARCHAR}, #{item.enterpriseType,jdbcType=VARCHAR},
+            #{item.registeredAddress,jdbcType=VARCHAR},
+            #{item.particularAddress,jdbcType=VARCHAR}, #{item.legalRepresentative,jdbcType=VARCHAR},
+            #{item.registeredCapital,jdbcType=VARCHAR}, #{item.registerDate,jdbcType=DATE},
+            #{item.uploadOfBusinessLicense,jdbcType=VARCHAR}, #{item.businessNature,jdbcType=VARCHAR},
+            #{item.productsOrServices,jdbcType=VARCHAR}, #{item.client,jdbcType=VARCHAR},
+            #{item.companyCode,jdbcType=VARCHAR}
+            )
+        </foreach>
+    </insert>
+
+
+    <!--查询供应商变更记录-->
+    <select id="selectChangeRecord" resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        select
+        <include refid="Base_Column_List"/>
+        from c_srm_supplier_change_record
+        <where>
+            <if test="supplierCode != null and supplierCode != ''">
+                supplier_code = #{supplierCode,jdbcType=INTEGER}
+            </if>
+            <if test="status!=null and status!=''">
+                and status=#{status,jdbcType=VARCHAR}
+            </if>
+        </where>
+        and is_delete=0
+    </select>
+
+
+    <!--查询供应商变更记录-->
+    <select id="selectChangeRecordD" resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CSrmSupplierChangeRecordRsp">
+        <!--@mbg.generated-->
+        select
+        <include refid="Base_Column_List"/>
+        from c_srm_supplier_change_record
+        <where>
+            <if test="supplierCode != null and supplierCode != ''">
+                supplier_code = #{supplierCode,jdbcType=VARCHAR}
+            </if>
+            <if test="status!=null and status!=''">
+                and status=#{status,jdbcType=VARCHAR}
+            </if>
+        </where>
+        and is_delete=0
+    </select>
+</mapper>

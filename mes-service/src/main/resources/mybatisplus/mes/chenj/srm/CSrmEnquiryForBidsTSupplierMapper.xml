@@ -1,0 +1,1112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.chenj.srm.CSrmEnquiryForBidsTSupplierMapper">
+    <resultMap id="BaseResultMap" type="com.skeqi.mes.pojo.chenj.srm.CSrmEnquiryForBidsTSupplier">
+        <!--@mbg.generated-->
+        <!--@Table c_srm_enquiry_for_bids_t_supplier-->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="rfq_or_tender_form_code" jdbcType="VARCHAR" property="rfqOrTenderFormCode"/>
+        <result column="line_number" jdbcType="VARCHAR" property="lineNumber"/>
+        <result column="supplier_code" jdbcType="VARCHAR" property="supplierCode"/>
+        <result column="material_code" jdbcType="VARCHAR" property="materialCode"/>
+        <result column="material_name" jdbcType="VARCHAR" property="materialName"/>
+        <result column="whether_offer" jdbcType="VARCHAR" property="whetherOffer"/>
+        <result column="offer_er" jdbcType="VARCHAR" property="offerEr"/>
+        <result column="offer_time" jdbcType="TIMESTAMP" property="offerTime"/>
+        <result column="offer_period_of_validity" jdbcType="TIMESTAMP" property="offerPeriodOfValidity"/>
+        <result column="unit_price" jdbcType="VARCHAR" property="unitPrice"/>
+        <result column="freight_or_not" jdbcType="VARCHAR" property="freightOrNot"/>
+        <result column="minimum_order" jdbcType="VARCHAR" property="minimumOrder"/>
+        <result column="minimum_packing_quantity" jdbcType="VARCHAR" property="minimumPackingQuantity"/>
+        <result column="estimated_time_of_delivery" jdbcType="TIMESTAMP" property="estimatedTimeOfDelivery"/>
+        <result column="quantity_allotted" jdbcType="VARCHAR" property="quantityAllotted"/>
+        <result column="choose_reason" jdbcType="VARCHAR" property="chooseReason"/>
+        <result column="scorer" jdbcType="VARCHAR" property="scorer"/>
+        <result column="marking_time" jdbcType="TIMESTAMP" property="markingTime"/>
+        <result column="score_elements_and_scores" jdbcType="VARCHAR" property="scoreElementsAndScores"/>
+        <result column="score" jdbcType="VARCHAR" property="score"/>
+        <result column="whether_to_recommend" jdbcType="VARCHAR" property="whetherToRecommend"/>
+        <result column="recommendations" jdbcType="VARCHAR" property="recommendations"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="company_code" jdbcType="VARCHAR" property="companyCode"/>
+        <result column="is_delete" jdbcType="BIT" property="isDelete"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        id, rfq_or_tender_form_code, line_number, supplier_code, material_code, material_name,
+        whether_offer, offer_er, offer_time, offer_period_of_validity, unit_price, freight_or_not,
+        minimum_order, minimum_packing_quantity, estimated_time_of_delivery, quantity_allotted,
+        choose_reason, scorer, marking_time, score_elements_and_scores, score, whether_to_recommend,
+        recommendations, create_time, update_time, supplier_id, company_code, is_delete
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        select
+        <include refid="Base_Column_List"/>
+        from c_srm_enquiry_for_bids_t_supplier
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <select id="selectByPrimaryList" resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CSrmEnquiryForBidsTSupplierRsp">
+        <!--@mbg.generated-->
+        select
+        material_code,material_name,offer_period_of_validity,unit_price,freight_or_not,minimum_order,minimum_packing_quantity,estimated_time_of_delivery,score
+        from c_srm_enquiry_for_bids_t_supplier
+        <where>
+            <if test="rfqOrTenderFormCode != null and rfqOrTenderFormCode != ''">
+                rfq_or_tender_form_code=#{rfqOrTenderFormCode,jdbcType=VARCHAR}
+            </if>
+
+        </where>
+        order by create_time desc
+    </select>
+    <select id="findTheTenderHall" resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CSrmEnquiryForBidsTSupplierHallRsp">
+        select
+        h.status,h.rfq_or_tender_form_code,h.company_code,s.offer_er,s.offer_time
+        from c_srm_enquiry_invitation_for_bids_t_h h left join c_srm_enquiry_for_bids_t_supplier s on
+        s.rfq_or_tender_form_code=h.rfq_or_tender_form_code
+        <where>
+            <if test="rfqOrTenderFormCode != null and rfqOrTenderFormCode != ''">
+                h.rfq_or_tender_form_code=#{rfqOrTenderFormCode,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null and status != ''">
+                and h.status=#{status,jdbcType=VARCHAR}
+            </if>
+            <!--寻源类型(1.询价2.招标)-->
+            and h.sourcing_type=2
+        </where>
+    </select>
+    <select id="selectFinallyData" resultType="com.skeqi.mes.pojo.chenj.srm.CSrmEnquiryForBidsTSupplier">
+        SELECT line_number
+        FROM c_srm_enquiry_for_bids_t_supplier
+        where rfq_or_tender_form_code=#{rfqOrTenderFormCode,jdbcType=VARCHAR}
+        ORDER BY id DESC
+        LIMIT 1
+    </select>
+
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        <!--@mbg.generated-->
+        delete from c_srm_enquiry_for_bids_t_supplier
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <delete id="delData">
+        delete from c_srm_enquiry_for_bids_t_supplier
+        where rfq_or_tender_form_code = #{rfqOrTenderFormCode,jdbcType=VARCHAR}
+    </delete>
+
+    <insert id="insert" keyColumn="id" keyProperty="id"
+            parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmEnquiryForBidsTSupplier"
+            useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_enquiry_for_bids_t_supplier (rfq_or_tender_form_code, line_number,
+        supplier_code, whether_offer, offer_er,
+        offer_time, offer_period_of_validity, unit_price,
+        freight_or_not, minimum_order, minimum_packing_quantity,
+        estimated_time_of_delivery, quantity_allotted,
+        choose_reason, scorer, marking_time,
+        score_elements_and_scores, whether_to_recommend,
+        recommendations, create_time, update_time
+        )
+        values (#{rfqOrTenderFormCode,jdbcType=VARCHAR}, #{lineNumber,jdbcType=VARCHAR},
+        #{supplierCode,jdbcType=VARCHAR}, #{whetherOffer,jdbcType=VARCHAR}, #{offerEr,jdbcType=VARCHAR},
+        #{offerTime,jdbcType=TIMESTAMP}, #{offerPeriodOfValidity,jdbcType=TIMESTAMP}, #{unitPrice,jdbcType=VARCHAR},
+        #{freightOrNot,jdbcType=VARCHAR}, #{minimumOrder,jdbcType=VARCHAR}, #{minimumPackingQuantity,jdbcType=VARCHAR},
+        #{estimatedTimeOfDelivery,jdbcType=TIMESTAMP}, #{quantityAllotted,jdbcType=VARCHAR},
+        #{chooseReason,jdbcType=VARCHAR}, #{scorer,jdbcType=VARCHAR}, #{markingTime,jdbcType=TIMESTAMP},
+        #{scoreElementsAndScores,jdbcType=VARCHAR}, #{whetherToRecommend,jdbcType=VARCHAR},
+        #{recommendations,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+        )
+    </insert>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id"
+            parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmEnquiryForBidsTSupplier" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_enquiry_for_bids_t_supplier
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="rfqOrTenderFormCode != null">
+                rfq_or_tender_form_code,
+            </if>
+            <if test="lineNumber != null">
+                line_number,
+            </if>
+            <if test="supplierCode != null">
+                supplier_code,
+            </if>
+            <if test="materialCode != null">
+                material_code,
+            </if>
+            <if test="materialName != null">
+                material_name,
+            </if>
+            <if test="whetherOffer != null">
+                whether_offer,
+            </if>
+            <if test="offerEr != null">
+                offer_er,
+            </if>
+            <if test="offerTime != null">
+                offer_time,
+            </if>
+            <if test="offerPeriodOfValidity != null">
+                offer_period_of_validity,
+            </if>
+            <if test="unitPrice != null">
+                unit_price,
+            </if>
+            <if test="freightOrNot != null">
+                freight_or_not,
+            </if>
+            <if test="minimumOrder != null">
+                minimum_order,
+            </if>
+            <if test="minimumPackingQuantity != null">
+                minimum_packing_quantity,
+            </if>
+            <if test="estimatedTimeOfDelivery != null">
+                estimated_time_of_delivery,
+            </if>
+            <if test="quantityAllotted != null">
+                quantity_allotted,
+            </if>
+            <if test="chooseReason != null">
+                choose_reason,
+            </if>
+            <if test="scorer != null">
+                scorer,
+            </if>
+            <if test="markingTime != null">
+                marking_time,
+            </if>
+            <if test="scoreElementsAndScores != null">
+                score_elements_and_scores,
+            </if>
+            <if test="score != null">
+                score,
+            </if>
+            <if test="whetherToRecommend != null">
+                whether_to_recommend,
+            </if>
+            <if test="recommendations != null">
+                recommendations,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="supplierId != null">
+                supplier_id,
+            </if>
+            <if test="companyCode != null">
+                company_code,
+            </if>
+            <if test="isDelete != null">
+                is_delete,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="rfqOrTenderFormCode != null">
+                #{rfqOrTenderFormCode,jdbcType=VARCHAR},
+            </if>
+            <if test="lineNumber != null">
+                #{lineNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="supplierCode != null">
+                #{supplierCode,jdbcType=VARCHAR},
+            </if>
+            <if test="materialCode != null">
+                #{materialCode,jdbcType=VARCHAR},
+            </if>
+            <if test="materialName != null">
+                #{materialName,jdbcType=VARCHAR},
+            </if>
+            <if test="whetherOffer != null">
+                #{whetherOffer,jdbcType=VARCHAR},
+            </if>
+            <if test="offerEr != null">
+                #{offerEr,jdbcType=VARCHAR},
+            </if>
+            <if test="offerTime != null">
+                #{offerTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="offerPeriodOfValidity != null">
+                #{offerPeriodOfValidity,jdbcType=TIMESTAMP},
+            </if>
+            <if test="unitPrice != null">
+                #{unitPrice,jdbcType=VARCHAR},
+            </if>
+            <if test="freightOrNot != null">
+                #{freightOrNot,jdbcType=VARCHAR},
+            </if>
+            <if test="minimumOrder != null">
+                #{minimumOrder,jdbcType=VARCHAR},
+            </if>
+            <if test="minimumPackingQuantity != null">
+                #{minimumPackingQuantity,jdbcType=VARCHAR},
+            </if>
+            <if test="estimatedTimeOfDelivery != null">
+                #{estimatedTimeOfDelivery,jdbcType=TIMESTAMP},
+            </if>
+            <if test="quantityAllotted != null">
+                #{quantityAllotted,jdbcType=VARCHAR},
+            </if>
+            <if test="chooseReason != null">
+                #{chooseReason,jdbcType=VARCHAR},
+            </if>
+            <if test="scorer != null">
+                #{scorer,jdbcType=VARCHAR},
+            </if>
+            <if test="markingTime != null">
+                #{markingTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="scoreElementsAndScores != null">
+                #{scoreElementsAndScores,jdbcType=VARCHAR},
+            </if>
+            <if test="score != null">
+                #{score,jdbcType=VARCHAR},
+            </if>
+            <if test="whetherToRecommend != null">
+                #{whetherToRecommend,jdbcType=VARCHAR},
+            </if>
+            <if test="recommendations != null">
+                #{recommendations,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="supplierId != null">
+                #{supplierId,jdbcType=INTEGER},
+            </if>
+            <if test="companyCode != null">
+                #{companyCode,jdbcType=VARCHAR},
+            </if>
+            <if test="isDelete != null">
+                #{isDelete,jdbcType=BIT},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmEnquiryForBidsTSupplier">
+        <!--@mbg.generated-->
+        update c_srm_enquiry_for_bids_t_supplier
+        <set>
+            <if test="supplierCode != null">
+                supplier_code = #{supplierCode,jdbcType=VARCHAR},
+            </if>
+            <if test="whetherOffer != null">
+                whether_offer = #{whetherOffer,jdbcType=VARCHAR},
+            </if>
+            <if test="offerEr != null">
+                offer_er = #{offerEr,jdbcType=VARCHAR},
+            </if>
+            <if test="offerTime != null">
+                offer_time = #{offerTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="offerPeriodOfValidity != null">
+                offer_period_of_validity = #{offerPeriodOfValidity,jdbcType=TIMESTAMP},
+            </if>
+            <if test="unitPrice != null">
+                unit_price = #{unitPrice,jdbcType=VARCHAR},
+            </if>
+            <if test="freightOrNot != null">
+                freight_or_not = #{freightOrNot,jdbcType=VARCHAR},
+            </if>
+            <if test="minimumOrder != null">
+                minimum_order = #{minimumOrder,jdbcType=VARCHAR},
+            </if>
+            <if test="minimumPackingQuantity != null">
+                minimum_packing_quantity = #{minimumPackingQuantity,jdbcType=VARCHAR},
+            </if>
+            <if test="estimatedTimeOfDelivery != null">
+                estimated_time_of_delivery = #{estimatedTimeOfDelivery,jdbcType=TIMESTAMP},
+            </if>
+            <if test="quantityAllotted != null">
+                quantity_allotted = #{quantityAllotted,jdbcType=VARCHAR},
+            </if>
+            <if test="chooseReason != null">
+                choose_reason = #{chooseReason,jdbcType=VARCHAR},
+            </if>
+            <if test="scorer != null">
+                scorer = #{scorer,jdbcType=VARCHAR},
+            </if>
+            <if test="markingTime != null">
+                marking_time = #{markingTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="scoreElementsAndScores != null">
+                score_elements_and_scores = #{scoreElementsAndScores,jdbcType=VARCHAR},
+            </if>
+            <if test="whetherToRecommend != null">
+                whether_to_recommend = #{whetherToRecommend,jdbcType=VARCHAR},
+            </if>
+            <if test="recommendations != null">
+                recommendations = #{recommendations,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        <where>
+            <if test="rfqOrTenderFormCode != null and rfqOrTenderFormCode != ''">
+                rfq_or_tender_form_code=#{rfqOrTenderFormCode,jdbcType=VARCHAR}
+            </if>
+            <if test="lineNumber != null and lineNumber != ''">
+                and line_number=#{lineNumber,jdbcType=VARCHAR}
+            </if>
+
+            <if test="id != null">
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+        </where>
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmEnquiryForBidsTSupplier">
+        <!--@mbg.generated-->
+        update c_srm_enquiry_for_bids_t_supplier
+        set rfq_or_tender_form_code = #{rfqOrTenderFormCode,jdbcType=VARCHAR},
+        line_number = #{lineNumber,jdbcType=VARCHAR},
+        supplier_code = #{supplierCode,jdbcType=VARCHAR},
+        whether_offer = #{whetherOffer,jdbcType=VARCHAR},
+        offer_er = #{offerEr,jdbcType=VARCHAR},
+        offer_time = #{offerTime,jdbcType=TIMESTAMP},
+        offer_period_of_validity = #{offerPeriodOfValidity,jdbcType=TIMESTAMP},
+        unit_price = #{unitPrice,jdbcType=VARCHAR},
+        freight_or_not = #{freightOrNot,jdbcType=VARCHAR},
+        minimum_order = #{minimumOrder,jdbcType=VARCHAR},
+        minimum_packing_quantity = #{minimumPackingQuantity,jdbcType=VARCHAR},
+        estimated_time_of_delivery = #{estimatedTimeOfDelivery,jdbcType=TIMESTAMP},
+        quantity_allotted = #{quantityAllotted,jdbcType=VARCHAR},
+        choose_reason = #{chooseReason,jdbcType=VARCHAR},
+        scorer = #{scorer,jdbcType=VARCHAR},
+        marking_time = #{markingTime,jdbcType=TIMESTAMP},
+        score_elements_and_scores = #{scoreElementsAndScores,jdbcType=VARCHAR},
+        whether_to_recommend = #{whetherToRecommend,jdbcType=VARCHAR},
+        recommendations = #{recommendations,jdbcType=VARCHAR},
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+        update_time = #{updateTime,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateBatch" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update c_srm_enquiry_for_bids_t_supplier
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="rfq_or_tender_form_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.rfqOrTenderFormCode,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="line_number = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.lineNumber,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="supplier_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.supplierCode,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="whether_offer = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.whetherOffer,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="offer_er = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.offerEr,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="offer_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.offerTime,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="offer_period_of_validity = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.offerPeriodOfValidity,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="unit_price = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.unitPrice,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="freight_or_not = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.freightOrNot,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="minimum_order = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.minimumOrder,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="minimum_packing_quantity = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.minimumPackingQuantity,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="estimated_time_of_delivery = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.estimatedTimeOfDelivery,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="quantity_allotted = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.quantityAllotted,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="choose_reason = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.chooseReason,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="scorer = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.scorer,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="marking_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.markingTime,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="score_elements_and_scores = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.scoreElementsAndScores,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="whether_to_recommend = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.whetherToRecommend,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="recommendations = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.recommendations,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.createTime,jdbcType=TIMESTAMP}
+                </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.updateTime,jdbcType=TIMESTAMP}
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    <update id="updateBatchSelective" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update c_srm_enquiry_for_bids_t_supplier
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="rfq_or_tender_form_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.rfqOrTenderFormCode != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.rfqOrTenderFormCode,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="line_number = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.lineNumber != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.lineNumber,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="supplier_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.supplierCode != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.supplierCode,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="whether_offer = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.whetherOffer != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.whetherOffer,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="offer_er = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.offerEr != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.offerEr,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="offer_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.offerTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.offerTime,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="offer_period_of_validity = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.offerPeriodOfValidity != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.offerPeriodOfValidity,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="unit_price = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.unitPrice != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.unitPrice,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="freight_or_not = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.freightOrNot != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.freightOrNot,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="minimum_order = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.minimumOrder != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.minimumOrder,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="minimum_packing_quantity = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.minimumPackingQuantity != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.minimumPackingQuantity,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="estimated_time_of_delivery = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.estimatedTimeOfDelivery != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.estimatedTimeOfDelivery,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="quantity_allotted = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.quantityAllotted != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.quantityAllotted,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="choose_reason = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.chooseReason != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.chooseReason,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="scorer = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.scorer != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.scorer,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="marking_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.markingTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.markingTime,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="score_elements_and_scores = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.scoreElementsAndScores != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.scoreElementsAndScores,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="whether_to_recommend = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.whetherToRecommend != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.whetherToRecommend,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="recommendations = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.recommendations != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.recommendations,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.createTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.createTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.updateTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.updateTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_enquiry_for_bids_t_supplier
+        (rfq_or_tender_form_code, line_number, supplier_code, whether_offer, offer_er, offer_time,
+        offer_period_of_validity, unit_price, freight_or_not, minimum_order, minimum_packing_quantity,
+        estimated_time_of_delivery, quantity_allotted, choose_reason, scorer, marking_time,
+        score_elements_and_scores, whether_to_recommend, recommendations, create_time,
+        update_time)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.rfqOrTenderFormCode,jdbcType=VARCHAR}, #{item.lineNumber,jdbcType=VARCHAR},
+            #{item.supplierCode,jdbcType=VARCHAR}, #{item.whetherOffer,jdbcType=VARCHAR},
+            #{item.offerEr,jdbcType=VARCHAR},
+            #{item.offerTime,jdbcType=VARCHAR}, #{item.offerPeriodOfValidity,jdbcType=VARCHAR},
+            #{item.unitPrice,jdbcType=VARCHAR}, #{item.freightOrNot,jdbcType=VARCHAR},
+            #{item.minimumOrder,jdbcType=VARCHAR},
+            #{item.minimumPackingQuantity,jdbcType=VARCHAR}, #{item.estimatedTimeOfDelivery,jdbcType=VARCHAR},
+            #{item.quantityAllotted,jdbcType=VARCHAR}, #{item.chooseReason,jdbcType=VARCHAR},
+            #{item.scorer,jdbcType=VARCHAR}, #{item.markingTime,jdbcType=VARCHAR},
+            #{item.scoreElementsAndScores,jdbcType=VARCHAR},
+            #{item.whetherToRecommend,jdbcType=VARCHAR}, #{item.recommendations,jdbcType=VARCHAR},
+            #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
+    <insert id="insertOrUpdate" keyColumn="id" keyProperty="id"
+            parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmEnquiryForBidsTSupplier" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_enquiry_for_bids_t_supplier
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            rfq_or_tender_form_code,
+            line_number,
+            supplier_code,
+            whether_offer,
+            offer_er,
+            offer_time,
+            offer_period_of_validity,
+            unit_price,
+            freight_or_not,
+            minimum_order,
+            minimum_packing_quantity,
+            estimated_time_of_delivery,
+            quantity_allotted,
+            choose_reason,
+            scorer,
+            marking_time,
+            score_elements_and_scores,
+            whether_to_recommend,
+            recommendations,
+            create_time,
+            update_time,
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            #{rfqOrTenderFormCode,jdbcType=VARCHAR},
+            #{lineNumber,jdbcType=VARCHAR},
+            #{supplierCode,jdbcType=VARCHAR},
+            #{whetherOffer,jdbcType=VARCHAR},
+            #{offerEr,jdbcType=VARCHAR},
+            #{offerTime,jdbcType=TIMESTAMP},
+            #{offerPeriodOfValidity,jdbcType=TIMESTAMP},
+            #{unitPrice,jdbcType=VARCHAR},
+            #{freightOrNot,jdbcType=VARCHAR},
+            #{minimumOrder,jdbcType=VARCHAR},
+            #{minimumPackingQuantity,jdbcType=VARCHAR},
+            #{estimatedTimeOfDelivery,jdbcType=TIMESTAMP},
+            #{quantityAllotted,jdbcType=VARCHAR},
+            #{chooseReason,jdbcType=VARCHAR},
+            #{scorer,jdbcType=VARCHAR},
+            #{markingTime,jdbcType=TIMESTAMP},
+            #{scoreElementsAndScores,jdbcType=VARCHAR},
+            #{whetherToRecommend,jdbcType=VARCHAR},
+            #{recommendations,jdbcType=VARCHAR},
+            #{createTime,jdbcType=TIMESTAMP},
+            #{updateTime,jdbcType=TIMESTAMP},
+        </trim>
+        on duplicate key update
+        <trim suffixOverrides=",">
+            <if test="id != null">
+                id = #{id,jdbcType=INTEGER},
+            </if>
+            rfq_or_tender_form_code = #{rfqOrTenderFormCode,jdbcType=VARCHAR},
+            line_number = #{lineNumber,jdbcType=VARCHAR},
+            supplier_code = #{supplierCode,jdbcType=VARCHAR},
+            whether_offer = #{whetherOffer,jdbcType=VARCHAR},
+            offer_er = #{offerEr,jdbcType=VARCHAR},
+            offer_time = #{offerTime,jdbcType=TIMESTAMP},
+            offer_period_of_validity = #{offerPeriodOfValidity,jdbcType=TIMESTAMP},
+            unit_price = #{unitPrice,jdbcType=VARCHAR},
+            freight_or_not = #{freightOrNot,jdbcType=VARCHAR},
+            minimum_order = #{minimumOrder,jdbcType=VARCHAR},
+            minimum_packing_quantity = #{minimumPackingQuantity,jdbcType=VARCHAR},
+            estimated_time_of_delivery = #{estimatedTimeOfDelivery,jdbcType=TIMESTAMP},
+            quantity_allotted = #{quantityAllotted,jdbcType=VARCHAR},
+            choose_reason = #{chooseReason,jdbcType=VARCHAR},
+            scorer = #{scorer,jdbcType=VARCHAR},
+            marking_time = #{markingTime,jdbcType=TIMESTAMP},
+            score_elements_and_scores = #{scoreElementsAndScores,jdbcType=VARCHAR},
+            whether_to_recommend = #{whetherToRecommend,jdbcType=VARCHAR},
+            recommendations = #{recommendations,jdbcType=VARCHAR},
+            create_time = #{createTime,jdbcType=TIMESTAMP},
+            update_time = #{updateTime,jdbcType=TIMESTAMP},
+        </trim>
+    </insert>
+    <insert id="insertOrUpdateSelective" keyColumn="id" keyProperty="id"
+            parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmEnquiryForBidsTSupplier" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_enquiry_for_bids_t_supplier
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="rfqOrTenderFormCode != null">
+                rfq_or_tender_form_code,
+            </if>
+            <if test="lineNumber != null">
+                line_number,
+            </if>
+            <if test="supplierCode != null">
+                supplier_code,
+            </if>
+            <if test="materialCode != null">
+                material_code,
+            </if>
+            <if test="materialName != null">
+                material_name,
+            </if>
+            <if test="whetherOffer != null">
+                whether_offer,
+            </if>
+            <if test="offerEr != null">
+                offer_er,
+            </if>
+            <if test="offerTime != null">
+                offer_time,
+            </if>
+            <if test="offerPeriodOfValidity != null">
+                offer_period_of_validity,
+            </if>
+            <if test="unitPrice != null">
+                unit_price,
+            </if>
+            <if test="freightOrNot != null">
+                freight_or_not,
+            </if>
+            <if test="minimumOrder != null">
+                minimum_order,
+            </if>
+            <if test="minimumPackingQuantity != null">
+                minimum_packing_quantity,
+            </if>
+            <if test="estimatedTimeOfDelivery != null">
+                estimated_time_of_delivery,
+            </if>
+            <if test="quantityAllotted != null">
+                quantity_allotted,
+            </if>
+            <if test="chooseReason != null">
+                choose_reason,
+            </if>
+            <if test="scorer != null">
+                scorer,
+            </if>
+            <if test="markingTime != null">
+                marking_time,
+            </if>
+            <if test="scoreElementsAndScores != null">
+                score_elements_and_scores,
+            </if>
+            <if test="score != null">
+                score,
+            </if>
+            <if test="whetherToRecommend != null">
+                whether_to_recommend,
+            </if>
+            <if test="recommendations != null">
+                recommendations,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="supplierId != null">
+                supplier_id,
+            </if>
+            <if test="companyCode != null">
+                company_code,
+            </if>
+            <if test="isDelete != null">
+                is_delete,
+            </if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="rfqOrTenderFormCode != null">
+                #{rfqOrTenderFormCode,jdbcType=VARCHAR},
+            </if>
+            <if test="lineNumber != null">
+                #{lineNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="supplierCode != null">
+                #{supplierCode,jdbcType=VARCHAR},
+            </if>
+            <if test="materialCode != null">
+                #{materialCode,jdbcType=VARCHAR},
+            </if>
+            <if test="materialName != null">
+                #{materialName,jdbcType=VARCHAR},
+            </if>
+            <if test="whetherOffer != null">
+                #{whetherOffer,jdbcType=VARCHAR},
+            </if>
+            <if test="offerEr != null">
+                #{offerEr,jdbcType=VARCHAR},
+            </if>
+            <if test="offerTime != null">
+                #{offerTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="offerPeriodOfValidity != null">
+                #{offerPeriodOfValidity,jdbcType=TIMESTAMP},
+            </if>
+            <if test="unitPrice != null">
+                #{unitPrice,jdbcType=VARCHAR},
+            </if>
+            <if test="freightOrNot != null">
+                #{freightOrNot,jdbcType=VARCHAR},
+            </if>
+            <if test="minimumOrder != null">
+                #{minimumOrder,jdbcType=VARCHAR},
+            </if>
+            <if test="minimumPackingQuantity != null">
+                #{minimumPackingQuantity,jdbcType=VARCHAR},
+            </if>
+            <if test="estimatedTimeOfDelivery != null">
+                #{estimatedTimeOfDelivery,jdbcType=TIMESTAMP},
+            </if>
+            <if test="quantityAllotted != null">
+                #{quantityAllotted,jdbcType=VARCHAR},
+            </if>
+            <if test="chooseReason != null">
+                #{chooseReason,jdbcType=VARCHAR},
+            </if>
+            <if test="scorer != null">
+                #{scorer,jdbcType=VARCHAR},
+            </if>
+            <if test="markingTime != null">
+                #{markingTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="scoreElementsAndScores != null">
+                #{scoreElementsAndScores,jdbcType=VARCHAR},
+            </if>
+            <if test="score != null">
+                #{score,jdbcType=VARCHAR},
+            </if>
+            <if test="whetherToRecommend != null">
+                #{whetherToRecommend,jdbcType=VARCHAR},
+            </if>
+            <if test="recommendations != null">
+                #{recommendations,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="supplierId != null">
+                #{supplierId,jdbcType=INTEGER},
+            </if>
+            <if test="companyCode != null">
+                #{companyCode,jdbcType=VARCHAR},
+            </if>
+            <if test="isDelete != null">
+                #{isDelete,jdbcType=BIT},
+            </if>
+        </trim>
+        on duplicate key update
+        <trim suffixOverrides=",">
+            <if test="id != null">
+                id = #{id,jdbcType=INTEGER},
+            </if>
+            <if test="rfqOrTenderFormCode != null">
+                rfq_or_tender_form_code = #{rfqOrTenderFormCode,jdbcType=VARCHAR},
+            </if>
+            <if test="lineNumber != null">
+                line_number = #{lineNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="supplierCode != null">
+                supplier_code = #{supplierCode,jdbcType=VARCHAR},
+            </if>
+            <if test="materialCode != null">
+                material_code = #{materialCode,jdbcType=VARCHAR},
+            </if>
+            <if test="materialName != null">
+                material_name = #{materialName,jdbcType=VARCHAR},
+            </if>
+            <if test="whetherOffer != null">
+                whether_offer = #{whetherOffer,jdbcType=VARCHAR},
+            </if>
+            <if test="offerEr != null">
+                offer_er = #{offerEr,jdbcType=VARCHAR},
+            </if>
+            <if test="offerTime != null">
+                offer_time = #{offerTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="offerPeriodOfValidity != null">
+                offer_period_of_validity = #{offerPeriodOfValidity,jdbcType=TIMESTAMP},
+            </if>
+            <if test="unitPrice != null">
+                unit_price = #{unitPrice,jdbcType=VARCHAR},
+            </if>
+            <if test="freightOrNot != null">
+                freight_or_not = #{freightOrNot,jdbcType=VARCHAR},
+            </if>
+            <if test="minimumOrder != null">
+                minimum_order = #{minimumOrder,jdbcType=VARCHAR},
+            </if>
+            <if test="minimumPackingQuantity != null">
+                minimum_packing_quantity = #{minimumPackingQuantity,jdbcType=VARCHAR},
+            </if>
+            <if test="estimatedTimeOfDelivery != null">
+                estimated_time_of_delivery = #{estimatedTimeOfDelivery,jdbcType=TIMESTAMP},
+            </if>
+            <if test="quantityAllotted != null">
+                quantity_allotted = #{quantityAllotted,jdbcType=VARCHAR},
+            </if>
+            <if test="chooseReason != null">
+                choose_reason = #{chooseReason,jdbcType=VARCHAR},
+            </if>
+            <if test="scorer != null">
+                scorer = #{scorer,jdbcType=VARCHAR},
+            </if>
+            <if test="markingTime != null">
+                marking_time = #{markingTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="scoreElementsAndScores != null">
+                score_elements_and_scores = #{scoreElementsAndScores,jdbcType=VARCHAR},
+            </if>
+            <if test="score != null">
+                score = #{score,jdbcType=VARCHAR},
+            </if>
+            <if test="whetherToRecommend != null">
+                whether_to_recommend = #{whetherToRecommend,jdbcType=VARCHAR},
+            </if>
+            <if test="recommendations != null">
+                recommendations = #{recommendations,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="supplierId != null">
+                supplier_id = #{supplierId,jdbcType=INTEGER},
+            </if>
+            <if test="companyCode != null">
+                company_code = #{companyCode,jdbcType=VARCHAR},
+            </if>
+            <if test="isDelete != null">
+                is_delete = #{isDelete,jdbcType=BIT},
+            </if>
+        </trim>
+    </insert>
+    <!--查询供应商最新报价信息-->
+    <select id="findSupplierNewList" resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CSrmEnquiryForBidsTSupplierRsp">
+        SELECT s.material_code,
+        s.unit_price
+        FROM c_srm_enquiry_for_bids_t_supplier s
+        WHERE s.material_code =#{materialCode,jdbcType=VARCHAR}
+        GROUP BY s.material_code
+        ORDER BY s.create_time DESC
+    </select>
+
+    <!--查询供应商报价信息-->
+    <select id="findSupplierList" resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CSrmEnquiryForBidsTSupplierRsp">
+
+        SELECT s.line_number lineNumber,s.material_code,s.material_name materialName,s.supplier_code,(select sup.`name`
+        from c_srm_supplier sup
+        where sup.supplier_code=s.supplier_code GROUP BY sup.supplier_code) name,
+        s.unit_price,
+        s.offer_er, s.offer_time, s.offer_period_of_validity,s.create_time,
+        s.minimum_order,s.minimum_packing_quantity,s.estimated_time_of_delivery
+        FROM c_srm_enquiry_for_bids_t_supplier s
+        <where>
+            <if test="rfqOrTenderFormCode != null and rfqOrTenderFormCode != ''">
+                s.rfq_or_tender_form_code like concat('%',#{rfqOrTenderFormCode,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="materialCode != null and materialCode != ''">
+                and s.material_code like concat('%',#{materialCode,jdbcType=VARCHAR},'%')
+            </if>
+            and s.is_delete=0
+        </where>
+        GROUP BY s.supplier_code
+        ORDER BY s.create_time DESC
+    </select>
+
+
+    <!--查询询价供应商表-->
+    <select id="findHistorySupplierList" resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CSrmEnquiryForBidsTSupplierRsp">
+        SELECT sup.supplier_code,(select s.`name` from c_srm_supplier s where s.supplier_code=sup.supplier_code and
+        s.is_delete=0 and s.status>0) name from
+        c_srm_enquiry_for_bids_t_supplier sup
+        <where>
+            <if test="materialCodeList!=null and materialCodeList.size()>0">
+                sup.material_code in
+                <foreach close=")" collection="materialCodeList" item="item" open="(" separator=", ">
+                    #{item,jdbcType=VARCHAR}
+                </foreach>
+            </if>
+            and sup.is_delete=0
+        </where>
+        group by sup.supplier_code
+        ORDER BY sup.offer_time desc
+    </select>
+
+    <!--查询采购订单头行数据-->
+    <select id="findHistorySupplierListByTime" resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CSrmEnquiryForBidsTSupplierRsp">
+        SELECT h.supplier_code,(select s.`name` from c_srm_supplier s where s.supplier_code=h.supplier_code and
+        s.is_delete=0 and s.status>0) name from
+        c_srm_purchase_order_h h where h.order_number in (SELECT
+        r.order_number from c_srm_purchase_order_r r
+        <where>
+            <if test="materialCodeList!=null and materialCodeList.size()>0">
+                r.material_code in
+                <foreach close=")" collection="materialCodeList" item="item" open="(" separator=", ">
+                    #{item,jdbcType=VARCHAR}
+                </foreach>
+            </if>
+            and h.is_delete=0
+        </where>
+        )
+        group by h.supplier_code
+        order by h.create_time desc
+    </select>
+
+</mapper>

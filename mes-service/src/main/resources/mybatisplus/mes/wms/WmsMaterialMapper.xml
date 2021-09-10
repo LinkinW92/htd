@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wms.WmsMaterialDao">
+
+	<select id="findMaterialList" resultType="com.skeqi.mes.pojo.wms.CWmsMaterialT">
+		select * from c_wms_material_t
+		where 1 = 1
+		<if test="id != null">
+			AND ID = #{id}
+		</if>
+		<if test="modifyTime != null">
+			AND MODIFY_TIME = #{modifyTime}
+		</if>
+		<if test="materialNo != null">
+			AND MATERIAL_NO = #{materialNo}
+		</if>
+		<if test="materialPartno != null">
+			AND MATERIAL_PARTNO = #{materialPartno}
+		</if>
+		<if test="materialName != null">
+			AND MATERIAL_NAME = #{materialName}
+		</if>
+		<if test="materialType != null">
+			AND MATERIAL_TYPE = #{materialType}
+		</if>
+		<if test="materialUnit != null">
+			AND MATERIAL_UNIT = #{materialUnit}
+		</if>
+		<if test="materialLength != null">
+			AND MATERIAL_LENGTH = #{materialLength}
+		</if>
+		<if test="materialWidth != null">
+			AND MATERIAL_WIDTH = #{materialWidth}
+		</if>
+		<if test="materialHight != null">
+			AND MATERIAL_HIGHT = #{materialHight}
+		</if>
+		<if test="materialVolume != null">
+			AND MATERIAL_VOLUME = #{materialVolume}
+		</if>
+		<if test="materialWeight != null">
+			AND MATERIAL_WEIGHT = #{materialWeight}
+		</if>
+		<if test="materialLt != null">
+			AND MATERIAL_LT = #{materialLt}
+		</if>
+		<if test="materialIncomType != null">
+			AND MATERIAL_INCOM_TYPE = #{materialIncomType}
+		</if>
+		<if test="materialModel != null">
+			AND MATERIAL_MODEL = #{materialModel}
+		</if>
+		<if test="materialCode != null">
+			AND MATERIAL_CODE = #{materialCode}
+		</if>
+		<if test="materialLowLimitmaterial != null">
+			AND MATERIAL_LOW_LIMITMATERIAL = #{materialLowLimitmaterial}
+		</if>
+		<if test="materialSc != null">
+			AND MATERIAL_SC = #{materialSc}
+		</if>
+		<if test="materialBatch != null">
+			AND MATERIAL_BATCH = #{materialBatch}
+		</if>
+		<if test="materialVr != null">
+			AND MATERIAL_VR = #{materialVr}
+		</if>
+		<if test="daysOfFailure != null">
+			AND DAYS_OF_FAILURE = #{daysOfFailure}
+		</if>
+		<if test="note != null">
+			AND NOTE = #{note}
+		</if>
+		<if test="materialCost != null">
+			AND MATERIAL_COST = #{materialCost}
+		</if>
+		ORDER BY ID
+	</select>
+
+	<select id="findMaterialAll" resultType="com.skeqi.mes.pojo.wms.CWmsMaterialT">
+		select ID,MATERIAL_NAME from c_wms_material_t
+		ORDER BY ID
+	</select>
+
+	<insert id="addMaterial">
+		insert into c_wms_material_t(
+		MODIFY_TIME,MATERIAL_NO,MATERIAL_PARTNO,MATERIAL_NAME,
+		MATERIAL_TYPE,MATERIAL_UNIT,MATERIAL_LENGTH,MATERIAL_WIDTH,
+		MATERIAL_HIGHT,MATERIAL_VOLUME,MATERIAL_WEIGHT,MATERIAL_LT,
+		MATERIAL_INCOM_TYPE,MATERIAL_MODEL,MATERIAL_CODE,MATERIAL_LOW_LIMITMATERIAL,
+		MATERIAL_SC,MATERIAL_BATCH,MATERIAL_VR,DAYS_OF_FAILURE,
+		NOTE,MATERIAL_COST)
+		values(
+		now(),#{materialNo},#{materialPartno},#{materialName},
+		#{materialType},#{materialUnit},#{materialLength},#{materialWidth},
+		#{materialHight},#{materialVolume},#{materialWeight},#{materialLt},
+		#{materialIncomType},#{materialModel},#{materialCode},#{materialLowLimitmaterial},
+		#{materialSc},#{materialBatch},#{materialVr},#{daysOfFailure},
+		#{note},#{materialCost})
+	</insert>
+
+	<delete id="deleteMaterial">
+		delete from c_wms_material_t
+		where id = #{materialId}
+	</delete>
+
+	<update id="updateMaterial">
+		update c_wms_material_t
+		<trim prefix="SET" suffixOverrides=",">  
+			<if test="materialNo != null">
+				MATERIAL_NO = #{materialNo},
+        	</if>
+			<if test="materialPartno != null">
+				MATERIAL_PARTNO = #{materialPartno},
+        	</if>
+			<if test="materialName != null">
+				MATERIAL_NAME = #{materialName},
+        	</if>
+			<if test="materialType != null">
+				MATERIAL_TYPE = #{materialType},
+        	</if>
+			<if test="materialUnit != null">
+				MATERIAL_UNIT = #{materialUnit},
+        	</if>
+			<if test="materialLength != null">
+				MATERIAL_LENGTH = #{materialLength},
+        	</if>
+			<if test="materialWidth != null">
+				MATERIAL_WIDTH = #{materialWidth},
+        	</if>
+			<if test="materialHight != null">
+				MATERIAL_HIGHT = #{materialHight},
+        	</if>
+			<if test="materialVolume != null">
+				MATERIAL_VOLUME = #{materialVolume},
+        	</if>
+			<if test="materialWeight != null">
+				MATERIAL_WEIGHT = #{materialWeight},
+        	</if>
+			<if test="materialLt != null">
+				MATERIAL_LT = #{materialLt},
+        	</if>
+			<if test="materialIncomType != null">
+				MATERIAL_INCOM_TYPE = #{materialIncomType},
+        	</if>
+			<if test="materialModelasdasd != null">
+				MATERIAL_MODEL = #{materialModel},
+        	</if>
+			<if test="materialCode != null">
+				MATERIAL_CODE = #{materialCode},
+        	</if>
+			<if test="materialLowLimitmaterial != null">
+				MATERIAL_LOW_LIMITMATERIAL = #{materialLowLimitmaterial},
+        	</if>
+			<if test="materialSc != null">
+				MATERIAL_SC = #{materialSc},
+        	</if>
+			<if test="materialBatch != null">
+				MATERIAL_BATCH = #{materialBatch},
+        	</if>
+			<if test="materialVr != null">
+				MATERIAL_VR = #{materialVr},
+        	</if>
+			<if test="daysOfFailure != null">
+				DAYS_OF_FAILURE = #{daysOfFailure},
+        	</if>
+			<if test="note != null">
+				NOTE = #{note},
+        	</if>
+			<if test="materialCost != null">
+				MATERIAL_COST = #{materialCost},
+        	</if>
+			MODIFY_TIME = now()
+        </trim>  
+		where ID = #{id}
+	</update>
+
+</mapper>

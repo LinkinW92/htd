@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.basicinformation.accountingsystem.TOrgAccountSystemMapper">
+    <select id="queryPageList"
+            resultType="com.skeqi.finance.pojo.vo.basicinformation.accountingsystem.TOrgAccountSystemVo">
+        SELECT
+        toas.*,
+        toase.f_id fEntryId,
+        toase.NAME fAcctOrgName,
+        ( SELECT t_fa_acct_policy.f_name FROM t_fa_acct_policy WHERE f_acctpolicy_id = toas.f_default_acctpolicy_id ) fDefaultAcctpolicyName
+        FROM
+        t_org_account_system toas
+        LEFT JOIN (
+        SELECT
+        t1.f_id,
+        t1.f_acctsystem_id,
+        t2.NAME
+        FROM
+        t_org_acct_sys_entry t1
+        LEFT JOIN sys_organization t2 ON t2.id = t1.f_acct_orgid
+        ) toase ON toase.f_acctsystem_id = toas.f_id
+        ${ew.customSqlSegment}
+    </select>
+
+    <select id="selectByFAcctOrgId"
+            resultType="com.skeqi.finance.pojo.vo.basicinformation.accountingsystem.TOrgAccountSystemVo">
+        select s.* from t_org_account_system s
+        where s.f_id in (select f_acctsystem_id from t_org_acct_sys_entry where f_acct_orgid = #{fAcctOrgId,jdbcType=INTEGER})
+        AND (s.f_isdefault_acct = '1' OR s.f_iscorpo_rate = '1')
+    </select>
+
+    <select id="queryPageListAccountSystem"
+            resultType="com.skeqi.finance.pojo.vo.basicinformation.accountingsystem.TOrgAccountSystemVo">
+        SELECT
+        toas.*,
+        ( SELECT t_fa_acct_policy.f_name FROM t_fa_acct_policy WHERE f_acctpolicy_id = toas.f_default_acctpolicy_id ) fDefaultAcctpolicyName
+        FROM
+        t_org_account_system toas
+        ${ew.customSqlSegment}
+    </select>
+
+    <select id="selectByFAccPolicyId"
+            resultType="com.skeqi.finance.domain.basicinformation.accountingsystem.TOrgAccountSystem">
+        SELECT
+            toas.*
+        FROM
+            t_org_account_system toas, t_org_acct_sys_entry se
+        WHERE toas.f_id = se.f_acctsystem_id and se.f_acctpolicy_id = #{fAccPolicyId,jdbcType=INTEGER}
+        GROUP BY toas.f_number
+    </select>
+
+
+</mapper>

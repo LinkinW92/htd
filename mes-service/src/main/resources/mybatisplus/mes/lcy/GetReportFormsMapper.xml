@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.lcy.GetReportFormsMapper">
+	<!-- *********工位完成数量统计******** -->
+	<!-- 初始化产线 -->
+	<select id="getInItStationNumberStatistics" resultType="string">
+		select
+		line_id from P_MES_STATION_PASS_T tt
+		group by line_id
+	</select>
+	<!-- 过去工位列表 -->
+	<select id="getStationPassSt" resultType="string">
+		select st from
+		P_MES_STATION_PASS_T tt
+		where 1=1
+		and line_id =#{getLine}
+		group by st
+	</select>
+	<!-- 获取该工位该时间的产品数量 -->
+	<select id="getStationPassProductNumber" resultType="int">
+		select
+		count(*) from
+		(select sn from P_MES_STATION_PASS_T tt
+		where 1=1
+		and dt
+		between #{getStartTime}
+		and #{getEndTime}
+		and tt.st = #{st}
+		and status =
+		'OK'
+		and line_id =#{getLine}
+		group by sn
+		) A
+	</select>
+	<!-- 获取该工位该时间的产品数量 L -->
+	<select id="getStationPassProductNumberL" resultType="PMesStationPassT">
+		select * from P_MES_STATION_PASS_T where 1=1
+		<if
+			test="startTime !=null and endTime!=null and startTime!=' '  and  endTime!=' '   ">
+			and dt between #{startTime} and #{endTime}
+		</if>
+		<if test="st !=null   and  st !=' '   ">
+			and ST=#{st}
+		</if>
+		<if test="lineId !=null   and  lineId !=' '   ">
+			and LINE_ID=#{lineId}
+		</if>
+		group by SN
+	</select>
+	<!-- *********班次数量统计********* -->
+	<!-- 获取产线列表 -->
+	<select id="getInItShiftNumberStatistics" resultType="string">
+		select
+		line_id from C_MES_SHIFTS_TEAM_T
+		group by line_id
+	</select>
+	<select id="shiftsTeamList" resultType="CMesShiftsTeamT">
+					select *
+					from C_MES_SHIFTS_TEAM_T t
+					where 1=1
+					and start_time is not null
+					and end_time is not null
+					and name is not null
+		<if test="getLine !=null and getLine !=''">
+			and line_id=#{getLine}
+		</if>
+		<if test=" dt!=null and dt != ''   ">
+			and START_TIME &lt; #{dt}    and   #{dt}    &lt; END_TIME
+		</if>
+	</select>
+
+	<select id="shiftsTeamIdAndNameAndTime" resultType="CMesShiftsTeamT">
+		select ID id,NAME name,START_TIME startTime,END_TIME endTime
+		from C_MES_SHIFTS_TEAM_T t
+		where 1=1
+		<if test="id !=null and id !=0">
+			and ID=#{id}
+		</if>
+		<if test="name !=null and name !=''">
+			and NAME=#{name}
+		</if>
+		<if test="startTime !=null and startTime !=''">
+			and START_TIME=#{startTime}
+		</if>
+		<if test="endTime !=null and endTime !=''">
+			and END_TIME=#{endTime}
+		</if>
+	</select>
+
+	<select id="getShiftNumberStatistics" resultType="int">
+		select count(*)
+		from
+		(select sn from P_MES_STATION_PASS_T tt
+		where 1=1
+		and dt between
+		#{getStartTime}
+		and #{getEndTime}
+		and line_id =#{getLine}
+		and status =
+		'OK'
+		group by sn
+		) A
+	</select>
+
+</mapper>

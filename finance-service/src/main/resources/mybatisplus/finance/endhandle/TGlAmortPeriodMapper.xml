@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.endhandle.TGlAmortPeriodMapper">
+
+    <resultMap type="com.skeqi.finance.domain.endhandle.amortization.TGlAmortPeriod" id="TGlAmortPeriodResult">
+        <result property="fSchemeId" column="f_scheme_id"/>
+        <result property="fYearPeriod" column="f_year_period"/>
+        <result property="fAmortratio" column="f_amortratio"/>
+        <result property="fAmortamount" column="f_amortamount"/>
+        <result property="fAmorted" column="f_amorted"/>
+        <result property="fYear" column="f_year"/>
+        <result property="fPeriod" column="f_period"/>
+        <result property="fAmortRatioFixed" column="f_amort_ratio_fixed"/>
+    </resultMap>
+
+    <select id="queryList" resultType="com.skeqi.finance.pojo.vo.endhandle.TGlAmortPeriodVo">
+        select  * from t_gl_amort_period where  f_scheme_id=#{fSchemeId}
+    </select>
+
+    <delete id="delBySchemeId">
+        delete from t_gl_amort_period where f_scheme_id=#{fSchemeId}
+    </delete>
+</mapper>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.qh.RMesTrackingTMapper">
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    ID, DT, ST, BST, SN, ENGINESN, GEARBOXSN, TYPENAME, TRAYNUM, PRODUCTNUM, `STATUS`,
+    DIS, PLAN_ID, REWORK_FLAG, PRODUCTION_ID, LINE_ID, WORK_ORDER_ID
+  </sql>
+    <select id="findRMesTrackingByWorkOrderId" resultType="java.util.Map">
+      select <include refid="Base_Column_List"/>
+      from r_mes_tracking_t
+      <where>
+        <if test="_parameter != null and _parameter != ''">
+          WORK_ORDER_ID = #{workOrderId,jdbcType=INTEGER}
+        </if>
+      </where>
+    </select>
+
+    <select id="findPMesTrackingByProductIDAndWorkOrderId" resultType="java.util.Map">
+        select
+        <include refid="Base_Column_List" />
+        from r_mes_tracking_t
+        <where>
+          <if test="productId != null and productId>0">
+            PRODUCTION_ID = #{productId,jdbcType=INTEGER}
+          </if>
+          <if test="workOrderId != null and workOrderId != ''">
+            and WORK_ORDER_ID = #{workOrderId,jdbcType=VARCHAR}
+          </if>
+        </where>
+        order by DT desc
+    </select>
+</mapper>

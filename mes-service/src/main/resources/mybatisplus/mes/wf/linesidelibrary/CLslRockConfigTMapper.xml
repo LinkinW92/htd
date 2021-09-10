@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wf.linesidelibrary.CLslRockConfigTMapper">
+  <sql id="workplace">
+      rc.productId,rc.lineId,rc.stationId,rc.rockId,rc.materialNo,rc.materialName,rc.capacity,rc.safetyLevel
+  </sql>
+  <select id="findAllWorkplaceConfig" resultType="com.skeqi.mes.pojo.wf.linesidelibrary.CLslRockConfigT">
+    SELECT
+    <include refid="workplace"/>,
+    IFNULL(mi.quantity, 0) quantity
+    FROM
+    (
+        SELECT
+            v.lineId,v.productId,c.stationId,c.materialNo,c.materialName,c.capacity,c.safetyLevel,c.rockId,c.versionId
+        FROM
+            c_lsl_rock_config_t c
+        LEFT JOIN c_lsl_rock_version_t v
+            ON v.ID = c.versionId
+            AND v.`status` = 1
+        LEFT JOIN c_mes_station_t s
+            ON s.ID = c.stationId
+            AND  s.automaticPolling = 0
+    ) rc
+    LEFT JOIN (
+        SELECT
+            i.productId,i.lineId,i.stationId,i.rockId,i.materialNo,i.materialName,sum( i.quantity ) quantity
+        FROM
+            c_lsl_material_inventory_t i
+        WHERE
+            i.`status` = 1
+        GROUP BY
+            i.rockId,i.materialNo,i.stationId
+    ) mi
+    ON rc.productId = mi.productId
+      AND rc.lineId = mi.lineId
+      AND rc.stationId = mi.stationId
+      AND rc.materialNo = mi.materialNo
+    WHERE
+        IFNULL(mi.quantity, 0) <![CDATA[ <= ]]>  IFNULL(rc.safetyLevel, 0)
+    GROUP BY
+        rc.stationId,rc.rockId,rc.materialNo
+  </select>
+
+  <select id="findWorkOrderRecipeByLineId" resultType="java.util.Map">
+    SELECT
+      (w.ORDER_NUMBER-w.OFFLINE_NUMBER) NUMBER_REMAINING,rds.NUMBERS
+    FROM
+      r_mes_workorder_detail_t w
+        LEFT JOIN
+      (SELECT rd.STEPNO,rd.NUMBERS,rd.RECIPE_ID,r.TOTAL_ID,r.STATION_ID
+        FROM c_mes_recipe_datil_t rd
+        LEFT JOIN c_mes_recipe_t r
+        on rd.RECIPE_ID = r.ID
+        WHERE rd.STEP_CATEGORY IN (3,7)
+            and r.STATION_ID = #{stationId,jdbcType=INTEGER}
+      ) rds
+      ON rds.TOTAL_ID = w.TOTAL_RECIPE_ID
+    WHERE
+      w.LINE_ID = #{lineId,jdbcType=INTEGER}
+      AND w.LEVEL_NO = ( SELECT MIN( LEVEL_NO )  FROM r_mes_workorder_detail_t WHERE LINE_ID = #{lineId,jdbcType=INTEGER} AND `STATUS` = 1)
+      AND w.`STATUS` = 1
+      AND w.PRODUCT_ID = #{productId,jdbcType=INTEGER}
+  </select>
+</mapper>

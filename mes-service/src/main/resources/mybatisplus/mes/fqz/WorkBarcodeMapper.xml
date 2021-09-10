@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.fqz.WrokBarcodeDAO">
+	<!-- 查询列表 -->
+	<select id="findAll" resultType="CMesWorkBarcodeT">
+		select print.id as printId,print.sn as sn,print.dt as dt,work.id as workId,work.production_id as workName,
+			   plan.id as productionId,plan.plan_name as planName,line.id as lineId,line.name as lineName
+ 			   from r_mes_plan_print_t print,
+ 			   r_mes_plan_t plan,
+ 			   r_mes_workorder_detail_t work,
+ 			   c_mes_line_t line
+       		   where print.work_order_id=work.id and work.plan_id=plan.id and line.id=plan.line_id
+       		 <if test="planName!=null and planName!=''">
+       		 	and plan.PLAN_NAME = #{planName}
+       		 </if>
+       		   <if test="sn!=null and sn!=''">
+       		 	and print.sn=#{sn}
+       		 </if>
+       		 <if test="id!=null and id!=''">
+       		 	and work.id=#{id}
+       		 </if>
+       		 order by print.id desc
+	</select>
+
+	<select id="findAllP" resultType="CMesWorkBarcodeT">
+		select print.id as printId,print.sn as sn,print.dt as dt,work.id as workId,work.production_id as workName,
+			   plan.id as productionId,plan.plan_name as planName,line.id as lineId,line.name as lineName
+ 			   from p_mes_plan_print_t print,
+ 			   p_mes_plan_t plan,
+ 			   p_mes_workorder_detail_t work,
+ 			   c_mes_line_t line
+       		   where print.work_order_id=work.id and work.plan_id=plan.id and line.id=plan.line_id
+       		 <if test="planName!=null and planName!=''">
+       		 	and plan.PLAN_NAME = #{planName}
+       		 </if>
+       		   <if test="sn!=null and sn!=''">
+       		 	and print.sn=#{sn}
+       		 </if>
+       		 <if test="id!=null and id!=''">
+       		 	and work.id=#{id}
+       		 </if>
+       		  order by print.id desc
+	</select>
+
+	<!-- 查询sn的状态 -->
+	<select id="sndail" resultType="PMesStationPassT">
+		select  t.sn,t.st,t.status,t.dt from P_MES_STATION_PASS_T t where sn=#{sn} and t.pass_flag=2 ORDER BY DT
+	</select>
+
+	<!--根据工单id查询R总成表 -->
+	<select id="findR" resultType="RMesTrackingT">
+		select * from R_MES_TRACKING_T where WORK_ORDER_ID = #{workId} and sn=#{sn}
+	</select>
+
+	<!--根据工单id查询P总成表 -->
+	<select id="findP" resultType="PMesTrackingT">
+		select * from P_MES_TRACKING_T where WORK_ORDER_ID = #{workId} and sn=#{sn}
+	</select>
+
+	<!-- 查询正在做的产品 -->
+	<select id="findPro" resultType="CMesProductionT">
+		SELECT DISTINCT
+	P.PRODUCTION_NAME,
+	p.path
+FROM
+	R_MES_TRACKING_T RT,
+	C_MES_PRODUCTION_T P,
+	c_mes_line_t line
+WHERE
+	RT.PRODUCTION_ID = P.ID
+	AND line.ID = RT.LINE_ID
+	AND RT.LINE_ID = #{id}
+	</select>
+
+	<!-- =查询正在做的计划 -->
+	<select id="findPlan" resultType="RMesPlanT">
+		select distinct t.plan_id as id,plan.plan_name as planName from R_MES_TRACKING_T t,R_MES_PLAN_T PLAN WHERE PLAN.ID=t.plan_id
+			and t.LINE_ID=#{id}
+	</select>
+
+	<!-- 查询正在做的工单 -->
+	<select id="findWorkor" resultType="RMesWorkorderDetailT">
+		select distinct t.work_order_id,work.production_id as productionID,work.ORDER_NUMBER,work.OFFLINE_NUMBER from R_MES_TRACKING_T t,r_Mes_Workorder_Detail_t work
+ 		WHERE work.ID=t.work_order_id   and  t.LINE_ID=#{id}
+
+	</select>
+</mapper>

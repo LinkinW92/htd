@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.yp.oa.DocumentTimeoutDao">
+
+	<!-- 查询审批单据 -->
+	<select id="findApprovalRecord" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			DATE_FORMAT( a.dt, '%Y-%m-%d %H:%i:%s' ) AS dt,
+			userId,
+			`name`,
+			state,
+			listNo,
+			url,
+			parameter,
+			callbackUrl,
+			urgent,
+			overtime,
+			timedOut,
+			overtimeType
+		FROM
+			c_oa_approval_record_t a
+		WHERE
+			a.timedOut = 'false'
+			AND a.state = '审核中'
+			AND a.overtime > 0
+<!-- 		SELECT -->
+<!-- 			a.*, -->
+<!-- 			b.step  -->
+<!-- 		FROM -->
+<!-- 			c_oa_approval_record_t a -->
+<!-- 			JOIN c_oa_approval_record_detailed_t b ON a.listNo = b.listNo  -->
+<!-- 		WHERE -->
+<!-- 			a.timedOut = 'false'  -->
+<!-- 			AND a.state = '审核中'  -->
+<!-- 			AND a.overtime > 0 -->
+	</select>
+
+	<!-- 查询待审批人 -->
+	<select id="queryApprover" resultType="com.alibaba.fastjson.JSONObject">
+		select * from c_oa_approval_record_with_t
+		where listNo = #{listNo}
+	</select>
+
+	<!-- 更新已超时列 -->
+	<update id="updateTimedOut">
+		update c_oa_approval_record_t
+		set
+		timedOut = 'true'
+		where listNo = #{listNo}
+	</update>
+
+	<!-- 查询待审批数据 -->
+	<select id="findPendingApproval" resultType="com.alibaba.fastjson.JSONObject">
+		select * from c_oa_approval_record_with_t
+		where overtime > 0
+		and timedOut = 'false'
+	</select>
+
+	<!-- 更新待审批已超时列 -->
+	<update id="updateTimedOutWith">
+		update c_oa_approval_record_with_t
+		set
+		timedOut = 'true'
+		where id = #{id}
+	</update>
+
+</mapper>

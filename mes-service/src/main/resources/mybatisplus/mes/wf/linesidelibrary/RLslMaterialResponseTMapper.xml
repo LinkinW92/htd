@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wf.linesidelibrary.RLslMaterialResponseTMapper">
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    ID, cdt, udt, requestDetailId, materialBatch,materialCode, quantity
+  </sql>
+
+  <insert id="insertSelective">
+    <!--@mbg.generated-->
+    insert into r_lsl_material_response_t
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+        cdt,
+        udt,
+        requestDetailId,
+        materialBatch,
+        materialCode,
+        quantity,
+    </trim>
+    values
+      <foreach collection="responseParams" item="det" separator=",">
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+          now(),
+          now(),
+          #{det.requestDetailId,jdbcType=INTEGER},
+          #{det.materialBatch,jdbcType=VARCHAR},
+          #{det.materialCode,jdbcType=INTEGER},
+          #{det.quantity,jdbcType=INTEGER},
+        </trim>
+      </foreach>
+  </insert>
+    <select id="findMaterialResponseByRequestDetailId" resultType="com.skeqi.mes.pojo.wf.linesidelibrary.RLslMaterialResponseT">
+        select  * from  r_lsl_material_response_t
+        <where>
+            requestDetailId = #{requestDetailId,jdbcType=INTEGER}
+        </where>
+    </select>
+</mapper>

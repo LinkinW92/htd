@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.zch.ProductionManagementDao">
+
+	<select id="findPlanList" resultType="java.util.Map">
+		select p.*, l.NAME as lineName, pr.PRODUCTION_NAME as productName
+		from c_mes_plan_t p
+		left join c_mes_line_t l on l.ID = p.lineId
+		left join c_mes_production_t pr on pr.ID = p.productId
+		where 1=1
+		<if test="planNo != null and planNo != ''">
+			and p.planNo like concat('%',#{planNo},'%')
+		</if>
+		<if test="orderNo != null and orderNo != ''">
+			and p.orderNo like concat('%',#{orderNo},'%')
+		</if>
+		<if test="projectNo != null and projectNo != ''">
+			and p.projectNo like concat('%',#{projectNo},'%')
+		</if>
+		<if test="productId != null and productId != ''">
+			and p.productId = #{productId}
+		</if>
+		order by p.udt desc
+	</select>
+
+	<select id="getPlanRepetition" resultType="java.util.Map">
+		select * from c_mes_plan_t where planNo = #{planNo}
+		<if test="ID != null and ID != ''">
+			and ID != #{ID}
+		</if>
+	</select>
+
+	<insert id="addPlan">
+		insert into c_mes_plan_t (cdt, udt, planNo, orderNo, projectNo, projectName, productId, materialNo, lineId, quantity, customer, planStartDate, planEndDate, status)
+		values (now(), now(), #{planNo}, #{orderNo}, #{projectNo}, #{projectName}, #{productId}, #{materialNo}, #{lineId}, #{quantity}, #{customer}, #{planStartDate}, #{planEndDate}, 1)
+	</insert>
+
+	<update id="editPlan">
+		update c_mes_plan_t set planNo = #{planNo}, orderNo = #{orderNo}, projectNo = #{projectNo}, projectName = #{projectName}, productId = #{productId}, lineId = #{lineId},
+		quantity = #{quantity}, customer = #{customer}, planStartDate = #{planStartDate}, planEndDate = #{planEndDate} where ID = #{ID}
+	</update>
+
+	<delete id="deletePlan">
+		delete from c_mes_plan_t where ID = #{ID}
+	</delete>
+
+	<select id="findPlanListMrp" resultType="java.util.Map">
+		select * from c_mes_plan_t where status = 1
+	</select>
+
+	<select id="getMaterialByProductId" resultType="java.util.Map">
+		select jm.* from c_mes_production_t p
+		left join c_mes_jl_material_t jm on jm.BOM_ID = p.MATERIAL_CODE
+		where p.ID = #{productId} limit 1
+	</select>
+
+	<select id="getMaterialInstanceByNo" resultType="java.util.Map">
+		select BOM_ID as materialNo, sum(NUMBER_REMAINING) as remainingNum
+		from c_mes_material_instance_t where BOM_ID = #{materialNo}
+		and NUMBER_REMAINING <![CDATA[>]]> 0 and DELETED = 0
+		<if test="projectNo != null and projectNo != ''">
+			and PROJECT_NO = #{projectNo}
+		</if>
+		group by BOM_ID
+	</select>
+
+	<select id="getLslInstanceByNo" resultType="java.util.Map">
+		select materialNo, sum(quantity) as quantity
+		from c_lsl_material_inventory_t
+		where materialNo = #{materialNo}
+		and status = 1 and quantity <![CDATA[>]]> 0
+		<if test="projectNo != null and projectNo != ''">
+			and projectNo = #{projectNo}
+		</if>
+		group by materialNo
+	</select>
+
+	<select id="findDemandMaterialList" resultType="java.util.Map">
+		select rd.MATERIALPN as materialNo, sum(rd.NUMBERS) as demandNum,
+		jm.*
+		from c_mes_recipe_datil_t rd
+		left join c_mes_recipe_t r on r.ID = rd.RECIPE_ID
+		left join c_mes_total_recipe_t tr on tr.ID = r.TOTAL_ID
+		left join c_mes_jl_material_t jm on jm.BOM_ID = rd.MATERIALPN
+		where tr.PRODUCTION_ID = #{productId}
+		and tr.LINE_ID = #{lineId}
+		and tr.STATUS = 1
+		and rd.MATERIALPN is not null
+		and rd.NUMBERS is not null
+		group by rd.MATERIALPN
+	</select>
+
+	<select id="findMaterialInstance" resultType="java.util.Map">
+		select BOM_ID as materialNo, sum(NUMBER_REMAINING) as remainingNum
+		from c_mes_material_instance_t
+		where NUMBER_REMAINING <![CDATA[>]]> 0 and DELETED = 0
+		group by BOM_ID
+	</select>
+
+	<select id="findLslInstance" resultType="java.util.Map">
+		select materialNo, sum(quantity) as quantity
+		from c_lsl_material_inventory_t
+		where status = 1 and quantity > 0
+		group by materialNo
+	</select>
+
+	<select id="getPurchaseMap" resultType="java.util.Map">
+		select por.material_code as materialNo, sum(por.count) as quantity
+		from c_srm_purchase_order_r por
+		left join c_srm_purchase_order_h poh on poh.order_number = por.order_number
+		where poh.status <![CDATA[<]]> 4
+		and por.material_code = #{materialNo}
+		group by por.material_code
+	</select>
+
+	<select id="getPurchaseDemandMap" resultType="java.util.Map">
+		select pdr.material_code as materialNo, sum(pdr.count) as quantity
+		from c_srm_purchase_demand_r pdr
+		left join c_srm_purchase_demand_h pdh on pdh.request_code = pdr.request_code
+		where pdh.status <![CDATA[<]]> 4
+		and pdr.material_code = #{materialNo}
+		<if test="projectNo != null and projectNo != ''">
+			and pdh.project_code = #{projectNo}
+		</if>
+		group by pdr.material_code
+	</select>
+
+	<select id="getWorkorderMap" resultType="java.util.Map">
+		select wd.REMAIND_NUMBER as quantity
+		from r_mes_workorder_detail_t wd
+		left join c_mes_production_t p on p.ID = wd.PRODUCT_ID
+		where p.MATERIAL_CODE = #{materialNo}
+		and wd.STATUS <![CDATA[<]]> 3
+		group by p.MATERIAL_CODE
+	</select>
+
+	<select id="getScheduledPlanMap" resultType="java.util.Map">
+		select sum(quantity) as quantity
+		from c_mes_plan_t pl
+		left join c_mes_production_t pr on pr.ID = pl.productId
+		where pr.MATERIAL_CODE = #{materialNo}
+		<if test="projectNo != null and projectNo != ''">
+			and pl.projectNo = #{projectNo}
+		</if>
+		and pl.quantity <![CDATA[>]]> 0
+		and status = 1
+		group by pr.MATERIAL_CODE
+	</select>
+
+	<select id="getWorkorderLockMap" resultType="java.util.Map">
+		select rd.MATERIALPN, sum(rd.NUMBERS*(wd.ORDER_NUMBER-wd.COMPLETE_NUMBER)) as quantity
+		from c_mes_recipe_datil_t rd
+		left join c_mes_recipe_t r on r.ID = rd.RECIPE_ID
+		join r_mes_workorder_detail_t wd on wd.TOTAL_RECIPE_ID = r.TOTAL_ID
+		where wd.STATUS <![CDATA[<]]> 3
+		and rd.MATERIALPN = 'MAT20210420001'
+		group by rd.MATERIALPN
+	</select>
+
+	<select id="getProductIdByMaterialNo" resultType="java.util.Map">
+		select ID as productId from c_mes_production_t where MATERIAL_CODE = #{materialNo} limit 1
+	</select>
+
+	<select id="getLastPurchaseDemand" resultType="java.util.Map">
+		select * from c_srm_purchase_demand_h order by id desc limit 1
+	</select>
+
+	<insert id="insertPurchaseDemand">
+		insert into c_srm_purchase_demand_h (request_code, status, application_date, project_code, project_name, create_time, update_time)
+		values(#{request_code}, 1, date_format(NOW(), '%Y-%c-%d'), #{project_code}, #{project_name}, now(), now())
+	</insert>
+
+	<insert id="insertPurchaseDemandR">
+		insert into c_srm_purchase_demand_r (request_code, material_code, material_name, count, unit, required_date, create_time, update_time)
+		values(#{request_code}, #{material_code}, #{material_name}, #{count}, #{unit}, date_format(NOW(), '%Y-%c-%d'), now(), now())
+	</insert>
+
+	<select id="findSNList" resultType="java.util.Map">
+		select s.*
+		from r_mes_plan_print_t s
+		where 1=1
+		<if test="sn != null and sn != ''">
+			s.sn like concat('%',#{sn},'%')
+		</if>
+	</select>
+
+	<select id="getTrackingBySn" resultType="java.util.Map">
+		select * from r_mes_tracking_t where SN = #{sn} and LINE_ID = #{lineId} limit 1
+	</select>
+
+	<select id="getTrackingCountRBySn" resultType="java.lang.Integer">
+		select count(*) from r_mes_tracking_t where SN = #{newSn}
+		<if test="lineId != null and lineId != ''">
+		 	and LINE_ID = #{lineId}
+		</if>
+	</select>
+
+	<select id="getTrackingCountPBySn" resultType="java.lang.Integer">
+		select count(*) from r_mes_tracking_t where SN = #{newSn}
+		<if test="lineId != null and lineId != ''">
+		 	and LINE_ID = #{lineId}
+		</if>
+	</select>
+
+	<insert id="insertTracking">
+		insert into r_mes_tracking_t (DT, ST, BST, SN, ENGINESN, GEARBOXSN, TYPENAME, TRAYNUM, PRODUCTNUM, STATUS, DIS, PLAN_ID, REWORK_FLAG, PRODUCTION_ID,
+		LINE_ID, WORK_ORDER_ID, UDT, STATE, PLAN_NUM, IN_PROCESS_NUM, COMPLETE_NUM, SCRAP_NUM, CREATOR, REVISER, TOTAL_RECIPE_ID)
+		values(now(), #{ST}, #{BST}, #{SN}, #{ENGINESN}, #{GEARBOXSN}, #{TYPENAME}, #{TRAYNUM}, #{PRODUCTNUM}, #{STATUS}, #{DIS}, #{PLAN_ID}, #{REWORK_FLAG}, #{PRODUCTION_ID},
+		#{LINE_ID}, #{WORK_ORDER_ID}, now(), #{STATE}, #{PLAN_NUM}, #{IN_PROCESS_NUM}, #{COMPLETE_NUM}, #{SCRAP_NUM}, #{CREATOR}, #{REVISER}, #{TOTAL_RECIPE_ID})
+	</insert>
+
+	<insert id="insertTranscodingRecord">
+		insert into c_mes_transcoding_record_t (DT, originalSn, newSn, lineId, type)
+		values(now(), #{sn}, #{newSn}, #{lineId}, #{type})
+	</insert>
+
+	<update id="updateSnBinding">
+		update r_mes_tracking_t set SN = #{newSn} where SN = #{sn};
+		update r_mes_plan_print_t set SN = #{newSn} where SN = #{sn};
+		update r_mes_step_t set SN = #{newSn} where SN = #{sn};
+		update r_mes_station_serial_flag_t set SN = #{newSn} where SN = #{sn};
+		update r_mes_rework_way_t set SN = #{newSn} where SN = #{sn};
+		update r_mes_leakage_t set SN = #{newSn} where SN = #{sn};
+		update r_mes_keypart_t set SN = #{newSn} where SN = #{sn};
+		update r_mes_bolt_t set SN = #{newSn} where SN = #{sn};
+		update p_mes_weigh_t set SN = #{newSn} where SN = #{sn};
+		update p_mes_station_serial_flag_t set SN = #{newSn} where SN = #{sn};
+		update p_mes_station_pass_t set SN = #{newSn} where SN = #{sn};
+		update p_mes_leakage_t set SN = #{newSn} where SN = #{sn};
+		update p_mes_keypart_t set SN = #{newSn} where SN = #{sn};
+	</update>
+
+	<update id="updateOriginalSnState">
+		update r_mes_tracking_t set STATE = 6 where SN = #{sn}
+	</update>
+
+	<insert id="copySnBinding">
+		insert into r_mes_tracking_t(DT, ST, BST, SN, ENGINESN, GEARBOXSN, TYPENAME, TRAYNUM, PRODUCTNUM, STATUS, DIS, PLAN_ID, REWORK_FLAG, PRODUCTION_ID, LINE_ID, WORK_ORDER_ID, UDT, STATE, PLAN_NUM, IN_PROCESS_NUM, COMPLETE_NUM, SCRAP_NUM, CREATOR, REVISER, TOTAL_RECIPE_ID)
+			select DT, ST, BST, concat(SN, '_', #{i}), ENGINESN, GEARBOXSN, TYPENAME, TRAYNUM, PRODUCTNUM, STATUS, DIS, PLAN_ID, REWORK_FLAG, PRODUCTION_ID, LINE_ID, WORK_ORDER_ID, UDT, STATE, PLAN_NUM, IN_PROCESS_NUM, COMPLETE_NUM, SCRAP_NUM, CREATOR, REVISER, TOTAL_RECIPE_ID from r_mes_tracking_t where SN = #{sn};
+		insert into r_mes_plan_print_t(DT, SN, PLAN_ID, LINE_ID, PRODUCTION_ID, SERIAL_NO, PRINT_FLAG, WORK_ORDER_ID) select DT, concat(SN, '_', #{i}), PLAN_ID, LINE_ID, PRODUCTION_ID, SERIAL_NO, PRINT_FLAG, WORK_ORDER_ID from r_mes_plan_print_t where SN = #{sn};
+		insert into r_mes_step_t(DT, ST, SN, STEP_NO, EMP, LINE_NAME) select DT, ST, concat(SN, '_', #{i}), STEP_NO, EMP, LINE_NAME from r_mes_step_t where SN = #{sn};
+		insert into r_mes_station_serial_flag_t(SN, DT, ST, SERIAL, FLAG) select concat(SN, '_', #{i}), DT, ST, SERIAL, FLAG from r_mes_station_serial_flag_t where SN = #{sn};
+		insert into r_mes_rework_way_t(DT, SN, ST_NAME, ST_ID, SERIAL_NO) select DT, concat(SN, '_', #{i}), ST_NAME, ST_ID, SERIAL_NO from r_mes_rework_way_t where SN = #{sn};
+		insert into r_mes_leakage_t(DT, ST, SN, LEAKAGE_NAME, LEAKAGE_PV, LEAKAGE_LV, LEAKAGE_R, WID, TRANSFER, LEAKAGE_MODE, REWORK_FLAG, REASON)
+			select DT, ST, concat(SN, '_', #{i}), LEAKAGE_NAME, LEAKAGE_PV, LEAKAGE_LV, LEAKAGE_R, WID, TRANSFER, LEAKAGE_MODE, REWORK_FLAG, REASON from r_mes_leakage_t where SN = #{sn};
+		insert into r_mes_keypart_t(DT, TRANSFER, KEYPART_MODE, ST, SN, WID, TID, SECOND_NUM, KEYPART_ID, KEYPART_NAME, KEYPART_PN, KEYPART_NUM, KEYPART_MODULE, KEYPART_REWORK_FG, KEYPART_REWORK_ST, MATERIAL_ID, MATERIAL_NUMBER, REASONS, MATERIAL_INSTANCE_ID, step)
+			select DT, TRANSFER, KEYPART_MODE, ST, concat(SN, '_', #{i}), WID, TID, SECOND_NUM, KEYPART_ID, KEYPART_NAME, KEYPART_PN, KEYPART_NUM, KEYPART_MODULE, KEYPART_REWORK_FG, KEYPART_REWORK_ST, MATERIAL_ID, MATERIAL_NUMBER, REASONS, MATERIAL_INSTANCE_ID, step from r_mes_keypart_t where SN = #{sn};
+		insert into r_mes_bolt_t(DT, TRANSFER, BOLT_MODE, SN, ST, T, A, P, C, R, EQS, T_LIMIT, A_LIMIT, WID, TID, BOLT_NUM, BOLT_NAME, REWORK_FLAG, REWORK_ST, GUN_NO, REASONS, Y, MATERIAL_INSTANCE_ID, step)
+			select DT, TRANSFER, BOLT_MODE, concat(SN, '_', #{i}), ST, T, A, P, C, R, EQS, T_LIMIT, A_LIMIT, WID, TID, BOLT_NUM, BOLT_NAME, REWORK_FLAG, REWORK_ST, GUN_NO, REASONS, Y, MATERIAL_INSTANCE_ID, step from r_mes_bolt_t where SN = #{sn};
+		insert into p_mes_weigh_t(DT, ST, SN, WID, WEIGH, WEIGH1, DIS, TRANSFER) select DT, ST, concat(SN, '_', #{i}), WID, WEIGH, WEIGH1, DIS, TRANSFER from p_mes_weigh_t where SN = #{sn};
+		insert into p_mes_station_serial_flag_t(SN, DT, ST, SERIAL, FLAG) select concat(SN, '_', #{i}), DT, ST, SERIAL, FLAG from p_mes_station_serial_flag_t where SN = #{sn};
+		insert into p_mes_station_pass_t(DT, SN, ST, EMP, TID, STATUS, PASS_FLAG, LINE_ID) select DT, concat(SN, '_', #{i}), ST, EMP, TID, STATUS, PASS_FLAG, LINE_ID from p_mes_station_pass_t where SN = #{sn};
+		insert into p_mes_leakage_t(DT, ST, SN, LEAKAGE_NAME, LEAKAGE_PV, LEAKAGE_LV, LEAKAGE_R, WID, TRANSFER, LEAKAGE_MODE, REWORK_FLAG, REASON)
+			select DT, ST, concat(SN, '_', #{i}), LEAKAGE_NAME, LEAKAGE_PV, LEAKAGE_LV, LEAKAGE_R, WID, TRANSFER, LEAKAGE_MODE, REWORK_FLAG, REASON from p_mes_leakage_t where SN = #{sn};
+		insert into p_mes_keypart_t(DT, TRANSFER, KEYPART_MODE, ST, SN, WID, TID, SECOND_NUM, KEYPART_ID, KEYPART_NAME, KEYPART_PN, KEYPART_NUM, KEYPART_MODULE, KEYPART_REWORK_FG, KEYPART_REWORK_ST, MATERIAL_ID, MATERIAL_NUMBER, REASONS, MATERIAL_INSTANCE_ID, step)
+			select DT, TRANSFER, KEYPART_MODE, ST, concat(SN, '_', #{i}), WID, TID, SECOND_NUM, KEYPART_ID, KEYPART_NAME, KEYPART_PN, KEYPART_NUM, KEYPART_MODULE, KEYPART_REWORK_FG, KEYPART_REWORK_ST, MATERIAL_ID, MATERIAL_NUMBER, REASONS, MATERIAL_INSTANCE_ID, step from p_mes_keypart_t where SN = #{sn};
+	</insert>
+
+	<select id="findContainerList" resultType="java.util.Map">
+		select * from c_mes_container_t
+		where 1 = 1
+		<if test="containerName != null and containerName != ''">
+			and containerName like concat('%', #{containerName}, '%')
+		</if>
+	</select>
+
+	<select id="getContainerRepetition" resultType="java.util.Map">
+		select * from c_mes_container_t where containerName = #{containerName}
+		<if test="ID != null and ID != ''">
+			and ID != #{ID}
+		</if>
+	</select>
+
+	<insert id="addContainer">
+		insert into c_mes_container_t (containerName, capacity)
+		values (#{containerName}, #{capacity})
+	</insert>
+
+	<update id="editContainer">
+		update c_mes_container_t set containerName = #{containerName}, capacity = #{capacity} where ID = #{ID}
+	</update>
+
+	<delete id="deleteContainer">
+		delete from c_mes_container_t where ID = #{ID}
+	</delete>
+
+	<select id="findPackList" resultType="java.util.Map">
+		select p.*, c.containerName, l.NAME as lineName from c_lsl_pack_t p
+		left join c_mes_container_t c on c.ID = p.containerId
+		left join c_mes_line_t l on l.ID = p.lineId
+		where 1 = 1
+		<if test="containerId != null and containerId != ''">
+			and p.containerId = #{containerId}
+		</if>
+		<if test="lineId != null and lineId != ''">
+			and p.lineId = #{lineId}
+		</if>
+		order by p.udt desc
+	</select>
+
+	<select id="getPackRepetition" resultType="java.util.Map">
+		select * from c_lsl_pack_t where containerNo = #{containerNo}
+		<if test="ID != null and ID != ''">
+			and ID != #{ID}
+		</if>
+	</select>
+
+	<insert id="addPack">
+		insert into c_lsl_pack_t (cdt, udt, containerId, containerNo, packager, lineId, status)
+		values(now(), now(), #{containerId}, #{containerNo}, #{packager}, #{lineId}, 0)
+	</insert>
+
+	<update id="editPack">
+		update c_lsl_pack_t
+		set containerId = #{containerId}, containerNo = #{containerNo}, packager = #{packager}, lineId = #{lineId}
+		where ID = #{ID}
+	</update>
+
+	<select id="findPackDetailListByPackId" resultType="java.util.Map">
+		select * from c_lsl_pack_detail_t pd
+		left join c_lsl_pack_t p on p.containerNo = pd.containerNo
+		where p.ID = #{ID}
+	</select>
+
+	<delete id="deletePack">
+		delete from c_lsl_pack_t where ID = #{ID}
+	</delete>
+
+	<select id="findPackDetailList" resultType="java.util.Map">
+		select * from c_lsl_pack_detail_t where containerNo = #{containerNo}
+	</select>
+
+	<select id="getPackDetailRepetition" resultType="java.util.Map">
+		select * from c_lsl_pack_detail_t where sn = #{sn}
+		<if test="ID != null and ID != ''">
+			and ID != #{ID}
+		</if>
+	</select>
+
+	<insert id="addPackDetail">
+		insert into c_lsl_pack_detail_t (containerNo, lineNo, sn, quantity)
+		values(#{containerNo}, #{lineNo}, #{sn}, 1)
+	</insert>
+
+	<update id="editPackDetail">
+		update c_lsl_pack_detail_t
+		set sn = #{sn}
+		where ID = #{ID}
+	</update>
+
+	<delete id="deletePackDetail">
+		delete from c_lsl_pack_detail_t where ID = #{ID}
+	</delete>
+
+</mapper>

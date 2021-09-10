@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.manage.mapper.SysUserRoleMapper">
+
+    <resultMap type="SysUserRole" id="SysUserRoleResult">
+        <result property="userId" column="user_id"/>
+        <result property="roleId" column="role_id"/>
+    </resultMap>
+    <update id="updateStatus">
+        update sys_user_role
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="role_id = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.userId != null">
+                        when user_id = #{item.userId,jdbcType=BIGINT} then #{item.roleId,jdbcType=BIGINT}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where user_id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.userId,jdbcType=BIGINT}
+        </foreach>
+    </update>
+
+
+</mapper>

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.all.CMesRoleTDAO">
+	<!-- 查询角色列表 -->
+	<select id="findAllRole" resultType="RoleT">
+		select * from c_qh_role where 1=1
+		<if test="roleName!=null and roleName!='' ">
+			and ROLE_NAME=#{roleName}
+		</if>
+	</select>
+
+	<!-- 根据ID查询角色 -->
+	<select id="findRoleByid" resultType="RoleT">
+		select * from C_MES_ROLE_T
+		where id=#{id}
+	</select>
+
+	<!-- 查询模块列表 -->
+	<select id="findAllMenu" resultType="CMesMenuT">
+		SELECT * FROM C_MES_MENU_T WHERE 1 = 1
+		<if test="grade!=null and grade !=''">
+			AND GRADe = #{grade}
+		</if>
+		<if test="menuType!=null and menuType !=''">
+			AND MENU_TYPE = #{menuType}
+		</if>
+		<if test="id!=null">
+			AND ID = #{menuId}
+		</if>
+	</select>
+
+	<!-- 获取最大的角色ID -->
+	<select id="findMaxRoleId" resultType="integer">
+		select max(id) from
+		C_MES_ROLE_T
+	</select>
+	<!-- 根据Menu_Type查询模板信息 -->
+	<select id="findMenuByMenu_Type" resultType="CMesMenuT">
+		SELECT * FROM
+		C_MES_MENU_T
+
+		<if test="MENU_TYPE  !='  ' and  MENU_TYPE  !=null   ">
+		 		WHERE	 MENU_TYPE=#{MENU_TYPE}
+		</if>
+	</select>
+
+	<!-- 添加角色 -->
+	<insert id="addRole" useGeneratedKeys="true" keyProperty="id">
+		INSERT
+		INTO C_MES_ROLE_T(ROLE_NAME,ROLE_DIS)
+		values(#{roleName},#{roleDis})
+	</insert>
+
+	<!-- 添加角色模块中间表 -->
+	<insert id="addMenuRole">
+		insert into C_MES_ROLE_MENU_T(ROLE_ID,MENU_ID)
+		values(#{roleId},#{menuId})
+	</insert>
+
+	<!-- 根据角色ID查询用户 -->
+	<select id="findUser" resultType="integer">
+		select count(*) from
+		c_mes_user_t where viewMode = 1 and ROLE_ID=#{id}
+	</select>
+
+	<!-- 删除角色 -->
+	<delete id="delRole">
+		delete from c_mes_role_t where id=#{id}
+	</delete>
+
+	<!-- 删除角色模块中间表 -->
+	<delete id="delMenuRole">
+		delete from c_mes_role_menu_t where ROLE_ID=#{id}
+	</delete>
+
+	<!-- 查询角色拥有的模块 -->
+	<select id="findMenuByid" resultType="CMesMenuT">
+		select m.* from
+		c_mes_role_menu_t rm,C_MES_MENU_T m
+		where rm.MENU_ID=m.id and
+		rm.ROLE_ID=#{id}
+	</select>
+
+	<!-- 修改角色 -->
+	<update id="updateRole">
+		UPDATE C_MES_ROLE_T SET ROLE_NAME =
+		#{roleName},ROLE_DIS = #{roleDis} WHERE ID = #{id}
+	</update>
+	<!-- 根据ID回显角色信息 -->
+	<select id="toupdate" resultType="CMesRoleMenuT">
+		SELECT
+		r.ID roleId,r.ROLE_NAME
+		roleName ,r.ROLE_DIS roleDis,m.id
+		menuId,m.MENU_NAME menuName
+		FROM
+		c_mes_role_t r
+		LEFT JOIN c_mes_role_menu_t rm ON r.id = rm.ROLE_ID
+		LEFT
+		JOIN c_mes_menu_t m on m.id =rm.MENU_ID
+		WHERE r.id=#{id}
+	</select>
+	<!-- 根据角色ID查询配置 -->
+	<select id="findByidCrud"  resultType="CMesRoleMenuT">
+		SELECT
+		r.ID roleId,
+		r.ROLE_NAME roleName,
+		r.ROLE_DIS roleDis,
+		m.id menuId,
+		m.MENU_NAME menuName,
+		c.id cid,
+		c.CRUD_NAME cname
+		FROM
+		c_mes_role_t r
+		LEFT JOIN c_mes_menu_crud_t crud ON r.id = crud.ROLE_ID
+		LEFT JOIN c_mes_menu_t m ON m.id = crud.MENU_ID
+		LEFT JOIN c_mes_crud_t c ON c.id = crud.MENU_CRUD_ID
+		WHERE
+		r.id = #{id}
+	</select>
+
+
+
+    <!-- 向c_mes_menu_crud_t 添加数据-->
+    <insert id="insertCrud">
+      insert into c_mes_menu_crud_t(MENU_ID,MENU_CRUD_ID,ROLE_ID)	values(#{mid},#{cids},#{rid})
+    </insert>
+
+
+
+</mapper>

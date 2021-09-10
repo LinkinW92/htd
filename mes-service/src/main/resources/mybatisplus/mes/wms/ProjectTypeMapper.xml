@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wms.ProjectTypeDao">
+
+	<select id="findProjectTypeList" resultType="com.skeqi.mes.pojo.wms.CWmsProjectType">
+		select * from c_wms_project_type_t
+		where VIEW_MODE = 1
+		<if test="id != null">
+			AND ID = #{id}
+		</if>
+		<if test="projectType != null">
+			AND PROJECT_TYPE = #{projectType}
+		</if>
+		<if test="dis != null">
+			AND DIS = #{dis}
+		</if>
+		ORDER BY ID
+	</select>
+
+	<select id="findCountByName" resultType="int">
+		select count(*) from c_wms_project_type_t
+		where PROJECT_TYPE = #{name}
+		and id != #{id}
+		and VIEW_MODE = 1
+	</select>
+
+	<insert id="addProjectType">
+		insert into c_wms_project_type_t(
+		PROJECT_TYPE,DIS)
+		values(
+		#{projectType},#{dis})
+	</insert>
+
+	<delete id="deleteProjectType">
+		delete from c_wms_project_type_t
+		where id = #{projectTypeId}
+	</delete>
+
+	<update id="updateProjectType">
+		update c_wms_project_type_t
+			<trim prefix="SET" suffixOverrides=",">
+				<if test="projectType != null">PROJECT_TYPE = #{projectType},</if>
+				<if test="dis != null">DIS = #{dis},</if>
+				<if test="viewMode != null">VIEW_MODE = #{viewMode},</if>
+			</trim>
+		where ID = #{id}
+	</update>
+
+</mapper>

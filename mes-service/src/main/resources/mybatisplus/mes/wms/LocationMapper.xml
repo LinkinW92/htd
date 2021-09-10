@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wms.LocationDao">
+
+	<resultMap type="com.skeqi.mes.pojo.wms.CWmsLocationT" id="locationMap">
+		<result column="ID" property="id" />
+		<result column="LOCATION_NO" property="locationNo" />
+		<result column="LOCATION_NAME" property="locationName" />
+		<result column="LOCATION_LENGTH" property="locationLength" />
+		<result column="LOCATION_WIDTH" property="locationWidth" />
+		<result column="LOCATION_HIGHT" property="locationHight" />
+		<result column="LOCATION_VOLUME" property="locationVolume" />
+		<result column="LOCATION_TYPE" property="locationType" />
+		<result column="LOCATION_MARK" property="locationMark" />
+		<result column="LOCATION_TYPE1" property="locationType1" />
+		<result column="LOCATION_CAPACITY" property="locationCapacity" />
+		<result column="LOCATION_WEIGHT" property="locationWeight" />
+		<result column="LOCATION_STATUS" property="locationStatus" />
+		<result column="LOCATION_X" property="locationX" />
+		<result column="LOCATION_Y" property="locationY" />
+		<result column="LOCATION_Z" property="locationZ" />
+		<result column="LOCATION_VR" property="locationVr" />
+		<result column="RESERVOIR_AREA_ID" property="reservoirAreaId" />
+		<result column="MODIFY_TIME" property="modifyTime" />
+		<result column="TRAY_TYPE" property="trayType" />
+		<result column="tray" property="tray" />
+		<result column="PTL_NO" property="ptlNo" />
+		<association property="warehouse" javaType="com.skeqi.mes.pojo.wms.WarehouseT">
+			<result column="W_Id" property="id" />
+			<result column="W_NAME" property="name" />
+		</association>
+		<association property="area" javaType="com.skeqi.mes.pojo.wms.CWmsAreaT">
+			<result column="AREA_ID" property="id" />
+			<result column="AREA_NAME" property="areaName" />
+		</association>
+		<association property="reservoirArea"
+			javaType="com.skeqi.mes.pojo.wms.CWmsReservoirAreaT">
+			<result column="RESEVOIR_ID" property="id" />
+			<result column="RESEVOIR_NAME" property="raName" />
+		</association>
+	</resultMap>
+
+	<select id="findLocationList" resultMap="locationMap">
+		select location.*,reservoir.id AS RESEVOIR_ID,reservoir.RA_NAME as
+		RESEVOIR_NAME,area.ID AS AREA_ID,area.AREA_NAME,warehouse.id as
+		W_ID,warehouse.name as W_NAME
+		from c_wms_location_t location
+		Left join c_wms_reservoir_area_t reservoir on location.RESERVOIR_AREA_ID = reservoir.id
+		Left join c_wms_area_t area on reservoir.AREA_ID = area.ID
+		Left join c_wms_warehouse_t warehouse on area.WAREHOUSE_ID = warehouse.ID
+		where
+		location.VIEW_MODE = 1
+		<if test="id != null and id != ''">
+			AND location.ID = #{id}
+		</if>
+		<if test="tray != null and tray != ''">
+			AND location.tray like '%${tray}%'
+		</if>
+		ORDER BY location.ID
+	</select>
+
+	<select id="findLocationAll" resultType="com.skeqi.mes.pojo.wms.CWmsLocationT">
+		select id,LOCATION_NAME from c_wms_location_t
+		where VIEW_MODE = 1
+		ORDER BY ID
+	</select>
+
+	<!-- 通过库位名称查询同名数量 -->
+	<select id="findCountByName" resultType="int">
+		select count(*) from c_wms_location_t
+		where VIEW_MODE = 1
+		and LOCATION_NAME = #{locationName}
+		and id != #{id}
+	</select>
+
+	<!-- 通过库位编号查询同名数量 -->
+	<select id="findCountByNo" resultType="int">
+		select count(*) from c_wms_location_t
+		where VIEW_MODE = 1
+		and LOCATION_NO = #{locationNo}
+		and id != #{id}
+	</select>
+
+	<insert id="addLocation">
+		insert into c_wms_location_t(
+		LOCATION_NO,LOCATION_NAME,LOCATION_LENGTH,LOCATION_WIDTH,
+		LOCATION_HIGHT,LOCATION_VOLUME,LOCATION_TYPE,LOCATION_MARK,
+		LOCATION_TYPE1,LOCATION_CAPACITY,LOCATION_WEIGHT,LOCATION_STATUS,
+		LOCATION_X,LOCATION_Y,LOCATION_Z,LOCATION_VR,
+		RESERVOIR_AREA_ID,MODIFY_TIME,TRAY_TYPE,VIEW_MODE,TRAY,PTL_NO)
+		values(
+		#{locationNo},#{locationName},#{locationLength},#{locationWidth},
+		#{locationHight},#{locationVolume},#{locationType},#{locationMark},
+		#{locationType1},#{locationCapacity},#{locationWeight},#{locationStatus},
+		#{locationX},#{locationY},#{locationZ},#{locationVr},
+		#{reservoirAreaId},now(),#{trayType},1,#{tray},#{ptlNo})
+	</insert>
+
+	<delete id="deleteLocation">
+		delete from c_wms_location_t
+		where id = #{locationId}
+	</delete>
+
+	<update id="updateLocation">
+		update c_wms_location_t
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="locationNo != null">LOCATION_NO = #{locationNo},</if>
+			<if test="locationName != null">LOCATION_NAME = #{locationName},</if>
+			<if test="locationLength != null">LOCATION_LENGTH = #{locationLength},</if>
+			<if test="locationWidth != null">LOCATION_WIDTH = #{locationWidth},</if>
+			<if test="locationHight != null">LOCATION_HIGHT = #{locationHight},</if>
+			<if test="locationVolume != null">LOCATION_VOLUME = #{locationVolume},</if>
+			<if test="locationType != null">LOCATION_TYPE = #{locationType},</if>
+			<if test="locationMark != null">LOCATION_MARK = #{locationMark},</if>
+			<if test="locationType1 != null">LOCATION_TYPE1 = #{locationType1},</if>
+			<if test="locationCapacity != null">LOCATION_CAPACITY = #{locationCapacity},</if>
+			<if test="locationWeight != null">LOCATION_WEIGHT = #{locationWeight},</if>
+			<if test="locationStatus != null">LOCATION_STATUS = #{locationStatus},</if>
+			<if test="locationX != null">LOCATION_X = #{locationX},</if>
+			<if test="locationY != null">LOCATION_Y = #{locationY},</if>
+			<if test="locationZ != null">LOCATION_Z = #{locationZ},</if>
+			<if test="locationVr != null">LOCATION_VR = #{locationVr},</if>
+			<if test="reservoirAreaId != null">RESERVOIR_AREA_ID = #{reservoirAreaId},</if>
+			<if test="trayType != null">TRAY_TYPE = #{trayType},</if>
+			<if test="viewMode != null">VIEW_MODE = #{viewMode},</if>
+			<if test="tray != null">TRAY = #{tray},</if>
+			<if test="ptlNo != null">PTL_NO = #{ptlNo},</if>
+			MODIFY_TIME = now()
+		</trim>
+		where ID = #{id}
+	</update>
+
+	<select id="findWarehouseAll" resultType="com.skeqi.mes.pojo.wms.WarehouseT">
+		select ID,NAME from
+		c_wms_warehouse_t
+		where VIEW_MODE = 1
+		ORDER BY ID
+	</select>
+
+	<select id="findAreaAll" resultType="com.skeqi.mes.pojo.wms.CWmsAreaT">
+		select ID,AREA_NAME from c_wms_area_t
+		where VIEW_MODE = 1
+		<if test="warehouseId != null">
+			AND WAREHOUSE_ID = #{warehouseId}
+		</if>
+		ORDER BY ID
+	</select>
+
+	<select id="findreservoirAreaAll" resultType="com.skeqi.mes.pojo.wms.CWmsReservoirAreaT">
+		select ID,RA_NAME from c_wms_reservoir_area_t
+		where VIEW_MODE = 1
+		<if test="areaId != null">
+			AND AREA_ID = #{areaId}
+		</if>
+		ORDER BY ID
+	</select>
+
+</mapper>

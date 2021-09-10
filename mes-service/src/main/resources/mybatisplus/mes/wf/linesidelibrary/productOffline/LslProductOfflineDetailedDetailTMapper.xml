@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wf.linesidelibrary.productOffline.LslProductOfflineDetailedDetailTMapper">
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, `number`, detailed_number, quantity, pack_no, material_sn, cdt, udt
+  </sql>
+    <delete id="deleteDetailedDetailByOfflineNumber">
+        delete from c_lsl_product_offline_detailed_detail_t where detailed_number in (
+            (
+                select
+                    number
+                from
+                    c_lsl_product_offline_detailed_t
+                where
+                    offline_number = #{number,jdbcType=VARCHAR}
+            )
+        )
+    </delete>
+    <select id="selectAll" resultType="com.skeqi.mes.pojo.wf.linesidelibrary.productOffline.LslProductOfflineDetailedDetailT">
+    select
+    <include refid="Base_Column_List" />
+    from c_lsl_product_offline_detailed_detail_t
+    <where>
+        `detailed_number` = #{detailedNumber,jdbcType=VARCHAR}
+    </where>
+  </select>
+  <insert id="insertByList">
+    insert into c_lsl_product_offline_detailed_detail_t
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+        `number`,
+        detailed_number,
+        quantity,
+        pack_no,
+        material_sn,
+        cdt,
+        udt
+    </trim>
+    <foreach collection="list" item="item" separator="," open="values">
+      (
+        #{item.number,jdbcType=VARCHAR},
+        #{item.detailedNumber,jdbcType=VARCHAR},
+        #{item.quantity,jdbcType=INTEGER},
+        #{item.packNo,jdbcType=VARCHAR},
+        #{item.materialSn,jdbcType=VARCHAR},
+        #{item.cdt,jdbcType=TIMESTAMP},
+        #{item.udt,jdbcType=TIMESTAMP}
+      )
+    </foreach>
+  </insert>
+  <select id="selectByPrimaryKey" resultType="com.skeqi.mes.pojo.wf.linesidelibrary.productOffline.LslProductOfflineDetailedDetailT">
+    select
+    <include refid="Base_Column_List" />
+    from c_lsl_product_offline_detailed_detail_t
+    <where>
+        `number` = #{number,jdbcType=VARCHAR}
+    </where>
+  </select>
+</mapper>

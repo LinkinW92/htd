@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.qh.CMesPlanTypeDao">
+	<!-- 查询所有计划类型的表 -->
+	<select id="findAllPlanType"
+		resultType="com.skeqi.mes.pojo.CMesPlanTypeT">
+		select typeName,dis, id from c_mes_plan_type_t ORDER BY id
+	</select>
+
+	<!-- 添加计划类型 -->
+	<insert id="addPlanType">
+		INSERT into c_mes_plan_type_t(typeName,dis)
+		value(#{typeName},#{dis})
+	</insert>
+
+
+	<!-- 修改此表展示的列 -->
+	<update id="updatePlanType">
+		update c_mes_plan_type_t
+		set
+		typeName = #{typeName},
+		dis = #{dis}
+		where id = #{id}
+	</update>
+
+	<!-- 删除 -->
+	<delete id="deletePlanType">
+		delete from c_mes_plan_type_t
+		where id = #{id}
+	</delete>
+
+	<!-- 根据id查询 -->
+	<select id="findPlanTypeById"
+		resultType="com.skeqi.mes.pojo.CMesPlanTypeT">
+		select typeName,dis, id
+		from c_mes_plan_type_t
+		where id = #{id}
+	</select>
+
+</mapper>

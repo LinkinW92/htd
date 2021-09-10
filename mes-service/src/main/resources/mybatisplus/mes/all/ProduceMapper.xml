@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.all.ProduceDAO">
+
+	<!-- 班次列表 -->
+	<select id="findAllShift" resultType="CMesShiftsTeamT">
+			SELECT st.*,line.ID AS lineId,line.NAME AS lineName FROM
+			C_MES_SHIFTS_TEAM_T st, C_MES_LINE_T line WHERE
+			st.LINE_ID = line.ID
+		<if test="name!=null and name!='' ">
+			and st.name = #{name}
+		</if>
+		ORDER BY ST.NAME
+	</select>
+
+	<!-- 根据id查询列表 -->
+	<select id="findShiftByid" resultType="CMesShiftsTeamT">
+		select * from C_MES_SHIFTS_TEAM_T where id=#{id}
+	</select>
+
+	<!-- 添加 -->
+	<insert id="addShift">
+		INSERT INTO C_MES_SHIFTS_TEAM_T(NAME,START_TIME,END_TIME,DIS,LINE_ID)
+		VALUES(#{name},#{startTime},#{endTime},#{dis},#{lineId})
+	</insert>
+
+	<!-- 修改 -->
+	<update id="updateShift">
+		UPDATE C_MES_SHIFTS_TEAM_T SET NAME =
+		#{name},START_TIME = #{startTime},END_TIME = #{endTime},DIS =
+		#{dis},line_id=#{lineId} where ID = #{id}
+	</update>
+
+	<!-- 删除 -->
+	<delete id="delShift">
+		delete from C_MES_SHIFTS_TEAM_T where id=#{id}
+	</delete>
+
+	<!-- 班组列表 -->
+	<select id="findAllTeam" resultType="CMesEmpTeamT">
+			SELECT empTeam.*,shiftsTeam.id as shiftsTeamId,shiftsTeam.name as shiftsTeamName FROM C_MES_EMP_TEAM_T empTeam
+join C_MES_SHIFT_EMPS_TEAM_T shiftEmpsTeam on empTeam.id =
+		shiftEmpsTeam.emp_team_id
+left join C_MES_SHIFTS_TEAM_T shiftsTeam on shiftEmpsTeam.shifts_team_id =
+		shiftsTeam.ID
+		where 1 = 1
+		<if test="name!=null">
+			AND empTeam.NAME = #{name}
+		</if>
+	</select>
+
+	<!-- 根据id查询班组列表 -->
+	<select id="findTeamByid" resultType="CMesEmpTeamT">
+		select * from C_MES_EMP_TEAM_T where id=#{id}
+	</select>
+
+	<!-- 获取最大的班组id -->
+	<select id="getMaxTeamId" resultType="Integer">
+		select max(id) from C_MES_EMP_TEAM_T
+	</select>
+	<!-- 添加班组 -->
+	<insert id="addTeam">
+		insert into C_MES_EMP_TEAM_T(NAME,DIS,EMPS)
+		values(#{name},#{dis},#{emps})
+	</insert>
+
+	<!-- 添加班组班次中间表 -->
+	<insert id="addShiftTeam">
+		insert into C_MES_SHIFT_EMPS_TEAM_T(SHIFTS_TEAM_ID,EMP_TEAM_ID) values(#{shiftsTeamId},#{empTeamId})
+	</insert>
+
+	<!-- 修改班组 -->
+	<update id="updateTeam">
+		update C_MES_EMP_TEAM_T set name=#{name},
+									dis=#{dis},
+									emps=#{emps}
+							  where id=#{id}
+	</update>
+
+	<!-- 删除班组 -->
+	<delete id="delTeam">
+		delete from C_MES_EMP_TEAM_T where id=#{id}
+	</delete>
+
+	<!-- 删除班组班次中间表 -->
+	<delete id="delShiftTeam">
+		delete from C_MES_SHIFT_EMPS_TEAM_T where emp_team_id=#{id}
+	</delete>
+
+	<!-- 通知管理列表 -->
+	<select id="findAllNotice" resultType="CMesNoticeT">
+				select *
+		from C_MES_NOTICE_T c
+		order by dt desc
+	</select>
+
+	<!-- 根据id查询 -->
+	<select id="findNoticeByid" resultType="CMesNoticeT">
+		select * from C_MES_NOTICE_T where id=#{id}
+	</select>
+
+
+	<!-- 根据班组id查询班长 -->
+	<select id="findTeams" resultType="String">
+		select EMP_NAME from C_MES_EMP_T where  EMP_TEAM_ID=#{id} and EMP_TYPE='1'
+	</select>
+
+	<!-- 添加 -->
+	<insert id="addNotice">
+		INSERT INTO C_MES_NOTICE_T
+		(DT,HEAD,NOTICE_CONTENT,CONTACTS,PULL_TIME)
+		VALUES (now(),#{head},#{noticeContent},#{contacts},now())
+	</insert>
+
+	<!-- 修改 -->
+	<update id="updateNotice">
+		update C_MES_NOTICE_T set HEAD=#{head},
+							      NOTICE_CONTENT=#{noticeContent},
+							      CONTACTS=#{contacts}
+							    where id=#{id}
+	</update>
+
+	<!-- 删除 -->
+	<delete id="delNotice">
+		delete from C_MES_NOTICE_T where id=#{id}
+	</delete>
+
+	<!-- 员工类型列表 -->
+	<select id="findAllEmpType" resultType="CMesEmpTypeT">
+		SELECT * FROM
+		C_MES_EMP_TYPE_T
+		WHERE 1 = 1
+		<if test="empType!=null and empType!='' ">
+			AND EMP_TYPE = #{empType}
+		</if>
+	</select>
+
+	<!-- 根据id查询员工类型 -->
+	<select id="findEmpTypeByid" resultType="CMesEmpTypeT">
+		select * from C_MES_EMP_TYPE_T where id=#{id}
+	</select>
+
+	<!-- 添加 -->
+	<insert id="addEmpType">
+		INSERT INTO C_MES_EMP_TYPE_T(EMP_TYPE,DIS)
+		VALUES(#{empType},#{dis})
+	</insert>
+
+	<!-- 修改 -->
+	<update id="updateEmpType">
+		UPDATE C_MES_EMP_TYPE_T SET EMP_TYPE = #{empType},DIS = #{dis} WHERE ID = #{id}
+	</update>
+
+	<!-- 删除 -->
+	<delete id="delEmpType">
+		delete from C_MES_EMP_TYPE_T where id=#{id}
+	</delete>
+
+	<!-- 查询员工列表 -->
+	<select id="findAllEmp" resultType="CMesEmpT">
+		SELECT
+			EMP.*,
+			EMPTEAM.NAME AS TEAMNAME,
+			LINE.NAME AS LINENAME
+			FROM
+			C_MES_EMP_T EMP,
+			C_MES_EMP_TEAM_T EMPTEAM,
+			C_MES_LINE_T LINE
+			WHERE EMP.EMP_TEAM_ID = EMPTEAM.ID
+			AND EMP.LINE_ID  = LINE.ID
+		<if test="empNo!=null and  empNo!='' ">
+			and EMP.EMP_NO = #{empNo}
+		</if>
+		<if test="empName!=null and empName!=''">
+			and EMP_NAME like '%${empName }%'
+		</if>
+		ORDER by EMP.EMP_NO
+	</select>
+
+	<!-- 根据id查询员工列表 -->
+	<select id="findEmpByid" resultType="CMesEmpT">
+		select * from C_MES_EMP_T where id=#{id}
+	</select>
+
+	<!-- 添加员工 -->
+	<insert id="addEmp">
+				INSERT INTO C_MES_EMP_T(
+		DT,EMP_NAME,EMP_NO,EMP_SEX,
+		EMP_TYPE,EMP_TP,EMP_DEPARTMENT,EMP_TEAM_ID,
+		LINE_ID,EMP_VR,EMP_MAIL,STATION_ID,IS_WHOLE,)
+		VALUES(
+		#{dt},#{empName},#{empNo},#{empSex},
+		#{empType},#{empTp},#{empDepartment},#{empTeamId},
+		#{lineId},#{empVr}, #{empMail},#{stationId},#{isWhole})
+	</insert>
+
+	<!-- 修改员工 -->
+	<update id="updateEmp">
+			UPDATE C_MES_EMP_T SET
+		DT =#{dt},EMP_NAME=#{empName},EMP_SEX=#{empSex},
+		EMP_TYPE=#{empType},EMP_TP=#{empTp},EMP_DEPARTMENT=#{empDepartment},
+		EMP_TEAM_ID=#{empTeamId},LINE_ID=#{lineId},EMP_VR=#{empVr},
+		EMP_MAIL= #{empMail},STATION_ID=#{stationId},IS_WHOLE=#{isWhole}
+		WHERE ID = #{id}
+	</update>
+
+	<!-- 删除员工 -->
+	<delete id="delEmp">
+		delete from C_MES_EMP_T where id=#{id}
+	</delete>
+</mapper>

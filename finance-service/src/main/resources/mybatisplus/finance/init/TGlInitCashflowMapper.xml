@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.init.TGlInitCashflowMapper">
+  <resultMap id="BaseResultMap" type="com.skeqi.finance.domain.init.TGlInitCashflow">
+    <!--@mbg.generated-->
+    <!--@Table t_gl_init_cashflow-->
+    <id column="f_id" jdbcType="INTEGER" property="fId" />
+    <result column="f_account_book_id" jdbcType="INTEGER" property="fAccountBookId" />
+    <result column="f_item_id" jdbcType="INTEGER" property="fItemId" />
+    <result column="f_currency_id" jdbcType="INTEGER" property="fCurrencyId" />
+    <result column="f_is_detail" jdbcType="CHAR" property="fIsDetail" />
+    <result column="f_amount_for" jdbcType="DECIMAL" property="fAmountFor" />
+    <result column="f_amount" jdbcType="DECIMAL" property="fAmount" />
+    <result column="f_type_id" jdbcType="INTEGER" property="fTypeId" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    f_id, f_account_book_id, f_item_id, f_currency_id, f_is_detail, f_amount_for, f_amount,
+    f_type_id
+  </sql>
+    <insert id="insertByList">
+        insert into
+        <trim prefix="t_gl_init_cashflow (" suffix=")" suffixOverrides=",">
+            f_account_book_id,
+            f_item_id,
+            f_currency_id,
+            f_is_detail,
+            f_amount_for,
+            f_amount,
+            f_type_id
+        </trim>
+        <foreach collection="list" item="item" open="VALUES" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                #{item.fAccountBookId,jdbcType=INTEGER},
+                #{item.fItemId,jdbcType=INTEGER},
+                #{item.fCurrencyId,jdbcType=INTEGER},
+                #{item.fIsDetail,jdbcType=VARCHAR},
+                #{item.fAmountFor,jdbcType=DECIMAL},
+                #{item.fAmount,jdbcType=DECIMAL},
+                #{item.fTypeId,jdbcType=INTEGER}
+            </trim>
+        </foreach>
+    </insert>
+    <update id="updateByList">
+        update t_gl_init_cashflow
+        <trim prefix="set" suffixOverrides=",">
+
+            <trim prefix="f_amount_for = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.fAmountFor != null">
+                        when f_id = #{item.fId,jdbcType=INTEGER}
+                        then #{item.fAmountFor,jdbcType=DECIMAL}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="f_amount = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.fAmount != null">
+                        when f_id = #{item.fId,jdbcType=INTEGER}
+                        then #{item.fAmount,jdbcType=DECIMAL}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where f_id in
+        <foreach  collection="list" item="item" open="(" separator=", " close=")">
+            #{item.fId,jdbcType=INTEGER}
+        </foreach>
+    </update>
+
+
+    <select id="queryCashFlow"
+            resultType="com.skeqi.finance.pojo.vo.basicinformation.cashflow.TGlCashFlowTypeVo">
+        SELECT
+            tf.f_id,
+            tf.f_number tfNumber,
+            tf.f_name tfName,
+            tf.f_parent_id,
+            tf.f_item_typeid,
+            t.*
+        FROM
+            t_gl_cash_flow tf
+                LEFT JOIN t_gl_cash_flow_type t ON t.f_item_typeid = tf.f_parent_id
+            where tf.f_document_status <![CDATA[ <> ]]> '-1'
+    </select>
+    <select id="queryInitCashFlow" resultType="com.skeqi.finance.domain.init.TGlInitCashflow">
+        select * FROM t_gl_init_cashflow
+        WHERE
+            f_account_book_id = #{fAccountBookId,jdbcType=INTEGER}
+        and
+            f_currency_id = #{fCurrencyId,jdbcType=INTEGER}
+    </select>
+</mapper>

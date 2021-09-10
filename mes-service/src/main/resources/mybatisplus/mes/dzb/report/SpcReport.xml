@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.skeqi.mes.mapper.dzb.report.SpcReport">
+
+    <!--获取有拧紧数据的工位    -->
+    <select id="querySPCStation" resultType="java.util.Map">
+        select id,STATION_NAME stationName from c_mes_station_t tt0,
+        (select distinct t0.STATION_ID from c_mes_recipe_t t0,
+        (select distinct RECIPE_ID from c_mes_recipe_datil_t
+        where STEP_CATEGORY = 7) t1
+        where t0.id = t1.RECIPE_ID) tt1
+        where tt0.id = tt1.STATION_ID
+    </select>
+
+    <!--查询工位螺栓名称 -->
+    <select id="querySPCSite" resultType="java.util.Map">
+        select t2.ID, CONCAT(t1.RECIPE_NAME,'-','工序',t2.STEPNO,'-',MATERIAL_NAME) site,t1.STATION_ID from
+        (select id,RECIPE_NAME,STATION_ID from c_mes_recipe_t where STATION_ID = 310) t1,
+        c_mes_recipe_datil_t t2
+        where t1.id = t2.RECIPE_ID
+    </select>
+
+</mapper>

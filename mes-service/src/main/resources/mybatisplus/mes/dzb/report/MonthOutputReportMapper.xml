@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.dzb.report.MonthOutputReportDao">
+
+    <!-- 查询全部产线 -->
+    <select id="listLine" resultType="java.util.Map">
+        select id,name from c_mes_line_t
+    </select>
+    <!--    根据产线和年份查询数量    -->
+    <select id="listMonthSnCountByYearAndLineId" resultType="java.util.Map">
+        select
+        month_num,
+        (select count(sn) from p_mes_tracking_t where year(OFFLINE_DT)=#{year}
+        <if test="lineId != null">
+            and LINE_ID=#{lineId}
+        </if>
+        and month(OFFLINE_DT)=month_num) snCount,
+        ( ifnull((select SUM(ORDER_NUMBER) from r_mes_workorder_detail_t where year(PLAN_START_TIME)=#{year} and
+        month(PLAN_START_TIME)=month_num
+        <if test="lineId != null">
+            and LINE_ID=#{lineId}
+        </if>
+        ),0)
+        + ifnull((select SUM(ORDER_NUMBER) from p_mes_workorder_detail_t where year(PLAN_START_TIME)=#{year} and
+        month(PLAN_START_TIME)=month_num
+        <if test="lineId != null">
+            and LINE_ID=#{lineId}
+        </if>
+        ),0)
+        ) orderSum
+        from c_mes_month
+    </select>
+
+    <select id="okNgOutputByYearAndLineIdAndMonth" resultType="java.util.Map">
+        select
+        (select count(sn) from p_mes_tracking_t where `STATUS` = 'OK' and year(OFFLINE_DT)=#{year}
+        <if test="lineId != null">
+            and LINE_ID=#{lineId}
+        </if>
+        <if test="month != null">
+            and month(OFFLINE_DT)=#{month}
+        </if>
+         ) okSn,
+        (select count(sn) from p_mes_tracking_t where `STATUS` = 'NG' and year(OFFLINE_DT)=#{year}
+        <if test="lineId != null">
+            and LINE_ID=#{lineId}
+        </if>
+        <if test="month != null">
+            and month(OFFLINE_DT)=#{month}
+        </if>
+        ) ngSn
+    </select>
+
+    <select id="snCountByYearAndLineId" resultType="java.util.Map">
+        select
+        (select count(sn) from p_mes_tracking_t where year(OFFLINE_DT)=#{year}
+        <if test="lineId != null">
+            and LINE_ID=#{lineId}
+        </if>
+        ) snCount,
+        ( ifnull((select SUM(ORDER_NUMBER) from r_mes_workorder_detail_t  where year(PLAN_START_TIME)=#{year}
+        <if test="lineId != null">
+            and LINE_ID=#{lineId}
+        </if>
+         ),0)
+        + ifnull((select SUM(ORDER_NUMBER) from p_mes_workorder_detail_t  where year(PLAN_START_TIME)=#{year}
+        <if test="lineId != null">
+            and LINE_ID=#{lineId}
+        </if>
+         ),0)
+        ) orderSum
+    </select>
+    <select id="listSnCountByYear" resultType="java.util.Map">
+        select month(OFFLINE_DT) months, count(sn) snCount
+         FROM p_mes_tracking_t
+         WHERE year(OFFLINE_DT)=#{year}  and LINE_ID=#{lineId}
+         group by months;
+    </select>
+    <select id="listOrderCountByYear" resultType="java.util.Map">
+        select month(PLAN_START_TIME) months, SUM(ORDER_NUMBER) orderCount
+        FROM
+        (select * from r_mes_workorder_detail_t
+         WHERE year(PLAN_START_TIME)=#{year} and LINE_ID=#{lineId}
+         UNION
+        select * from p_mes_workorder_detail_t
+         WHERE year(PLAN_START_TIME)=#{year} and LINE_ID=#{lineId}
+         ) t
+         group by months;
+    </select>
+    <select id="okNgCountByYearAndLineIdAndMonth" resultType="java.util.Map">
+         select `STATUS` status,count(sn) countSn
+         from p_mes_tracking_t
+         where 1=1
+        <if test="year != null">
+            and year(OFFLINE_DT)=#{year}
+        </if>
+        <if test="month != null">
+            and month(OFFLINE_DT)=#{month}
+        </if>
+         and LINE_ID=#{lineId}
+         group by `STATUS`;
+    </select>
+
+
+</mapper>
+
+

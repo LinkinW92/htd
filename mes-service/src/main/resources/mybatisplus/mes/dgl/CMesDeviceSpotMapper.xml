@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.skeqi.mes.mapper.dgl.CMesDeviceSpotDao">
+	<!-- 设备管理查询 -->
+	<select id="findDeviceSpotList" resultType="CMesDeviceSpotT" parameterType="map">
+		SELECT L.NAME AS lineName,S.* FROM C_MES_DEVICE_SPOT_T S
+		JOIN C_MES_LINE_T L ON S.LINE_ID=L.ID
+		<where>
+			<if test="deviceName != null and deviceName != ''">
+				S.DEVICE_NAME like '%${deviceName}%'
+			</if>
+			<if test="lineId != null and lineId != ''">
+				AND S.LINE_ID=#{lineId}
+			</if>
+		</where>
+	</select>
+
+	<!-- 查询所有产线名称，ID -->
+	<select id="lineList" resultType="CMesLineT">
+		SELECT ID,NAME FROM C_MES_LINE_T
+	</select>
+
+	<!-- 根据产线ID查询设备名称，ID -->
+	<select id="findlineById" resultType="CMesDeviceT">
+		SELECT ID,DEVICE_NAME FROM C_MES_DEVICE_T WHERE DEVICE_LINE=#{lineId}
+	</select>
+
+	<!-- 新增设备点检 -->
+	<insert id="addDeviceSpot" keyProperty="id" useGeneratedKeys="false">
+		INSERT INTO C_MES_DEVICE_SPOT_T(DEVICE_NAME,LINE_ID,DT,STATUS,EMP)
+  		values(#{deviceName},#{lineId},now(),#{status},#{emp})
+  	</insert>
+
+	<!-- 根据ID删除 -->
+	<delete id="delDeviceSpot">
+		DELETE FROM C_MES_DEVICE_SPOT_T WHERE ID = #{id}
+	</delete>
+
+	<!-- 根据ID查询，回显 -->
+	<select id="findByDeviceSpotId" resultType="CMesDeviceSpotT">
+		SELECT * FROM C_MES_DEVICE_SPOT_T WHERE ID=#{id}
+	</select>
+
+	<!-- 修改 -->
+	<update id="updateDeviceSpot">
+		UPDATE C_MES_DEVICE_SPOT_T SET
+			DEVICE_NAME=#{deviceName},LINE_ID=#{lineId},DT=now(),STATUS=#{status},EMP=#{emp}
+      	WHERE ID = #{id}
+	</update>
+</mapper>

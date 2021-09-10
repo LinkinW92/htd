@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.basicinformation.voucher.TBdVchgroupAcctMapper">
+
+    <resultMap type="com.skeqi.finance.domain.basicinformation.voucher.TBdVchgroupAcct" id="TBdVchgroupAcctResult">
+        <result property="fEntryId" column="f_entry_id"/>
+        <result property="fVchgroupId" column="f_vchgroup_id"/>
+        <result property="fAcctNumber" column="f_acct_number"/>
+        <result property="fDebit" column="f_debit"/>
+        <result property="fCredit" column="f_credit"/>
+        <result property="fDebitCredit" column="f_debit_credit"/>
+        <result property="fDebitNo" column="f_debit_no"/>
+        <result property="fCreditNo" column="f_credit_no"/>
+        <result property="fDebitCreditNo" column="f_debit_credit_no"/>
+    </resultMap>
+    <insert id="insertByAddBoList">
+        insert into
+        <trim prefix="t_bd_vchgroup_acct (" suffix=")" suffixOverrides=",">
+            f_vchgroup_id,
+            f_acct_number,
+            f_debit,
+            f_credit,
+            f_debit_credit,
+            f_debit_no,
+            f_credit_no,
+            f_debit_credit_no
+        </trim>
+        <foreach collection="list" item="item" open="VALUES" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                #{item.fVchgroupId,jdbcType=INTEGER},
+                #{item.fAcctNumber,jdbcType=VARCHAR},
+                #{item.fDebit,jdbcType=VARCHAR},
+                #{item.fCredit,jdbcType=VARCHAR},
+                #{item.fDebitCredit,jdbcType=VARCHAR},
+                #{item.fDebitNo,jdbcType=VARCHAR},
+                #{item.fCreditNo,jdbcType=VARCHAR},
+                #{item.fDebitCreditNo,jdbcType=VARCHAR}
+            </trim>
+        </foreach>
+     </insert>
+    <update id="updateByEditList">
+        update t_bd_vchgroup_acct
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="f_vchgroup_id = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.fVchgroupId != null">
+                        when f_entry_id = #{item.fEntryId,jdbcType=INTEGER}
+                        then #{item.fVchgroupId,jdbcType=INTEGER}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="f_acct_number = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.fAcctNumber != null">
+                        when f_entry_id = #{item.fEntryId,jdbcType=INTEGER}
+                        then #{item.fAcctNumber,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="f_debit = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.fDebit != null">
+                        when f_entry_id = #{item.fEntryId,jdbcType=INTEGER}
+                        then #{item.fDebit,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="f_credit = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.fCredit != null">
+                        when f_entry_id = #{item.fEntryId,jdbcType=INTEGER}
+                        then #{item.fCredit,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="f_debit_credit = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.fDebitCredit != null">
+                        when f_entry_id = #{item.fEntryId,jdbcType=INTEGER}
+                        then #{item.fDebitCredit,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="f_debit_no = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.fDebitNo != null">
+                        when f_entry_id = #{item.fEntryId,jdbcType=INTEGER}
+                        then #{item.fDebitNo,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="f_credit_no = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.fCreditNo != null">
+                        when f_entry_id = #{item.fEntryId,jdbcType=INTEGER}
+                        then #{item.fCreditNo,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="f_debit_credit_no = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.fDebitCreditNo != null">
+                        when f_entry_id = #{item.fEntryId,jdbcType=INTEGER}
+                        then #{item.fDebitCreditNo,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where f_entry_id in
+        <foreach  collection="list" item="item" open="(" separator=", " close=")">
+            #{item.fEntryId,jdbcType=INTEGER}
+        </foreach>
+    </update>
+
+    <select id="selectByFVchgroupId"
+            resultType="com.skeqi.finance.pojo.vo.basicinformation.voucher.TBdVchgroupAcctVo">
+        select * from t_bd_vchgroup_acct where f_vchgroup_id = #{fVchgroupId,jdbcType=INTEGER}
+    </select>
+
+</mapper>

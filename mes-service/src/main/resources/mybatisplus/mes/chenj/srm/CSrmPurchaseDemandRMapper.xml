@@ -1,0 +1,695 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.chenj.srm.CSrmPurchaseDemandRMapper">
+    <resultMap id="BaseResultMap" type="com.skeqi.mes.pojo.chenj.srm.CSrmPurchaseDemandR">
+        <!--@mbg.generated-->
+        <!--@Table c_srm_purchase_demand_r-->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="request_code" jdbcType="VARCHAR" property="requestCode"/>
+        <result column="row_project_number" jdbcType="VARCHAR" property="rowProjectNumber"/>
+        <result column="material_code" jdbcType="VARCHAR" property="materialCode"/>
+        <result column="material_name" jdbcType="VARCHAR" property="materialName"/>
+        <result column="count" jdbcType="VARCHAR" property="count"/>
+        <result column="unit" jdbcType="VARCHAR" property="unit"/>
+        <result column="required_date" jdbcType="TIMESTAMP" property="requiredDate"/>
+        <result column="place_of_receipt" jdbcType="VARCHAR" property="placeOfReceipt"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        id, request_code, row_project_number, material_code, material_name, `count`, unit,
+        required_date, place_of_receipt, create_time, update_time, purchase_demand_id, is_delete,
+        specification, project, remark, station, delivery_date
+    </sql>
+    <select id="selectByPrimaryKey" resultType="com.skeqi.mes.pojo.chenj.srm.CSrmPurchaseDemandR">
+        <!--@mbg.generated-->
+        select
+        <include refid="Base_Column_List"/>
+        from c_srm_purchase_demand_r
+        <where>
+            <if test="requestCode != null and requestCode != ''">
+                request_code=#{requestCode,jdbcType=VARCHAR}
+            </if>
+            <if test="id != null">
+                and id=#{id,jdbcType=INTEGER}
+            </if>
+            and is_delete=0
+        </where>
+    </select>
+
+    <select id="selectByPrimaryKeyTransferOfOrder" resultType="com.skeqi.mes.pojo.chenj.srm.CSrmPurchaseDemandR">
+        select
+        request_code,material_code
+        from c_srm_purchase_demand_r
+        where is_delete=0
+    </select>
+    <select id="selectFinallyData" resultType="com.skeqi.mes.pojo.chenj.srm.CSrmPurchaseDemandR">
+        SELECT row_project_number rowProjectNumber
+        FROM c_srm_purchase_demand_r
+        where request_code=#{requestCode}
+        ORDER BY id DESC
+        LIMIT 1
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        <!--@mbg.generated-->
+        delete from c_srm_purchase_demand_r
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmPurchaseDemandR"
+            useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_purchase_demand_r (request_code, row_project_number, material_code,
+        material_name, `count`, unit,
+        required_date, place_of_receipt, create_time,
+        update_time)
+        values (#{requestCode,jdbcType=VARCHAR}, #{rowProjectNumber,jdbcType=VARCHAR}, #{materialCode,jdbcType=VARCHAR},
+        #{materialName,jdbcType=VARCHAR}, #{count,jdbcType=VARCHAR}, #{unit,jdbcType=VARCHAR},
+        #{requiredDate,jdbcType=TIMESTAMP}, #{placeOfReceipt,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
+        #{updateTime,jdbcType=TIMESTAMP})
+    </insert>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id"
+            parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmPurchaseDemandR" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_purchase_demand_r
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="requestCode != null">
+                request_code,
+            </if>
+            <if test="rowProjectNumber != null">
+                row_project_number,
+            </if>
+            <if test="materialCode != null">
+                material_code,
+            </if>
+            <if test="materialName != null">
+                material_name,
+            </if>
+            <if test="count != null">
+                `count`,
+            </if>
+            <if test="unit != null">
+                unit,
+            </if>
+            <if test="requiredDate != null">
+                required_date,
+            </if>
+            <if test="placeOfReceipt != null">
+                place_of_receipt,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="specification != null">
+                specification,
+            </if>
+            <if test="project != null">
+                project,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+            <if test="station != null">
+                station,
+            </if>
+            <if test="deliveryDate != null">
+                delivery_date,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="requestCode != null">
+                #{requestCode,jdbcType=VARCHAR},
+            </if>
+            <if test="rowProjectNumber != null">
+                #{rowProjectNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="materialCode != null">
+                #{materialCode,jdbcType=VARCHAR},
+            </if>
+            <if test="materialName != null">
+                #{materialName,jdbcType=VARCHAR},
+            </if>
+            <if test="count != null">
+                #{count,jdbcType=VARCHAR},
+            </if>
+            <if test="unit != null">
+                #{unit,jdbcType=VARCHAR},
+            </if>
+            <if test="requiredDate != null">
+                #{requiredDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="placeOfReceipt != null">
+                #{placeOfReceipt,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="specification != null">
+                #{specification,jdbcType=VARCHAR},
+            </if>
+            <if test="project != null">
+                #{project,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null">
+                #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="station != null">
+                #{station,jdbcType=VARCHAR},
+            </if>
+            <if test="deliveryDate != null">
+                #{deliveryDate,jdbcType=TIMESTAMP},
+            </if>
+
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmPurchaseDemandR">
+        <!--@mbg.generated-->
+        update c_srm_purchase_demand_r
+        <set>
+            <if test="requestCode != null">
+                request_code = #{requestCode,jdbcType=VARCHAR},
+            </if>
+            <if test="rowProjectNumber != null">
+                row_project_number = #{rowProjectNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="materialCode != null">
+                material_code = #{materialCode,jdbcType=VARCHAR},
+            </if>
+            <if test="materialName != null">
+                material_name = #{materialName,jdbcType=VARCHAR},
+            </if>
+            <if test="count != null">
+                `count` = #{count,jdbcType=VARCHAR},
+            </if>
+            <if test="unit != null">
+                unit = #{unit,jdbcType=VARCHAR},
+            </if>
+            <if test="requiredDate != null">
+                required_date = #{requiredDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="placeOfReceipt != null">
+                place_of_receipt = #{placeOfReceipt,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isDelete != null">
+                is_delete=#{isDelete,jdbcType=BOOLEAN},
+            </if>
+        </set>
+        <where>
+            <if test="requestCode != null and requestCode != ''">
+                request_code=#{requestCode,jdbcType=VARCHAR}
+            </if>
+            <if test="id != null">
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+        </where>
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmPurchaseDemandR">
+        <!--@mbg.generated-->
+        update c_srm_purchase_demand_r
+        set request_code = #{requestCode,jdbcType=VARCHAR},
+        row_project_number = #{rowProjectNumber,jdbcType=VARCHAR},
+        material_code = #{materialCode,jdbcType=VARCHAR},
+        material_name = #{materialName,jdbcType=VARCHAR},
+        `count` = #{count,jdbcType=VARCHAR},
+        unit = #{unit,jdbcType=VARCHAR},
+        required_date = #{requiredDate,jdbcType=TIMESTAMP},
+        place_of_receipt = #{placeOfReceipt,jdbcType=VARCHAR},
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+        update_time = #{updateTime,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateBatch" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update c_srm_purchase_demand_r
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="request_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.requestCode,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="row_project_number = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.rowProjectNumber,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="material_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.materialCode,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="material_name = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.materialName,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="`count` = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.count,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="unit = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.unit,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="required_date = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.requiredDate,jdbcType=TIMESTAMP}
+                </foreach>
+            </trim>
+            <trim prefix="place_of_receipt = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.placeOfReceipt,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.createTime,jdbcType=TIMESTAMP}
+                </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.updateTime,jdbcType=TIMESTAMP}
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    <update id="updateBatchSelective" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update c_srm_purchase_demand_r
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="request_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.requestCode != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.requestCode,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="row_project_number = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.rowProjectNumber != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.rowProjectNumber,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="material_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.materialCode != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.materialCode,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="material_name = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.materialName != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.materialName,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="`count` = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.count != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.count,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="unit = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.unit != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.unit,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="required_date = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.requiredDate != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.requiredDate,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="place_of_receipt = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.placeOfReceipt != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.placeOfReceipt,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.createTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.createTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.updateTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.updateTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    <update id="updateBatchSelectiveKThree" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update c_srm_purchase_demand_r
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="row_project_number = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.rowProjectNumber != null">
+                        when request_code = #{item.requestCode,jdbcType=VARCHAR} then
+                        #{item.rowProjectNumber,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="material_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.materialCode != null">
+                        when request_code = #{item.requestCode,jdbcType=VARCHAR} then
+                        #{item.materialCode,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="material_name = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.materialName != null">
+                        when request_code = #{item.requestCode,jdbcType=VARCHAR} then
+                        #{item.materialName,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="specification = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.specification != null">
+                        when request_code = #{item.requestCode,jdbcType=VARCHAR} then
+                        #{item.specification,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="`count` = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.count != null">
+                        when request_code = #{item.requestCode,jdbcType=VARCHAR} then #{item.count,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="unit = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.unit != null">
+                        when request_code = #{item.requestCode,jdbcType=VARCHAR} then #{item.unit,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="project = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.project != null">
+                        when request_code = #{item.requestCode,jdbcType=VARCHAR} then #{item.project,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="remark = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.requiredDate != null">
+                        when request_code = #{item.requestCode,jdbcType=VARCHAR} then #{item.remark,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="station = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.station != null">
+                        when request_code = #{item.requestCode,jdbcType=VARCHAR} then #{item.station,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="required_date = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.requiredDate != null">
+                        when request_code = #{item.requestCode,jdbcType=VARCHAR} then
+                        #{item.requiredDate,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where request_code in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.requestCode,jdbcType=VARCHAR} and row_project_number =#{item.rowProjectNumber,jdbcType=VARCHAR}
+        </foreach>
+        and is_delete='0'
+        <!--        and row_project_number =-->
+        <!--        <foreach close=")" collection="list" item="item" open="(" separator=", ">-->
+        <!--            #{item.rowProjectNumber,jdbcType=VARCHAR}-->
+        <!--        </foreach>-->
+    </update>
+
+
+    <insert id="batchInsertKThree" parameterType="map">
+        <!--@mbg.generated-->
+        insert into c_srm_purchase_demand_r
+        (request_code, row_project_number, material_code, material_name, `count`, unit, required_date,
+        create_time,is_delete,delivery_date,project,remark,station,specification)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.requestCode,jdbcType=VARCHAR}, #{item.rowProjectNumber,jdbcType=VARCHAR},
+            #{item.materialCode,jdbcType=VARCHAR}, #{item.materialName,jdbcType=VARCHAR},
+            #{item.count,jdbcType=VARCHAR}, #{item.unit,jdbcType=VARCHAR},
+            #{item.requiredDate,jdbcType=TIMESTAMP},now(),0,#{item.deliveryDate,jdbcType=TIMESTAMP},
+            #{item.project,jdbcType=VARCHAR},#{item.remark,jdbcType=VARCHAR},#{item.station,jdbcType=VARCHAR},#{item.specification,jdbcType=VARCHAR})
+        </foreach>
+    </insert>
+    <insert id="insertOrUpdate" keyColumn="id" keyProperty="id"
+            parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmPurchaseDemandR"
+            useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_purchase_demand_r
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            request_code,
+            row_project_number,
+            material_code,
+            material_name,
+            `count`,
+            unit,
+            required_date,
+            place_of_receipt,
+            create_time,
+            update_time,
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            #{requestCode,jdbcType=VARCHAR},
+            #{rowProjectNumber,jdbcType=VARCHAR},
+            #{materialCode,jdbcType=VARCHAR},
+            #{materialName,jdbcType=VARCHAR},
+            #{count,jdbcType=VARCHAR},
+            #{unit,jdbcType=VARCHAR},
+            #{requiredDate,jdbcType=TIMESTAMP},
+            #{placeOfReceipt,jdbcType=VARCHAR},
+            #{createTime,jdbcType=TIMESTAMP},
+            #{updateTime,jdbcType=TIMESTAMP},
+        </trim>
+        on duplicate key update
+        <trim suffixOverrides=",">
+            <if test="id != null">
+                id = #{id,jdbcType=INTEGER},
+            </if>
+            request_code = #{requestCode,jdbcType=VARCHAR},
+            row_project_number = #{rowProjectNumber,jdbcType=VARCHAR},
+            material_code = #{materialCode,jdbcType=VARCHAR},
+            material_name = #{materialName,jdbcType=VARCHAR},
+            `count` = #{count,jdbcType=VARCHAR},
+            unit = #{unit,jdbcType=VARCHAR},
+            required_date = #{requiredDate,jdbcType=TIMESTAMP},
+            place_of_receipt = #{placeOfReceipt,jdbcType=VARCHAR},
+            create_time = #{createTime,jdbcType=TIMESTAMP},
+            update_time = #{updateTime,jdbcType=TIMESTAMP},
+        </trim>
+    </insert>
+    <insert id="insertOrUpdateSelective" keyColumn="id" keyProperty="id"
+            parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmPurchaseDemandR" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_purchase_demand_r
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="requestCode != null">
+                request_code,
+            </if>
+            <if test="rowProjectNumber != null">
+                row_project_number,
+            </if>
+            <if test="materialCode != null">
+                material_code,
+            </if>
+            <if test="materialName != null">
+                material_name,
+            </if>
+            <if test="count != null">
+                `count`,
+            </if>
+            <if test="unit != null">
+                unit,
+            </if>
+            <if test="requiredDate != null">
+                required_date,
+            </if>
+            <if test="placeOfReceipt != null">
+                place_of_receipt,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="requestCode != null">
+                #{requestCode,jdbcType=VARCHAR},
+            </if>
+            <if test="rowProjectNumber != null">
+                #{rowProjectNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="materialCode != null">
+                #{materialCode,jdbcType=VARCHAR},
+            </if>
+            <if test="materialName != null">
+                #{materialName,jdbcType=VARCHAR},
+            </if>
+            <if test="count != null">
+                #{count,jdbcType=VARCHAR},
+            </if>
+            <if test="unit != null">
+                #{unit,jdbcType=VARCHAR},
+            </if>
+            <if test="requiredDate != null">
+                #{requiredDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="placeOfReceipt != null">
+                #{placeOfReceipt,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+        on duplicate key update
+        <trim suffixOverrides=",">
+            <if test="id != null">
+                id = #{id,jdbcType=INTEGER},
+            </if>
+            <if test="requestCode != null">
+                request_code = #{requestCode,jdbcType=VARCHAR},
+            </if>
+            <if test="rowProjectNumber != null">
+                row_project_number = #{rowProjectNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="materialCode != null">
+                material_code = #{materialCode,jdbcType=VARCHAR},
+            </if>
+            <if test="materialName != null">
+                material_name = #{materialName,jdbcType=VARCHAR},
+            </if>
+            <if test="count != null">
+                `count` = #{count,jdbcType=VARCHAR},
+            </if>
+            <if test="unit != null">
+                unit = #{unit,jdbcType=VARCHAR},
+            </if>
+            <if test="requiredDate != null">
+                required_date = #{requiredDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="placeOfReceipt != null">
+                place_of_receipt = #{placeOfReceipt,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <delete id="delData">
+        delete from c_srm_purchase_demand_r where request_code =#{requestCode,jdbcType=VARCHAR}
+        and is_delete=0
+    </delete>
+    <delete id="delKThreeData">
+        delete from c_srm_purchase_demand_r where request_code in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.requestCode,jdbcType=VARCHAR}
+        </foreach>
+        and is_delete=0
+    </delete>
+    <update id="updateSelectiveKThree">
+        <!--@mbg.generated-->
+        update c_srm_purchase_demand_r
+        <set>
+            <if test="materialCode != null">
+                material_code = #{materialCode,jdbcType=VARCHAR},
+            </if>
+            <if test="materialName != null">
+                material_name = #{materialName,jdbcType=VARCHAR},
+            </if>
+            <if test="count != null">
+                count = #{count,jdbcType=VARCHAR},
+            </if>
+            <if test="unit != null">
+                unit = #{unit,jdbcType=VARCHAR},
+            </if>
+            <if test="requiredDate != null">
+                required_date = #{requiredDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="specification != null">
+                specification = #{specification,jdbcType=VARCHAR},
+            </if>
+            <if test="project != null">
+                project = #{project,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null">
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="station != null">
+                station = #{station,jdbcType=VARCHAR},
+            </if>
+            <if test="deliveryDate != null">
+                delivery_date = #{deliveryDate,jdbcType=TIMESTAMP},
+            </if>
+            update_time=now()
+        </set>
+        where request_code=#{requestCode,jdbcType=VARCHAR} and row_project_number=#{rowProjectNumber,jdbcType=VARCHAR}
+        and is_delete=0
+    </update>
+
+</mapper>

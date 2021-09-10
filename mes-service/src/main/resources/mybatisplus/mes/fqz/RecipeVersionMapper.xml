@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.fqz.RecipeVersionDAO">
+	<!-- 查询最大的版本号addVersion -->
+	<select id="listName" resultType="Double">
+		select max(Recipe_name) from  C_MES_RECIPE_VERSION t WHERE PRODUCTION_ID=#{pname}
+	</select>
+	<!-- 查询最大ID -->
+	<select id="listId" resultType="Integer">
+		select max(RECIPE_ID) from  C_MES_RECIPE_VERSION t
+	</select>
+	<!-- 添加 -->
+	<insert id="addVersion">
+		insert into C_MES_RECIPE_VERSION t(RECIPE_NAME,PRODUCTION_ID,PRODUCTION_NAME,PRODUCTION_VR)
+		values(#{recipeName},#{productionId},#{productionName},#{productionVr})
+	</insert>
+	<!-- 添加明细 -->
+	<insert id="addVersionDetail">
+		insert into C_MES_RECIPE_VERSION_DETAIL(VERSION_ID,STEP_CATEGORY,MATERIAL_NAME,NUMBERS,GUN_NO,PROGRAM_NO,MATERIALPN,SLEEVE_NO,STEPNO,UPLOAD_CODE,FEACODE,BOLTEQS,STATION_NAME,PRODUCTION_NAME,PRODUCTION_VR,PHOTO_NO,REWORKTIMES,CHEKORNO,REVIEWORNO,EXACTORNO,A_LIMIT,T_LIMIT,PICTURN_PATH,BOLT_JSON)
+		values(#{recipeName,jdbcType=VARCHAR},#{info.stepCategory,jdbcType=VARCHAR},
+		#{info.materialName,jdbcType=VARCHAR},#{info.numbers,jdbcType=VARCHAR},#{info.gunNo,jdbcType=VARCHAR},#{info.programNo,jdbcType=VARCHAR},#{info.materialpn,jdbcType=VARCHAR},
+		#{info.sleeveNo,jdbcType=VARCHAR},#{info.stepno,jdbcType=NUMERIC},#{info.uploadCode,jdbcType=VARCHAR},#{info.feacode,jdbcType=VARCHAR},
+		#{info.bolteqs,jdbcType=VARCHAR},#{info.stationName,jdbcType=VARCHAR},#{info.productionName,jdbcType=VARCHAR},#{info.productionVr,jdbcType=VARCHAR},
+		#{info.photoNo,jdbcType=VARCHAR},#{info.reworktimes,jdbcType=VARCHAR},#{info.chekorno,jdbcType=VARCHAR},#{info.revieworno,jdbcType=VARCHAR},#{info.exactorno,jdbcType=VARCHAR},
+		#{info.aLimit,jdbcType=VARCHAR},#{info.tLimit,jdbcType=VARCHAR},#{info.picturnPath,jdbcType=VARCHAR},#{info.boltJson,jdbcType=VARCHAR})
+	</insert>
+	<!-- 查询版本 号 -->
+	<select id="findVersion" resultType="Map">
+		select RECIPE_ID,RECIPE_NAME FROM C_MES_RECIPE_VERSION WHERE PRODUCTION_ID=#{vr} order by RECIPE_ID desc
+	</select>
+	<!-- 根据产品查版本号 -->
+	<select id="findPVersion" resultType="CMesRecipeVersion">
+		select RECIPE_ID,RECIPE_NAME FROM C_MES_RECIPE_VERSION WHERE PRODUCTION_VR=#{vr} order by RECIPE_ID desc
+	</select>
+	<!-- 根据ID查名称 -->
+	<select id="findId" resultType="String">
+		select recipe_name  from C_MES_RECIPE_VERSION v where v.recipe_id=#{vername}
+	</select>
+	<!-- 根据名称查ID -->
+	<select id="findName" resultType="Integer">
+		select recipe_id  from C_MES_RECIPE_VERSION v where v.recipe_name=#{name}
+	</select>
+	<!-- 查询明细 -->
+	<select id="recipeDatilListsTwo" resultType="CMesRecipeVersionDetail">
+		select t.* from
+		C_MES_RECIPE_VERSION_DETAIL t,
+		c_Mes_Recipe_Version v,
+		C_MES_PRODUcTION_t p
+		where t.version_id=v.recipe_id and t.production_vr=p.production_vr
+	<if test="id!=null and id!=''">
+		 and p.id= #{id}
+	</if>
+	<if test="PVersion!=null and PVersion!='' and PVersion!=0">
+		and v.recipe_name=#{PVersion}
+	</if>
+	order by t.detail_id
+	</select>
+	<!-- 根据产品ID查名称 -->
+	<select id="findPName" resultType="String">
+		select t.production_vr from C_MES_PRODUCTION_T t where t.id=#{id}
+	</select>
+	<!-- 根据工位名称查询工位ID -->
+	<select id="findStationName" resultType="Integer">
+		select t.id from C_MES_STATION_T t where
+		<if test="name!=null and name!=''">
+			t.station_name=#{name}
+		</if>
+	</select>
+	<!-- 根据产品名称查询产品ID、 -->
+	<select id="findProductName" resultType="Integer">
+		select t.id from C_MES_PRODUCTION_T t where
+		<if test="name!=null and name!=''">
+		 t.production_name=#{name}
+		</if>
+	</select>
+	<!-- 根据产品ID和工位ID查询配方ID -->
+	<select id="findPCId" resultType="Integer">
+		select t.recipe_id from C_MES_PRODUCTION_RECIPE_T t where t.production_id=#{Pid} and t.station_id=#{Sid}
+	</select>
+	<!-- 根据类型名称查询类型id -->
+	<select id="findTId" resultType="Integer">
+		select t.id from C_MES_RECIPE_TYPE_T t where
+		<if test="name!=null and name!=''">
+			t.type_name=#{name}
+		</if>
+	</select>
+	<!-- 添加配方明细 -->
+	<insert id="addrecipe">
+		insert into c_mes_recipe_datil_t(step_category,material_name,gun_no,program_no,
+		sleeve_no,feacode,numbers,stepno,upload_code,bolteqs,materialpn,recipe_id,PHOTO_NO,reworktimes,
+		chekorno,revieworno,exactorno,a_Limit,t_Limit,picturn_Path,bolt_Json) values
+		(#{step_category,jdbcType=VARCHAR},#{material_name,jdbcType=VARCHAR},#{GUN_NO,jdbcType=VARCHAR},
+		#{PROGRAM_NO,jdbcType=VARCHAR},#{SLEEVE_NO,jdbcType=VARCHAR},#{FEACODE,jdbcType=VARCHAR},
+		#{numbers,jdbcType=VARCHAR},#{STEPNO,jdbcType=NUMERIC},#{UPLOAD_CODE,jdbcType=VARCHAR},
+		#{BOLTEQS,jdbcType=VARCHAR},#{MATERIALPN,jdbcType=VARCHAR},#{recipe_id},#{photoNo,jdbcType=VARCHAR},
+		#{reworktimes,jdbcType=VARCHAR},#{chekorno,jdbcType=VARCHAR},#{revieworno,jdbcType=VARCHAR},
+		#{exactorno,jdbcType=VARCHAR},#{aLimit,jdbcType=VARCHAR},#{tLimit,jdbcType=VARCHAR},
+		#{picturnPath,jdbcType=VARCHAR},#{boltJson,jdbcType=VARCHAR})
+	</insert>
+	<!-- 删除旧的配方明细 -->
+	<delete id="deleterecipe">
+		delete from C_MES_RECIPE_DATIL_T t where id=#{id}
+	</delete>
+	<!-- 根据配方明细表的id查询id -->
+	<select id="findRId" resultType="Integer">
+		select id from C_MES_RECIPE_DATIL_T where recipe_id=#{id}
+	</select>
+	<!-- 查询配方明细表最大的id -->
+	<select id="findMaxId" resultType="Integer">
+		select max(id) from  C_MES_RECIPE_DATIL_T
+	</select>
+	<!-- 删除版本和版本明细 -->
+	<delete id="deleteVersion">
+		delete from C_MES_RECIPE_VERSION where recipe_id=#{verid}
+	</delete>
+	<delete id="ddelteVersionDetil">
+		delete from C_MES_RECIPE_VERSION_DETAIL where version_id=#{verid}
+	</delete>
+
+	<!-- 根据产品规则查询id -->
+	<select id="findPID" resultType="CMesProductionT">
+		select t.id,t.production_name from C_MES_PRODUCTION_T t
+		 where t.production_vr=#{Pvr}
+	</select>
+
+	<!-- 查询该产品下的配方 -->
+	<select id="findRecipe" resultType="CMesRecipeDatilT">
+	select de.*,ST.STATION_NAME as stationName,p.PRODUCTION_NAME as productionName,p.production_vr as productionVr,TY.TYPE_NAME as recipeTypeName
+						from C_MES_PRODUCTION_RECIPE_T pr,
+								 C_MES_PRODUCTION_T p,
+                 C_MES_RECIPE_T re,
+						     C_MES_RECIPE_DATIL_T de,
+								 C_MES_STATION_T st,
+								 C_MES_RECIPE_TYPE_T ty
+						WHERE p.ID=pr.PRODUCTION_ID and pr.RECIPE_ID=RE.ID and re.ID=de.RECIPE_ID and ST.ID=pr.STATION_ID
+									AND TY.id=de.STEP_CATEGORY and p.id=#{id} order by st.id
+
+	</select>
+</mapper>

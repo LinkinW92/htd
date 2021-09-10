@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wf.CMesMaterialCodeMappingTMapper">
+  <resultMap id="BaseResultMap" type="com.skeqi.mes.pojo.wf.CMesMaterialCodeMappingT">
+    <!--@mbg.generated-->
+    <!--@Table c_mes_material_code_mapping_t-->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="supplier_name" jdbcType="VARCHAR" property="supplierName" />
+    <result column="supplier_material_code" jdbcType="VARCHAR" property="supplierMaterialCode" />
+    <result column="material_code" jdbcType="VARCHAR" property="materialCode" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, supplier_name, supplier_material_code, material_code
+  </sql>
+  <select id="findMaterialCodeMapping" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select
+    <include refid="Base_Column_List" />
+    from c_mes_material_code_mapping_t
+    <where>
+      <if test="supplierName != null and supplierName != ''">
+        supplier_name LIKE CONCAT('%',#{supplierName,jdbcType=VARCHAR},'%')
+      </if>
+    </where>
+  </select>
+
+  <select id="selectCodeMapping" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from c_mes_material_code_mapping_t
+    <where>
+      <if test="supplierMaterialCode != null and supplierMaterialCode != ''">
+        supplier_material_code = #{supplierMaterialCode,jdbcType=VARCHAR}
+      </if>
+      <if test="materialCode != null and materialCode != ''">
+        OR material_code = #{materialCode,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </select>
+
+  <insert id="addMaterialCodeMapping">
+    insert into
+    <trim prefix="c_mes_material_code_mapping_t(" suffix=")" suffixOverrides=",">
+      <if test="supplierName != null and supplierName != ''">
+        supplier_name,
+      </if>
+      <if test="supplierMaterialCode != null and supplierMaterialCode != ''">
+        supplier_material_code,
+      </if>
+      <if test="materialCode != null and materialCode != ''">
+        material_code
+      </if>
+    </trim>
+    <trim prefix="values(" suffix=")" suffixOverrides=",">
+      <if test="supplierName != null and supplierName != ''">
+        #{supplierName,jdbcType=VARCHAR},
+      </if>
+      <if test="supplierMaterialCode != null and supplierMaterialCode != ''">
+        #{supplierMaterialCode,jdbcType=VARCHAR},
+      </if>
+      <if test="materialCode != null and materialCode != ''">
+        #{materialCode,jdbcType=VARCHAR}
+      </if>
+    </trim>
+  </insert>
+
+  <insert id="addMaterialCodesMapping">
+    insert into
+    <trim prefix="c_mes_material_code_mapping_t(" suffix=")" suffixOverrides=",">
+      <if test="list != null and list.size() != 0">
+        supplier_name,
+        supplier_material_code,
+        material_code
+      </if>
+    </trim>
+    value
+    <foreach collection="list" item="it" separator=",">
+       (
+      #{it.supplier_name,jdbcType=VARCHAR},
+      #{it.supplier_material_code,jdbcType=VARCHAR},
+      #{it.material_code,jdbcType=VARCHAR}
+      )
+    </foreach>
+  </insert>
+</mapper>

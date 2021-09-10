@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.chenj.srm.CSrmSupplierRMapper">
+    <resultMap id="BaseResultMap" type="com.skeqi.mes.pojo.chenj.srm.CSrmSupplierR">
+        <!--@mbg.generated-->
+        <!--@Table c_srm_supplier_r-->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="request_code" jdbcType="VARCHAR" property="requestCode"/>
+        <result column="grading_index" jdbcType="VARCHAR" property="gradingIndex"/>
+        <result column="index_value" jdbcType="VARCHAR" property="indexValue"/>
+        <result column="grading_staff" jdbcType="VARCHAR" property="gradingStaff"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="request_code_id" jdbcType="INTEGER" property="requestCodeId"/>
+        <result column="is_delete" jdbcType="BIT" property="isDelete"/>
+        <result column="evaluation_item_no" jdbcType="VARCHAR" property="evaluationItemNo"/>
+        <result column="evaluation_item" jdbcType="VARCHAR" property="evaluationItem"/>
+        <result column="evaluation_criterion" jdbcType="VARCHAR" property="evaluationCriterion"/>
+        <result column="score_is" jdbcType="VARCHAR" property="scoreIs"/>
+        <result column="score_start" jdbcType="VARCHAR" property="scoreStart"/>
+        <result column="score_stop" jdbcType="VARCHAR" property="scoreStop"/>
+        <result column="score" jdbcType="VARCHAR" property="score"/>
+        <result column="weight" jdbcType="VARCHAR" property="weight"/>
+        <result column="line_number" jdbcType="VARCHAR" property="lineNumber"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        id, request_code, grading_index, index_value, grading_staff, create_time, update_time,
+        request_code_id, is_delete, evaluation_item_no, evaluation_item, evaluation_criterion,
+        score_is, score_start, score_stop, score, weight,line_number
+    </sql>
+    <update id="deleteByPrimaryData">
+        update c_srm_supplier_r set is_delete=1 where request_code=#{requestCode,jdbcType=VARCHAR} and line_number in
+        <foreach close=")" collection="lineNumber" item="item" open="(" separator=", ">
+            #{item,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        select
+        <include refid="Base_Column_List"/>
+        from c_srm_supplier_r
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <select id="selectByPrimaryKeyList" resultType="com.skeqi.mes.pojo.chenj.srm.req.CSrmSupplierRReq">
+        <!--@mbg.generated-->
+        select
+        <include refid="Base_Column_List"/>
+        from c_srm_supplier_r
+        <where>
+            <if test="requestCode != null and requestCode != ''">
+                request_code like concat('%',#{requestCode,jdbcType=VARCHAR},'%')
+            </if>
+            and is_delete=0
+        </where>
+    </select>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmSupplierR"
+            useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_supplier_r
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="requestCode != null">
+                request_code,
+            </if>
+            <if test="gradingIndex != null">
+                grading_index,
+            </if>
+            <if test="indexValue != null">
+                index_value,
+            </if>
+            <if test="gradingStaff != null">
+                grading_staff,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="requestCodeId != null">
+                request_code_id,
+            </if>
+            <if test="isDelete != null">
+                is_delete,
+            </if>
+            <if test="evaluationItemNo != null">
+                evaluation_item_no,
+            </if>
+            <if test="evaluationItem != null">
+                evaluation_item,
+            </if>
+            <if test="evaluationCriterion != null">
+                evaluation_criterion,
+            </if>
+            <if test="scoreIs != null">
+                score_is,
+            </if>
+            <if test="scoreStart != null">
+                score_start,
+            </if>
+            <if test="scoreStop != null">
+                score_stop,
+            </if>
+            <if test="score != null">
+                score,
+            </if>
+            <if test="weight != null">
+                weight,
+            </if>
+            <if test="lineNumber != null and lineNumber != ''">
+                line_number,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="requestCode != null">
+                #{requestCode,jdbcType=VARCHAR},
+            </if>
+            <if test="gradingIndex != null">
+                #{gradingIndex,jdbcType=VARCHAR},
+            </if>
+            <if test="indexValue != null">
+                #{indexValue,jdbcType=VARCHAR},
+            </if>
+            <if test="gradingStaff != null">
+                #{gradingStaff,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="requestCodeId != null">
+                #{requestCodeId,jdbcType=INTEGER},
+            </if>
+            <if test="isDelete != null">
+                #{isDelete,jdbcType=BIT},
+            </if>
+            <if test="evaluationItemNo != null">
+                #{evaluationItemNo,jdbcType=VARCHAR},
+            </if>
+            <if test="evaluationItem != null">
+                #{evaluationItem,jdbcType=VARCHAR},
+            </if>
+            <if test="evaluationCriterion != null">
+                #{evaluationCriterion,jdbcType=VARCHAR},
+            </if>
+            <if test="scoreIs != null">
+                #{scoreIs,jdbcType=VARCHAR},
+            </if>
+            <if test="scoreStart != null">
+                #{scoreStart,jdbcType=VARCHAR},
+            </if>
+            <if test="scoreStop != null">
+                #{scoreStop,jdbcType=VARCHAR},
+            </if>
+            <if test="score != null">
+                #{score,jdbcType=VARCHAR},
+            </if>
+            <if test="weight != null">
+                #{weight,jdbcType=VARCHAR},
+            </if>
+            <if test="lineNumber != null and lineNumber != ''">
+                #{lineNumber,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmSupplierR">
+        <!--@mbg.generated-->
+        update c_srm_supplier_r
+        <set>
+            <if test="requestCode != null">
+                request_code = #{requestCode,jdbcType=VARCHAR},
+            </if>
+            <if test="gradingIndex != null">
+                grading_index = #{gradingIndex,jdbcType=VARCHAR},
+            </if>
+            <if test="indexValue != null">
+                index_value = #{indexValue,jdbcType=VARCHAR},
+            </if>
+            <if test="gradingStaff != null">
+                grading_staff = #{gradingStaff,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="requestCodeId != null">
+                request_code_id = #{requestCodeId,jdbcType=INTEGER},
+            </if>
+            <if test="isDelete != null">
+                is_delete = #{isDelete,jdbcType=BIT},
+            </if>
+            <if test="evaluationItemNo != null">
+                evaluation_item_no = #{evaluationItemNo,jdbcType=VARCHAR},
+            </if>
+            <if test="evaluationItem != null">
+                evaluation_item = #{evaluationItem,jdbcType=VARCHAR},
+            </if>
+            <if test="evaluationCriterion != null">
+                evaluation_criterion = #{evaluationCriterion,jdbcType=VARCHAR},
+            </if>
+            <if test="scoreIs != null">
+                score_is = #{scoreIs,jdbcType=VARCHAR},
+            </if>
+            <if test="scoreStart != null">
+                score_start = #{scoreStart,jdbcType=VARCHAR},
+            </if>
+            <if test="scoreStop != null">
+                score_stop = #{scoreStop,jdbcType=VARCHAR},
+            </if>
+            <if test="score != null">
+                score = #{score,jdbcType=VARCHAR},
+            </if>
+            <if test="weight != null">
+                weight = #{weight,jdbcType=VARCHAR},
+            </if>
+        </set>
+        <where>
+            <if test="requestCode!=null and requestCode!=''">
+                request_code=#{requestCode,jdbcType=VARCHAR}
+            </if>
+            <if test="id != null">
+                and id=#{id,jdbcType=INTEGER}
+            </if>
+        </where>
+    </update>
+    <update id="updateBatchSelective" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update c_srm_supplier_r
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="request_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.requestCode != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.requestCode,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="grading_index = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.gradingIndex != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.gradingIndex,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="index_value = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.indexValue != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.indexValue,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="grading_staff = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.gradingStaff != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.gradingStaff,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.createTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.createTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.updateTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.updateTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="request_code_id = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.requestCodeId != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.requestCodeId,jdbcType=INTEGER}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="is_delete = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.isDelete != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.isDelete,jdbcType=BIT}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="evaluation_item_no = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.evaluationItemNo != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.evaluationItemNo,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="evaluation_item = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.evaluationItem != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.evaluationItem,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="evaluation_criterion = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.evaluationCriterion != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.evaluationCriterion,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="score_is = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.scoreIs != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.scoreIs,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="score_start = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.scoreStart != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.scoreStart,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="score_stop = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.scoreStop != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.scoreStop,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="score = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.score != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.score,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="weight = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.weight != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.weight,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_supplier_r
+        (request_code, grading_index, index_value, grading_staff, create_time, update_time,
+        request_code_id, is_delete, evaluation_item_no, evaluation_item, evaluation_criterion,
+        score_is, score_start, score_stop, score, weight)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.requestCode,jdbcType=VARCHAR}, #{item.gradingIndex,jdbcType=VARCHAR},
+            #{item.indexValue,jdbcType=VARCHAR},
+            #{item.gradingStaff,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP},
+            #{item.updateTime,jdbcType=TIMESTAMP},
+            #{item.requestCodeId,jdbcType=INTEGER}, #{item.isDelete,jdbcType=BIT},
+            #{item.evaluationItemNo,jdbcType=VARCHAR},
+            #{item.evaluationItem,jdbcType=VARCHAR}, #{item.evaluationCriterion,jdbcType=VARCHAR},
+            #{item.scoreIs,jdbcType=VARCHAR}, #{item.scoreStart,jdbcType=VARCHAR}, #{item.scoreStop,jdbcType=VARCHAR},
+            #{item.score,jdbcType=VARCHAR}, #{item.weight,jdbcType=VARCHAR})
+        </foreach>
+    </insert>
+
+
+    <select id="selectRequestCode" parameterType="java.lang.String" resultType="java.lang.Integer">
+        <!--@mbg.generated-->
+        select
+        count(1)
+        from c_srm_supplier_r r left join c_srm_supplier_h h on r.request_code=h.request_code
+        where r.request_code = #{requestCode,jdbcType=VARCHAR} and h.status='0' and h.blacklist_mark='1'
+    </select>
+    <select id="selectFinallyData" resultType="com.skeqi.mes.pojo.chenj.srm.CSrmSupplierR">
+        SELECT line_number
+        FROM c_srm_supplier_r
+        where request_code=#{requestCode,jdbcType=VARCHAR}
+        ORDER BY id DESC
+        LIMIT 1
+    </select>
+
+</mapper>

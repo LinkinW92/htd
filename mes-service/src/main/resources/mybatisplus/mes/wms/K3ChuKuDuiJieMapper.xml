@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wms.K3ChuKuDuiJieDao">
+
+	<!-- 通过仓库名称查询仓库 -->
+	<select id="findWarehouse" resultType="com.skeqi.mes.pojo.wms.WarehouseT">
+		select id,NAME from c_wms_warehouse_t
+		where NAME = #{warehouseName}
+	</select>
+
+	<!-- 通过项目名称查询项目 -->
+	<select id="findProject" resultType="com.skeqi.mes.pojo.wms.CWmsProject">
+		select id,PROJECT_NAME from c_wms_project_t
+		where PROJECT_NAME = #{projectName}
+	</select>
+
+	<!-- 新增项目信息-->
+	<insert id="addProject">
+		insert into c_wms_project_t(PROJECT_NAME,UPDATE_DATE)
+		value(#{projectName},now())
+	</insert>
+
+	<!-- 通过物料名称查询物料 -->
+	<select id="findMtaerialName" resultType="com.skeqi.mes.pojo.CMesJlMaterialT">
+		select id,BOM_ID,MATERIAL_NAME from c_mes_jl_material_t
+		where VIEW_MODE = 1
+		and MATERIAL_NAME = #{materialName}
+	</select>
+
+	<!-- 新增物料信息-->
+	<insert id="addMaterial">
+		insert into c_mes_jl_material_t(BOM_ID,MATERIAL_NAME)
+		value(#{bomId},#{materialName})
+	</insert>
+
+	<!-- 新增K3出库记录表-->
+	<insert id="addK3ExportNotifydetall">
+		insert into k3_export_notifydetail(
+		EXPORT_ID,BOM_ID,EXPORT_LOT_NO,EXPORT_PACK_QUANTITY,
+		EXPORT_WAREHOUSE_ID,Material_Id,materialGoodsModel,project_Id)
+		value(#{exportId},#{bomId},#{exportLotNo},#{exportPackQuantity},
+		#{exportWaerhouseId},#{materialId},#{materialGoodsModel},#{projectId})
+	</insert>
+
+	<!-- 查询物料库存 -->
+	<select id="findMaterialNumber" resultType="com.skeqi.mes.pojo.wms.CWmsMaterialNumberT">
+		select * from c_wms_material_number_t
+		where WAREHOUSE_ID = #{warehouseId}
+		and PROJECT_ID = #{projectId}
+		and MATERIAL_ID = #{materialId}
+	</select>
+
+	<!-- 更新物料库存即将出库数量-->
+	<update id="updateMaterialNumber">
+		update c_wms_material_number_t
+		set LMMINENT_RELEASE = #{lmminentRelease}
+		where id = #{id}
+	</update>
+
+	<!-- 新增出库队列-->
+	<insert id="addOutTaskqueue">
+		insert into r_wms_out_taskqueue_t(DT,LIST_NO,TRAY,LOCATION_ID,STATION_ID)
+		value(now(),#{listNo},#{tray},#{locationId},#{stationId})
+	</insert>
+
+	<!-- 新增永久库存详情-->
+	<insert id="addStorageDetail">
+		insert into r_wms_storage_detail_t(
+		DT,MATERIAL_ID,MATERIAL_NUMBER,MATERIAL_CODE,AREA_ID,RESERVOIR_AREA_ID,
+		LOCATION_ID,LIST_NO,PROJECT_ID,TRAY,WAREHOUSE_ID,
+		YN_SHIFT,ISSUE_OR_RECEIPT,STATION_ID,bar_code,materialNumberId)
+		value(
+		NOW(),#{materialId},#{materialNumber},#{materialCode},#{areaId},#{reservoirAreaId},
+		#{locationId},#{listNo},#{projectId},#{tray},#{warehouseId},
+		0,0,#{stationId},#{barCode},#{materialNumberId})
+	</insert>
+
+	<resultMap type="com.skeqi.mes.pojo.wms.CWmsOutTaskqueueT" id="outTaskqueueMap">
+		<result column="ID" property="id"/>
+		<result column="DT" property="dt"/>
+		<result column="LIST_NO" property="listNo"/>
+		<result column="TRAY" property="tray"/>
+		<result column="STATION_ID" property="stationId"/>
+		<result column="FLAG" property="flag"/>
+		<result column="OVER_DT" property="overDt"/>
+		<result column="LOCATION_ID" property="locationId"/>
+		<association property="location" javaType="com.skeqi.mes.pojo.wms.CWmsLocationT">
+			<result column="LOCATION_ID" property="id" />
+			<result column="LOCATION_NAME" property="locationName" />
+			<result column="LOCATION_X" property="locationX" />
+			<result column="LOCATION_Y" property="locationY" />
+			<result column="LOCATION_Z" property="locationZ" />
+		</association>
+		<association property="station" javaType="com.skeqi.mes.pojo.CMesStationT">
+			<result column="station_ID" property="id" />
+			<result column="station_NAME" property="stationName" />
+		</association>
+	</resultMap>
+	<select id="findOutTaskqueue" resultMap="outTaskqueueMap">
+		SELECT `out`.*, location.id as LOCATION_ID,location.LOCATION_NAME,location.LOCATION_X, location.LOCATION_Y, location.LOCATION_Z,station.STATION_NAME,station.id as station_id FROM r_wms_out_taskqueue_t `out`
+		JOIN c_wms_location_t location ON `out`.LOCATION_ID = location.id
+		Left join c_mes_station_t station on `out`.STATION_ID = station.id
+		WHERE `out`.LIST_NO like 'K3CK%'
+	</select>
+
+	<resultMap type="com.skeqi.mes.pojo.wms.CWmsStorageDetailT" id="storageDetailMap">
+		<result column="ID" property="id"/>
+		<result column="DT" property="dt"/>
+		<result column="MATERIAL_ID" property="materialId"/>
+		<result column="sum" property="materialNumber"/>
+		<result column="MATERIAL_CODE" property="materialCode"/>
+		<result column="AREA_ID" property="areaId"/>
+		<result column="RESERVOIR_AREA_ID" property="reservoirAreaId"/>
+		<result column="LOCATION_ID" property="locationId"/>
+		<result column="NOTE" property="note"/>
+		<result column="LIST_NO" property="listNo"/>
+		<result column="PROJECT_ID" property="projectId"/>
+		<result column="SUPPLIER_ID" property="supplierId"/>
+		<result column="TRAY" property="tray"/>
+		<result column="WAREHOUSE_ID" property="warehouseId"/>
+		<result column="YN_SHIFT" property="ynShift"/>
+		<result column="STATION_ID" property="stationId"/>
+		<result column="ISSUE_OR_RECEIPT" property="issueOrReceipt"/>
+		<association property="material" javaType="com.skeqi.mes.pojo.CMesJlMaterialT">
+		<result column="BOM_ID" property="bomId"/>
+			<result column="MATERIAL_NAME" property="materialName" />
+		</association>
+		<association property="warehouse" javaType="com.skeqi.mes.pojo.wms.WarehouseT">
+			<result column="warehouseName" property="name" />
+		</association>
+		<association property="location" javaType="com.skeqi.mes.pojo.wms.CWmsLocationT">
+			<result column="LOCATION_NAME" property="locationName" />
+		</association>
+		<association property="project" javaType="com.skeqi.mes.pojo.wms.CWmsProject">
+			<result column="PROJECT_NAME" property="projectName" />
+		</association>
+	</resultMap>
+	<select id="findStorageDetailList" resultMap="storageDetailMap">
+		select sum(storage.MATERIAL_NUMBER) as sum,storage.*,material.BOM_ID,material.MATERIAL_NAME,warehouse.`NAME` as warehouseName,location.LOCATION_NAME,project.PROJECT_NAME from r_wms_storage_detail_t storage
+		join c_mes_jl_material_t material on storage.MATERIAL_ID = material.id
+		join c_wms_warehouse_t warehouse on storage.WAREHOUSE_ID = warehouse.id
+		join c_wms_location_t location on storage.LOCATION_ID = location.id
+		join c_wms_project_t project on storage.PROJECT_ID = project.id
+		where LIST_NO = #{listNo}
+		and location.id = #{locationId}
+		GROUP BY material.BOM_ID,material.MATERIAL_NAME,warehouse.`NAME` ,location.LOCATION_NAME,project.PROJECT_NAME
+	</select>
+
+	<select id="findStationList" resultType="com.skeqi.mes.pojo.CMesStationT">
+		select id,STATION_NAME from c_mes_station_t
+		GROUP BY STATION_NAME
+	</select>
+
+	<update id="updateOutTaskqueueStationId">
+		update r_wms_out_taskqueue_t set STATION_ID = #{stationId}
+		where id = #{id}
+	</update>
+
+	<select id="findOutTaskqueueById" resultType="com.skeqi.mes.pojo.wms.CWmsOutTaskqueueT">
+		SELECT * FROM r_wms_out_taskqueue_t
+		where id = #{id}
+	</select>
+
+	<!-- 	通过id查询K3出库信息 -->
+	<select id="findK3Export" resultType="com.skeqi.mes.pojo.wms.K3ExportNotifydetall">
+		SELECT
+			*
+		FROM
+			k3_export_notifydetail
+		WHERE
+			id = #{id}
+	</select>
+
+	<!-- 	通过库位、物料、项目查询物料库存 -->
+	<select id="findMaterialNumberByLocationIdAndMaterialIdAndProjectId" resultType="com.skeqi.mes.pojo.wms.CWmsMaterialNumberT">
+		SELECT
+			*
+		FROM
+			c_wms_material_number_t
+		WHERE
+			LMMINENT_RELEASE>0
+			AND LOCATION_ID = #{locationId}
+
+			AND MATERIAL_ID = #{materialId}
+
+			AND PROJECT_ID = #{projectId}
+	</select>
+
+	<!-- 	删除临时库存详情 -->
+	<delete id="deleteStorageDetail">
+		DELETE
+		FROM
+			r_wms_storage_detail_t
+		WHERE
+			id = #{id}
+	</delete>
+
+	<!-- 	删除出库队列 -->
+	<delete id="deleteOutTaskqueue">
+		DELETE
+		FROM
+			r_wms_out_taskqueue_t
+		WHERE
+			id = #{id}
+	</delete>
+
+	<select id="findProcessApproval" resultType="com.skeqi.mes.pojo.wms.ProcessApproval">
+		select * from c_wms_process_approval_t
+		where 1 = 1
+		<if test="id != null">
+			AND ID = #{id}
+		</if>
+		<if test="deptId != null">
+			AND DEPT_ID = #{deptId}
+		</if>
+		<if test="roleId != null">
+			AND ROLE_ID = #{roleId}
+		</if>
+		<if test="typeId != null">
+			AND TYPE_ID = #{typeId}
+		</if>
+		<if test="dt != null">
+			AND DT = #{dt}
+		</if>
+		<if test="dis != null">
+			AND DIS = #{dis}
+		</if>
+		ORDER BY ID
+	</select>
+
+	<resultMap type="com.skeqi.mes.pojo.wms.ProcessApprovalDetail"
+		id="detailMap">
+		<result column="ID" property="id" />
+		<result column="USER_ID" property="userId" />
+		<result column="PRIORITY_LEVEL" property="priorityLevel" />
+		<result column="DT" property="dt" />
+		<result column="PROCESS_ID" property="processId" />
+		<result column="DIS" property="dis" />
+		<association property="user" javaType="com.skeqi.mes.pojo.CMesUserT">
+			<result column="USER_NAME" property="userName" />
+		</association>
+		<association property="department" javaType="com.skeqi.mes.pojo.wms.CWmsDepartmentT">
+			<result column="DM_NAME" property="dmName" />
+		</association>
+		<association property="role" javaType="com.skeqi.mes.pojo.CMesRoleT">
+			<result column="ROLE_NAME" property="roleName" />
+		</association>
+		<association property="processType" javaType="com.skeqi.mes.pojo.wms.ProcessType">
+			<result column="PROCESS_TYPE_NAME" property="processType" />
+		</association>
+	</resultMap>
+	<select id="findProcessApprovalDetailList" resultMap="detailMap">
+		SELECT xq.*,us.USER_NAME,bm.DM_NAME,ro.ROLE_NAME,lx.PROCESS_TYPE as
+		PROCESS_TYPE_NAME
+		FROM C_WMS_PROCESS_APPROVAL_DETAIL xq
+		JOIN
+		c_mes_user_t us ON xq.USER_ID = us.id
+		JOIN c_wms_department_t bm ON
+		us.DEPARTMENT = bm.ID
+		JOIN c_qh_role ro ON us.ROLE_ID = ro.ID
+		JOIN
+		C_WMS_PROCESS_APPROVAL_T lc ON xq.PROCESS_ID = lc.ID
+		JOIN
+		C_WMS_PROCESS_TYPE_T lx ON lc.TYPE_ID = lx.ID
+		WHERE us.viewMode = 1
+		<if test="roleId != null and roleId != ''">
+			AND ro.ID = #{roleId}
+		</if>
+		<if test="deptId != null and deptId != ''">
+			AND bm.ID = #{deptId}
+		</if>
+		<if test="typeId != null and typeId != ''">
+			AND lx.ID = #{typeId}
+		</if>
+		<if test="id != null and id != ''">
+			AND xq.ID = #{id}
+		</if>
+		<if test="userId != null and userId != ''">
+			AND xq.USER_ID = #{userId}
+		</if>
+		<if test="priorityLevel != null and priorityLevel != ''">
+			AND xq.PRIORITY_LEVEL = #{priorityLevel}
+		</if>
+		<if test="dt != null and dt != ''">
+			AND xq.DT = #{dt}
+		</if>
+		<if test="processId != null and processId != ''">
+			AND xq.PROCESS_ID = #{processId}
+		</if>
+		<if test="dis != null and dis != ''">
+			AND xq.DIS = #{dis}
+		</if>
+		ORDER BY xq.PRIORITY_LEVEL
+	</select>
+
+	<insert id="addApproval">
+		insert into c_wms_approval_t(
+		LIST_NO,DT,PROCESS_ID,USER_ID,STATE,NOTE)
+		values(
+		#{listNo},now(),#{processId},#{userId},#{state},#{note})
+	</insert>
+
+	<!-- 通过用户id查询用户 -->
+	<select id="findUserById" resultType="com.skeqi.mes.pojo.CMesUserT">
+		select * from c_mes_user_t
+		where viewMode = 1
+		and id = #{userId}
+	</select>
+
+</mapper>

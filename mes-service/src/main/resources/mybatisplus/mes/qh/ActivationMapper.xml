@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.qh.ActivationDao">
+
+	<!-- 激活记录查询 -->
+	<select id="findList" resultType="com.alibaba.fastjson.JSONObject">
+		select id,dt,activation_code as activationCode,days from c_mes_activation_record
+		<where>
+			<if test="dt != null and dt != ''">
+				dt = #{dt}
+			</if>
+			<if test="activation_code != null and activation_code != ''">
+				and activation_code = #{activationCode}
+			</if>
+			<if test="days != null and days != ''">
+				and days = #{days}
+			</if>
+		</where>
+		GROUP BY id
+	</select>
+
+	<!-- 查询激活码是否使用过 -->
+	<select id="findCountByActivationCode" resultType="int">
+		select count(*) from c_mes_activation_record
+		where activation_code = #{activationCode}
+	</select>
+
+	<!-- 新增激活记录 -->
+	<insert id="add">
+		INSERT INTO c_mes_activation_record(dt, activation_code, days)
+		value(now(), #{activationCode}, #{days})
+	</insert>
+
+	<!-- 保存校验记录 -->
+	<insert id="addCheck">
+		INSERT INTO c_mes_check_data(dt,`code`)
+		value(now(), #{code})
+	</insert>
+
+</mapper>

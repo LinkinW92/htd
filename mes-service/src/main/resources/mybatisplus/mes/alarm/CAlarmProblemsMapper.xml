@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.alarm.CAlarmProblemsDao">
+
+	<!-- 查询所有事件 -->
+	<select id="findEventAll"
+		resultType="com.skeqi.mes.pojo.alarm.CAlarmEvent">
+		select id,`event` from c_alarm_event
+		ORDER BY id
+	</select>
+
+	<!-- 新增通知日志 -->
+	<insert id="addNoticeLogs">
+		INSERT INTO
+		c_alarm_notice_logs(fault_id,lossType,dt,sendOut,receive,channels,channelsType)
+		value(#{faultId},#{lossType},now(),#{sendOut},#{receive},#{channels},#{channelsType})
+	</insert>
+
+	<!-- 通过id查询损失类型 -->
+	<select id="findLossTypeById" resultType="com.skeqi.mes.pojo.project.CMesLossTypeT">
+		select id,LOSS_NAME from c_mes_loss_type_t
+		where id = #{id}
+	</select>
+
+	<!-- 通过产线工位查询故障 -->
+	<select id="findAndonFault" resultType="com.skeqi.mes.pojo.project.CMesAndonFault">
+		SELECT
+			fault.id,
+			fault.LINE_NAME,
+			fault.STATION_NAME,
+			max(fault.ESTABLISH_DT) as ESTABLISH_DT,
+			fault.RESPONSE_DT,
+			fault.SOLVE_DT,
+			fault.LOSS_TYPE,
+			fault.`STATUS`,
+			fault.FAULT_TYPE,
+			fault.EMP,
+			fault.NOTE,
+			fault.TOOL_ID,
+			fault.TOOL_IDS,
+			fault.dt,
+			fault.REASON,
+			fault.fault_level_id,
+			type.LOSS_NAME
+		FROM
+			c_mes_andon_fault_t fault
+			JOIN c_mes_loss_type_t type ON fault.LOSS_TYPE = type.id
+		where LINE_NAME = #{lineName}
+		and  STATION_NAME = #{stationName}
+		and fault.`STATUS`!=2
+	</select>
+
+	<resultMap type="com.alibaba.fastjson.JSONObject"
+		id="jsonEmailMap">
+		<result column="sender_email" property="senderEmail" />
+		<result column="the_server" property="theServer" />
+		<result column="authorization_code"
+			property="authorizationCode" />
+		<result column="notification_channels_content"
+			property="notificationChannelsContent" />
+		<result column="event" property="event" />
+		<result column="notification_channels" property="notificationChannels" />
+		<result column="notification_channels_type_name" property="notificationChannelsTypeName" />
+	</resultMap>
+
+	<!-- 查询需要发送的邮件 -->
+	<select id="findNnotificationMethod" resultMap="jsonEmailMap">
+		SELECT
+			b.sender_email,
+			b.the_server,
+			b.authorization_code,
+			c.notification_channels_content,
+			c.notification_channels,
+			d.LOSS_NAME,
+			e.notification_channels_type_name
+		FROM
+			c_alarm_notification_method a
+			JOIN c_alarm_email_config b ON a.service_Id = b.id
+			JOIN c_alarm_notification_channels c ON a.notification_channels_id = c.id
+			JOIN c_mes_loss_type_t d ON a.Loss_Type_Id = d.id
+			JOIN c_alarm_notification_channels_type e ON
+			c.notification_channels_type_id = e.id
+		where a.Loss_Type_Id = #{lossTypeId}
+		and a.problem_Level_Id = #{problemLevelId}
+		and a.problem_State = #{problemState}
+	</select>
+
+	<!-- <resultMap type="com.alibaba.fastjson.JSONObject" id="jsonShortmessageMap"> -->
+	<!-- <result column="sender_email" property="senderEmail" /> -->
+	<!-- <result column="the_server" property="theServer" /> -->
+	<!-- <result column="authorization_code" property="authorizationCode" /> -->
+	<!-- <result column="notification_channels_content" property="notificationChannelsContent"
+		/> -->
+	<!-- </resultMap> -->
+
+	<!-- 查询需要发送的短信 -->
+	<!-- <select id="findNnotificationMethod" resultType="com.skeqi.mes.pojo.alarm.CAlarmNotificationMethod"> -->
+
+
+	<!-- </select> -->
+
+</mapper>
+
+

@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.skeqi.mes.mapper.yin.ProductionDao">
+
+	<select id="shiftsTeamList" resultType="CMesShiftsTeamT">
+		SELECT st.*,line.ID AS lineId,line.NAME AS lineName FROM
+		C_MES_SHIFTS_TEAM_T st, C_MES_LINE_T line WHERE
+		st.LINE_ID = line.ID
+		<if test="id!=null">
+			and st.id = #{id}
+		</if>
+		<if test="name!=null">
+			and st.name = #{name}
+		</if>
+		ORDER BY ST.NAME
+	</select>
+	<insert id="addShiftsTeam" keyProperty="id" useGeneratedKeys="false">
+		INSERT INTO C_MES_SHIFTS_TEAM_T(NAME,START_TIME,END_TIME,DIS,LINE_ID)
+		VALUES(#{name},#{startTime},#{endTime},#{dis},#{lineId})
+	</insert>
+	<insert id="addEmpTeam" keyProperty="id" useGeneratedKeys="false">
+		INSERT INTO C_MES_EMP_TEAM_T(NAME,DIS,EMPS)
+		VALUES(#{name},#{dis},#{emps})
+	</insert>
+	<update id="editShiftsTeam">
+		UPDATE C_MES_SHIFTS_TEAM_T SET NAME =
+		#{name},START_TIME = #{startTime},END_TIME = #{endTime},DIS =
+		#{dis},line_id=#{lineId} where ID = #{id}
+	</update>
+	<update id="editEmpTeam">
+		UPDATE C_MES_EMP_TEAM_T SET NAME = #{name},DIS= #{dis},EMPS = #{emps} where ID = #{id}
+	</update>
+	<delete id="delShift">
+		DELETE FROM C_MES_SHIFTS_TEAM_T WHERE ID = #{id}
+	</delete>
+	<delete id="delEmpTeam">
+		DELETE FROM C_MES_EMP_TEAM_T WHERE ID = #{id}
+	</delete>
+	<select id="planList" resultType="RMesPlanT">
+		SELECT ID,PLAN_NAME FROM
+		R_MES_PLAN_T ORDER BY PLAN_NAME
+	</select>
+	<select id="lineList" resultType="CMesLineT">
+		SELECT id,dt,name,dsc FROM
+		C_MES_LINE_T
+	</select>
+	<select id="maxIdByShift" resultType="int">
+		SELECT MAX(ID) FROM
+		C_MES_SHIFTS_TEAM_T
+	</select>
+
+	<!-- 表都没有 -->
+	<insert id="addPlanTeam" keyProperty="id" useGeneratedKeys="false">
+		<selectKey keyProperty="id" resultType="int" order="BEFORE">
+			select
+			nvl(max(id),0)+1 from C_MES_PLAN_TEAM_T
+		</selectKey>
+		INSERT INTO C_MES_PLAN_TEAM_T
+		VALUES(#{id},#{shiftsTeamId},'',#{planId})
+	</insert>
+
+	<select id="countShiftByName" resultType="int">
+		SELECT COUNT(*) FROM
+		C_MES_SHIFTS_TEAM_T WHERE NAME = #{name} AND LINE_ID =
+		#{lineId}
+	</select>
+	<select id="countEmpTeamByName" resultType="int">
+		SELECT COUNT(*) FROM
+		C_MES_EMP_TEAM_T WHERE NAME = #{name}
+	</select>
+	<select id="empTeamList" resultType="CMesEmpTeamT">
+		SELECT empTeam.*,shiftsTeam.id as shiftsTeamId,shiftsTeam.name as shiftsTeamName FROM C_MES_EMP_TEAM_T empTeam
+join C_MES_SHIFT_EMPS_TEAM_T shiftEmpsTeam on empTeam.id =
+		shiftEmpsTeam.emp_team_id
+left join C_MES_SHIFTS_TEAM_T shiftsTeam on shiftEmpsTeam.shifts_team_id =
+		shiftsTeam.ID
+		where 1 = 1
+		<if test="id!=null">
+			and empTeam.id = #{id}
+		</if>
+		<if test="empTeamName!=null">
+			AND empTeam.NAME = #{empTeamName}
+		</if>
+	</select>
+	<insert id="addShiftEmpsTeam" keyProperty="id" useGeneratedKeys="false">
+		insert into C_MES_SHIFT_EMPS_TEAM_T(SHIFTS_TEAM_ID,EMP_TEAM_ID)
+		values(#{shiftsTeamId},#{empTeamId})
+	</insert>
+	<select id="getMaxIdfromSET" resultType="int">
+		select MAX(ID) from
+		C_MES_EMP_TEAM_T
+	</select>
+	<update id="editShiftsTeamByEmpTeamId">
+		update C_MES_SHIFT_EMPS_TEAM_T set
+		SHIFTS_TEAM_ID = #{shiftsTeamId} where EMP_TEAM_ID = #{empTeamId}
+	</update>
+	<delete id="delShiftEmpTeam">
+		delete FROM C_MES_SHIFT_EMPS_TEAM_T where
+		emp_team_id = #{id}
+	</delete>
+	<select id="empList" resultType="CMesEmpT">
+	SELECT
+	EMP.*,
+	EMPTEAM.NAME AS TEAMNAME,
+	LINE.NAME AS LINENAME
+	FROM
+	C_MES_EMP_T EMP,
+	C_MES_EMP_TEAM_T EMPTEAM,
+	C_MES_LINE_T LINE
+	WHERE EMP.EMP_TEAM_ID = EMPTEAM.ID
+	AND EMP.LINE_ID  = LINE.ID
+		<if test="id!=null">
+			AND EMP.ID=#{id}
+		</if>
+		ORDER by EMP.EMP_NO
+	</select>
+	<select id="countEmpByEmpNo" resultType="int">
+		SELECT COUNT(*) FROM
+		C_MES_EMP_T WHERE EMP_NO = #{empNo}
+	</select>
+	<select id="stationList" resultType="CMesStationT">
+		SELECT ID,STATION_NAME FROM C_MES_STATION_T WHERE LINE_ID=#{lineId}
+	</select>
+
+	<select id="findById" resultType="CMesEmpT">
+		SELECT * FROM C_MES_EMP_T WHERE ID=#{id}
+	</select>
+
+	<insert id="addEmp" keyProperty="id" useGeneratedKeys="false">
+		INSERT INTO C_MES_EMP_T(
+		DT,EMP_NO,EMP_NAME,EMP_SEX,
+		EMP_TYPE,EMP_TP,EMP_DEPARTMENT,EMP_TEAM_ID,
+		LINE_ID,EMP_VR,EMP_MAIL,STATION_ID)
+		VALUES(
+		#{dt},#{empNo},#{empName},#{empSex},
+		#{empType},#{empTp},#{empDepartment},#{empTeamId},
+		#{lineId},#{empVr}, #{empMail},#{stationId})
+	</insert>
+	<update id="editEmp">
+		UPDATE C_MES_EMP_T SET
+		DT =#{dt},EMP_NAME=#{empName},EMP_SEX=#{empSex},
+		EMP_TYPE=#{empType},EMP_TP=#{empTp},EMP_DEPARTMENT=#{empDepartment},
+		EMP_TEAM_ID=#{empTeamId},LINE_ID=#{lineId},EMP_VR=#{empVr},
+		EMP_MAIL= #{empMail},STATION_ID=#{stationId}
+		WHERE ID = #{id}
+	</update>
+	<delete id="delEmp">
+		DELETE FROM C_MES_EMP_T WHERE ID = #{id}
+	</delete>
+	<select id="empTypeList" resultType="CMesEmpTypeT">
+		SELECT * FROM
+		C_MES_EMP_TYPE_T
+		WHERE 1 = 1
+		<if test="id!=null">
+			AND id = #{id}
+		</if>
+	</select>
+
+	<!-- <insert id="addEmpTeam" keyProperty="id" useGeneratedKeys="false">
+		<selectKey keyProperty="id" resultType="int" order="BEFORE">
+			select
+			nvl(max(id),0)+1 from C_MES_EMP_TEAM_T
+		</selectKey>
+		INSERT INTO C_MES_EMP_TEAM_T
+		VALUES(#{id},#{name},#{dis},#{lineId},#{emps})
+	</insert> -->
+
+	<insert id="addEmpType" keyProperty="id" useGeneratedKeys="false">
+		INSERT INTO C_MES_EMP_TYPE_T(EMP_TYPE,DIS)
+		VALUES(#{empType},#{dis})
+	</insert>
+	<update id="editEmpType">
+		UPDATE C_MES_EMP_TYPE_T SET EMP_TYPE = #{empType},DIS = #{dis} WHERE ID = #{id}
+	</update>
+	<delete id="delEmpType">
+		DELETE FROM C_MES_EMP_TYPE_T WHERE ID = #{id}
+	</delete>
+</mapper>

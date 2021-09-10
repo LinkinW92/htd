@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.dzb.report.ScrewDownDao">
+    <select id="listLine" resultType="java.util.Map">
+        select id,name from c_mes_line_t
+    </select>
+    <select id="countBoltGroupSt"  resultType="java.util.Map">
+        	select mb.st,count(sn) okNum, (select count(sn) from p_mes_bolt_t mb2 where mb2.st = mb.st and DT BETWEEN #{startDate}  and #{endDate}) sumNum
+        from p_mes_bolt_t mb,c_mes_station_t ms
+        where mb.st = ms.STATION_NAME
+        and ms.LINE_ID = #{lineId}
+        and DT BETWEEN #{startDate} and #{endDate}
+        and R = 'OK'
+        GROUP BY st
+    </select>
+    <select id="countBoltGroupSt2"  resultType="java.util.Map">
+        select t2.st,t2.r,count(sn) count from
+        (select *
+        from p_mes_bolt_t
+        where DT BETWEEN #{startDate} and #{endDate}) t2 INNER JOIN
+        (select STATION_NAME from c_mes_station_t where line_id = #{lineId}) t1
+        on t1.STATION_NAME = t2.st
+        group by  t2.st,t2.r
+    </select>
+</mapper>
+
+

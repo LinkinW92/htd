@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wf.SchemePageDao">
+
+    <!--订单整体情况（订单目标）-->
+    <select id="findOrderTarget" resultType="java.util.Map">
+        select
+            PRODUCT_MODEL type,PRODUCT_NAME name, sum(DEMAND_NUM) num
+        FROM
+            c_mes_orderrecord_t
+        WHERE
+            PRODUCT_MODEL is not  null
+          and
+                ORDER_ID in (
+                select
+                    ID
+                FROM
+                    c_mes_salesorder_t
+                WHERE
+                    DELIVERY_PLAN_TIME
+                        between
+                        DATE_FORMAT(NOW(),'%Y-%m-%d 00:00:00')
+                        AND
+                        DATE_FORMAT(DATE_ADD(NOW(), INTERVAL + 2 MONTH),'%Y-%m-%d 23:59:59')
+            )
+        GROUP BY PRODUCT_MODEL
+    </select>
+    <!--订单整体情况（已生产）-->
+    <select id="findOrderAlreadyProduce" resultType="java.util.Map">
+        SELECT p.PRODUCTION_TYPE type,p.PRODUCTION_NAME name,sum(t.num) num
+        from
+            (
+                select PRODUCT_ID,sum(COMPLETE_NUMBER) as num
+                FROM p_mes_workorder_detail_t
+                WHERE
+                    PRODUCT_ID is not null
+                  and
+                        ORDER_ID in (
+                        select
+                            ID
+                        FROM
+                            c_mes_salesorder_t o
+                        WHERE
+                            DELIVERY_PLAN_TIME
+                                between
+                                DATE_FORMAT(now(),'%Y-%m-%d 00:00:00')
+                                AND
+                                DATE_FORMAT(DATE_ADD(now(), INTERVAL + 2 MONTH),'%Y-%m-%d 23:59:59')
+                    )
+                GROUP BY PRODUCT_ID
+
+                union all
+
+                select PRODUCT_ID,sum(COMPLETE_NUMBER) as num
+                FROM r_mes_workorder_detail_t
+                WHERE
+                    PRODUCT_ID is not null
+                  and
+                        ORDER_ID in (
+                        select
+                            ID
+                        FROM
+                            c_mes_salesorder_t o
+                        WHERE
+                            DELIVERY_PLAN_TIME
+                                between
+                                DATE_FORMAT(now(),'%Y-%m-%d 00:00:00')
+                                AND
+                                DATE_FORMAT(DATE_ADD(now(), INTERVAL + 2 MONTH),'%Y-%m-%d 23:59:59')
+                    )
+                GROUP BY PRODUCT_ID
+            ) t,c_mes_production_t p
+        where t.PRODUCT_ID = p.ID
+        GROUP BY t.PRODUCT_ID;
+    </select>
+
+    <select id="findBuyingSituation" resultType="java.util.Map">
+        select DT,MATERIAL_NO,MATERIAL_NAME,SUM(MATERIAL_NUM) num FROM
+            c_mes_purchase_order_details_t
+        WHERE PURCHASE_ORDER_ID in
+              (
+                  select ID FROM
+                      c_mes_purchase_order_t
+                  WHERE ORDER_TIME
+                            between DATE_FORMAT(now(),'%Y-%m-%d 00:00:00')
+                            AND DATE_FORMAT(date_add(now(), interval 14 day),'%Y-%m-%d 23:59:59')
+              )
+        GROUP BY DT,MATERIAL_NO
+    </select>
+
+    <select id="findProduction" resultType="java.util.Map">
+        SELECT wd.PLAN_START_TIME,wd.PRODUCT_ID,(SELECT p.PRODUCTION_NAME FROM c_mes_production_t p WHERE p.ID = wd.PRODUCT_ID) productName, sum(wd.ORDER_NUMBER) num
+        FROM
+            r_mes_workorder_detail_t wd
+        WHERE
+            wd.PLAN_START_TIME
+                between
+                DATE_FORMAT(now(),'%Y-%m-%d 00:00:00')
+                AND
+                DATE_FORMAT(date_add(now(), interval 14 day),'%Y-%m-%d 23:59:59')
+        GROUP BY wd.PLAN_START_TIME,wd.PRODUCT_ID
+    </select>
+
+    <select id="findEvent" resultType="java.util.Map">
+        select ID,DT,OBJECT_TYPE,OBJECT_ID,`EVENT` from c_mes_event_t
+        where OBJECT_TYPE in ('订单','采购','成品')
+        order by DT desc
+        limit 10
+    </select>
+
+    <!--在线订单-->
+    <select id="findOnlineOrder" resultType="java.util.Map">
+        select so.*,
+        sum(IFNULL(o.DEMAND_NUM,0)) QUANRITY,
+        IFNULL(work.COMPLETE_NUMBER_SUM,0) QUANRITY_NUMBER,
+        IFNULL(work.ORDER_NUMBER_SUM,0) ORDER_NUMBER_SUM,
+        IFNULL(
+            ROUND(
+                IFNULL(work.COMPLETE_NUMBER_SUM,0)
+                /
+                IFNULL(sum(IFNULL(o.DEMAND_NUM,0)),0)
+                *
+                100,1
+            )
+        ,0) COMPLETE_NUMBER_SUM
+        from c_mes_salesorder_t so
+        left join c_mes_orderrecord_t o
+        on so.ID = o.ORDER_ID
+        left join
+        (
+        SELECT *,sum(tb.COMPLETE_NUMBER) COMPLETE_NUMBER_SUM,sum(tb.ORDER_NUMBER) ORDER_NUMBER_SUM FROM
+        (
+        (select  ORDER_ID,COMPLETE_NUMBER,ORDER_NUMBER from r_mes_workorder_detail_t)
+        union all
+        (select  ORDER_ID,COMPLETE_NUMBER,ORDER_NUMBER from p_mes_workorder_detail_t)
+        ) as tb
+        GROUP BY tb.ORDER_ID
+        ) as work
+        on work.ORDER_ID = so.ID
+        where `STATUS` = 4 or `STATUS` = 5
+        group by so.CODE
+    </select>
+
+    <!--在线工单-->
+    <select id="findOnlineWorkOrder" resultType="java.util.Map">
+        select w.WORKORDER_ID,IFNULL(w.ORDER_NUMBER,0) ORDER_NUMBER ,IFNULL(w.OK_NUMBER,0) OK_NUMBER ,IFNULL(w.OFFLINE_NUMBER,0) OFFLINE_NUMBER,IFNULL(w.DEFFECT_NUMBER,0) DEFFECT_NUMBER, w.`STATUS`,
+            IFNULL(
+                ROUND(
+                                IFNULL(w.OFFLINE_NUMBER,0)
+                                /
+                                IFNULL(w.ORDER_NUMBER,0)
+                                *
+                                100,1
+                    )
+            ,0) PERCENTAGEVALUE
+             ,(select p.PRODUCTION_NAME from c_mes_production_t p where p.ID=w.PRODUCT_ID) as PRODUCTION_NAME
+             ,(select t.NAME from c_mes_shifts_team_t t where t.ID=w.TEAM_ID) as TEAM_NAME
+             ,(select l.NAME from c_mes_line_t l where l.ID=w.LINE_ID)  as LINE_NAME
+        from r_mes_workorder_detail_t w
+        order by w.LEVEL_NO
+    </select>
+
+    <!--在线产线-->
+    <select id="findOnlineLine" resultType="java.util.Map">
+<!--        select line.* from r_mes_workorder_detail_t wk-->
+<!--                               left JOIN c_mes_line_t line-->
+<!--                                         on line.ID = wk.LINE_ID-->
+<!--                               LEFT JOIN c_mes_salesorder_t od-->
+<!--                                         on wk.ORDER_ID = od.ID-->
+<!--        WHERE wk.`STATUS` in(1,2) and od.`STATUS` &gt;=2-->
+
+        select line.*,wk.*,
+        IFNULL(
+        ROUND(
+        IFNULL(wk.COMPLETE_NUMBER,0)
+        /
+        IFNULL(wk.ORDER_NUMBER,0)
+        *
+        100,1
+        )
+        ,0) PERCENTAGEVALUE
+        from c_mes_line_t line
+        left JOIN (
+        SELECT w.*,p.PRODUCTION_NAME,p.PRODUCTION_TYPE from
+        r_mes_workorder_detail_t w
+        LEFT JOIN c_mes_production_t p
+        on p.ID = w.PRODUCT_ID
+        ) wk
+        on line.ID = wk.LINE_ID
+
+    </select>
+
+    <!--产线优率-->
+    <select id="findLineOptimalRate" resultType="java.util.Map">
+        select line.*,wk.*,
+               IFNULL(
+                       ROUND(
+                                       IFNULL(wk.OK_NUMBER_SUM,0)
+                                       /
+                                       IFNULL(wk.ORDER_NUMBER,0)
+                                   *
+                                       100,1
+                           )
+                   ,0) PERCENTAGEVALUE,
+
+               IFNULL(
+                       ROUND(
+                                       IFNULL(wk.OK_NUMBER_SUM,0)
+                                       /
+                                       IFNULL(wk.OFFLINE_NUMBER_SUM,0)
+                                   *
+                                       100,1
+                           )
+                   ,0) PERCENTAGE_OK_NUMBER_SUM,
+
+               IFNULL(
+                       ROUND(
+                                       IFNULL(wk.DEFFECT_NUMBER_SUM,0)
+                                       /
+                                       IFNULL(wk.OFFLINE_NUMBER_SUM,0)
+                                   *
+                                       100,1
+                           )
+                   ,0) PERCENTAGE_DEFFECT_NUMBER_SUM
+
+        from c_mes_line_t line
+                 left JOIN (
+            SELECT w.*,
+                   p.PRODUCTION_NAME,p.PRODUCTION_TYPE,
+                   sum(w.OK_NUMBER) OK_NUMBER_SUM,
+                   SUM(w.DEFFECT_NUMBER) DEFFECT_NUMBER_SUM,
+                   sum(w.OFFLINE_NUMBER) OFFLINE_NUMBER_SUM
+            from
+                r_mes_workorder_detail_t w
+                    LEFT JOIN c_mes_production_t p
+                              on p.ID = w.PRODUCT_ID
+        ) wk
+            on line.ID = wk.LINE_ID
+    </select>
+
+
+
+
+</mapper>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.zl.CMesBusinessRecordDao">
+	<!-- 查询全部 -->
+	<select id="findAllBusinessRecord" resultType="CMesBusinessRecord">
+	SELECT * FROM c_mes_business_record where 1=1
+	</select>
+
+		<select id="findById" resultType="CMesBusinessRecord">
+		SELECT * FROM c_mes_business_record ID = #{id}
+	</select>
+
+		<select id="countBusinessOrderNo" resultType="int">
+		SELECT COUNT(*) FROM
+		c_mes_business_record WHERE ORDER_NO = #{orderNo}
+	</select>
+
+	<!-- 查询name是否重复 -->
+	<select id="findBusinessRecordByName" resultType="CMesBusinessRecord">
+		select * from c_mes_business_record where PRODUCTION_NAME = #{name}
+	</select>
+
+		<insert id="addBusiness">
+		INSERT INTO c_mes_business_record(
+		ORDER_NO,CUSTOMER_ORDER_NUMBER,NAME_GOODS,DELIVERY_DATE,
+		ORDER_STATUS,UNIT_PRICE,C_NUMBER,MONEY)
+		VALUES(
+		#{orderNo},#{customerOrderNumber},#{nameGoods},#{deliveryDate},
+		#{orderStatus},#{unitPrice},#{cNumber},#{money})
+	</insert>
+		<select id="findBusinessId" resultType="CMesBusinessRecord">
+			select * from c_mes_business_record where id=#{id}
+	</select>
+		<update id="editBusiness">
+		UPDATE c_mes_business_record SET
+		ORDER_NO =#{orderNo},CUSTOMER_ORDER_NUMBER=#{customerOrderNumber},NAME_GOODS=#{nameGoods},
+		DELIVERY_DATE=#{deliveryDate},ORDER_STATUS=#{orderStatus},UNIT_PRICE=#{unitPrice},
+		C_NUMBER=#{cNumber},MONEY=#{money}
+		WHERE ID = #{id}
+	</update>
+	<delete id="delBusiness">
+		DELETE FROM c_mes_business_record WHERE ID = #{id}
+	</delete>
+
+</mapper>

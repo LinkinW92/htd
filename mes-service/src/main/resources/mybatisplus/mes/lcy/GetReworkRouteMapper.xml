@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.lcy.GetReworkRouteMapper">
+
+	<select id="getReworkRoute" resultType="RMesTrackingT">
+		select *
+		FROM R_MES_TRACKING_T
+		where 1=1
+		and tt.status = 'NG'
+		<if test="sn !=null and sn!='' ">
+			and SN = #{sn}
+			</if>
+	</select>
+
+	<select id="queryBoltList" resultType="PMesBoltT">
+		select * from P_MES_BOLT_T where 1=1
+			AND BOLT_MODE = 0
+			<if test="sn !=null and sn!='' ">
+			and SN = #{sn}
+			</if>
+		ORDER BY ST,DT
+	</select>
+	<select id="queryKeypartList" resultType="PMesKeypartT">
+		select * from P_MES_KEYPART_T where 1=1
+			AND KEYPART_MODE = 0
+			<if test="sn !=null and sn!='' ">
+			and SN = #{sn}
+			</if>
+			ORDER BY ST,DT
+	</select>
+	<select id="queryLeakageList" resultType="PMesLeakageT">
+		select * from P_MES_LEAKAGE_T where 1=1
+			AND LEAKAGE_MODE = 0
+			<if test="sn !=null and sn!='' ">
+			and SN = #{sn}
+			</if>
+		ORDER BY ST,DT
+	</select>
+
+	<resultMap type="com.skeqi.mes.pojo.PMesDefectReasonT" id="reasonMap">
+		<id property="id" column="id"/>
+		<result property="sn" column="sn"/>
+		<result property="dt" column="dt"/>
+		<result property="defectType" column="defect_type"/>
+		<result property="reasonDetail" column="reason_detail"/>
+		<result property="dutyId" column="duty_id"/>
+		<result property="defectId" column="reason_detail"/>
+		<result property="resionId" column="reason_detail"/>
+		<collection property="tracking" ofType="com.skeqi.mes.pojo.PMesTrackingT">
+			<id property="id" column="pid"/>
+			<result property="dt" column="pdt"/>
+			<result property="sn" column="psn"/>
+			<result property="st" column="st"/>
+			<result property="bst" column="bst"/>
+			<result property="engineSn" column="enginesn"/>
+			<result property="gearBoxSn" column="gearboxsn"/>
+			<result property="typeName" column="typename"/>
+			<result property="trayNum" column="traynum"/>
+			<result property="productNum" column="productnum"/>
+			<result property="status" column="status"/>
+			<result property="dis" column="dis"/>
+			<result property="planId" column="plan_id"/>
+			<result property="offLineDt" column="offline_dt"/>
+			<result property="reworkFlag" column="rework_flag"/>
+			<result property="productionId" column="production_id"/>
+			<result property="lineId" column="line_id"/>
+		</collection>
+	</resultMap>
+
+
+	<!-- select tt.id,tt.dt,tt.st,tt.bst,tt.sn,tt.enginesn,tt.gearboxsn,tt.traynum,tt.productnum,tt.status,
+		tt.dis,tt.plan_id,tt.rework_flag,tt.production_id,tt.line_id,r.id,r.sn,r.dt,r.defect_type,
+		r.reason_detail,r.duty_id,r.defect_id,r.resion_id
+		from R_MES_TRACKING_T t
+		left join P_MES_DEFECT_REASON_T r
+		on tt.sn = r.sn
+		where tt.sn = #{sn} -->
+
+	<select id="queryProductRepairDownLine" resultMap="reasonMap">
+
+	</select>
+
+
+	<select id="getDefectResionList" resultType="CMesDefectResionT">
+		select tt.id,tt.dis,tt.resion_number
+		from C_MES_DEFECT_RESION_T tt
+	</select>
+
+	<select id="getDutyManagerList" resultType="CMesDutyManagerT">
+		select tt.id,tt.duty_id,tt.duty_name,tt.duty_dis
+		from C_MES_DUTY_MANAGER_T tt
+	</select>
+
+	<select id="getDefectManagerList" resultType="CMesDefectManager">
+		select tt.id,tt.defect_id,tt.defect_name
+		from C_MES_DEFECT_MANAGER_T tt
+	</select>
+	<!-- 添加原因信息 -->
+	<insert id="addDefectReason">
+		insert into P_MES_DEFECT_REASON_T (sn,dt,
+		defect_type,reason_detail,duty_id,defect_id,resion_id)
+        values(#{sn},#{date},#{addReason},#{reasonDetail},#{dutyManager},
+		#{defectManager},#{reasonManager})
+	</insert>
+	<insert id="addDefectReasonl"  useGeneratedKeys="true" keyProperty="id">
+	insert into P_MES_DEFECT_REASON_T (sn,dt,DEFECT_TYPE,REASON_DETAIL,DUTY_ID,DEFECT_ID,RESION_ID)
+    values(#{sn},now(),#{defectType},#{reasonDetail},#{dutyId},#{defectId},#{resionId})
+	</insert>
+	<!-- 获取产品运行表的信息 -->
+	<select id="getRTracking" resultType="RMesTrackingT">
+		select tt.id,tt.dt,tt.st,tt.bst,tt.sn,tt.enginesn,
+               tt.gearboxsn,tt.typename,tt.traynum,tt.productnum,tt.status,tt.dis,tt.plan_id,
+               tt.rework_flag,tt.production_id,tt.line_id
+         from R_MES_TRACKING_T tt
+         where tt.sn=#{sn}
+         and tt.status='NG'
+	</select>
+
+	<insert id="addPTracking">
+		insert into P_MES_TRACKING_T (dt,st,bst,sn,enginesn,
+        gearboxsn,typename,traynum,productnum,status,dis,plan_id,offline_dt,
+		rework_flag,production_id,line_id)
+		values(#{dt,jdbcType=DATE},#{st,jdbcType=VARCHAR},#{bst,jdbcType=VARCHAR},#{sn,jdbcType=VARCHAR},
+		#{enginesn,jdbcType=VARCHAR},#{gearboxsn,jdbcType=VARCHAR},#{typename,jdbcType=VARCHAR},#{traynum,jdbcType=VARCHAR},#{productnum,jdbcType=VARCHAR},
+		#{status,jdbcType=VARCHAR},#{dis,jdbcType=VARCHAR},#{planId,jdbcType=INTEGER},NOW(),#{reworkFlag,jdbcType=VARCHAR},#{productionId,jdbcType=INTEGER},#{lineId,jdbcType=INTEGER})
+	</insert>
+
+	<delete id="deleteRTracking">
+		delete from  R_MES_TRACKING_T  where sn = #{sn}
+	</delete>
+
+
+	<select id="queryStList" resultType="CMesStationT">
+ 		select tt.id,tt.station_name
+ 		from C_MES_STATION_T tt
+ 		where tt.line_id = #{lineId}
+	</select>
+
+	<select id="queryReworkStList" resultType="ReworkWayT">
+		select tt.id,tt.dt,tt.sn,tt.st_name,tt.st_id,tt.serial_no
+		from R_MES_REWORK_WAY_T tt
+		where tt.sn =#{sn}
+		order by tt.serial_no asc
+	</select>
+
+	<insert id="addReworkWay" >
+				insert into R_MES_REWORK_WAY_T (dt,sn,st_name,st_id,serial_no)
+    			values(#{date},#{sn},#{stName},#{stId},#{serialNo})
+	</insert>
+
+	<delete id="removeBackWay">
+			delete from  R_MES_REWORK_WAY_T where 1=1 and  sn =#{sn}
+
+	</delete>
+
+
+	<update id="updatRTracking">
+			update R_MES_TRACKING_T  set enginesn ='3'
+       		where sn = #{sn}
+	</update>
+
+	<!-- PMesDefectReasonT queryDefectResionList(@Param("sn")String sn, @Param("getStartTime")String getStartTime,
+			@Param("getEndTime")String getEndTime, @Param("getLine")String getLine);
+	 -->
+	<select id="queryDefectResionList" resultType="com.skeqi.mes.pojo.PMesDefectReasonT" >
+		select tt.sn,tt.dt,tt.defect_type,tt.reason_detail,
+    dtt.id dt_id,dtt.dt dt_dt,dtt.duty_id dt_di,dtt.duty_name dutyName,dtt.duty_dis dt_dis,
+    dm.id dm_id,dm.dt dm_dt,dm.defect_id dm_di,dm.defect_name defectName,dm.defect_dis dm_dis,
+    dr.id dr_id,dr.dt dr_dt,dr.resion_number dr_rn,dr.dis resionDis,
+    p.id pid,p.dt pdt,p.sn psn,p.bst,p.enginesn,p.gearboxsn,p.typename,p.traynum,p.productnum,
+    p.status,p.dis,p.plan_id,p.offline_dt,p.rework_flag,p.production_id,p.line_id lineId
+    from P_MES_DEFECT_REASON_T tt
+    left join C_MES_DUTY_MANAGER_T dt
+    on tt.duty_id = dtt.id
+    left join C_MES_DEFECT_MANAGER_T dm
+    on tt.defect_id = dm.id
+    left join C_MES_DEFECT_RESION_T dr
+    on tt.resion_id = dr.id
+    left join P_MES_TRACKING_T p
+    on tt.sn = p.sn
+    where 1=1
+
+		<if test="getLine !=null and getLine !=''">
+ 			and p.line_id=#{getLine}
+ 		</if>
+ 		<if test="sn!=null and sn!=''">
+ 			and tt.sn = #{sn}
+ 		</if>
+ 		<if test="getStartTime!=null and getStartTime!=''">
+ 			  and tt.dt>=#{getStartTime}
+ 		</if>
+ 		<if test="getEndTime!=null and getEndTime!=''">
+ 			<![CDATA[and tt.dt <= #{getEndTime}]]>
+ 		</if>
+ 		and tt.defect_type in(1,2)
+	</select>
+<!-- 	<resultMap type="com.skeqi.mes.pojo.PMesDefectReasonT"   id="getDefectResion">
+		<id property="id" column="id"/>
+		<result property="sn" column="sn"/>
+		<result property="dt" column="dt"/>
+		<result property="defectType" column="defect_type"/>
+		<result property="resionDetail" column="resion_detail"/>
+		<result property="dutyId" column="dt_id"/>
+		<result property="defectId" column="dm_id"/>
+		<result property="resionId" column="dr_id"/>
+	<collection property="tracking" javaType="java.util.List" ofType="com.skeqi.mes.pojo.PTrackingT">
+			<result property="id" column="pid"/>
+			<result property="dt" column="pdt"/>
+			<result property="sn" column="psn"/>
+			<result property="st" column="st"/>
+			<result property="bst" column="bst"/>
+			<result property="engineSN" column="enginesn"/>
+			<result property="typeName" column="typename"/>
+			<result property="trayNum" column="traynum"/>
+			<result property="productNum" column="productnum"/>
+			<result property="status" column="status"/>
+			<result property="dis" column="dis"/>
+			<result property="planId" column="plan_id"/>
+			<result property="reworkFlag" column="rework_flag"/>
+			<result property="productionId" column="production_id"/>
+			<result property="lineId" column="line_id"/>
+	</collection>
+	<collection property="getDuty"  ofType="com.skeqi.mes.pojo.CMesDutyManagerT">
+			<result property="id" column="dt_id"/>
+			<result property="dt" column="dt_dt"/>
+			<result property="dutyId" column="dt_di"/>
+			<result property="dutyName" column="dt_dn"/>
+			<result property="dutyDis" column="dt_dis"/>
+	</collection>
+
+
+		<collection property="getResion" javaType="java.util.List" ofType="com.skeqi.mes.pojo.CMesDefectResionT">
+			<result property="id" column="dr_id"/>
+			<result property="dt" column="dr_dt"/>
+			<result property="resionNumber" column="dr_rn"/>
+			<result property="dis" column="dr_dis"/>
+	</collection>
+	 <collection property="defect" javaType="java.util.List" ofType="com.skeqi.mes.pojo.CMesDefectManager">
+			<result property="id" column="dm_id"/>
+			<result property="dt" column="dm_dt"/>
+			<result property="defectId" column="dm_di"/>
+			<result property="defectName" column="dm_dn"/>
+			<result property="defectDis" column="dm_dis"/>
+	</collection>
+	</resultMap> -->
+
+
+</mapper>
+
+
+
+
+
+
+

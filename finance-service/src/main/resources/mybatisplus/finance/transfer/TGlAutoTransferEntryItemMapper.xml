@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.endhandle.TGlAutoTransferEntryItemMapper">
+
+    <resultMap type="com.skeqi.finance.domain.endhandle.transfer.TGlAutoTransferEntryItem" id="TGlAutoTransferEntryItemResult">
+        <result property="fEntryId" column="f_entry_id"/>
+        <result property="fTransferEntryId" column="f_transfer_entry_id"/>
+        <result property="fFlexitemPropertyId" column="f_flexitem_property_id"/>
+        <result property="fBeginItemNumber" column="f_begin_item_number"/>
+        <result property="fEndItemNumber" column="f_end_item_number"/>
+        <result property="fIssequentSelect" column="f_issequent_select"/>
+        <result property="fItemNumber" column="f_item_number"/>
+    </resultMap>
+
+    <delete id="delByTransferEntryId">
+        delete from t_gl_auto_transfer_entry_item where f_transfer_entry_id=#{id}
+    </delete>
+
+</mapper>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.zch.HookDao">
+
+	<select id="findJobList" resultType="java.util.Map">
+		select * from c_mes_job_configuration_t
+	</select>
+
+	<insert id="addJobBinding">
+		insert into c_mes_job_binding_t(stationId, jobId, `inOut`, status)
+		values (#{stationId}, #{jobId}, #{inOut}, 1)
+	</insert>
+
+	<update id="editJobBindingStatus">
+		update c_mes_job_binding_t set status = #{status} where ID = #{ID}
+	</update>
+
+	<delete id="deleteJobBinding">
+		delete from c_mes_job_binding_t where ID = #{ID}
+	</delete>
+
+	<select id="findJobBindingList" resultType="java.util.Map">
+		select hb.*, jc.name as jobName
+		from c_mes_job_binding_t hb
+		left join c_mes_job_configuration_t jc on jc.id = hb.jobId
+		where hb.stationId = #{stationId}
+	</select>
+
+	<select id="getJobBindingRepetition" resultType="java.util.Map">
+		select * from c_mes_job_binding_t
+		where stationId = #{stationId} and `inOut` = #{inOut} and jobId = #{jobId}
+		<if test="ID != null and ID != ''">
+			and ID != #{ID}
+		</if>
+	</select>
+
+	<select id="findJobBindingListByStationId" resultType="java.util.Map">
+		select * from c_mes_job_binding_t jb
+		left join c_mes_job_configuration_t jc on jc.id = jb.jobId
+		where stationId = #{stationId} and `inOut` = #{inOut}
+	</select>
+</mapper>

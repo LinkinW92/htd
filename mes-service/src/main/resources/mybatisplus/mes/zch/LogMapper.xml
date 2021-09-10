@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.zch.LogDao">
+	<insert id="addOperationLog">
+		insert into c_mes_operation_log_t (username, module, module2, methods, content, actionurl, ip, dt, commite,params,apiAnnotation)
+		values(#{username}, #{module}, #{module2}, #{methods}, #{content}, #{actionurl}, #{ip}, #{dt}, #{commite},#{params},#{apiAnnotation})
+	</insert>
+
+
+
+	<select id="findOperationLogList" resultType="java.util.Map">
+		select * from c_mes_operation_log_t
+		where 1=1
+		<if test="username != null and username != ''">
+			and username like concat('%', #{username}, '%')
+		</if>
+		<if test="module != null and module != ''">
+			and module = #{module}
+		</if>
+		<if test="module2 != null and module2 != ''">
+			and module2 like concat('%', #{module2}, '%')
+		</if>
+		<if test="params != null and params != ''">
+			and params =  #{params}
+		</if>
+		<if test="actionurl != null and actionurl != ''">
+			and actionurl =#{actionurl}
+		</if>
+		<if test="beginTime != null and beginTime != ''">
+			and dt &gt;= date_format(#{beginTime}, '%Y-%m-%d 00:00:00')
+		</if>
+		<if test="endTime != null and endTime != ''">
+			and dt &lt;= date_format(#{endTime}, '%Y-%m-%d 23:59:59')
+		</if>
+		order by dt desc
+	</select>
+
+	<insert id="addVisitLog">
+		insert into c_mes_visit_log_t(username, dt, pageName, ip) values(#{username}, now(), #{pageName}, #{ip})
+	</insert>
+
+	<insert id="addErrorLog">
+		insert into c_mes_error_log_t(username, dt, errorMsg, ip) values(#{username}, now(), #{errorMsg}, #{ip})
+	</insert>
+
+	<select id="findVisitLogList" resultType="java.util.Map">
+		select * from c_mes_visit_log_t
+		where 1=1
+		<if test="username != null and username != ''">
+			and username like concat('%', #{username}, '%')
+		</if>
+		<if test="beginTime != null and beginTime != ''">
+			and dt &gt;= date_format(#{beginTime}, '%Y-%m-%d 00:00:00')
+		</if>
+		<if test="endTime != null and endTime != ''">
+			and dt &lt;= date_format(#{endTime}, '%Y-%m-%d 23:59:59')
+		</if>
+		order by dt desc
+	</select>
+</mapper>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.yp.system.SystemNewsDao">
+
+	<!-- 查询通知 -->
+	<select id="list" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			id,
+			DATE_FORMAT( dt, '%Y-%m-%d %H:%i:%s' ) AS dt,
+			msg,
+			title,
+			userId,
+			state,
+			expandData,
+			url
+		FROM
+			`c_qh_news_t`
+		where userId = #{userId}
+		<if test="state != null and state != '' and state != '全部'">
+		and state = #{state}
+		</if>
+		ORDER BY dt desc
+	</select>
+
+	<!-- 发起通知 -->
+	<insert id="launch">
+		insert into c_qh_news_t(dt,msg,title,userId,state,expandData,url)
+		value(now(),#{msg},#{title},#{userId},#{state},#{expandData},#{url})
+	</insert>
+
+	<!-- 修改标记 -->
+	<update id="updateState">
+		update c_qh_news_t
+		set
+		state = #{state}
+		where id = #{id}
+	</update>
+
+	<!-- 全部编辑已读 -->
+	<update id="batch">
+		update c_qh_news_t
+		set
+		state = '已读'
+		where userId = #{userId}
+	</update>
+
+	<!-- 删除通知 -->
+	<delete id="delete">
+		delete from c_qh_news_t
+		where id = #{id}
+	</delete>
+
+	<!-- 通过id查询用户 -->
+	<select id="findUserById" resultType="com.alibaba.fastjson.JSONObject">
+		select id,USER_NAME as userName,email from c_mes_user_t
+		where id = #{userId}
+	</select>
+
+</mapper>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.endhandle.TGlWithholdingAcctDimensionMapper">
+
+    <resultMap type="com.skeqi.finance.domain.endhandle.withholding.TGlWithholdingAcctDimension" id="TGlWithholdingAcctDimensionResult">
+        <result property="dimensionId" column="dimension_id"/>
+        <result property="dsCode" column="ds_code"/>
+        <result property="dsName" column="ds_name"/>
+        <result property="amortEntryId" column="amort_entry_id"/>
+        <result property="acctId" column="acct_id"/>
+    </resultMap>
+
+
+    <select id="findByEntryId" resultMap="TGlWithholdingAcctDimensionResult">
+        select * from t_gl_withholding_acct_dimension where amort_entry_id=#{fId}
+    </select>
+</mapper>

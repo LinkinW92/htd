@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.qh.PositionDao">
+
+	<!-- 查询 -->
+	<select id="list" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			id,
+			DATE_FORMAT( dt, '%Y-%m-%d %H:%i:%s' ) AS dt,
+			`name`,
+			dis,
+			rankID
+		FROM
+			c_mes_positionid_t
+		where 1 = 1
+		<if test="name != null and name != ''">
+			AND name like '%${name}%'
+		</if>
+		ORDER BY id
+	</select>
+
+	<!-- 新增 -->
+	<insert id="add">
+		insert into c_mes_positionid_t(dt,name,dis,ID_,rankID)
+		values(now(),#{name},#{dis},#{ID_},#{rankID})
+	</insert>
+
+	<!-- 更新 -->
+	<update id="update">
+		update c_mes_positionid_t
+		set
+		dt = now(),
+		name = #{name},
+		dis = #{dis},
+		rankID = #{rankID}
+		where id = #{id}
+	</update>
+
+	<!-- 删除 -->
+	<delete id="delete">
+		delete from c_mes_positionid_t
+		where id = #{id}
+	</delete>
+
+	<!-- 通过id查询职位使用得人数 -->
+	<select id="findUserPositionCount" resultType="int">
+		select count(*) from c_mes_user_t
+		where viewMode = 1
+		and positionId = #{positionId}
+	</select>
+
+	<!-- 查询名称得数量 -->
+	<select id="findCountByName" resultType="int">
+		select count(*) from c_mes_positionid_t
+		where name = #{name}
+		<if test="id != null and id != ''">
+		and id != #{id}
+		</if>
+	</select>
+
+</mapper>

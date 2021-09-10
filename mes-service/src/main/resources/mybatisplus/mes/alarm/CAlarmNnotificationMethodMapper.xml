@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.alarm.CAlarmNnotificationMethodDao">
+
+	<!-- 通过用户名称查询用户 -->
+	<select id="findUserByName" resultType="com.skeqi.mes.pojo.CMesUserT">
+		select
+		id,USER_NAME,`STATUS`,DEPARTMENT,`SECURITY`,USER_POWER,ROLE_ID,USER_NUMBER,LOGINSTATUS
+		from c_mes_user_t
+		where viewMode = 1
+		and USER_NAME = #{userName}
+	</select>
+
+	<!-- 查询通知渠道类型 -->
+	<select id="findNotificationChannelsTypeList"
+		resultType="com.skeqi.mes.pojo.alarm.CAlarmNotificationChannelsType">
+		select id,notification_channels_type_name,note from
+		c_alarm_notification_channels_type
+		ORDER BY id
+	</select>
+
+	<resultMap type="com.skeqi.mes.pojo.alarm.CAlarmNotificationMethod" id="notificationMethodMap">
+		<id column="id" property="id" />
+		<result column="Loss_Type_Id" property="lossTypeId" />
+		<result column="notification_Channels_Id"
+			property="notificationChannelsId" />
+		<result column="user_id" property="userId" />
+		<result column="service_id" property="serviceId" />
+		<result column="dt" property="dt" />
+		<result column="problem_Level_Id" property="problemLevelId" />
+		<result column="problem_State" property="problemState" />
+
+		<association property="problemLevel" javaType="com.skeqi.mes.pojo.alarm.CAlarmProblemLevel">
+			<result column="explain" property="explain" />
+		</association>
+		<association property="lossType" javaType="com.skeqi.mes.pojo.project.CMesLossTypeT">
+			<result column="LOSS_NAME" property="lossName" />
+		</association>
+		<association property="notificationChannels" javaType="com.skeqi.mes.pojo.alarm.CAlarmNotificationChannels">
+			<result column="notification_Channels" property="notificationChannels" />
+			<result column="notification_channels_type_id" property="notificationChannelsTypeId" />
+		</association>
+	</resultMap>
+
+	<!-- 查询通知方式 -->
+	<select id="findNnotificationMethodList" resultMap="notificationMethodMap">
+		SELECT
+			a.id,
+			a.Loss_Type_Id,
+			a.notification_channels_id,
+			a.user_id,
+			a.dt,
+			a.service_id,
+			a.problem_Level_Id,
+			a.problem_State,
+			b.LOSS_NAME,
+			c.notification_channels,
+			c.notification_channels_type_id,
+			d.`explain`
+		FROM
+			c_alarm_notification_method a
+			JOIN c_mes_loss_type_t b ON a.Loss_Type_Id = b.id
+			JOIN c_alarm_notification_channels c ON a.notification_channels_id = c.id
+			JOIN c_alarm_problem_level d ON a.problem_Level_Id = d.id
+
+		ORDER BY
+			a.id
+	</select>
+
+	<!-- 查询通知方式是否重名 -->
+	<select id="findNnotificationMethod"
+		resultType="java.lang.Integer">
+		select count(id) from c_alarm_notification_method
+		where
+<!-- 		user_id = #{userId} -->
+<!-- 		and  -->
+		event_id = #{eventId}
+	</select>
+
+	<!-- 新增通知方式 -->
+	<insert id="addNnotificationMethod">
+		INSERT INTO
+		c_alarm_notification_method(Loss_Type_Id,notification_channels_id,user_id,service_id,problem_Level_Id,problem_State,dt)
+		value(#{lossTypeId},#{notificationChannelsId},#{userId},#{serviceId},#{problemLevelId},#{problemState},now())
+	</insert>
+
+	<!-- 更新通知方式 -->
+	<update id="updateNnotificationMethod">
+		update c_alarm_notification_method
+		set Loss_Type_Id =
+		#{lossTypeId},
+		notification_channels_id = #{notificationChannelsId},
+		service_id = #{serviceId},
+		problem_Level_Id = #{problemLevelId},
+		problem_State = #{problemState},
+		dt = now()
+		where id = #{id}
+	</update>
+
+	<!-- 删除通知方式 -->
+	<delete id="deleteNnotificationMethod">
+		delete from c_alarm_notification_method
+		<if test="id != null and id != ''">
+			where id = #{id}
+		</if>
+		<if
+			test="notificationChannelsId != null and notificationChannelsId != ''">
+			where notificationChannelsId = #{notificationChannelsId}
+		</if>
+	</delete>
+
+	<!-- 查询所有问题等级 -->
+	<select id="findProblemLevelAll" resultType="com.skeqi.mes.pojo.alarm.CAlarmProblemLevel">
+		select id,`level`,`explain` from c_alarm_problem_level
+		ORDER BY id
+	</select>
+
+	<resultMap type="com.skeqi.mes.pojo.alarm.CAlarmNotificationChannels" id="notificationChannelsMap">
+		<id column="id" property="id" />
+		<result column="user_id" property="userId" />
+		<result column="notification_channels_type_id" property="notificationChannelsTypeId" />
+		<result column="notification_channels" property="notificationChannels" />
+		<result column="notification_channels_content" property="notificationChannelsContent" />
+		<result column="dt" property="dt" />
+		<association property="notificationChannelsType" javaType="com.skeqi.mes.pojo.alarm.CAlarmNotificationChannelsType">
+			<result column="notification_channels_type_name" property="notificationChannelsTypeName" />
+		</association>
+	</resultMap>
+
+
+	<!-- 查询通知渠道 -->
+	<select id="findNotificationChannelsList" resultMap="notificationChannelsMap">
+		SELECT
+		a.id,
+		a.user_id,
+		a.notification_channels_type_id,
+		a.notification_channels,
+		a.notification_channels_content,
+		a.dt,
+		type.notification_channels_type_name
+		FROM
+		c_alarm_notification_channels
+		a
+		JOIN c_alarm_notification_channels_type type on
+		a.notification_channels_type_id = type.id
+		where a.view_mode = 1
+<!-- 		and a.user_id = #{userId} -->
+		and type.id = #{typeId}
+		<!-- and a.notification_channels like '%${notificationChannels}%' -->
+		ORDER BY a.id
+	</select>
+
+	<!-- 通过通知渠道查询通知渠道类型 -->
+	<select id="findNotificationChannelsType" resultType="com.skeqi.mes.pojo.alarm.CAlarmNotificationChannelsType">
+		select b.notification_channels_type_name from c_alarm_notification_channels a
+		join c_alarm_notification_channels_type b on a.notification_channels_type_id = b.id
+		where a.id = #{id}
+	</select>
+
+	<!-- 查询邮箱服务是否存在 -->
+	<select id="findEamilCountById" resultType="java.lang.Integer">
+		select count(id) from c_alarm_email_config
+		where id = #{id}
+<!-- 		and user_id = #{userId} -->
+	</select>
+
+	<!-- 查询短信服务是否存在 -->
+	<select id="findShortmessageCountById" resultType="java.lang.Integer">
+		select count(id) from c_alarm_shortmessage_config
+		where id = #{id}
+<!-- 		and user_id = #{userId} -->
+	</select>
+
+	<!-- 查询通知渠道 -->
+	<select id="findNotificationChannelsById"  resultType="com.skeqi.mes.pojo.alarm.CAlarmNotificationChannels">
+		select id,notification_channels_content from c_alarm_notification_channels
+		where id = #{id}
+	</select>
+
+	<!-- 查询邮箱服务 -->
+	<select id="findEmailConfigById" resultType="com.skeqi.mes.pojo.alarm.CAlarmEmailConfig">
+		select sender_email,the_server,authorization_code from c_alarm_email_config
+		where id = #{id}
+	</select>
+
+	<!-- 查询短信服务 -->
+	<select id="findShortmessageConfigById" resultType="com.skeqi.mes.pojo.alarm.CAlarmShortmessageConfig">
+		select header,parameter,charset,api_url,request_method from c_alarm_shortmessage_config
+		where id = #{id}
+	</select>
+
+	<!-- 查询所有损失类型 -->
+	<select id="findLossTypeAll" resultType="com.skeqi.mes.pojo.project.CMesLossTypeT">
+		select id,LOSS_NAME from c_mes_loss_type_t
+		ORDER BY id
+	</select>
+
+</mapper>

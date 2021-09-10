@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wms.StockTransferDao">
+
+	<!-- 查询 -->
+	<select id="list" resultType="com.alibaba.fastjson.JSONObject">
+		select a.id,a.dt,a.listNo,a.userId,a.state,b.USER_NAME as userName from c_wms_stock_transfer a
+		join c_mes_user_t b on a.userId = b.id
+		where 1=1
+		<if test="listNo != null and listNo != ''">
+			and a.listNo like '%${listNo}%'
+		</if>
+		ORDER BY dt desc
+	</select>
+
+	<!-- 查询入库队列 -->
+	<select id="findInTaskqueue" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			DATE_FORMAT( a.dt, '%Y-%m-%d %H:%i:%s' ) dt,
+			a.LIST_NO AS listNo,
+			a.tray,
+			a.flag,
+			a.LOCATION_ID AS locationId,
+			b.LOCATION_NAME AS locationName,
+			b.LOCATION_TYPE as locationType
+		FROM
+			r_wms_in_taskqueue_t a
+			JOIN c_wms_location_t b ON a.LOCATION_ID = b.id
+		where a.LIST_NO = #{listNo}
+	</select>
+
+	<!-- 查询出库队列 -->
+	<select id="findOutTaskqueue" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			DATE_FORMAT( a.dt, '%Y-%m-%d %H:%i:%s' ) dt,
+			a.LIST_NO AS listNo,
+			a.tray,
+			a.flag,
+			a.LOCATION_ID AS locationId,
+			b.LOCATION_NAME AS locationName,
+			b.LOCATION_TYPE as locationType
+		FROM
+			r_wms_out_taskqueue_t a
+			JOIN c_wms_location_t b ON a.LOCATION_ID = b.id
+		where a.LIST_NO = #{listNo}
+	</select>
+
+	<!-- 查询临时库存 -->
+	<select id="findRStock" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			b.MATERIAL_NAME AS materialName,
+			a.MATERIAL_NUMBER AS materialNumber,
+			c.PROJECT_NAME AS projectName,
+			d.LOCATION_NAME AS locationName,
+			a.ISSUE_OR_RECEIPT AS issueOrReceipt
+		FROM
+			r_wms_storage_detail_t a
+			JOIN c_mes_jl_material_t b ON a.MATERIAL_ID = b.id
+			JOIN c_wms_project_t c ON a.PROJECT_ID = c.id
+			JOIN c_wms_location_t d ON a.LOCATION_ID = d.id
+		where a.list_no = #{listNo}
+		<if test="locationId != null and locationId != ''">
+			and a.location_id = #{locationId}
+		</if>
+	</select>
+
+	<!-- 查询永久库存 -->
+	<select id="findPStock" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			b.MATERIAL_NAME AS materialName,
+			a.MATERIAL_NUMBER AS materialNumber,
+			c.PROJECT_NAME AS projectName,
+			d.LOCATION_NAME AS locationName,
+			a.ISSUE_OR_RECEIPT AS issueOrReceipt
+		FROM
+			p_wms_storage_detail_t a
+			JOIN c_mes_jl_material_t b ON a.MATERIAL_ID = b.id
+			JOIN c_wms_project_t c ON a.PROJECT_ID = c.id
+			JOIN c_wms_location_t d ON a.LOCATION_ID = d.id
+		where a.list_no = #{listNo}
+	</select>
+
+	<!-- 查询库位坐标 -->
+	<select id="findLocationCoordinate" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			DISTINCT a.id,
+			a.LIST_NO AS listNo,
+			a.tray,
+			b.LOCATION_X AS x,
+			b.LOCATION_Y AS y,
+			b.LOCATION_Z AS z,
+			c.ISSUE_OR_RECEIPT AS issueOrReceipt
+		FROM
+			r_wms_out_taskqueue_t a
+			JOIN c_wms_location_t b ON a.LOCATION_ID = b.id
+			JOIN r_wms_storage_detail_t c ON a.LIST_NO = c.LIST_NO AND a.LOCATION_ID = c.LOCATION_ID
+		where a.LIST_NO = #{listNo}
+		and a.LOCATION_ID = #{locationId}
+	</select>
+
+	<!-- 修改出库队列动作标记 -->
+	<update id="updateOutTaskqueueFlag">
+		update r_wms_out_taskqueue_t
+		set
+		FLAG = 1
+		where id = #{id}
+	</update>
+
+	<!-- 删除出库队列 -->
+	<delete id="deleteOutTaskqueue">
+		delete from r_wms_out_taskqueue_t
+		where id = #{id}
+	</delete>
+
+	<!-- 更新托盘码 -->
+	<update id="updateTray">
+		update r_wms_in_taskqueue_t
+		set TRAY = #{tray}
+		where id = #{id}
+	</update>
+
+	<!-- 修改入库队列动作标记 -->
+	<update id="updateInTaskqueueFlag">
+		update r_wms_in_taskqueue_t
+		set
+		FLAG = 1
+		where id = #{id}
+	</update>
+
+	<!-- 通过单号查询出库队列的数量 -->
+	<select id="findInTaskqueueByListNo" resultType="int">
+		select count(*) from r_wms_in_taskqueue_t
+		where LIST_NO = #{listNo}
+	</select>
+
+	<!-- 通过单号查询入库队列的数量 -->
+	<select id="findOutTaskqueueByListNo" resultType="int">
+		select count(*) from r_wms_out_taskqueue_t
+		where LIST_NO = #{listNo}
+	</select>
+
+	<!-- 更新库存转移表状态 -->
+	<update id="updateStockTransferState">
+		update c_wms_stock_transfer
+		set state = '完成'
+		where listNo = #{listNo}
+	</update>
+
+	<!-- 查询托盘码是否存在 -->
+	<select id="findTrayCount" resultType="int">
+		select
+		(SELECT COUNT(*) FROM c_wms_location_t
+		WHERE tray = #{tray})
+		+
+		(
+		SELECT COUNT(*) FROM c_wms_material_number_t
+		WHERE tray = #{tray})
+		+
+		(
+		SELECT COUNT(*) FROM r_wms_out_taskqueue_t
+		WHERE tray = #{tray})
+		+
+		(
+		SELECT COUNT(*) FROM r_wms_IN_taskqueue_t
+		WHERE tray = #{tray}) as count
+	</select>
+
+	<!-- 查询临时库存详情 -->
+	<select id="queryTemporaryInventoryDetails" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			detail.id,
+			detail.dt,
+			detail.MATERIAL_ID AS materialId,
+			detail.MATERIAL_NUMBER AS materialNumber,
+			detail.LOCATION_ID AS locationId,
+			detail.LIST_NO AS listNo,
+			detail.PROJECT_ID AS projectId,
+			detail.materialNumberId,
+			detail.YN_SHIFT as ynShift,
+			detail.ISSUE_OR_RECEIPT as issueOrReceipt,
+			location.LOCATION_NAME AS locationName,
+			rArea.RA_NAME AS rAName,
+			rArea.id AS rAId,
+			area.AREA_NAME AS areaName,
+			area.id AS areaId,
+			warehouse.`name` AS warehouseName,
+			warehouse.id AS warehouseId,
+			material.MATERIAL_NAME AS materialName,
+			material.BOM_ID as bomId,
+			project.PROJECT_NAME AS projectName
+		FROM
+			r_wms_storage_detail_t detail
+			JOIN c_wms_location_t location ON detail.LOCATION_ID = location.id
+			JOIN c_wms_reservoir_area_t rArea ON location.RESERVOIR_AREA_ID = rArea.id
+			JOIN c_wms_area_t area ON rArea.AREA_ID = area.id
+			JOIN c_wms_warehouse_t warehouse ON area.WAREHOUSE_ID = warehouse.id
+			JOIN c_mes_jl_material_t material ON detail.MATERIAL_ID = material.id
+			JOIN c_wms_project_t project ON detail.PROJECT_ID = project.id
+		WHERE
+			detail.LIST_NO = #{listNo}
+			AND detail.ISSUE_OR_RECEIPT = #{issueOrReceipt}
+			AND detail.LOCATION_ID = #{locationId}
+	</select>
+
+	<!-- 查询物料库存 -->
+	<select id="queryMaterialInventory" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			id,
+			MATERIAL_NUMBER as materialNumber,
+			PROJECT_ID as projectId,
+			MATERIAL_ID as materialId,
+			WAREHOUSE_ID as warehouseId,
+			LOCATION_ID as locationId,
+			LMMINENT_RELEASE as lmminentRelease
+		FROM
+			c_wms_material_number_t
+		where PROJECT_ID = #{projectId}
+		and MATERIAL_ID = #{materialId}
+		and LOCATION_ID = #{locationId}
+	</select>
+
+	<!-- 通过id查询物料库存 -->
+	<select id="queryMaterialInventoryById" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			id,
+			MATERIAL_NUMBER as materialNumber,
+			PROJECT_ID as projectId,
+			MATERIAL_ID as materialId,
+			WAREHOUSE_ID as warehouseId,
+			LOCATION_ID as locationId,
+			LMMINENT_RELEASE as lmminentRelease
+		FROM
+			c_wms_material_number_t
+		where id = #{id}
+	</select>
+
+	<!-- 新增物料库存 -->
+	<insert id="newMaterialInventory">
+		INSERT INTO c_wms_material_number_t ( MATERIAL_NO, MATERIAL_NAME, MATERIAL_NUMBER, PROJECT_ID, MATERIAL_ID, WAREHOUSE_ID, AREA_ID, LOCATION_ID, RESERVOIR_AREA_ID, LMMINENT_RELEASE, DT, TRAY )
+		VALUE (#{bomId},#{materialName},#{materialNumber},#{projectId},#{materialId},#{warehouseId},#{areaId},#{locationId},#{rAId},0,now(),#{tray})
+	</insert>
+
+	<!-- 更新物料库存 -->
+	<update id="updateMaterialInventory">
+		update c_wms_material_number_t
+		set MATERIAL_NUMBER = MATERIAL_NUMBER + #{materialNumber},
+		dt = now()
+		where id = #{materialNumberId}
+	</update>
+
+	<!-- 删除临时物料库存 -->
+	<delete id="deleteTemporaryMaterialInventory">
+		DELETE FROM r_wms_storage_detail_t
+		where id = #{id}
+	</delete>
+
+	<!-- 新增永久库存详情 -->
+	<insert id="newPermanentInventoryDetails">
+		INSERT INTO p_wms_storage_detail_t ( DT, MATERIAL_ID, MATERIAL_NUMBER, AREA_ID, RESERVOIR_AREA_ID, LOCATION_ID, LIST_NO, PROJECT_ID, TRAY, WAREHOUSE_ID, YN_SHIFT, ISSUE_OR_RECEIPT, MATERIAL_NAME, WAREHOUSE_NAME, AREA_NAME, RESERVOIR_AREA_NAME, LOCATION_NAME, PROJECT_NAME, STATION_NAME, materialNumberId )
+		VALUE(now(),#{materialId},#{materialNumber},#{areaId},#{rAId},#{locationId},#{listNo},#{projectId},#{tray},#{warehouseId},#{ynShift},#{issueOrReceipt},#{materialName},#{warehouseName},#{areaName},#{rAName},#{locationName},#{projectName},#{stationName},#{materialNumberId})
+	</insert>
+
+	<!-- 删除临时入库队列 -->
+	<delete id="deleteTemporaryStorageQueue">
+		DELETE FROM r_wms_in_taskqueue_t
+		where id = #{id}
+	</delete>
+
+	<!-- 新增永久入库队列 -->
+	<insert id="addPermanentStorageQueue">
+		insert into p_wms_in_taskqueue_t(DT,LIST_NO,TRAY,FLAG,OVER_DT,LOCATION_ID)
+		value(#{dt},#{listNo},#{tray},#{flag},now(),#{locationId})
+	</insert>
+
+	<!-- 修改库位状态以及托盘码 -->
+	<update id="modifyTheStatusOfTheLocationAndTheTrayCode">
+		update c_wms_location_t
+		set
+		LOCATION_STATUS = #{state},
+		TRAY = #{tray}
+		where id = #{id}
+	</update>
+
+	<!-- 出库更新库存 -->
+	<update id="issueUpdateInventory">
+		update c_wms_material_number_t
+		set
+		MATERIAL_NUMBER = MATERIAL_NUMBER - #{materialNumber},
+		LMMINENT_RELEASE = LMMINENT_RELEASE - #{materialNumber},
+		dt = now()
+		where id = #{id}
+	</update>
+
+	<!-- 删除库存记录 -->
+	<delete id="deleteInventoryRecord">
+		DELETE FROM c_wms_material_number_t
+		where id = #{id}
+	</delete>
+
+	<!-- 删除临时出库队列  -->
+	<delete id="deleteTemporaryIssueQueue">
+		DELETE FROM r_wms_out_taskqueue_t
+		where id = #{id}
+	</delete>
+
+	<!-- 新增永久出库队列 -->
+	<insert id="addPermanentIssueQueue">
+		INSERT INTO p_wms_out_taskqueue_t(DT,LIST_NO,TRAY,FLAG,OVER_DT,LOCATION_ID)
+		value(#{dt},#{listNo},#{tray},#{flag},now(),#{locationId})
+	</insert>
+
+	<!-- 通过库位id查询库存 -->
+	<select id="findMaterialNumberByLocationId" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			id,
+			MATERIAL_NUMBER as materialNumber,
+			PROJECT_ID as projectId,
+			MATERIAL_ID as materialId,
+			WAREHOUSE_ID as warehouseId,
+			LOCATION_ID as locationId,
+			LMMINENT_RELEASE as lmminentRelease
+		FROM
+			c_wms_material_number_t
+		where LOCATION_ID = #{locationId}
+	</select>
+
+
+
+
+
+
+
+
+
+
+
+
+</mapper>

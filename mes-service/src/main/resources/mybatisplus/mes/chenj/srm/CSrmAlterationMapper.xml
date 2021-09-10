@@ -1,0 +1,449 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.chenj.srm.CSrmAlterationMapper">
+  <resultMap id="BaseResultMap" type="com.skeqi.mes.pojo.chenj.srm.CSrmAlteration">
+    <!--@mbg.generated-->
+    <!--@Table c_srm_alteration-->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="changing_object_types" jdbcType="VARCHAR" property="changingObjectTypes" />
+    <result column="changing_object_values" jdbcType="VARCHAR" property="changingObjectValues" />
+    <result column="property_changes" jdbcType="VARCHAR" property="propertyChanges" />
+    <result column="the_old_attribute_values" jdbcType="VARCHAR" property="theOldAttributeValues" />
+    <result column="the_new_attribute_values" jdbcType="VARCHAR" property="theNewAttributeValues" />
+    <result column="change_a_person" jdbcType="VARCHAR" property="changeAPerson" />
+    <result column="alteration_time" jdbcType="TIMESTAMP" property="alterationTime" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, changing_object_types, changing_object_values, property_changes, the_old_attribute_values,
+    the_new_attribute_values, change_a_person, alteration_time, create_time, update_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select
+    <include refid="Base_Column_List" />
+    from c_srm_alteration
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <!--@mbg.generated-->
+    delete from c_srm_alteration
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmAlteration" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into c_srm_alteration (changing_object_types, changing_object_values,
+      property_changes, the_old_attribute_values,
+      the_new_attribute_values, change_a_person, alteration_time,
+      create_time, update_time)
+    values (#{changingObjectTypes,jdbcType=VARCHAR}, #{changingObjectValues,jdbcType=VARCHAR},
+      #{propertyChanges,jdbcType=VARCHAR}, #{theOldAttributeValues,jdbcType=VARCHAR},
+      #{theNewAttributeValues,jdbcType=VARCHAR}, #{changeAPerson,jdbcType=VARCHAR}, #{alterationTime,jdbcType=TIMESTAMP},
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmAlteration" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into c_srm_alteration
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="changingObjectTypes != null">
+        changing_object_types,
+      </if>
+      <if test="changingObjectValues != null">
+        changing_object_values,
+      </if>
+      <if test="propertyChanges != null">
+        property_changes,
+      </if>
+      <if test="theOldAttributeValues != null">
+        the_old_attribute_values,
+      </if>
+      <if test="theNewAttributeValues != null">
+        the_new_attribute_values,
+      </if>
+      <if test="changeAPerson != null">
+        change_a_person,
+      </if>
+      <if test="alterationTime != null">
+        alteration_time,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="changingObjectTypes != null">
+        #{changingObjectTypes,jdbcType=VARCHAR},
+      </if>
+      <if test="changingObjectValues != null">
+        #{changingObjectValues,jdbcType=VARCHAR},
+      </if>
+      <if test="propertyChanges != null">
+        #{propertyChanges,jdbcType=VARCHAR},
+      </if>
+      <if test="theOldAttributeValues != null">
+        #{theOldAttributeValues,jdbcType=VARCHAR},
+      </if>
+      <if test="theNewAttributeValues != null">
+        #{theNewAttributeValues,jdbcType=VARCHAR},
+      </if>
+      <if test="changeAPerson != null">
+        #{changeAPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="alterationTime != null">
+        #{alterationTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmAlteration">
+    <!--@mbg.generated-->
+    update c_srm_alteration
+    <set>
+      <if test="changingObjectTypes != null">
+        changing_object_types = #{changingObjectTypes,jdbcType=VARCHAR},
+      </if>
+      <if test="changingObjectValues != null">
+        changing_object_values = #{changingObjectValues,jdbcType=VARCHAR},
+      </if>
+      <if test="propertyChanges != null">
+        property_changes = #{propertyChanges,jdbcType=VARCHAR},
+      </if>
+      <if test="theOldAttributeValues != null">
+        the_old_attribute_values = #{theOldAttributeValues,jdbcType=VARCHAR},
+      </if>
+      <if test="theNewAttributeValues != null">
+        the_new_attribute_values = #{theNewAttributeValues,jdbcType=VARCHAR},
+      </if>
+      <if test="changeAPerson != null">
+        change_a_person = #{changeAPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="alterationTime != null">
+        alteration_time = #{alterationTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmAlteration">
+    <!--@mbg.generated-->
+    update c_srm_alteration
+    set changing_object_types = #{changingObjectTypes,jdbcType=VARCHAR},
+      changing_object_values = #{changingObjectValues,jdbcType=VARCHAR},
+      property_changes = #{propertyChanges,jdbcType=VARCHAR},
+      the_old_attribute_values = #{theOldAttributeValues,jdbcType=VARCHAR},
+      the_new_attribute_values = #{theNewAttributeValues,jdbcType=VARCHAR},
+      change_a_person = #{changeAPerson,jdbcType=VARCHAR},
+      alteration_time = #{alterationTime,jdbcType=TIMESTAMP},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateBatch" parameterType="java.util.List">
+    <!--@mbg.generated-->
+    update c_srm_alteration
+    <trim prefix="set" suffixOverrides=",">
+      <trim prefix="changing_object_types = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.changingObjectTypes,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="changing_object_values = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.changingObjectValues,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="property_changes = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.propertyChanges,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="the_old_attribute_values = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.theOldAttributeValues,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="the_new_attribute_values = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.theNewAttributeValues,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="change_a_person = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.changeAPerson,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="alteration_time = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.alterationTime,jdbcType=TIMESTAMP}
+        </foreach>
+      </trim>
+      <trim prefix="create_time = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.createTime,jdbcType=TIMESTAMP}
+        </foreach>
+      </trim>
+      <trim prefix="update_time = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.updateTime,jdbcType=TIMESTAMP}
+        </foreach>
+      </trim>
+    </trim>
+    where id in
+    <foreach close=")" collection="list" item="item" open="(" separator=", ">
+      #{item.id,jdbcType=INTEGER}
+    </foreach>
+  </update>
+  <update id="updateBatchSelective" parameterType="java.util.List">
+    <!--@mbg.generated-->
+    update c_srm_alteration
+    <trim prefix="set" suffixOverrides=",">
+      <trim prefix="changing_object_types = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.changingObjectTypes != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.changingObjectTypes,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="changing_object_values = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.changingObjectValues != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.changingObjectValues,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="property_changes = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.propertyChanges != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.propertyChanges,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="the_old_attribute_values = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.theOldAttributeValues != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.theOldAttributeValues,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="the_new_attribute_values = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.theNewAttributeValues != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.theNewAttributeValues,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="change_a_person = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.changeAPerson != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.changeAPerson,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="alteration_time = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.alterationTime != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.alterationTime,jdbcType=TIMESTAMP}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="create_time = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.createTime != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.createTime,jdbcType=TIMESTAMP}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="update_time = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.updateTime != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.updateTime,jdbcType=TIMESTAMP}
+          </if>
+        </foreach>
+      </trim>
+    </trim>
+    where id in
+    <foreach close=")" collection="list" item="item" open="(" separator=", ">
+      #{item.id,jdbcType=INTEGER}
+    </foreach>
+  </update>
+  <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into c_srm_alteration
+    (changing_object_types, changing_object_values, property_changes, the_old_attribute_values,
+      the_new_attribute_values, change_a_person, alteration_time, create_time, update_time
+      )
+    values
+    <foreach collection="list" item="item" separator=",">
+      (#{item.changingObjectTypes,jdbcType=VARCHAR}, #{item.changingObjectValues,jdbcType=VARCHAR},
+        #{item.propertyChanges,jdbcType=VARCHAR}, #{item.theOldAttributeValues,jdbcType=VARCHAR},
+        #{item.theNewAttributeValues,jdbcType=VARCHAR}, #{item.changeAPerson,jdbcType=VARCHAR},
+        #{item.alterationTime,jdbcType=TIMESTAMP}, #{item.createTime,jdbcType=TIMESTAMP},
+        #{item.updateTime,jdbcType=TIMESTAMP})
+    </foreach>
+  </insert>
+  <insert id="insertOrUpdate" keyColumn="id" keyProperty="id" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmAlteration" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into c_srm_alteration
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      changing_object_types,
+      changing_object_values,
+      property_changes,
+      the_old_attribute_values,
+      the_new_attribute_values,
+      change_a_person,
+      alteration_time,
+      create_time,
+      update_time,
+    </trim>
+    values
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      #{changingObjectTypes,jdbcType=VARCHAR},
+      #{changingObjectValues,jdbcType=VARCHAR},
+      #{propertyChanges,jdbcType=VARCHAR},
+      #{theOldAttributeValues,jdbcType=VARCHAR},
+      #{theNewAttributeValues,jdbcType=VARCHAR},
+      #{changeAPerson,jdbcType=VARCHAR},
+      #{alterationTime,jdbcType=TIMESTAMP},
+      #{createTime,jdbcType=TIMESTAMP},
+      #{updateTime,jdbcType=TIMESTAMP},
+    </trim>
+    on duplicate key update
+    <trim suffixOverrides=",">
+      <if test="id != null">
+        id = #{id,jdbcType=INTEGER},
+      </if>
+      changing_object_types = #{changingObjectTypes,jdbcType=VARCHAR},
+      changing_object_values = #{changingObjectValues,jdbcType=VARCHAR},
+      property_changes = #{propertyChanges,jdbcType=VARCHAR},
+      the_old_attribute_values = #{theOldAttributeValues,jdbcType=VARCHAR},
+      the_new_attribute_values = #{theNewAttributeValues,jdbcType=VARCHAR},
+      change_a_person = #{changeAPerson,jdbcType=VARCHAR},
+      alteration_time = #{alterationTime,jdbcType=TIMESTAMP},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+    </trim>
+  </insert>
+  <insert id="insertOrUpdateSelective" keyColumn="id" keyProperty="id" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmAlteration" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into c_srm_alteration
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="changingObjectTypes != null">
+        changing_object_types,
+      </if>
+      <if test="changingObjectValues != null">
+        changing_object_values,
+      </if>
+      <if test="propertyChanges != null">
+        property_changes,
+      </if>
+      <if test="theOldAttributeValues != null">
+        the_old_attribute_values,
+      </if>
+      <if test="theNewAttributeValues != null">
+        the_new_attribute_values,
+      </if>
+      <if test="changeAPerson != null">
+        change_a_person,
+      </if>
+      <if test="alterationTime != null">
+        alteration_time,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    values
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="changingObjectTypes != null">
+        #{changingObjectTypes,jdbcType=VARCHAR},
+      </if>
+      <if test="changingObjectValues != null">
+        #{changingObjectValues,jdbcType=VARCHAR},
+      </if>
+      <if test="propertyChanges != null">
+        #{propertyChanges,jdbcType=VARCHAR},
+      </if>
+      <if test="theOldAttributeValues != null">
+        #{theOldAttributeValues,jdbcType=VARCHAR},
+      </if>
+      <if test="theNewAttributeValues != null">
+        #{theNewAttributeValues,jdbcType=VARCHAR},
+      </if>
+      <if test="changeAPerson != null">
+        #{changeAPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="alterationTime != null">
+        #{alterationTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+    on duplicate key update
+    <trim suffixOverrides=",">
+      <if test="id != null">
+        id = #{id,jdbcType=INTEGER},
+      </if>
+      <if test="changingObjectTypes != null">
+        changing_object_types = #{changingObjectTypes,jdbcType=VARCHAR},
+      </if>
+      <if test="changingObjectValues != null">
+        changing_object_values = #{changingObjectValues,jdbcType=VARCHAR},
+      </if>
+      <if test="propertyChanges != null">
+        property_changes = #{propertyChanges,jdbcType=VARCHAR},
+      </if>
+      <if test="theOldAttributeValues != null">
+        the_old_attribute_values = #{theOldAttributeValues,jdbcType=VARCHAR},
+      </if>
+      <if test="theNewAttributeValues != null">
+        the_new_attribute_values = #{theNewAttributeValues,jdbcType=VARCHAR},
+      </if>
+      <if test="changeAPerson != null">
+        change_a_person = #{changeAPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="alterationTime != null">
+        alteration_time = #{alterationTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+</mapper>

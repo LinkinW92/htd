@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.lcy.ProductTMapper">
+
+
+		<select id="queryProductionVr" resultType="int">
+				select count(id) from C_MES_PRODUCTION_T
+				where 1=1
+				and  production_vr = #{productionVr}
+				<if test="productId!=null and productId!=''">
+        			and id=#{productId}
+        		</if>
+		</select>
+		<select id="queryProductionType" resultType="int">
+				select count(id) from C_MES_PRODUCTION_T
+				where 1=1
+				and  production_type = #{productionType}
+				<if test="id!=null and id!=''">
+        			and id=#{id}
+        		</if>
+		</select>
+
+		<select id="queryProductionName" resultType="int">
+				select count(id) from C_MES_PRODUCTION_T
+				where 1=1
+				and  production_name = #{productionName}
+				<if test="id!=null and id!=''">
+        			and id=#{id}
+        		</if>
+		</select>
+
+
+		<insert id="addProduction" keyProperty="id" useGeneratedKeys="false">
+				insert into C_MES_PRODUCTION_T ( production_name
+				, production_type, production_trademark, production_series,
+				 production_vr, production_discription,
+				 production_ste,PRODUCTION_SYSTEM_ID,PRODUCTION_GROUP_ID,PRODUCTION_PRINT_ID,path)
+				values(#{productionName},#{productionType},#{productionTrademark},
+				#{productionSeries},#{productionVr},#{productionDiscription},#{productionSte},#{productionSystemId},#{productionGroupId},#{labelTypeId},#{path,jdbcType=VARCHAR})
+		</insert>
+
+		<update id="updateProduct">
+			update C_MES_PRODUCTION_T set  production_name =#{productionName},
+       	 		 production_type=#{productionType}, production_series=#{productionSeries},
+				 production_vr=#{productionVr}, production_discription=#{productionDiscription},
+				 production_ste=#{productionSte}, production_print_id=#{labelTypeId},
+				 PRODUCTION_SYSTEM_ID = #{productionSystemId}, PRODUCTION_GROUP_ID = #{productionGroupId},path=#{path,jdbcType=VARCHAR}
+       			 where  id = #{productId}
+		</update>
+
+
+
+
+</mapper>

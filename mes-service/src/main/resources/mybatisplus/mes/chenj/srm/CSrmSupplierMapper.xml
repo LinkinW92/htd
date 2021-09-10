@@ -1,0 +1,840 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.chenj.srm.CSrmSupplierMapper">
+    <resultMap id="BaseResultMap" type="com.skeqi.mes.pojo.chenj.srm.CSrmSupplier">
+        <!--@mbg.generated-->
+        <!--@Table c_srm_supplier-->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="contact_person" jdbcType="VARCHAR" property="contactPerson"/>
+        <result column="contact_number" jdbcType="VARCHAR" property="contactNumber"/>
+        <result column="contact_email" jdbcType="VARCHAR" property="contactEmail"/>
+        <result column="account" jdbcType="VARCHAR" property="account"/>
+        <result column="password" jdbcType="VARCHAR" property="password"/>
+        <result column="company_code" jdbcType="VARCHAR" property="companyCode"/>
+        <result column="supplier_code" jdbcType="VARCHAR" property="supplierCode"/>
+        <result column="in_phase" jdbcType="VARCHAR" property="inPhase"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="role_id" jdbcType="VARCHAR" property="roleId"/>
+        <result column="token" jdbcType="VARCHAR" property="token"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="token_create_time" jdbcType="TIMESTAMP" property="tokenCreateTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        id, `name`, contact_person, contact_number, contact_email, account, company_code,
+        supplier_code, in_phase, `status`, create_time, update_time,token_create_time,role_id
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        select
+        <include refid="Base_Column_List"/>
+        from c_srm_supplier
+        <where>
+            <if test="supplierCode != null and supplierCode != ''">
+                supplier_code=#{supplierCode,jdbcType=VARCHAR}
+            </if>
+            <if test="supplierCodeList != null and supplierCodeList != ''">
+                and supplier_code in
+                <foreach close=")" collection="supplierCodeList" item="item" open="(" separator=", ">
+                    #{item,jdbcType=VARCHAR}
+                </foreach>
+            </if>
+            <if test="name != null and name != ''">
+                and name=#{name,jdbcType=VARCHAR}
+            </if>
+            and is_delete='0'
+        </where>
+    </select>
+
+
+    <select id="selectSupplierInfo" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmSupplier"
+            resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CSrmSupplierInfoRsp">
+        <!--@mbg.generated-->
+        select
+        <include refid="Base_Column_List"/>
+        from c_srm_supplier
+        <where>
+            <if test="inPhase != null and inPhase != ''">
+                in_phase=#{inPhase,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null and status != ''">
+                and status=#{status,jdbcType=VARCHAR}
+            </if>
+            <if test="supplierCode!=null and supplierCode!=''">
+                and supplier_code like concat('%',#{supplierCode,jdbcType=VARCHAR},'%')
+            </if>
+            and is_delete='0'
+        </where>
+        group by supplier_code
+        order by create_time desc
+    </select>
+
+    <select id="selectSupplierEnterpriseInfo" resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CSrmSupplierEnterpriseRsp">
+        <!--@mbg.generated-->
+        select
+        s.supplier_code supplierCode,s.company_code companyCode,s.name companyName,s.status status,s.in_phase
+        inPhase,s.account account
+        from c_srm_supplier s left join c_srm_company c on s.company_code = c.company_code
+        <where>
+            <if test="inPhase != null and inPhase != ''">
+                s.in_phase=#{inPhase,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null and status != ''">
+                and s.status=#{status,jdbcType=VARCHAR}
+            </if>
+            <if test="supplierCode!=null and supplierCode!=''">
+                and s.supplier_code like concat('%',#{supplierCode,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="submitStart != null and submitStart != ''">
+                and s.update_time  <![CDATA[ >= ]]> #{submitStart,jdbcType=VARCHAR}
+            </if>
+            <if test="submitStop != null and submitStop != ''">
+                and s.update_time <![CDATA[ <= ]]>
+                #{submitStop,jdbcType=VARCHAR}
+            </if>
+
+            <if test="companyName != null and companyName != ''">
+                and c.company_name=#{companyName,jdbcType=VARCHAR}
+            </if>
+            and s.is_delete='0'
+        </where>
+        order by s.update_time desc
+    </select>
+    <select id="findSupplierStatus" resultType="java.lang.String">
+        <!--@mbg.generated-->
+        select `status` status
+        from c_srm_supplier
+        where supplier_code=#{supplierCode,jdbcType=VARCHAR} and is_delete='0'
+        group by supplier_code
+    </select>
+
+    <!--获取最后一条数据-->
+    <select id="selectFinallyData" resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        SELECT
+        supplier_code
+        FROM
+        c_srm_supplier
+        where supplier_code like concat('S','%')
+        ORDER BY
+        supplier_code DESC
+        LIMIT 1
+    </select>
+
+    <!--查询供应商代码是否存在-->
+    <select id="selectSupplierCode" resultType="com.skeqi.mes.pojo.chenj.srm.CSrmSupplier">
+        <!--@mbg.generated-->
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        c_srm_supplier
+        <where>
+            <if test="supplierCode!= null and supplierCode != ''">
+                supplier_code=#{supplierCode,jdbcType=VARCHAR}
+            </if>
+            and is_delete=0
+        </where>
+    </select>
+
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        <!--@mbg.generated-->
+        delete from c_srm_supplier
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmSupplier"
+            useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_supplier (`name`, contact_person, contact_number,
+        contact_email, account, `password`,
+        company_code, supplier_code, in_phase,
+        `status`, role_id,
+        token, create_time, update_time
+        )
+        values (#{name,jdbcType=VARCHAR}, #{contactPerson,jdbcType=VARCHAR}, #{contactNumber,jdbcType=VARCHAR},
+        #{contactEmail,jdbcType=VARCHAR}, #{account,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
+        #{companyCode,jdbcType=VARCHAR}, #{supplierCode,jdbcType=VARCHAR}, #{inPhase,jdbcType=VARCHAR},
+        #{status,jdbcType=INTEGER}, #{roleId,jdbcType=VARCHAR},
+        #{token,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+        )
+    </insert>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmSupplier"
+            useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_supplier
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null">
+                `name`,
+            </if>
+            <if test="contactPerson != null">
+                contact_person,
+            </if>
+            <if test="contactNumber != null">
+                contact_number,
+            </if>
+            <if test="contactEmail != null">
+                contact_email,
+            </if>
+            <if test="account != null">
+                account,
+            </if>
+            <if test="password != null">
+                `password`,
+            </if>
+            <if test="companyCode != null">
+                company_code,
+            </if>
+            <if test="supplierCode != null">
+                supplier_code,
+            </if>
+            <if test="inPhase != null">
+                in_phase,
+            </if>
+            <if test="status != null">
+                `status`,
+            </if>
+            <if test="roleId != null">
+                role_id,
+            </if>
+            <if test="token != null">
+                token,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="contactPerson != null">
+                #{contactPerson,jdbcType=VARCHAR},
+            </if>
+            <if test="contactNumber != null">
+                #{contactNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="contactEmail != null">
+                #{contactEmail,jdbcType=VARCHAR},
+            </if>
+            <if test="account != null">
+                #{account,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null">
+                #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="companyCode != null">
+                #{companyCode,jdbcType=VARCHAR},
+            </if>
+            <if test="supplierCode != null">
+                #{supplierCode,jdbcType=VARCHAR},
+            </if>
+            <if test="inPhase != null">
+                #{inPhase,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=INTEGER},
+            </if>
+            <if test="roleId != null">
+                #{roleId,jdbcType=VARCHAR},
+            </if>
+            <if test="token != null">
+                #{token,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmSupplier">
+        <!--@mbg.generated-->
+        update c_srm_supplier
+        <set>
+            <if test="name != null">
+                `name` = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="contactPerson != null">
+                contact_person = #{contactPerson,jdbcType=VARCHAR},
+            </if>
+            <if test="contactNumber != null">
+                contact_number = #{contactNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="contactEmail != null">
+                contact_email = #{contactEmail,jdbcType=VARCHAR},
+            </if>
+            <if test="account != null">
+                account = #{account,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null">
+                `password` = #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="companyCode != null">
+                company_code = #{companyCode,jdbcType=VARCHAR},
+            </if>
+            <if test="inPhase != null">
+                in_phase = #{inPhase,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                `status` = #{status,jdbcType=INTEGER},
+            </if>
+            <if test="roleId != null">
+                role_id = #{roleId,jdbcType=VARCHAR},
+            </if>
+            <if test="token != null">
+                token = #{token,jdbcType=VARCHAR},
+            </if>
+            <if test="isDelete != null">
+                is_delete=#{isDelete,jdbcType=BOOLEAN},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        <where>
+            <if test="supplierCode!=null and supplierCode!=''">
+                supplier_code = #{supplierCode,jdbcType=VARCHAR}
+            </if>
+            and is_delete='0'
+        </where>
+
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmSupplier">
+        <!--@mbg.generated-->
+        update c_srm_supplier
+        set `name` = #{name,jdbcType=VARCHAR},
+        contact_person = #{contactPerson,jdbcType=VARCHAR},
+        contact_number = #{contactNumber,jdbcType=VARCHAR},
+        contact_email = #{contactEmail,jdbcType=VARCHAR},
+        account = #{account,jdbcType=VARCHAR},
+        `password` = #{password,jdbcType=VARCHAR},
+        company_code = #{companyCode,jdbcType=VARCHAR},
+        supplier_code = #{supplierCode,jdbcType=VARCHAR},
+        in_phase = #{inPhase,jdbcType=VARCHAR},
+        `status` = #{status,jdbcType=INTEGER},
+        role_id = #{roleId,jdbcType=VARCHAR},
+        token = #{token,jdbcType=VARCHAR},
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+        update_time = #{updateTime,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=INTEGER} and is_delete='0'
+    </update>
+    <update id="updateBatch" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update c_srm_supplier
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="`name` = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.name,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="contact_person = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.contactPerson,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="contact_number = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.contactNumber,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="contact_email = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.contactEmail,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="account = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.account,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="`password` = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.password,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="company_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.companyCode,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="supplier_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.supplierCode,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="in_phase = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.inPhase,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="`status` = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.status,jdbcType=INTEGER}
+                </foreach>
+            </trim>
+            <trim prefix="role_id = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.roleId,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="token = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.token,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.createTime,jdbcType=TIMESTAMP}
+                </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.updateTime,jdbcType=TIMESTAMP}
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    <update id="updateBatchSelective" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update c_srm_supplier
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="`name` = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.name != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.name,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="contact_person = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.contactPerson != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.contactPerson,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="contact_number = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.contactNumber != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.contactNumber,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="contact_email = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.contactEmail != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.contactEmail,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="account = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.account != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.account,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="`password` = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.password != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.password,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="company_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.companyCode != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.companyCode,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="supplier_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.supplierCode != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.supplierCode,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="in_phase = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.inPhase != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.inPhase,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="`status` = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.status != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.status,jdbcType=INTEGER}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="role_id = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.roleId != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.roleId,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="token = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.token != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.token,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.createTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.createTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.updateTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.updateTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_supplier
+        (`name`, contact_person, contact_number, contact_email, account, `password`, company_code,
+        supplier_code, in_phase, `status`, role_id, token, create_time, update_time
+        )
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.name,jdbcType=VARCHAR}, #{item.contactPerson,jdbcType=VARCHAR},
+            #{item.contactNumber,jdbcType=VARCHAR},
+            #{item.contactEmail,jdbcType=VARCHAR}, #{item.account,jdbcType=VARCHAR}, #{item.password,jdbcType=VARCHAR},
+            #{item.companyCode,jdbcType=VARCHAR}, #{item.supplierCode,jdbcType=VARCHAR},
+            #{item.inPhase,jdbcType=VARCHAR},
+            #{item.status,jdbcType=INTEGER}, #{item,jdbcType=VARCHAR}, #{item.roleId,jdbcType=VARCHAR},
+            #{item.token,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP}
+            )
+        </foreach>
+    </insert>
+    <insert id="insertOrUpdate" keyColumn="id" keyProperty="id" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmSupplier"
+            useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_supplier
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            `name`,
+            contact_person,
+            contact_number,
+            contact_email,
+            account,
+            `password`,
+            company_code,
+            supplier_code,
+            in_phase,
+            `status`,
+            role_id,
+            token,
+            create_time,
+            update_time,
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            #{name,jdbcType=VARCHAR},
+            #{contactPerson,jdbcType=VARCHAR},
+            #{contactNumber,jdbcType=VARCHAR},
+            #{contactEmail,jdbcType=VARCHAR},
+            #{account,jdbcType=VARCHAR},
+            #{password,jdbcType=VARCHAR},
+            #{companyCode,jdbcType=VARCHAR},
+            #{supplierCode,jdbcType=VARCHAR},
+            #{inPhase,jdbcType=VARCHAR},
+            #{status,jdbcType=INTEGER},
+            #{roleId,jdbcType=VARCHAR},
+            #{token,jdbcType=VARCHAR},
+            #{createTime,jdbcType=TIMESTAMP},
+            #{updateTime,jdbcType=TIMESTAMP},
+        </trim>
+        on duplicate key update
+        <trim suffixOverrides=",">
+            <if test="id != null">
+                id = #{id,jdbcType=INTEGER},
+            </if>
+            `name` = #{name,jdbcType=VARCHAR},
+            contact_person = #{contactPerson,jdbcType=VARCHAR},
+            contact_number = #{contactNumber,jdbcType=VARCHAR},
+            contact_email = #{contactEmail,jdbcType=VARCHAR},
+            account = #{account,jdbcType=VARCHAR},
+            `password` = #{password,jdbcType=VARCHAR},
+            company_code = #{companyCode,jdbcType=VARCHAR},
+            supplier_code = #{supplierCode,jdbcType=VARCHAR},
+            in_phase = #{inPhase,jdbcType=VARCHAR},
+            `status` = #{status,jdbcType=INTEGER},
+            role_id = #{roleId,jdbcType=VARCHAR},
+            token = #{token,jdbcType=VARCHAR},
+            create_time = #{createTime,jdbcType=TIMESTAMP},
+            update_time = #{updateTime,jdbcType=TIMESTAMP},
+        </trim>
+    </insert>
+    <insert id="insertOrUpdateSelective" keyColumn="id" keyProperty="id"
+            parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmSupplier" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_supplier
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="name != null">
+                `name`,
+            </if>
+            <if test="contactPerson != null">
+                contact_person,
+            </if>
+            <if test="contactNumber != null">
+                contact_number,
+            </if>
+            <if test="contactEmail != null">
+                contact_email,
+            </if>
+            <if test="account != null">
+                account,
+            </if>
+            <if test="password != null">
+                `password`,
+            </if>
+            <if test="companyCode != null">
+                company_code,
+            </if>
+            <if test="supplierCode != null">
+                supplier_code,
+            </if>
+            <if test="inPhase != null">
+                in_phase,
+            </if>
+            <if test="status != null">
+                `status`,
+            </if>
+            <if test="roleId != null">
+                role_id,
+            </if>
+            <if test="token != null">
+                token,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="contactPerson != null">
+                #{contactPerson,jdbcType=VARCHAR},
+            </if>
+            <if test="contactNumber != null">
+                #{contactNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="contactEmail != null">
+                #{contactEmail,jdbcType=VARCHAR},
+            </if>
+            <if test="account != null">
+                #{account,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null">
+                #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="companyCode != null">
+                #{companyCode,jdbcType=VARCHAR},
+            </if>
+            <if test="supplierCode != null">
+                #{supplierCode,jdbcType=VARCHAR},
+            </if>
+            <if test="inPhase != null">
+                #{inPhase,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=INTEGER},
+            </if>
+            <if test="roleId != null">
+                #{roleId,jdbcType=VARCHAR},
+            </if>
+            <if test="token != null">
+                #{token,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+        on duplicate key update
+        <trim suffixOverrides=",">
+            <if test="id != null">
+                id = #{id,jdbcType=INTEGER},
+            </if>
+            <if test="name != null">
+                `name` = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="contactPerson != null">
+                contact_person = #{contactPerson,jdbcType=VARCHAR},
+            </if>
+            <if test="contactNumber != null">
+                contact_number = #{contactNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="contactEmail != null">
+                contact_email = #{contactEmail,jdbcType=VARCHAR},
+            </if>
+            <if test="account != null">
+                account = #{account,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null">
+                `password` = #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="companyCode != null">
+                company_code = #{companyCode,jdbcType=VARCHAR},
+            </if>
+            <if test="supplierCode != null">
+                supplier_code = #{supplierCode,jdbcType=VARCHAR},
+            </if>
+            <if test="inPhase != null">
+                in_phase = #{inPhase,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                `status` = #{status,jdbcType=INTEGER},
+            </if>
+            <if test="roleId != null">
+                role_id = #{roleId,jdbcType=VARCHAR},
+            </if>
+            <if test="token != null">
+                token = #{token,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <!--根据供应商代码查询供应商-->
+    <select id="checkSupplierCode" parameterType="string" resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        select
+        <include refid="Base_Column_List"/>,password,token,role_id
+        from c_srm_supplier
+        <where>
+            <if test="supplierCode != null and supplierCode != ''">
+                supplier_code=#{supplierCode,jdbcType=VARCHAR}
+            </if>
+            <if test="account != null and account != ''">
+                and account=#{account,jdbcType=VARCHAR}
+            </if>
+            and is_delete='0'
+        </where>
+        order by create_time desc
+    </select>
+    <update id="updateTokenCreateTimeOrToken">
+        <!--@mbg.generated-->
+        update c_srm_supplier
+        set token_create_time = #{tokenCreateTime,jdbcType=TIMESTAMP}
+        <if test="token != null and token != ''">
+            ,token=#{token,jdbcType=VARCHAR}
+        </if>
+        where account = #{userName,jdbcType=VARCHAR} and is_delete='0'
+    </update>
+    <select id="findByToken" resultMap="BaseResultMap">
+        select * from c_srm_supplier where token=#{token,jdbcType=VARCHAR} and is_delete='0'
+    </select>
+
+
+    <select id="findEnterpriseAuthInfo" resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CSrmSupplierEnterpriseRsp">
+        SELECT
+        b.bank_name bankName,
+        b.bank_account bankAccount,
+        p.product_name productName,
+        p.product_type productType
+        FROM c_srm_supplier s
+        LEFT JOIN c_srm_bank b ON s.supplier_code = b.supplier_code
+        LEFT JOIN c_srm_product p ON s.supplier_code = p.supplier_code
+        WHERE s.supplier_code = #{supplierCode,jdbcType=VARCHAR} and s.is_delete='0'
+    </select>
+    <select id="findSupplierManagement" resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CSrmSupplierManagementRsp">
+        SELECT s.supplier_code,s.`name`,
+        s.contact_person,s.contact_number,s.contact_email,s.company_code,csc.company_name,s.in_phase,s.create_time,s.status
+        from c_srm_supplier s
+        left join c_srm_company csc on s.company_code = csc.company_code
+        <where>
+            <if test="companyName != null and companyName != ''">
+                csc.company_name like concat('%',#{companyName,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="name != null and name != ''">
+                and s.name like concat('%',#{name,jdbcType=VARCHAR},'%')
+            </if>
+            and s.is_delete=0
+        </where>
+        order by s.create_time desc
+    </select>
+    <select id="selectSupplierList" resultType="com.skeqi.mes.pojo.chenj.srm.req.CSrmSupplierHRsp">
+        select
+        `name` name,supplier_code supplierCode
+        from c_srm_supplier
+        <where>
+            <if test="name != null and name != ''">
+                name like concat('%',#{name,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="supplierCode != null and supplierCode != ''">
+                and supplier_code like concat('%',#{supplierCode,jdbcType=VARCHAR},'%')
+            </if>
+            and is_delete=0 and status='3'
+        </where>
+        group by supplier_code
+        order by create_time desc
+    </select>
+
+
+    <insert id="batchInsertKThree" parameterType="map">
+        insert into c_srm_supplier
+        (`name`, contact_person, contact_number, address, account, `password`,
+        supplier_code, `status`, role_id,
+        create_time, update_time, is_delete, phone, fax, abbreviation)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.name,jdbcType=VARCHAR}, #{item.contactPerson,jdbcType=VARCHAR},
+            #{item.contactNumber,jdbcType=VARCHAR},
+            #{item.address,jdbcType=VARCHAR}, #{item.account,jdbcType=VARCHAR},
+            #{item.password,jdbcType=VARCHAR}, #{item.supplierCode,jdbcType=VARCHAR},
+            #{item.status,jdbcType=INTEGER}, #{item.roleId,jdbcType=VARCHAR},
+            now(),now(),0, #{item.phone,jdbcType=VARCHAR},
+            #{item.fax,jdbcType=VARCHAR}, #{item.abbreviation,jdbcType=VARCHAR})
+        </foreach>
+    </insert>
+</mapper>

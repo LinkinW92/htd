@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.alarm.CAlarmShortmessageConfigDao">
+
+	<!-- 通过用户名查询用户 -->
+	<select id="findUserByName" resultType="com.skeqi.mes.pojo.CMesUserT">
+		select id,USER_NAME,`STATUS`,DEPARTMENT,`SECURITY`,USER_POWER,ROLE_ID,USER_NUMBER,LOGINSTATUS,Token from c_mes_user_t
+		where viewMode = 1
+		and USER_NAME = #{userName}
+	</select>
+
+	<!-- 查询短信服务配置集合 -->
+	<select id="findShortmessageConfigList" resultType="com.skeqi.mes.pojo.alarm.CAlarmShortmessageConfig">
+		select a.id,a.user_id,a.header,a.parameter,a.charset,a.api_url,a.request_method,a.dt from c_alarm_shortmessage_config a
+		join c_mes_user_t b on a.user_id = b.id
+<!-- 		where b.user_name =  #{userName} -->
+		ORDER BY a.id
+	</select>
+
+	<!-- 新增短信服务配置 -->
+	<insert id="addShortmessageConfig">
+		insert into c_alarm_shortmessage_config(user_id,header,parameter,charset,api_url,request_method,dt)
+		value(#{userId},#{header},#{parameter},#{charset},#{apiUrl},#{requestMethod},now())
+	</insert>
+
+	<!-- 更新短信服务配置 -->
+	<update id="updateShortmessageConfig">
+		update c_alarm_shortmessage_config
+		set
+		user_id = #{userId},
+		header = #{header},
+		parameter = #{parameter},
+		charset = #{charset},
+		api_url = #{apiUrl},
+		request_method = #{requestMethod},
+		dt = now()
+		where id = #{id}
+	</update>
+
+	<!-- 删除短信服务配置 -->
+	<delete id="deleteShortmessageConfig">
+		delete from c_alarm_shortmessage_config
+		where id = #{id}
+	</delete>
+
+</mapper>
+
+

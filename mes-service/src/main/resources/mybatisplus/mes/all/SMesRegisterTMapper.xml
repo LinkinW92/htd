@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.all.SMesRegisterTDAO">
+
+	<!-- 查询列表 -->
+	<select id="findAllRegisterT" resultType="RegisterT">
+		select r.*,s.station_Name as stationName,l.name as lineName from S_MES_REGISTER_T r, C_MES_STATION_T s,C_MES_LINE_T l
+		where r.station_id=s.id and r.line_id=l.id
+		<if test="id!=null and id!=0">
+			 and r.id=#{id}
+		</if>
+		<if test="lineName!=null and lineName!=''">
+			and l.name like concat('%',#{lineName},'%')
+		</if>
+		<if test="stationName!=null and stationName!=''">
+			and s.station_Name like concat('%',#{stationName},'%')
+		</if>
+		<!-- order by r.dt desc -->
+	</select>
+
+	<!--添加  -->
+	<insert id="addRegisterT">
+		 INSERT INTO  S_MES_REGISTER_T(DT,IP,MAC,HOSTNAME,LINE_ID,STATION_ID)
+		 VALUES (now(),#{ip},#{mac},#{hostname},#{lineId},#{stationId})
+	</insert>
+
+	<!-- 修改 -->
+	<update id="updadteRegisterT">
+		UPDATE S_MES_REGISTER_T SET IP = #{ip},DT=now(),HOSTNAME=#{hostname},station_id=#{stationId},
+		line_id=#{lineId} where ID=#{id}
+	</update>
+
+	<!-- 删除 -->
+	<delete id="delRegisterT">
+		DELETE FROM S_MES_REGISTER_T WHERE ID = #{id}
+	</delete>
+</mapper>

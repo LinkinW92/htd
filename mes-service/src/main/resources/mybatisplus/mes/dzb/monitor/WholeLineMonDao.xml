@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.skeqi.mes.mapper.dzb.monitor.WholeLineMonDao">
+
+    <select id="listOfflineCount" resultType="java.util.Map">
+        <![CDATA[
+        select count(sn) snCount,TO_DAYS(OFFLINE_DT) days from p_mes_tracking_t
+        where OFFLINE_DT <= #{end} and OFFLINE_DT>=#{start}
+        group by  days;
+        ]]>
+    </select>
+    <select id="listOnlineCount" resultType="java.util.Map">
+        <![CDATA[
+        select count(sn) snCount,TO_DAYS(dt) days from p_mes_tracking_t
+        where dt <= #{end}  and dt>=#{start}
+        group by days;
+        ]]>
+    </select>
+    <select id="listOnlineCount2" resultType="java.util.Map">
+        <![CDATA[
+        select count(sn) snCount,TO_DAYS(dt) days from r_mes_tracking_t
+        where dt <= #{end}  and dt>=#{start}
+        group by days;
+        ]]>
+    </select>
+    <select id="listNgCount" resultType="java.util.Map">
+        <![CDATA[
+        select count(sn) snCount,TO_DAYS(OFFLINE_DT) days from p_mes_tracking_t
+        where OFFLINE_DT <= #{end} and OFFLINE_DT>=#{start} and `STATUS`='NG'
+        group by  days;
+        ]]>
+    </select>
+    <select id="listOrder" resultType="java.util.Map">
+        select WORKORDER_ID,
+        (select p.PRODUCTION_NAME FROM c_mes_production_t p WHERE p.ID=w.PRODUCT_ID) as PRODUCTION_NAME,
+        order_number,
+        OFFLINE_NUMBER
+        from r_mes_workorder_detail_t w
+        order by plan_start_time desc
+        limit 0,6
+    </select>
+
+</mapper>

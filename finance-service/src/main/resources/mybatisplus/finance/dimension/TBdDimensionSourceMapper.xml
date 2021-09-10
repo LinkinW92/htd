@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.dimension.TBdDimensionSourceMapper">
+
+    <resultMap type="com.skeqi.finance.domain.TBdDimensionSource" id="TBdDimensionSourceResult">
+        <result property="fId" column="f_id"/>
+        <result property="fNumber" column="f_number"/>
+        <result property="fName" column="f_name"/>
+        <result property="fType" column="f_type"/>
+        <result property="fStrategyType" column="f_strategy_type"/>
+        <result property="fCreateOrgid" column="f_create_orgid"/>
+        <result property="fCreatorid" column="f_creatorid"/>
+        <result property="fCreateDate" column="f_create_date"/>
+        <result property="fUseOrgid" column="f_use_orgid"/>
+        <result property="fModifierid" column="f_modifierid"/>
+        <result property="fModifyDate" column="f_modify_date"/>
+        <result property="fDocumentStatus" column="f_document_status"/>
+        <result property="fAuditorid" column="f_auditorid"/>
+        <result property="fAuditDate" column="f_audit_date"/>
+        <result property="fForbidStatus" column="f_forbid_status"/>
+        <result property="fForbidderid" column="f_forbidderid"/>
+        <result property="fForbidDate" column="f_forbid_date"/>
+        <result property="fIssysPreset" column="f_issys_preset"/>
+        <result property="fMasterId" column="f_master_id"/>
+    </resultMap>
+    <resultMap type="com.skeqi.finance.pojo.vo.dimension.TBdDimensionSourceVo" id="TBdDimensionSourceVoResult">
+        <result property="fId" column="f_id"/>
+        <result property="fNumber" column="f_number"/>
+        <result property="fName" column="f_name"/>
+    </resultMap>
+    <resultMap type="com.skeqi.finance.domain.help.TBdBaseType" id="TBdBaseTypeResult">
+        <result property="fId" column="f_id"/>
+        <result property="fNumber" column="f_number"/>
+        <result property="fTypeName" column="f_type_name"/>
+        <result property="fTableName" column="f_table_name"/>
+        <result property="fListSql" column="f_listsql"/>
+        <result property="fOneSql" column="f_onesql"/>
+    </resultMap>
+    <resultMap type="com.skeqi.finance.domain.help.TBdHelpData" id="TBdBaseDataResult">
+        <result property="fId" column="f_id"/>
+        <result property="fName" column="f_name"/>
+        <result property="fNumber" column="f_number"/>
+        <result property="fRemark" column="f_remark"/>
+        <result property="fSort" column="f_sort"/>
+        <result property="fTypeId" column="f_type_id"/>
+        <result property="fTypeName" column="f_type_name"/>
+        <result property="fCreateOrgid" column="f_create_orgid"/>
+        <result property="fUseOrgid" column="f_use_orgid"/>
+        <result property="fCreatorid" column="f_creatorid"/>
+        <result property="fCreateDate" column="f_create_date"/>
+        <result property="fModifierid" column="f_modifierid"/>
+        <result property="fModifyDate" column="f_modify_date"/>
+        <result property="fDocumentStatus" column="f_document_status"/>
+        <result property="fAuditorid" column="f_auditorid"/>
+        <result property="fAuditDate" column="f_audit_date"/>
+        <result property="fForbidStatus" column="f_forbid_status"/>
+        <result property="fForbidderid" column="f_forbidderid"/>
+        <result property="fForbidDate" column="f_forbid_date"/>
+        <result property="fIssysPreset" column="f_issys_preset"/>
+        <result property="fMasterId" column="f_master_id"/>
+    </resultMap>
+
+    <select id="findByCode" resultMap="TBdDimensionSourceResult">
+        select * from t_bd_dimension_source where  f_id=#{code}
+    </select>
+
+    <select id="listBastType" resultMap="TBdDimensionSourceVoResult">
+        select f_id, f_number,f_type_name f_name
+        from t_bd_base_type
+    </select>
+    <select id="listBaseData" resultType="java.util.Map">
+        ${sql}
+    </select>
+    <select id="listBaseData2" resultMap="TBdBaseDataResult">
+        select * from t_bd_base_data where f_type_id = #{typeId}
+    </select>
+    <select id="getOneBaseData" resultType="com.skeqi.finance.domain.TBdDimensionSource">
+        ${sql} #{id}
+    </select>
+    <select id="getOneBaseData2" resultMap="TBdBaseDataResult">
+        select * from t_bd_base_data where id = #{id}
+    </select>
+    <select id="getOneBastType" resultMap="TBdBaseTypeResult">
+        select f_id, f_number, f_type_name,f_table_name,f_listsql,f_onesql
+        from t_bd_base_type where f_id = #{id}
+    </select>
+</mapper>

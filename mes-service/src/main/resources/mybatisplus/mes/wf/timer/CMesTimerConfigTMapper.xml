@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wf.timer.CMesTimerConfigTMapper">
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, code, `name`, `cron`,cron_explain, `status`,params,start_time,stop_time
+  </sql>
+  <insert id="addTimerConfig">
+    insert into c_mes_timer_config_t
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="code != null and code != ''">
+        code,
+      </if>
+      <if test="name != null and name != ''">
+        name,
+      </if>
+      <if test="status != null and status != ''">
+        status,
+      </if>
+      <if test="params != null and params != ''">
+        params,
+      </if>
+      <if test="startTime != null and startTime != ''">
+        start_time,
+      </if>
+      <if test="stopTime != null and stopTime != ''">
+        stop_time,
+      </if>
+      <if test="cron != null and cron != ''">
+        `cron`,
+      </if>
+      <if test="cronExplain != null and cronExplain != ''">
+        cron_explain
+      </if>
+    </trim>
+    <trim prefix="value(" suffix=")" suffixOverrides=",">
+      <if test="code != null and code != ''">
+        #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null and name != ''">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null and status != ''">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="params != null and params != ''">
+        #{params,jdbcType=VARCHAR},
+      </if>
+      <if test="startTime != null and startTime != ''">
+        #{startTime,jdbcType=VARCHAR},
+      </if>
+      <if test="stopTime != null and stopTime != ''">
+        #{stopTime,jdbcType=VARCHAR},
+      </if>
+      <if test="cron != null and cron != ''">
+        #{cron,jdbcType=INTEGER},
+      </if>
+      <if test="cronExplain != null and cronExplain != ''">
+        #{cronExplain,jdbcType=VARCHAR}
+      </if>
+    </trim>
+  </insert>
+  <delete id="deleteTimerTack">
+    delete from c_mes_timer_config_t
+    where code = #{code,jdbcType=VARCHAR}
+  </delete>
+  <select id="selectByCode" resultType="com.skeqi.mes.pojo.wf.timer.CMesTimerConfigT">
+    <!--@mbg.generated-->
+    select
+    id, code, `name`, `cron`,cron_explain, `status`,params,start_time,stop_time
+    from c_mes_timer_config_t
+    <where>
+      <if test="_parameter != null and _parameter != ''">
+        code = #{code,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </select>
+
+  <update id="updateByStatus">
+    <!--@mbg.generated-->
+    update c_mes_timer_config_t
+    <set>
+      <if test="status != null">
+        `status` = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="status ==0">
+        stop_time = now(),
+      </if>
+      <if test="status ==1">
+        start_time = now()
+      </if>
+    </set>
+    where code = #{code,jdbcType=VARCHAR}
+  </update>
+
+    <update id="editTimerConfig">
+      update c_mes_timer_config_t
+      <set>
+        <if test="name != null and name != ''">
+          name = #{name,jdbcType=VARCHAR},
+        </if>
+        <if test="status != null">
+          `status` = #{status,jdbcType=INTEGER},
+        </if>
+        <if test="params != null and params != ''">
+          `params` = #{params,jdbcType=VARCHAR},
+        </if>
+        <if test="cron != null and cron != ''">
+          `cron` = #{cron,jdbcType=INTEGER},
+        </if>
+        <if test="cronExplain != null and cronExplain != ''">
+          cron_explain = #{cronExplain,jdbcType=INTEGER},
+        </if>
+      </set>
+      where code = #{code,jdbcType=VARCHAR}
+    </update>
+
+  <update id="updateByStatusNoTime">
+    <!--@mbg.generated-->
+    update c_mes_timer_config_t
+    <set>
+      <if test="status != null">
+        `status` = #{status,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where code = #{code,jdbcType=VARCHAR}
+  </update>
+</mapper>

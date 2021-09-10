@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.qh.CQhRoleJurisdictionDao">
+
+	<!-- 手动映射 -->
+	<resultMap type="com.alibaba.fastjson.JSONObject" id="jurisdictionMap">
+		<result column="menuId1" property="id" />
+		<result column="menuName1" property="menuName" />
+
+		<collection property="menuList" javaType="list" ofType="com.alibaba.fastjson.JSONObject">
+
+			<result column="menuId2" property="id" />
+			<result column="menuName2" property="menuName" />
+
+			<collection property="menuList" javaType="list" ofType="com.alibaba.fastjson.JSONObject">
+
+				<result column="menuId3" property="id" />
+				<result column="menuName3" property="menuName" />
+
+
+				<collection property="menuList" javaType="list" ofType="com.alibaba.fastjson.JSONObject">
+
+					<result column="menuId4" property="id" />
+					<result column="menuName4" property="menuName" />
+
+				</collection>
+
+			</collection>
+
+		</collection>
+
+	</resultMap>
+
+	<!-- 查询所有权限 -->
+	<select id="findJurisdictionList" resultMap="jurisdictionMap">
+		SELECT
+			menu1.id AS menuId1,
+			menu1.menu_name AS menuName1,
+			ifnull(CONCAT(menu1.id,"-",authority_interface1.id),menu2.id) AS menuId2,
+			ifnull(authority_interface1.operation_type,menu2.menu_name) AS menuName2,
+			ifnull(CONCAT(menu2.id,"-",authority_interface2.id),menu3.id) AS menuId3,
+			ifnull(authority_interface2.operation_type,menu3.menu_name) AS menuName3,
+			CONCAT(menu3.id,"-",authority_interface3.id) AS menuId4,
+			authority_interface3.operation_type AS menuName4
+		FROM
+			c_qh_menu menu1
+			LEFT JOIN c_qh_menu menu2 ON menu1.id = menu2.superior_menu_id and menu2.if_enable = "true"
+			LEFT JOIN c_qh_menu menu3 ON menu2.id = menu3.superior_menu_id and menu3.if_enable = "true"
+			LEFT JOIN c_qh_authority_interface authority_interface1 ON menu1.id = authority_interface1.menu_id
+			LEFT JOIN c_qh_authority_interface authority_interface2 ON menu2.id = authority_interface2.menu_id
+			LEFT JOIN c_qh_authority_interface authority_interface3 ON menu3.id = authority_interface3.menu_id
+		WHERE
+			menu1.menu_grade = 1
+			and menu1.if_enable = "true"
+		ORDER BY
+			menu1.`order`+0,
+			menu2.`order`+0,
+			menu3.`order`+0
+	</select>
+
+	<!-- 查询角色权限 -->
+	<select id="findRoleJurisdiction" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			CONCAT( role_menu.menu_id, "-", role_menu.operation_type_id ) AS id,
+			authority_interface.operation_type as operationType,
+			authority_interface.operation_type_code as operationTypeCode
+		FROM
+			c_qh_role_menu role_menu
+			JOIN c_qh_authority_interface authority_interface ON role_menu.operation_type_id = authority_interface.id
+		WHERE
+			role_menu.role_id = #{roleId}
+	</select>
+
+	<!-- 新增角色权限 -->
+	<insert id="addRoleJurisdiction">
+		insert into c_qh_role_menu(role_id,menu_id,operation_type_id)
+		value ${sql}
+	</insert>
+
+	<!-- 删除角色权限 -->
+	<delete id="deleteRoleJurisdiction">
+		delete from c_qh_role_menu
+		where  role_id = #{roleId}
+	</delete>
+
+</mapper>

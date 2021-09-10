@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wf.linesidelibrary.RLslMaterialRequestTMapper">
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    ID, cdt, udt, billNo, productId, lineId,stationId, `status`, creator, picker, pickTime,
+    collector, collectTime,description
+  </sql>
+  <update id="updateByIdsAndStatus">
+    update  r_lsl_material_request_t
+    <set>
+        <if test="status != null">
+            status = #{status,jdbcType=INTEGER},
+        </if>
+        <if test="picker != null and picker != ''">
+            picker = #{picker,jdbcType=VARCHAR},
+            pickTime = now()
+        </if>
+
+    </set>
+    <where>
+        <if test="billNo != null and billNo != ''">
+            billNo = #{billNo,jdbcType=VARCHAR}
+        </if>
+    </where>
+  </update>
+
+    <update id="updateMaterialRequestCancelTask">
+        update  r_lsl_material_request_t
+        <set>
+            <if test="status != null">
+                status = #{status,jdbcType=INTEGER},
+            </if>
+            <if test="collector != null and collector != ''">
+                picker = #{picker,jdbcType=VARCHAR},
+                pickTime = now(),
+            </if>
+            <if test="description != null and description != ''">
+                `description` = #{description,jdbcType=VARCHAR}
+            </if>
+
+        </set>
+        <where>
+            <if test="billNo != null and billNo != ''">
+                billNo = #{billNo,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </update>
+    <update id="rejectMaterialRequest">
+        update  r_lsl_material_request_t
+        <set>
+            <if test="status != null">
+                status = #{status,jdbcType=INTEGER},
+            </if>
+            <if test="rejecter != null and rejecter != ''">
+                rejecter = #{rejecter,jdbcType=VARCHAR},
+                refusedTime = now(),
+            </if>
+            <if test="refuseDescribe != null and refuseDescribe != ''">
+                `refuseDescribe` = #{refuseDescribe,jdbcType=VARCHAR}
+            </if>
+
+        </set>
+        <where>
+            <if test="billNo != null and billNo != ''">
+                billNo = #{billNo,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </update>
+
+    <select id="findMaterialRequest" resultType="com.skeqi.mes.pojo.wf.linesidelibrary.RLslMaterialRequestT">
+      SELECT productId,lineId,stationId FROM r_lsl_material_request_t
+      WHERE
+        <foreach close=")" collection="list" item="item" open="(" separator="or">
+            (
+            productId=#{item.productId,jdbcType=INTEGER}
+            and lineId=#{item.lineId,jdbcType=INTEGER}
+            and stationId = #{item.stationId,jdbcType=INTEGER}
+            )
+        </foreach>
+          and `STATUS` <![CDATA[ < ]]> 3
+    </select>
+
+  <insert id="addMaterialRequest">
+    insert into r_lsl_material_request_t
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+        cdt,
+        udt,
+        billNo,
+        productId,
+        lineId,
+        stationId,
+        `status`,
+        creator,
+        serialNumber
+    </trim>
+    values
+    <foreach collection="list" item="item" separator=",">
+      <trim prefix="(" suffix=")" suffixOverrides=",">
+      now(),
+      now(),
+      #{item.billNo,jdbcType=INTEGER},
+      #{item.productId,jdbcType=INTEGER},
+      #{item.lineId,jdbcType=INTEGER},
+      #{item.stationId,jdbcType=INTEGER},
+      #{item.status,jdbcType=INTEGER},
+      #{item.creator,jdbcType=VARCHAR},
+      #{item.serialNumber,jdbcType=VARCHAR}
+      </trim>
+    </foreach>
+  </insert>
+
+  <select id="findMaterialRequestByStatus" resultType="com.skeqi.mes.pojo.wf.linesidelibrary.RLslMaterialRequestT">
+    SELECT r.ID, r.cdt, r.udt, r.billNo, r.productId, r.lineId,r.stationId, r.`status`, r.creator,p.PRODUCTION_NAME productionName,l.NAME lineName,s.STATION_NAME stationName,IF(count(rd.ID)=0,null,count(rd.ID)) detailCount,sum(rd.requiredQuantity) sumRequiredQuantity
+    FROM r_lsl_material_request_t r
+      left join c_mes_production_t p
+      on p.ID = r.productId
+      left join c_mes_line_t l
+      on  r.lineId = l.ID
+      left join c_mes_station_t s
+      on s.ID = r.stationId
+      left join c_lsl_material_request_detail_t rd
+      on rd.billNo = r.billNo
+    <where>
+        <foreach collection="statusList" item="item" open="r.`status` in (" close=")" separator=",">
+            #{item,jdbcType=INTEGER}
+        </foreach>
+    </where>
+    group by r.billNo,r.udt,r.cdt
+    order by r.udt,r.cdt
+  </select>
+
+  <select id="findMaterialRequestByBillNo" resultType="integer">
+    SELECT ID
+    FROM r_lsl_material_request_t
+      <where>
+        <foreach collection="statusList" item="item" open="`status` not in(" close=")" separator=",">
+            #{item,jdbcType=INTEGER}
+        </foreach>
+          and
+        billNo = #{billNo,jdbcType=VARCHAR}
+      </where>
+  </select>
+
+    <select id="selectMaterialRequest" resultType="com.skeqi.mes.pojo.wf.linesidelibrary.RLslMaterialRequestT">
+        SELECT cdt,serialNumber FROM r_lsl_material_request_t ORDER BY cdt desc,serialNumber DESC LIMIT 1
+    </select>
+
+
+    <select id="findMaterialRequestByBillNoList" resultType="com.skeqi.mes.pojo.wf.linesidelibrary.RLslMaterialRequestT">
+        SELECT r.billNo, r.productId, r.lineId,r.stationId,l.NAME lineName,s.STATION_NAME stationName,s.trumpet trumpet,s.loopSum, rd.requiredQuantity,rd.materialNo,rd.materialName
+        FROM r_lsl_material_request_t r
+                 left join c_mes_line_t l
+                           on  r.lineId = l.ID
+                 left join c_mes_station_t s
+                           on s.ID = r.stationId
+                 left join c_lsl_material_request_detail_t rd
+                           on rd.billNo = r.billNo
+        <where>
+            <foreach collection="list" open="r.billNo in (" close=")" item="item" separator=",">
+                #{item.billNo,jdbcType=VARCHAR}
+            </foreach>
+        </where>
+    </select>
+
+    <select id="findMaterialRequestAll" resultType="com.skeqi.mes.pojo.wf.linesidelibrary.RLslMaterialRequestT">
+        SELECT
+        r.ID,
+        r.cdt,
+        r.udt,
+        r.billNo,
+        r.productId,
+        r.lineId,
+        r.stationId,
+        r.`status`,
+        r.creator,
+        r.picker,
+        r.pickTime,
+        r.collector,
+        r.collectTime,
+        r.serialNumber,
+        r.description,
+        r.rejecter,
+        r.refusedTime,
+        r.refuseDescribe,
+        p.PRODUCTION_NAME productionName,
+        l.NAME lineName,
+        s.STATION_NAME stationName,
+        (select IF(count(rd.ID)=0,null,count(rd.ID)) from c_lsl_material_request_detail_t rd where rd.billNo = r.billNo ) detailCount,
+        (select sum(rd.requiredQuantity) from c_lsl_material_request_detail_t rd where rd.billNo = r.billNo ) sumRequiredQuantity
+        FROM r_lsl_material_request_t r
+        left join c_mes_production_t p
+        on p.ID = r.productId
+        left join c_mes_line_t l
+        on  r.lineId = l.ID
+        left join c_mes_station_t s
+        on s.ID = r.stationId
+        <where>
+            <if test="status != null">
+                and r.status = #{status,jdbcType=INTEGER}
+            </if>
+            <if test="billNo != null and billNo != ''">
+                and r.billNo = #{billNo,jdbcType=VARCHAR}
+            </if>
+            <if test="creator != null and creator != ''">
+                and r.creator = #{creator,jdbcType=VARCHAR}
+            </if>
+            <if test="collector != null and collector != ''">
+                and r.collector = #{collector,jdbcType=VARCHAR}
+            </if>
+            <if test="rejecter != null and rejecter != ''">
+                and r.rejecter = #{rejecter,jdbcType=VARCHAR}
+            </if>
+            <if test="pickTime !=null and pickTime != '' and startPickTime !=null and startPickTime != ''">
+                and pickTime BETWEEN
+                DATE_FORMAT(#{startPickTime,jdbcType=VARCHAR},'%Y-%m-%d 00:00:00')  AND DATE_FORMAT(#{pickTime,jdbcType=VARCHAR},'%Y-%m-%d 23:59:59')
+            </if>
+        </where>
+    </select>
+</mapper>

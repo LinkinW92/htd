@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wf.linesidelibrary.checkInventory.LslCheckInventoryDetailedTMapper">
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, `number`, check_number, material_code, real_quantity, warehouse_quantity, discrepancy_quantity,
+    work_order, cdt, udt
+  </sql>
+    <delete id="deleteDetailedByCheckNumber">
+      delete from c_lsl_check_inventory_detailed_t where check_number = #{number,jdbcType=VARCHAR}
+    </delete>
+    <select id="selectByPrimaryKey"  resultType="com.skeqi.mes.pojo.wf.linesidelibrary.checkInventory.LslCheckInventoryDetailedT">
+    <!--@mbg.generated-->
+    select
+    <include refid="Base_Column_List" />
+    from c_lsl_check_inventory_detailed_t
+    where number = #{number,jdbcType=VARCHAR}
+  </select>
+    <select id="selectAll" resultType="com.skeqi.mes.pojo.wf.linesidelibrary.checkInventory.LslCheckInventoryDetailedT">
+      select
+      <include refid="Base_Column_List" />
+      from c_lsl_check_inventory_detailed_t
+      <where>
+        <if test="checkNumber != null and checkNumber != ''">
+          `check_number` = #{checkNumber,jdbcType=VARCHAR}
+        </if>
+      </where>
+    </select>
+
+  <insert id="insertSelective" parameterType="com.skeqi.mes.pojo.wf.linesidelibrary.checkInventory.LslCheckInventoryDetailedT">
+    <!--@mbg.generated-->
+    insert into c_lsl_check_inventory_detailed_t
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="number != null">
+        `number`,
+      </if>
+      <if test="checkNumber != null">
+        check_number,
+      </if>
+      <if test="materialCode != null">
+        material_code,
+      </if>
+      <if test="realQuantity != null">
+        real_quantity,
+      </if>
+      <if test="warehouseQuantity != null">
+        warehouse_quantity,
+      </if>
+      <if test="discrepancyQuantity != null">
+        discrepancy_quantity,
+      </if>
+      <if test="workOrder != null">
+        work_order,
+      </if>
+      <if test="cdt != null">
+        cdt,
+      </if>
+      <if test="udt != null">
+        udt,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="number != null">
+        #{number,jdbcType=VARCHAR},
+      </if>
+      <if test="checkNumber != null">
+        #{checkNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="materialCode != null">
+        #{materialCode,jdbcType=VARCHAR},
+      </if>
+      <if test="realQuantity != null">
+        #{realQuantity,jdbcType=INTEGER},
+      </if>
+      <if test="warehouseQuantity != null">
+        #{warehouseQuantity,jdbcType=INTEGER},
+      </if>
+      <if test="discrepancyQuantity != null">
+        #{discrepancyQuantity,jdbcType=INTEGER},
+      </if>
+      <if test="workOrder != null">
+        #{workOrder,jdbcType=VARCHAR},
+      </if>
+      <if test="cdt != null">
+        #{cdt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="udt != null">
+        #{udt,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+    <insert id="addDetailedByList">
+      insert into c_lsl_check_inventory_detailed_t
+      <trim prefix="(" suffix=")" suffixOverrides=",">
+          `number`,
+          check_number,
+          material_code,
+          real_quantity,
+          warehouse_quantity,
+          discrepancy_quantity,
+          work_order,
+          cdt,
+          udt
+      </trim>
+
+      <foreach collection="list" item="item" open="values" separator=",">
+        (
+          #{item.number,jdbcType=VARCHAR},
+          #{item.checkNumber,jdbcType=VARCHAR},
+          #{item.materialCode,jdbcType=VARCHAR},
+          #{item.realQuantity,jdbcType=INTEGER},
+          #{item.warehouseQuantity,jdbcType=INTEGER},
+          #{item.discrepancyQuantity,jdbcType=INTEGER},
+          #{item.workOrder,jdbcType=VARCHAR},
+          #{item.cdt,jdbcType=TIMESTAMP},
+          #{item.udt,jdbcType=TIMESTAMP}
+        )
+      </foreach>
+
+
+    </insert>
+</mapper>

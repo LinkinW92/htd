@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.TBdAccountcyMapper">
+
+    <resultMap type="com.skeqi.finance.domain.TBdAccountcy" id="TBdAccountcyResult">
+        <result property="fCurrencyId" column="f_currency_id"/>
+        <result property="fEntryId" column="f_entry_id"/>
+        <result property="fAcctId" column="f_acct_id"/>
+        <result property="fSeq" column="f_seq"/>
+    </resultMap>
+
+
+</mapper>

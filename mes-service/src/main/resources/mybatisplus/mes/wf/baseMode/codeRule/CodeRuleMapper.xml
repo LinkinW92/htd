@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.wf.baseMode.codeRule.CodeRuleDao">
+	<sql id="include">
+		ID, DT, ALTER_DT, CODE_RULE_PREFIX, CODE_RULE, CODE_RULE_SUFFIX,CODE_TYPE, CODE_NAME, LAST_CODE, CODE_RULE_VALUE, CODE_RULE_SUFFIX_VALUE, `EXPLAIN`,`DELETE`,ENABLE_RESET,RESET_CYCLE,CREATE_CODE_TIME
+	</sql>
+	<select id="findCodeRuleList" resultType="com.skeqi.mes.pojo.wf.baseMode.coderRule.CMesCodeRuleT">
+		select <include refid="include"/> from c_mes_code_rule_t
+		<where>
+			`DELETE` = 0
+			<if test="codeType != null and codeType != ''">
+				and CODE_TYPE = #{codeType,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+	<insert id="addCodeRule">
+		INSERT INTO
+		<trim prefix="c_mes_code_rule_t(" suffix=")" suffixOverrides=",">
+			DT,
+			ALTER_DT,
+			CODE_TYPE,
+			CODE_NAME,
+			CODE_RULE_PREFIX,
+			CODE_RULE,
+			CODE_RULE_SUFFIX,
+			`explain`,
+			RESET_CYCLE,
+			`DELETE`
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			now(),
+			now(),
+			#{codeType,jdbcType=VARCHAR},
+			#{codeName,jdbcType=VARCHAR},
+			#{codeRulePrefix,jdbcType=VARCHAR},
+			#{codeRule,jdbcType=VARCHAR},
+			#{codeRuleSuffix,jdbcType=INTEGER},
+			#{explain,jdbcType=VARCHAR},
+			#{resetCycle,jdbcType=INTEGER},
+			0
+		</trim>
+	</insert>
+
+	<select id="findRuleByCodeType" resultType="com.skeqi.mes.pojo.wf.baseMode.coderRule.CMesCodeRuleT">
+		select
+		<include refid="include"/>
+		from c_mes_code_rule_t
+		where CODE_TYPE =#{code,jdbcType=VARCHAR} and `DELETE` = 0
+	</select>
+
+	<!--最新编号-->
+	<update id="updateCodeRule">
+		update c_mes_code_rule_t
+		<set>
+			<if test="lastCode != null and lastCode != ''">
+				LAST_CODE = #{lastCode,jdbcType=VARCHAR},
+			</if>
+			<if test="codeRuleValue != null and codeRuleValue != ''">
+				CODE_RULE_VALUE = #{codeRuleValue,jdbcType=VARCHAR},
+			</if>
+			<if test="codeRuleSuffixValue != null and codeRuleSuffixValue != ''">
+				CODE_RULE_SUFFIX_VALUE = #{codeRuleSuffixValue,jdbcType=VARCHAR},
+			</if>
+			<if test="createCodeTime != null">
+				CREATE_CODE_TIME = #{createCodeTime,jdbcType=TIMESTAMP}
+			</if>
+		</set>
+		<where>
+			<if test="codeType != null and codeType != ''">
+				CODE_TYPE = #{codeType,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</update>
+
+	<update id="delCodeRuleListById">
+		update c_mes_code_rule_t set `DELETE`= 1 where ID = #{id,jdbcType=INTEGER}
+	</update>
+
+	<update id="editCodeRule">
+		update c_mes_code_rule_t
+		<set>
+			<if test="codeName != null and codeName != ''">
+				CODE_RULE_PREFIX = #{codeName,jdbcType=VARCHAR},
+			</if>
+			<if test="codeRulePrefix != null and codeRulePrefix != ''">
+				CODE_RULE_PREFIX = #{codeRulePrefix,jdbcType=VARCHAR},
+			</if>
+			<if test="codeRule != null and codeRule != ''">
+				CODE_RULE = #{codeRule,jdbcType=VARCHAR},
+			</if>
+			<if test="codeRuleSuffix != null and codeRuleSuffix != ''">
+				CODE_RULE_SUFFIX = #{codeRuleSuffix,jdbcType=VARCHAR},
+			</if>
+			<if test="explain != null and explain != ''">
+				`EXPLAIN` = #{explain,jdbcType=VARCHAR},
+			</if>
+			<if test="resetCycle != null and resetCycle != ''">
+				RESET_CYCLE = #{resetCycle,jdbcType=VARCHAR},
+			</if>
+		</set>
+		<where>
+			<if test="id != null and id >0">
+				ID = #{id,jdbcType=INTEGER}
+			</if>
+		</where>
+	</update>
+</mapper>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wms.ConfigDao">
+
+	<!-- 查询 -->
+	<select id="select" resultType="com.alibaba.fastjson.JSONObject">
+		select * from c_wms_config_t
+		where id = 1
+	</select>
+
+	<!-- 更新 -->
+	<update id="update">
+		update c_wms_config_t
+		set
+		timeOut = #{timeOut}
+		where id = 1
+	</update>
+
+</mapper>

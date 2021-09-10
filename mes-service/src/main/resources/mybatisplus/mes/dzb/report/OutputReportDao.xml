@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.skeqi.mes.mapper.dzb.report.OutputReportDao">
+    <select id="listPlant" resultType="java.util.Map">
+        select id, plantName
+        from c_mes_plant_t
+    </select>
+    <select id="listLine" resultType="java.util.Map">
+        select id, `name`
+        from c_mes_line_t
+        <where>
+            <if test="plantCode != null and plantCode.length > 0">
+                plantCode in
+                <foreach collection="plantCode" item="v" open="(" separator="," close=")">
+                    (#{v})
+                </foreach>
+            </if>
+        </where>
+    </select>
+    <select id="listSt" resultType="java.util.Map">
+        select id,station_name stationName from c_mes_station_t
+        <where>
+            <if test="lineId != null and lineId.length>0">
+                LINE_ID in
+                <foreach collection="lineId" item="v" open="(" separator="," close=")">
+                    (#{v})
+                </foreach>
+            </if>
+        </where>
+    </select>
+    <select id="data" resultType="java.util.Map">
+        select
+        <foreach collection="groupList" item="col">
+            <if test="col=='dayNo'">
+                DATE_FORMAT(sp.dt,'%Y-%m-%d') dayNo,
+            </if>
+            <if test="col=='monthNo'">
+                DATE_FORMAT(sp.dt,'%Y-%m') monthNo,
+            </if>
+            <if test="col=='weekNo'">
+                WEEK(date_add(sp.dt,interval 6 day),2) weekNo,
+            </if>
+
+            <if test="col=='plantName'">
+                p.plantName,
+            </if>
+            <if test="col=='lineName'">
+                l.`NAME` lineName,
+            </if>
+            <if test="col=='st'">
+                sp.st,
+            </if>
+            <if test="col=='productionName'">
+                mp.PRODUCTION_NAME productionName,
+            </if>
+
+            <if test="col=='materialCode'">
+                mp.MATERIAL_CODE materialCode,
+            </if>
+        </foreach>
+        sum(track.PLAN_NUM) planNum
+        from p_mes_station_pass_t sp,
+        (select sn,PRODUCTION_ID,PLAN_NUM from p_mes_tracking_t union select sn,PRODUCTION_ID,PLAN_NUM from
+        r_mes_tracking_t) track,
+        c_mes_line_t l,c_mes_plant_t p,c_mes_production_t mp
+        where sp.PASS_FLAG = 2
+        and sp.line_id = l.id
+        and l.plantCode = p.plantCode
+        and track.sn = sp.sn
+        and track.PRODUCTION_ID = mp.ID
+        <if test="start != null and start != ''">
+            and sp.DT >= #{start}
+        </if>
+        <if test="end != null and end != ''">
+            <![CDATA[
+            and sp.DT<= #{end}
+            ]]>
+        </if>
+        <foreach collection="whereList" item="value" index="key">
+            and ${key} in
+            <foreach collection="value" item="v" open="(" separator="," close=")">
+                (#{v})
+            </foreach>
+        </foreach>
+        <foreach open="group by" collection="groupList" item="col" separator=",">
+            ${col}
+        </foreach>
+    </select>
+</mapper>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.endhandle.TGlAutoTransferMapper">
+
+    <resultMap type="com.skeqi.finance.domain.endhandle.transfer.TGlAutoTransfer" id="TGlAutoTransferResult">
+        <result property="fTransferId" column="f_transfer_id"/>
+        <result property="fNumber" column="f_number"/>
+        <result property="fName" column="f_name"/>
+        <result property="fBookId" column="f_book_id"/>
+        <result property="fTransferType" column="f_transfer_type"/>
+        <result property="fVoucherGroupId" column="f_voucher_group_id"/>
+        <result property="fPeriodRange" column="f_period_range"/>
+        <result property="fLastDate" column="f_last_date"/>
+        <result property="fForbidStatus" column="f_forbid_status"/>
+        <result property="fForbidderId" column="f_forbidder_id"/>
+        <result property="fForbidDate" column="f_forbid_date"/>
+        <result property="fOptWay" column="f_opt_way"/>
+        <result property="fOptFrequency" column="f_opt_frequency"/>
+    </resultMap>
+
+    <select id="queryPageList" resultType="com.skeqi.finance.pojo.vo.transfer.TGlAutoTransferVo">
+        SELECT t.*,b.f_book_name as book_name,b.f_number as book_number FROM t_gl_auto_transfer t
+        LEFT JOIN t_bd_account_book b ON b.f_book_id=t.f_book_id
+        <where>
+            <if test="bo.fNumber!=null and bo.fNumber!=''">
+                t.f_number=#{bo.fNumber}
+            </if>
+            <if test="bo.fName!=null and bo.fName!=''">
+                t.f_name=#{bo.fName}
+            </if>
+            <if test="bo.fBookName!=null and bo.fBookName!=''">
+                b.f_book_name=#{bo.fBookName}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryVchLogPage" resultType="com.skeqi.finance.pojo.vo.voucher.TGlVoucherVo">
+        SELECT v.* from (SELECT * from t_bd_execute_log WHERE execute_type=#{bo.executeType} AND execute_id=#{bo.executeId}) lg
+        LEFT JOIN t_gl_voucher v ON v.f_voucher_id=lg.out_execute_id
+        <where>
+            <if test="bo.fYear!=null">
+              v.f_year=#{bo.fYear}
+            </if>
+            <if test="bo.fPeriod!=null">
+                v.f_period=#{bo.fPeriod}
+            </if>
+            <if test="bo.executeType!=null and bo.executeType!='' ">
+                v.f_source_bill_key=#{bo.executeType}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryInfoById" resultType="com.skeqi.finance.pojo.vo.transfer.TGlAutoTransferVo">
+        SELECT
+            t.*,
+            g.f_voucher_words,
+            b.f_number as book_number,
+            b.f_book_name as book_name
+        FROM
+            t_gl_auto_transfer t
+            LEFT JOIN t_bd_voucher_group g ON g.f_vchgroup_id = t.f_voucher_group_id
+            LEFT JOIN t_bd_account_book b ON b.f_book_id = t.f_book_id
+    </select>
+</mapper>

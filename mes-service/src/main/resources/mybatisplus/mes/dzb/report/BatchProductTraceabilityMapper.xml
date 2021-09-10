@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.skeqi.mes.mapper.dzb.report.BatchProductTraceabilityDao">
+    <select id="getAllProduction" resultType="java.util.Map">
+        select id,production_name productionName from c_mes_production_t;
+    </select>
+    <select id="getPTrackByProductionId" resultType="java.util.Map">
+        select * from p_mes_tracking_t
+        where production_id= #{productionId}
+        <if test="end != null">
+            and OFFLINE_DT <![CDATA[<=]]> #{end}
+        </if>
+        <if test="start != null">
+            and offline_dt <![CDATA[>=]]> #{start}
+        </if>
+        order by dt
+    </select>
+</mapper>

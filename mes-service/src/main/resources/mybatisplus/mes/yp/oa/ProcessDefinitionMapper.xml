@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.yp.oa.ProcessDefinitionDao">
+
+	<!-- 查询 -->
+	<select id="list" resultType="com.alibaba.fastjson.JSONObject">
+		select a.*,b.*,d.`name` as typeName from act_re_procdef a
+		join c_oa_activiti_form_template_t b on a.KEY_ = b.activitiKey
+		join c_oa_form_template_t c on b.formTemplateId = c.id
+		join c_oa_form_template_type_t d on c.typeId = d.id
+	</select>
+
+	<!-- 新增 -->
+	<insert id="addActivitiFormTemplate">
+		insert into c_oa_activiti_form_template_t(activitiKey,formTemplateId,name,organizationalPath,positionid)
+		value(#{key},#{templateId},#{templateName},#{organizationalPath},#{positionid})
+	</insert>
+
+	<!-- 通过id查询表单模板 -->
+	<select id="findFormTemplateById" resultType="int">
+		select count(*) from c_oa_form_template_t
+		where id = #{id}
+	</select>
+
+	<!-- 通过模板id查询模板是否被流程绑定 -->
+	<select id="findActivitiFormTemplateByFormTemplateId" resultType="int">
+		select count(*) from c_oa_activiti_form_template_t
+		where formTemplateId = #{formTemplateId}
+	</select>
+
+	<!-- 查询表单模板 -->
+	<select id="queryFormTemplate" resultType="com.alibaba.fastjson.JSONObject">
+		select * from c_oa_form_template_t
+		where id not in (
+			select formTemplateId from c_oa_activiti_form_template_t
+		)
+	</select>
+
+	<!-- 查询用户信息 -->
+	<select id="queryUser" resultType="com.alibaba.fastjson.JSONObject">
+		select id,USER_NAME as userName from c_mes_user_t
+	</select>
+
+	<!-- 查询模板明细 -->
+	<select id="findTemplateDetailed" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT * FROM `c_oa_form_template_detailed_t`
+		where formTemplateId = #{id}
+		ORDER BY `order`
+	</select>
+
+	<!-- 查询流程xml -->
+	<select id="inquiryProcessXML" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT * FROM act_re_procdef a
+		JOIN act_ge_bytearray b ON a.DEPLOYMENT_ID_ = b.DEPLOYMENT_ID_
+		join c_oa_activiti_form_template_t c on a.KEY_ = c.activitiKey
+		WHERE a.KEY_ = #{key}
+	</select>
+
+	<!-- 查询当前流程是否还有实例未完成 -->
+	<select id="findApprovalRecordCount" resultType="int">
+		select count(*) from c_oa_approval_record_t
+		where actKey = #{key}
+		and (state = '待审核'
+		or state = '审核中')
+	</select>
+
+	<!-- 查询部门 -->
+	<select id="findDepartment" resultType="com.alibaba.fastjson.JSONObject">
+		select * from c_wms_department_t
+		ORDER BY companyId,superiorId
+	</select>
+
+	<!-- 查询职位 -->
+	<select id="findPositionid" resultType="com.alibaba.fastjson.JSONObject">
+		select * from c_mes_positionid_t
+	</select>
+
+	<!--  删除表单模板与流程关联表 -->
+	<delete id="deleteActivitiFormTemplate">
+		delete from c_oa_activiti_form_template_t
+		where activitiKey = #{key}
+	</delete>
+
+	<!-- 更新申请单状态 -->
+	<update id="updateApprovalRecordState">
+		update c_oa_approval_record_t
+		set
+		state = '流程已被删除'
+		where (state = '待审核'
+		or state = '审核中')
+		and actKey = #{key}
+	</update>
+
+	<!-- 更新表单模板与流程关联表职位 -->
+	<update id="updateActivitiFormTemplatePositionId">
+		update c_oa_activiti_form_template_t
+		set positionId = #{positionIdJson}
+		where activitiKey = #{key}
+	</update>
+
+	<!-- 通过名称查询菜单 -->
+	<select id="findMenuByName" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			id,
+			menu_grade as menuGrade,
+			superior_menu_id as superiorMenuId,
+			menu_name as menuName,
+			if_enable as ifEnable,
+			path,
+			icon,
+			`order`
+		FROM
+			`c_qh_menu`
+		WHERE menu_name = #{name}
+	</select>
+
+	<!-- 新增菜单 -->
+	<insert id="addMenu" useGeneratedKeys="true" keyProperty="id"  keyColumn="id">
+		insert into c_qh_menu(menu_grade,superior_menu_id,menu_name,if_enable,path,icon,`order`)
+		value(#{menuGrade},#{superiorMenuId},#{menuName},#{ifEnable},#{path},#{icon},#{order})
+	</insert>
+
+	<!-- 更新菜单 -->
+	<update id="updateMenu">
+		update c_qh_menu
+		set
+		menu_name = #{name}
+		where menu_name = #{oldName}
+	</update>
+
+	<!-- 删除菜单 -->
+	<delete id="deleteMenu">
+		delete from c_qh_menu
+		where menu_name = #{name}
+	</delete>
+
+	<!-- 查询模板类型 -->
+	<select id="findFormTemplateType" resultType="com.alibaba.fastjson.JSONObject">
+		select b.* from c_oa_form_template_t a
+		join c_oa_form_template_type_t b on a.typeId = b.id
+		where a.name = #{name}
+	</select>
+
+	<!-- 新增权限接口 -->
+	<insert id="addAuthorityInterface">
+		insert into c_qh_authority_interface(path,operation_type_code,menu_id,operation_type)
+		value(#{path},#{operationTypeCode},#{menuId},#{operationType})
+	</insert>
+
+	<!-- 通过菜单名称查询菜单count数量 -->
+	<select id="findMenuCountByName" resultType="int">
+		SELECT count(*) FROM `c_qh_menu`
+		where menu_name = #{name}
+	</select>
+
+
+</mapper>

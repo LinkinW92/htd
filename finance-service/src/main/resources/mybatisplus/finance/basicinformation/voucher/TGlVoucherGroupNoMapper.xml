@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.TGlVoucherGroupNoMapper">
+
+    <resultMap type="com.skeqi.finance.domain.TGlVoucherGroupNo" id="TGlVoucherGroupNoResult">
+        <result property="fId" column="f_id"/>
+        <result property="fYear" column="f_year"/>
+        <result property="fVoucherGroupNo" column="f_voucher_group_no"/>
+        <result property="fPeriod" column="f_period"/>
+        <result property="fVoucherGroupId" column="f_voucher_group_id"/>
+        <result property="fBookId" column="f_book_id"/>
+    </resultMap>
+
+
+    <select id="queryNotContinueNo" resultType="java.lang.Integer">
+        SELECT f_voucher_group_no FROM t_gl_voucher_group_no WHERE
+            f_year = #{fYear}  and f_period=#{fPeriod} and f_voucher_group_id=#{fVoucherGroupId} and f_book_id=#{fBookId}
+            ORDER BY f_voucher_group_no DESC
+    </select>
+
+    <select id="queryMaxNo" resultType="java.lang.Integer">
+         SELECT
+            f_voucher_group_no
+        FROM
+            t_gl_voucher_group_no
+        WHERE
+           f_year = #{fYear}  and f_period=#{fPeriod} and f_voucher_group_id=#{fVoucherGroupId} and f_book_id=#{fBookId}
+            order by  f_voucher_group_no desc limit 1
+    </select>
+
+</mapper>

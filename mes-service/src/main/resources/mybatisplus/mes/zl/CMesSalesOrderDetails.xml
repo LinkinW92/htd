@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.zl.CMesSalesOrderDetailsDao">
+	<!-- 查询全部 -->
+	<select id="findAllSalesOrderDetails" resultType="CMesSalesOrderDetails">
+	SELECT * FROM c_mes_sales_order_details where 1=1
+	</select>
+			<!-- 查询客户列表 -->
+	<select id="customerList" resultType="CMesSalesOrderDetails">
+				select * FROM c_mes_sales_order_details where 1=1
+		<if test="clientName!=null and clientName!=''">
+			and CLIENT_NAME like '%${clientName}%'
+		</if>
+		<if test="contacts!=null and contacts!=''">
+			and CONTACTS like '%${contacts}%'
+		</if>
+	</select>
+			<!-- 查询订单列表 -->
+	<select id="salesOrderList" resultType="CMesSalesOrderDetails">
+				select * FROM c_mes_sales_order_details where 1=1
+		<if test="clientName!=null and clientName!=''">
+			and CLIENT_NAME like '%${clientName}%'
+		</if>
+		<if test="contacts!=null and contacts!=''">
+			and CONTACTS like '%${contacts}%'
+		</if>
+		<if test="customerOrderNumber!=null and customerOrderNumber!=''">
+			and CUSTOMER_ORDER_NUMBER like '%${customerOrderNumber}%'
+		</if>
+	</select>
+
+	<select id="countSalesOrderDetails" resultType="int">
+		SELECT COUNT(*) FROM
+		c_mes_sales_order_details WHERE COMPANY_ORDER_NUMBER = #{companyOrderNumber}
+	</select>
+		<insert id="addSalesOrderDetails">
+		INSERT INTO c_mes_sales_order_details(
+		COMPANY_ORDER_NUMBER,CUSTOMER_ORDER_NUMBER,CLIENT_NAME,ORDER_DATE,
+		SCHEDULED_DELIVERY_DATE,SALESMAN,ACCOUNTING_DEPARTMENT,ORDER_STATUS,TOTAL_ORDER_AMOUNT,
+
+		COLLECTED_STATUS,INVOICE_STATUS,NOTE,ORDER_MATERIAL_COST
+		,ORDER_GROSS_PROFIT,ULTIMATE_CUSTOMER,CONTACTS,MANAGER_TELE,CUSTOMER_AREA,CURRENCY,SHIPMENT_AMOUNT,DELIVERY_ADDRESS,
+		INVOICE_MAILING_ADDRESS,PICTURN_PATH,STATE)
+		VALUES(
+		#{companyOrderNumber},#{customerOrderNumber},#{clientName},#{orderDate},#{scheduledDeliveryDate},#{salesman},#{accountingDepartment},
+		#{orderStatus},#{totalOrderAmount},#{collectedStatus},#{invoiceStatus},#{note},#{orderMaterialCost},#{orderGrossProfit}
+		,#{ultimateCustomer},#{contacts},#{managerTele},#{customerArea},#{currency},#{shipmentAmount},#{deliveryAddress},#{invoiceMailingAddress},#{picturnPath},#{state})
+	</insert>
+		<select id="findSalesOrderDetailsId" resultType="CMesSalesOrderDetails">
+			select * from c_mes_sales_order_details where id=#{id}
+	</select>
+		<update id="editSalesOrderDetails">
+		UPDATE c_mes_sales_order_details SET
+		COMPANY_ORDER_NUMBER =#{companyOrderNumber},CUSTOMER_ORDER_NUMBER=#{customerOrderNumber},CLIENT_NAME=#{clientName},
+		ORDER_DATE=#{orderDate},SCHEDULED_DELIVERY_DATE=#{scheduledDeliveryDate},SALESMAN=#{salesman},ACCOUNTING_DEPARTMENT=#{accountingDepartment}
+		,ORDER_STATUS=#{orderStatus},TOTAL_ORDER_AMOUNT=#{totalOrderAmount},COLLECTED_STATUS=#{collectedStatus},INVOICE_STATUS=#{invoiceStatus},
+		NOTE=#{note},ORDER_MATERIAL_COST=#{orderMaterialCost},ORDER_GROSS_PROFIT=#{orderGrossProfit},ULTIMATE_CUSTOMER=#{ultimateCustomer},CONTACTS=#{contacts}
+		,MANAGER_TELE=#{managerTele},CUSTOMER_AREA=#{customerArea},CURRENCY=#{currency},SHIPMENT_AMOUNT=#{shipmentAmount},DELIVERY_ADDRESS=#{deliveryAddress},
+		INVOICE_MAILING_ADDRESS=#{invoiceMailingAddress},PICTURN_PATH=#{picturnPath},STATE=#{state}
+		WHERE ID = #{id}
+	</update>
+	<delete id="delSalesOrderDetails">
+		DELETE FROM c_mes_sales_order_details WHERE ID = #{id}
+	</delete>
+			<!-- 入库 -->
+	<update id="outStock">
+				update c_mes_sales_order_details set ORDER_STATUS=#{outStock}
+										where id=#{id}
+	</update>
+		<!-- 审批 -->
+	<update id="approval">
+				update c_mes_sales_order_details set STATE=#{approval}
+										where id=#{id}
+	</update>
+</mapper>

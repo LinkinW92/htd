@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.zch.LineSideLibraryApiDao">
+	<select id="getProductByName" resultType="java.util.Map">
+		select * from c_mes_production_t where PRODUCTION_NAME = #{product} limit 1
+	</select>
+
+	<select id="getInventory" resultType="java.util.Map">
+		select * from c_lsl_material_inventory_t
+		where productId=#{productId} and lineId=#{lineId} and stationId=#{stationId} and step=#{step} and materialNo=#{materialNo}
+		<if test="rockNo != null and rockNo != ''">
+			 and rockNo=#{rockNo}
+		</if>
+		limit 1
+	</select>
+
+	<select id="getStorageDetail" resultType="java.util.Map">
+		select sd.*,jm.BOM_ID,jm.MATERIAL_NAME from r_wms_storage_detail_t sd
+		left join c_mes_jl_material_t jm on jm.ID=sd.MATERIAL_ID
+		where bar_code=#{code} and ISSUE_OR_RECEIPT=0 limit 1
+	</select>
+
+	<update id="updateQuantity">
+		update c_lsl_material_inventory_t set quantity = quantity + ${quantity} where ID = #{inventoryId}
+	</update>
+
+	<insert id="insertInventoryBatch">
+		insert into c_lsl_material_inventory_t(cdt, productId, lineId, stationId, step, rockNo, batchCode, materialNo, materialName, type, quantity, status)
+		values(now(), #{productId}, #{lineId}, #{stationId}, #{step}, #{rockNo}, #{batchCode}, #{materialNo}, #{materialName}, #{type}, #{quantity}, 1)
+	</insert>
+
+	<insert id="insertInventorySingle">
+		insert into c_lsl_material_inventory_t(cdt, productId, lineId, stationId, step, rockNo, materialCode, materialNo, materialName, type, quantity, status)
+		values(now(), #{productId}, #{lineId}, #{stationId}, #{step}, #{rockNo}, #{materialCode}, #{materialNo}, #{materialName}, #{type}, #{quantity}, 1)
+	</insert>
+
+	<update id="materialDeduction">
+		update c_lsl_material_inventory_t set quantity = quantity - 1 where ID = #{ID}
+	</update>
+
+	<select id="getMaterialResponse" resultType="java.util.Map">
+		select * from r_lsl_material_response_t where 1=1
+		and lineId=#{lineId} and stationId=#{stationId}
+		and (batchCode = #{code} or materialCode = #{code})
+		limit 1
+	</select>
+
+	<update id="updateResponseStatus">
+		update r_lsl_material_response_t set status = 2 where ID = #{ID}
+	</update>
+
+	<select id="getResponseFinishCount" resultType="java.lang.Integer">
+		select count(*) from r_lsl_material_response_t where requestId = #{requestId} and status = 1
+	</select>
+
+	<select id="getMaterialRequest" resultType="java.util.Map">
+		select * from r_lsl_material_request_t where ID= #{requestId}
+	</select>
+
+	<insert id="insertInventory">
+		INSERT INTO c_lsl_material_inventory_t
+		(cdt, udt, productId, lineId, stationId,
+		batchCode, materialCode, materialNo, materialName, type,
+		quantity, `status`, rockId)
+		select now(), now(), mq.productId, mq.lineId, mq.stationId, mr.materialBatch,
+		case when mqd.tracesType=1 then mr.materialBatch else mr.materialCode end,
+		mqd.materialNo, mqd.materialName, mqd.tracesType,
+		mr.quantity, 1, mqd.rockId
+		from r_lsl_material_response_t mr
+		left join c_lsl_material_request_detail_t mqd on mqd.ID=mr.requestDetailId
+		left join r_lsl_material_request_t mq on mq.billNo=mqd.billNo
+		where mq.billNo = #{billNo}
+		and mq.`status` = 2
+	</insert>
+
+	<update id="updateRequestStatus">
+		update r_lsl_material_request_t set status=#{status}, collector=#{emp}, collectTime=now() where billNo=#{billNo}
+	</update>
+
+	<select id="getRockConfig">
+		select * from c_lsl_rock_config_t where lineId=#{lineId} and stationId=#{stationId} and productId=#{productId} and step=#{step} and rockNo=#{rockNo} limit 1
+	</select>
+
+	<insert id="insertRequestManual">
+		insert into r_lsl_material_request_t (cdt, productId, lineId, stationId, step, rockNo, materialNo, materialName, requiredQuantity, status)
+		values (now(), #{productId}, #{lineId}, #{stationId}, #{step}, #{rockNo}, #{materialNo}, #{materialName}, #{requiredQuantity}, 2)
+	</insert>
+
+	<select id="getInventoryByCode" resultType="java.util.Map">
+		select * from c_lsl_material_inventory_t where 1=1
+		and (batchCode=#{code} or materialCode=#{code})
+	</select>
+
+	<update id="updateInventoryStatus">
+		update c_lsl_material_inventory_t set status=2 where ID=#{ID}
+	</update>
+
+	<select id="findRockConfigPTL" resultType="java.util.Map">
+		select r.ptlNo from c_lsl_rock_config_t rc
+		left join c_lsl_rock_version_t rv on rv.ID = rc.versionId
+		left join c_lsl_rock_t r on r.ID = rc.rockId
+		where rv.lineId = #{lineId}
+		and rv.productId = #{productId}
+		and rv.`status` = 1
+		and rc.stationId = #{stationId}
+		and rc.materialNo = #{materialNo}
+	</select>
+
+	<select id="findMaterialQuestListByStation" resultType="java.util.Map">
+		select mr.billNo, mr.`status
+		from r_lsl_material_request_t mr
+		where mr.lineId = #{lineId}
+		and mr.`status` <![CDATA[<]]> 3
+		and mr.stationId = #{stationId}
+		<if test="productId != null and productId != ''">
+			and productId = #{productId}
+		</if>
+		<if test="status != null and status != ''">
+			and status = #{status}
+		</if>
+		order by mr.`status` desc
+	</select>
+
+	<select id="findMaterialQuestDetailListByStation" resultType="java.util.Map">
+		select mrt.materialNo, mrt.materialName, mrt.requiredQuantity,
+		(select COUNT(*) from r_lsl_material_response_t mr where mr.requestDetailId = mrt.ID) as actualQuantity
+		from c_lsl_material_request_detail_t mrt
+		where mrt.billNo = #{billNo}
+	</select>
+
+	<select id="getRequestByBillNo" resultType="java.util.Map">
+		select * from r_lsl_material_request_t where billNo = #{billNo} limit 1
+	</select>
+
+	<select id="findMaterialResponseListByBillNo" resultType="java.util.Map">
+		select mr.materialBatch,mr.materialCode,sum(mr.quantity) as quantity, mqd.tracesType
+		from r_lsl_material_response_t mr
+		left join c_lsl_material_request_detail_t mqd on mqd.ID=mr.requestDetailId
+		left join r_lsl_material_request_t mq on mq.billNo=mqd.billNo
+		where mqd.billNo = #{billNo}
+		and mq.`status` = 2
+		GROUP BY mr.materialBatch,mr.materialCode
+	</select>
+
+	<update id="reducePickingLockNumber">
+		update c_mes_material_instance_t set PICKING_LOCK_NUMBER = PICKING_LOCK_NUMBER - #{quantity} where
+		<if test="tracesType == 0">
+			MATERIAL_BATCH = #{materialBatch} and MATERIAL_SN = #{materialCode}
+		</if>
+		<if test="tracesType == 1">
+			MATERIAL_BATCH = #{materialBatch}
+		</if>
+		<if test="tracesType == 2">
+			MATERIAL_SN = #{materialCode}
+		</if>
+	</update>
+
+	<select id="getMaterialRecipeDetail" resultType="java.util.Map">
+		select * from c_mes_recipe_datil_t rd left join c_mes_recipe_t r on r.ID = rd.RECIPE_ID where r.TOTAL_ID=#{totalRecipeId} and r.STATION_ID=#{stationId} and rd.STEPNO=#{stepNo} and STEP_CATEGORY
+	</select>
+
+	<update id="inventoryDeductionBatch">
+		update c_lsl_material_inventory_t set quantity = quantity - #{num} where batchCode = #{batchCode}
+	</update>
+
+	<update id="inventoryDeductionSingle">
+		update c_lsl_material_inventory_t set quantity = quantity - 1 where materialCode = #{barcode}
+	</update>
+
+	<select id="getRock" resultType="java.util.Map">
+		select * from c_lsl_rock_t where rockNo = #{rockNo}
+	</select>
+
+	<select id="getLastQuest" resultType="java.util.Map">
+		select * from r_lsl_material_request_t order by cdt desc limit 1
+	</select>
+
+	<insert id="insertRequest">
+		insert into r_lsl_material_request_t(cdt, udt, billNo, productId, lineId, stationId, `status`, creator, serialNumber)
+		values (now(), now(), #{billNo}, #{productId}, #{lineId}, #{stationId}, 0, #{emp}, #{serialNumber})
+	</insert>
+
+	<insert id="insertRequestDetail">
+		insert into c_lsl_material_request_detail_t (cdt, udt, rockId, materialNo, materialName, requiredQuantity, billNo, tracesType)
+		values (now(), now(), #{rockId}, #{barcode}, #{materialName}, #{quantity}, #{billNo}, #{tracesType})
+	</insert>
+
+	<select id="getMaterialByCode" resultType="java.util.Map">
+		select * from c_mes_jl_material_t where BOM_ID = #{barcode} limit 1
+	</select>
+
+	<select id="getRockRemainNum" resultType="java.lang.Integer">
+		select sum(quantity) as quantity from c_lsl_material_inventory_t
+		where productId = #{productId} and lineId = #{lineId} and stationId = #{stationId} and batchCode = #{batchCode} and status = 1
+		group by batchCode
+	</select>
+
+	<select id="findLastRequest" resultType="com.skeqi.mes.pojo.wf.linesidelibrary.RLslMaterialRequestT">
+		select * from r_lsl_material_request_t order by ID desc limit 1
+	</select>
+
+	<select id="getInventoryByBatchCode" resultType="java.util.Map">
+		select * from c_lsl_material_inventory_t where batchCode = #{batchCode} limit 1
+	</select>
+
+	<update id="updateRetrospect">
+		update c_mes_retrospect_t set consumeNum = consumeNum + 1 where materialNo = #{materialNo} and sn = #{SN} and stationId = #{stationId}
+	</update>
+
+	<insert id="insertRetrospect">
+		insert into c_mes_retrospect_t (cdt, udt, sn, materialNo, consumeNum, locationId, operator, operationTime, stationId, uninstall)
+		values (now(), now(), #{SN}, #{materialNo}, 1, #{rockId}, #{emp}, now(), #{stationId}, 0)
+	</insert>
+
+	<select id="getInventoryByMaterialCode" resultType="java.util.Map">
+		select * from c_lsl_material_inventory_t where materialCode = #{materialCode} or batchCode = #{materialCode} and quantity > 0 limit 1
+	</select>
+</mapper>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.yp.oa.DingtalkDao">
+
+	<!-- 通过手机号码查询用户信息 -->
+	<select id="findUserByMobile" resultType="com.alibaba.fastjson.JSONObject">
+		select id,USER_NAME as userName,mobile,appId from c_mes_user_t
+		where viewMode = 1
+		and mobile = #{mobile}
+	</select>
+
+	<!-- 通过手机号码查询用户信息 -->
+	<select id="findUserByAppId" resultType="com.alibaba.fastjson.JSONObject">
+		select id,USER_NAME as userName,mobile,appId from c_mes_user_t
+		where viewMode = 1
+		and appId = #{appId}
+	</select>
+
+	<!-- 通过用户名查询用户 -->
+	<select id="findUserByName" resultType="com.alibaba.fastjson.JSONObject">
+		select id,USER_NAME as userName,USER_PWD as passWord,mobile,appId from c_mes_user_t
+		where viewMode = 1
+		and user_name = #{userName}
+	</select>
+
+	<!-- 更新用户信息 -->
+	<update id="updateUser">
+		update c_mes_user_t
+		set
+		mobile = #{mobile},
+		appId = #{appId}
+		where id = #{userId}
+	</update>
+
+</mapper>

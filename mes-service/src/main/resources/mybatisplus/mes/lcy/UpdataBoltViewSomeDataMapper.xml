@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.lcy.UpdataBoltViewSomeDataMapper">
+
+
+	<select id="queryRecipeDatil" resultType="CMesRecipeDatilT">
+		select t.id,t.path_binary,t.numbers,
+		t.bolt_json from C_MES_RECIPE_DATIL_T t
+		where 1=1
+		and t.id = #{id}
+
+	</select>
+
+
+	<update id="updataViewBoltData">
+			update C_MES_RECIPE_DATIL_T set bolt_json=#{jsonStr}
+			where id = ${id}
+	</update>
+
+
+
+
+
+
+
+
+
+
+
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+

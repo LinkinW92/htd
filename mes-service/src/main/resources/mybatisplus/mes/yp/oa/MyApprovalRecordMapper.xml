@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.yp.oa.MyApprovalRecordDao">
+
+	<!-- 查询 -->
+	<select id="list" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			DATE_FORMAT( a.dt, '%Y-%m-%d %H:%i:%s' ) AS dt,
+			a.listNo,
+			a.state,
+			b.state AS listState,
+			c.USER_NAME AS userName,
+			c.`name` as fullName,
+			b.`name`
+		FROM
+			c_oa_approval_batch_records_t a
+			JOIN c_oa_approval_record_t b ON a.listNo = b.listNo
+			JOIN c_mes_user_t c ON b.userId = c.id
+		where a.userId = #{userId}
+		<if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
+		and DATE_FORMAT(a.dt,'%Y-%m-%d') between #{startDate} and #{endDate}
+		</if>
+		<if test="listNo != null and listNo != ''">
+		and a.listNo like '%${listNo}%'
+		</if>
+		<if test="type != null and type != ''">
+		and b.name = #{type}
+		</if>
+		<if test="applicantId != null and applicantId != ''">
+		and b.userId = #{applicantId}
+		</if>
+		ORDER BY a.dt desc
+	</select>
+
+	<!-- 查询明细 -->
+	<select id="queryDetails" resultType="com.alibaba.fastjson.JSONObject">
+		select * from c_oa_approval_record_detailed_t
+		where approvalRecordId = #{id}
+	</select>
+
+	<!-- 查询审批备注 -->
+	<select id="findApprovalRecordNote" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			DATE_FORMAT( a.dt, '%Y-%m-%d %H:%i:%s' ) AS dt,
+			a.dis,
+			a.approvalRecordId,
+			a.state,
+			b.USER_NAME AS userName,
+			b.`name` as fullName
+		FROM
+			c_oa_approval_record_note_t a
+			left JOIN c_mes_user_t b ON a.userId = b.id
+		where a.approvalRecordId = #{id}
+	</select>
+
+	<!-- 查询所有用户 -->
+	<select id="findUserAll" resultType="com.alibaba.fastjson.JSONObject">
+		select id,user_name as userName,`name` as fullName from c_mes_user_t
+		ORDER BY id
+	</select>
+
+	<!-- 查询现有的单据类型 -->
+	<select id="findType" resultType="com.alibaba.fastjson.JSONObject">
+		select * from c_oa_form_template_t
+	</select>
+
+
+</mapper>

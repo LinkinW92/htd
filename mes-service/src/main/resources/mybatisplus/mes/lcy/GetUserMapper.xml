@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.skeqi.mes.mapper.lcy.GetUserMapper">
+
+
+	<sql id="login">
+		select u.id,u.user_name,u.user_pwd,u.status,
+    u.department,u.security,u.user_power,u.role_id,
+    u.user_number,r.id rid,r.role_name,r.role_dis,
+    rm.menu_id,me.menu_name,me.grade,me.url,me.menu_type
+    from C_MES_USER_T u
+    left join C_MES_ROLE_T r
+    on u.role_id =r.id
+    left join C_MES_ROLE_MENU_T rm
+    on u.role_id = rm.role_id
+    left join C_MES_MENU_T me
+    on rm.menu_id=me.id
+	</sql>
+
+
+	<select id="getUserPowerT" resultType="string">
+		select power
+		from C_MES_USER_POWER_T
+	</select>
+
+	<select id="getMenuT" resultType="string">
+		select tt.url from C_MES_MENU_T tt
+	</select>
+
+	<select id="getCrudName" resultType="string">
+		select tt.crud_alias from C_MES_CRUD_T tt
+	</select>
+
+
+
+	<select id="getLoginValue" resultMap="userMap">
+	<include refid="login"></include>
+	where u.viewMode = 1 = user_name=#{username} and u.status = 1
+	<!-- <![CDATA[where user_name=#{username} and u.status = 1]]> -->
+	</select>
+	<select id="getCrudList" resultType="CMesCrudT">
+	select c.id,c.crud_name,c.crud_alias
+    from  C_MES_ROLE_T r
+    left join C_MES_ROLE_MENU_T rm
+    on r.id = rm.role_id
+    left join C_MES_MENU_T me
+    on rm.menu_id=me.id
+    left join C_MES_MENU_CRUD_T mc
+    on me.id = mc.menu_id
+    left join C_MES_CRUD_T c
+    on c.id = mc.menu_crud_id
+    and mc.role_id = r.id
+
+    where 1=1
+    and rm.role_id = #{roleId}
+	and mc.menu_id = #{menuId}
+
+	</select>
+
+	<select id="findCrudList" resultType="CMesCrudT">
+	SELECT
+	c.id AS id,
+	c.crud_name AS crudName,
+  	me.MENU_NAME mname
+	FROM
+		C_MES_ROLE_T r
+		LEFT JOIN C_MES_ROLE_MENU_T rm ON r.id = rm.role_id
+		LEFT JOIN C_MES_MENU_T me ON rm.menu_id = me.id
+		LEFT JOIN C_MES_MENU_CRUD_T mc ON me.id = mc.menu_id
+		LEFT JOIN C_MES_CRUD_T c ON c.id = mc.menu_crud_id
+	WHERE
+		mc.role_id = r.id
+		and c.crud_name is not null
+		and rm.role_id = #{roleId}
+		and mc.menu_id = #{menuId}
+
+	</select>
+	<resultMap type="com.skeqi.mes.pojo.CMesUserT" id="userMap">
+		<id property="id" column="id"/>
+		<result property="roleId" column="role_id"/>
+		<result property="userNumber" column="user_number"/>
+		<result property="userName" column="user_name"/>
+		<result property="userPwd" column="user_pwd"/>
+		<result property="status" column="status"/>
+		<result property="department" column="department"/>
+		<result property="security" column="security"/>
+		<result property="roleName" column="role_name"/>
+		<collection property="setRole" ofType="com.skeqi.mes.pojo.CMesRoleT">
+			<id property="rid" column="rid"/>
+			<result property="roleName" column="role_name"/>
+			<result property="roleDis" column="role_dis"/>
+		</collection>
+		<collection property="setMenu" ofType="com.skeqi.mes.pojo.CMesMenuT">
+		<id property="id" column="menu_id"/>
+		<result property="menuName" column="menu_name"/>
+		<result property="grade" column="grade"/>
+		<result property="url" column="url"/>
+		<result property="menuType" column="menu_type"/>
+		</collection>
+	</resultMap>
+
+
+
+</mapper>

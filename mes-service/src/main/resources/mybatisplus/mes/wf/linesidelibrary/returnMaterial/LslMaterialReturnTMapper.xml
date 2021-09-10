@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wf.linesidelibrary.returnMaterial.LslMaterialReturnTMapper">
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, `number`, cdt, udt, `type`, `status`, creator, mender, remarks
+  </sql>
+    <delete id="deleteByNumber">
+      delete from c_lsl_material_return_t where number = #{number,jdbcType=VARCHAR}
+    </delete>
+    <select id="selectByPrimaryKey" resultType="com.skeqi.mes.pojo.wf.linesidelibrary.returnMaterial.LslMaterialReturnT">
+    <!--@mbg.generated-->
+    select
+    <include refid="Base_Column_List" />
+    from c_lsl_material_return_t
+    where `number` = #{number,jdbcType=VARCHAR}
+  </select>
+    <select id="selectAll" resultType="com.skeqi.mes.pojo.wf.linesidelibrary.returnMaterial.LslMaterialReturnT">
+      select
+      <include refid="Base_Column_List" />
+      from c_lsl_material_return_t
+      <where>
+        <if test="number != null and number != ''">
+          `number` like concat ('%', #{number,jdbcType=VARCHAR}, '%')
+        </if>
+        <if test="status != null">
+          and `status` =#{status,jdbcType=INTEGER}
+        </if>
+        <if test="creator != null and creator != ''">
+          and creator like concat ('%', #{creator,jdbcType=VARCHAR}, '%')
+        </if>
+      </where>
+    </select>
+
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.skeqi.mes.pojo.wf.linesidelibrary.returnMaterial.LslMaterialReturnT" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into c_lsl_material_return_t
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="number != null">
+        `number`,
+      </if>
+      <if test="cdt != null">
+        cdt,
+      </if>
+      <if test="udt != null">
+        udt,
+      </if>
+      <if test="type != null">
+        `type`,
+      </if>
+      <if test="status != null">
+        `status`,
+      </if>
+      <if test="creator != null">
+        creator,
+      </if>
+      <if test="mender != null">
+        mender,
+      </if>
+      <if test="remarks != null">
+        remarks,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="number != null">
+        #{number,jdbcType=VARCHAR},
+      </if>
+      <if test="cdt != null">
+        #{cdt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="udt != null">
+        #{udt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="creator != null">
+        #{creator,jdbcType=VARCHAR},
+      </if>
+      <if test="mender != null">
+        #{mender,jdbcType=VARCHAR},
+      </if>
+      <if test="remarks != null">
+        #{remarks,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+</mapper>

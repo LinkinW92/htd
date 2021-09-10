@@ -1,0 +1,389 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.zch.OrderDao">
+
+    <!-- 订单列表 -->
+    <select id="findOrderList" resultType="java.util.Map">
+        select * from c_mes_salesorder_t
+        where 1=1
+        <if test="status!=null and status!=''">
+            and status=#{status}
+        </if>
+        <if test="order_time!=null and order_time!=''">
+            and DATE_FORMAT(order_time,'%Y-%m-%d') = DATE_FORMAT(#{order_time},'%Y-%m-%d')
+        </if>
+        <if test="order_begin_time!=null and order_begin_time!='' and order_end_time!=null and order_end_time!=''">
+            and order_time between '${order_begin_time} 00:00:00' and '${order_end_time} 23:59:59'
+        </if>
+        <if test="customer_name!=null and customer_name!=''">
+            and customer_name like concat('%', #{customer_name}, '%')
+        </if>
+        order by order_time
+    </select>
+
+    <!-- 新增订单 -->
+    <insert id="addOrder" keyProperty="id"
+            useGeneratedKeys="false">
+		INSERT INTO c_mes_salesorder_t
+		(DT,ALTER_DT,CUSTOMER_NAME,ORDER_TIME,DELIVERY_PLAN_TIME,DELIVERY_INFORMATION,STATUS,CODE, `ORDER_TYPE`,  `CONTRACT_NO`, `SERVED_BY`, `PAYER`, `CREATOR`, `CUSTOMER_PO_NO`, `MODIFIED_BY`,  `COMPANY_CODE`)
+		VALUES
+		(NOW(),NOW(),#{customer_name},#{order_time},#{delivery_plan_time},#{delivery_information},1,#{CODE},#{order_type},#{contract_no},#{served_by},#{payer},#{creator},#{customer_po_no},#{modified_by},#{company_code})
+	</insert>
+
+    <!-- 新增订单记录 -->
+    <insert id="addOrderrecord" keyProperty="id"
+            useGeneratedKeys="false">
+		INSERT INTO c_mes_orderrecord_t
+		(DT,ALTER_DT,ORDER_ID,PRODUCT_NAME,PRODUCT_MODEL
+		,DEMAND_NUM,MFG_PARAMS,ROUTING_ID,TOTAL_RECIPE_ID, `UNIT_PRICE_EXCLUDING_TAX`, `PRICE_UNIT`, `TAX_RATE`, `PLANNED_DELIVERY_DATE`)
+		VALUES
+		(NOW(),NOW(),#{ORDER_ID},#{PRODUCT_NAME},#{PRODUCT_MODEL}
+		,#{DEMAND_NUM},#{MFG_PARAMS},#{ROUTING_ID},#{TOTAL_RECIPE_ID},#{UNIT_PRICE_EXCLUDING_TAX},#{PRICE_UNIT},#{TAX_RATE},#{PLANNED_DELIVERY_DATE})
+	</insert>
+
+    <!-- 修改订单 -->
+    <update id="updateOrder">
+        UPDATE c_mes_salesorder_t SET
+        ALTER_DT=NOW()
+        <if test="CUSTOMER_NAME!=null and CUSTOMER_NAME!=''">
+            ,CUSTOMER_NAME=#{CUSTOMER_NAME}
+        </if>
+        <if test="ORDER_TIME!=null and ORDER_TIME!=''">
+            ,ORDER_TIME=#{ORDER_TIME}
+        </if>
+        <if test="DELIVERY_PLAN_TIME!=null and DELIVERY_PLAN_TIME!=''">
+            ,DELIVERY_PLAN_TIME=#{DELIVERY_PLAN_TIME}
+        </if>
+        <if test="DELIVERY_INFORMATION!=null and DELIVERY_INFORMATION!=''">
+            ,DELIVERY_INFORMATION=#{DELIVERY_INFORMATION}
+        </if>
+        <if test="STATUS!=null and STATUS!=''">
+            ,STATUS=#{STATUS}
+        </if>
+        <if test="CODE!=null and CODE!=''">
+            ,CODE=#{CODE}
+        </if>
+
+
+        <if test="ORDER_TYPE!=null and ORDER_TYPE!=''">
+            ,ORDER_TYPE=#{ORDER_TYPE}
+        </if>
+        <if test="CONTRACT_NO!=null and CONTRACT_NO!=''">
+            ,CONTRACT_NO=#{CONTRACT_NO}
+        </if>
+        <if test="SERVED_BY!=null and SERVED_BY!=''">
+            ,SERVED_BY=#{SERVED_BY}
+        </if>
+        <if test="PAYER!=null and PAYER!=''">
+            ,PAYER=#{PAYER}
+        </if>
+
+        <if test="CUSTOMER_PO_NO!=null and CUSTOMER_PO_NO!=''">
+            ,CUSTOMER_PO_NO=#{CUSTOMER_PO_NO}
+        </if>
+        <if test="MODIFIED_BY!=null and MODIFIED_BY!=''">
+            ,MODIFIED_BY=#{MODIFIED_BY}
+        </if>
+
+        <if test="COMPANY_CODE!=null and COMPANY_CODE!=''">
+            ,COMPANY_CODE=#{COMPANY_CODE}
+        </if>
+
+            ,MODIFICATION_TIME=NOW()
+
+        WHERE ID=#{ID}
+    </update>
+
+    <!-- 修改订单记录 -->
+    <update id="updateOrderrecord">
+        UPDATE c_mes_orderrecord_t SET
+        ALTER_DT=NOW()
+        <if test="PRODUCT_MODEL!=null and PRODUCT_MODEL!=''">
+            ,PRODUCT_MODEL=#{PRODUCT_MODEL}
+        </if>
+        <if test="PRODUCT_NAME!=null and PRODUCT_NAME!=''">
+            ,PRODUCT_NAME=#{PRODUCT_NAME}
+        </if>
+        <if test="DEMAND_NUM!=null and DEMAND_NUM!=''">
+            ,DEMAND_NUM=#{DEMAND_NUM}
+        </if>
+        <if test="MFG_PARAMS!=null and MFG_PARAMS!=''">
+            ,MFG_PARAMS=#{MFG_PARAMS}
+        </if>
+        <if test="ROUTING_ID!=null and ROUTING_ID!=''">
+            ,ROUTING_ID=#{ROUTING_ID}
+        </if>
+        <if test="TOTAL_RECIPE_ID!=null and TOTAL_RECIPE_ID!=''">
+            ,TOTAL_RECIPE_ID=#{TOTAL_RECIPE_ID}
+        </if>
+        <if test="UNIT_PRICE_EXCLUDING_TAX!=null and UNIT_PRICE_EXCLUDING_TAX!=''">
+            ,UNIT_PRICE_EXCLUDING_TAX=#{UNIT_PRICE_EXCLUDING_TAX}
+        </if>
+        <if test="PRICE_UNIT!=null and PRICE_UNIT!=''">
+            ,PRICE_UNIT=#{PRICE_UNIT}
+        </if>
+        <if test="TAX_RATE!=null and TAX_RATE!=''">
+            ,TAX_RATE=#{TAX_RATE}
+        </if>
+        <if test="PLANNED_DELIVERY_DATE!=null and PLANNED_DELIVERY_DATE!=''">
+            ,PLANNED_DELIVERY_DATE=#{PLANNED_DELIVERY_DATE}
+        </if>
+        WHERE ID=#{ID}
+    </update>
+
+    <!-- 订单记录列表 -->
+    <select id="findOrderrecondList" resultType="java.util.Map">
+		select o.*
+		,ifnull((select SUM(ORDER_NUMBER) from r_mes_workorder_detail_t w where w.ORDERRECORD_ID=o.ID),0)
+		+ ifnull((select SUM(ORDER_NUMBER) from p_mes_workorder_detail_t w where w.ORDERRECORD_ID=o.ID),0) as SCHEDULED_NUM
+		from c_mes_orderrecord_t o
+		where o.order_id=#{order_id}
+		order by o.ALTER_DT desc
+	</select>
+
+    <!-- 获取排产里订单列表 -->
+    <select id="findOrderListOnScheduling" resultType="java.util.Map">
+		select * from c_mes_salesorder_t
+		where STATUS in (2,4,5)
+		ORDER BY DELIVERY_PLAN_TIME
+	</select>
+
+    <!-- 根据产线id和日期获取工单列表 -->
+    <select id="findWorkorderByLineId" resultType="java.util.Map">
+		select w.*
+		,(select p.PRODUCTION_NAME from c_mes_production_t p where p.ID=w.PRODUCT_ID) as PRODUCTION_NAME
+		,DATE_FORMAT(w.PLAN_START_TIME,'%H:%i') as TIME
+		,(select o.CODE from c_mes_salesorder_t o where o.ID=w.ORDER_ID) as ORDER_CODE
+		from r_mes_workorder_detail_t w
+		where 1=1
+		and w.LINE_ID=#{LINE_ID}
+		and DATE_FORMAT(w.PLAN_START_TIME,'%Y-%m-%d') = DATE_FORMAT(#{time},'%Y-%m-%d')
+		union all
+		select w.*
+		,(select p.PRODUCTION_NAME from c_mes_production_t p where p.ID=w.PRODUCT_ID) as PRODUCTION_NAME
+		,DATE_FORMAT(w.PLAN_START_TIME,'%H:%i') as TIME
+		,(select o.CODE from c_mes_salesorder_t o where o.ID=w.ORDER_ID) as ORDER_CODE
+		from p_mes_workorder_detail_t w
+		where 1=1
+		and w.LINE_ID=#{LINE_ID}
+		and DATE_FORMAT(w.PLAN_START_TIME,'%Y-%m-%d') = DATE_FORMAT(#{time},'%Y-%m-%d')
+	</select>
+
+    <!-- 删除订单 -->
+    <delete id="deleteOrder">
+		delete from c_mes_salesorder_t where ID=#{ID}
+	</delete>
+
+    <!-- 删除订单记录 -->
+    <delete id="deleteOrderrecord">
+		delete from c_mes_orderrecord_t where ID=#{ID}
+	</delete>
+
+    <!-- 根据订单id查询订单数量和已排产数量 -->
+    <select id="getSchedulingNum" resultType="java.util.Map">
+		select ifnull((select sum(ORDER_NUMBER) from r_mes_workorder_detail_t where ORDER_ID=#{order_id} and STATUS != 4),0) as orderNum
+		,ifnull((select sum(DEMAND_NUM) from c_mes_orderrecord_t where ORDER_ID=#{order_id}),0) as demandNum
+	</select>
+
+    <!-- 根据id查询订单 -->
+    <select id="getByID" resultType="java.util.Map">
+		select * from c_mes_salesorder_t s where ID=#{ID}
+	</select>
+
+    <!-- 根据id查询订单详情 -->
+    <select id="getOrderrecordByID" resultType="java.util.Map">
+		select o.*
+		,(select CODE from c_mes_salesorder_t s where s.ID=o.ORDER_ID) as CODE
+		 from c_mes_orderrecord_t o where o.ID=#{ID}
+	</select>
+
+    <!-- 查询工单需求物料列表 -->
+    <select id="findDemandMaterial" resultType="java.util.Map">
+        SELECT mld.MATERIAL_NO,mld.MATERIAL_NAME,wd.PLAN_START_TIME,wd.ORDER_NUMBER*mld.MATERIAL_NUMBER as DEMAND_NUM
+        FROM c_mes_material_list_detail_t mld
+        left join c_mes_material_list_t ml on ml.LIST_NO=mld.MATERILA_LIST_ID
+        left join r_mes_workorder_detail_t wd on wd.BOM_ID=ml.ID
+        where 1=1
+        <if test="status != null and status != ''">
+            and wd.status=#{status}
+        </if>
+        and PLAN_START_TIME between '${beginTime} 00:00:00' and '${endTime} 23:59:59'
+        union all
+        SELECT mld.MATERIAL_NO,mld.MATERIAL_NAME,wd.PLAN_START_TIME,wd.ORDER_NUMBER*mld.MATERIAL_NUMBER as DEMAND_NUM
+        FROM c_mes_material_list_detail_t mld
+        left join c_mes_material_list_t ml on ml.LIST_NO=mld.MATERILA_LIST_ID
+        left join p_mes_workorder_detail_t wd on wd.BOM_ID=ml.ID
+        where 1=1
+        <if test="status != null and status != ''">
+            and wd.status=#{status}
+        </if>
+        and PLAN_START_TIME between '${beginTime} 00:00:00' and '${endTime} 23:59:59'
+    </select>
+
+    <!-- 获取物料库存数量 -->
+    <select id="getMaterialStock" resultType="java.util.Map">
+		SELECT
+			IFNULL(count(*),0) AS sum
+		FROM
+			c_wms_material_number_t
+		WHERE MATERIAL_NO = #{MATERIAL_NO}
+	</select>
+
+    <!-- 获取当前所有物料库存数量 -->
+    <select id="findAllInventory" resultType="java.util.Map">
+		SELECT
+			count( MATERIAL_NO ) AS num,
+			MATERIAL_NO,
+			MATERIAL_NAME
+		FROM
+			c_wms_material_number_t
+		GROUP BY
+			MATERIAL_NO,
+			MATERIAL_NAME
+	</select>
+
+    <!-- 插入信息到记录表 -->
+    <insert id="InsertInventory">
+        INSERT INTO c_wms_material_inventory_t(MATERIAL_NO,MATERIAL_NAME,MATERIAL_NUMBER,INVENTORY_TIME)
+        VALUES
+        <foreach collection="list" item="emp" separator=",">
+            (#{emp.MATERIAL_NO},#{emp.MATERIAL_NAME},#{emp.num},now())
+        </foreach>
+    </insert>
+
+    <!-- 获取物料指定日期物料记录 -->
+    <select id="getInventoryByNo" resultType="java.util.Map">
+		SELECT
+			MATERIAL_NUMBER
+		FROM
+			c_wms_material_inventory_t
+		WHERE
+			MATERIAL_NO = #{MATERIAL_NO}
+			AND date_format( INVENTORY_TIME, '%Y/%m/%d' ) = date_format( #{date}, '%Y/%m/%d' )
+		limit 1
+	</select>
+
+    <!-- 根据物料code和时间区间获取物料库存记录 -->
+    <select id="getMaterialInventoryList" resultType="java.util.Map">
+		select distinct  MATERIAL_NO,MATERIAL_NAME,MATERIAL_NUMBER,date_format( INVENTORY_TIME, '%Y-%m-%d' ) as INVENTORY_TIME
+		from c_wms_material_inventory_t
+		where INVENTORY_TIME between date_format( #{startDt}, '%Y/%m/%d 00:00:00' ) and date_format( #{endDt}, '%Y/%m/%d 23:59:59' )
+		and MATERIAL_NO in (${materialCode})
+	</select>
+
+    <select id="findOrderByIdOrCode" resultType="java.util.Map">
+        select * from c_mes_salesorder_t s
+        <where>
+            <if test="id!=null and id>0">
+                s.ID = #{id}
+            </if>
+            <if test="code!=null and code!=''">
+                and s.CODE = #{code}
+            </if>
+        </where>
+    </select>
+
+    <select id="getInventoryCount" resultType="java.lang.Integer">
+		select count(*) from c_wms_material_inventory_t
+		where MATERIAL_NO=#{MATERIAL_NO}
+		and MATERIAL_NAME=#{MATERIAL_NAME}
+		and date_format( INVENTORY_TIME, '%Y/%m/%d' ) = date_format( #{INVENTORY_TIME}, '%Y/%m/%d')
+	</select>
+
+    <!-- 获取消耗列表 -->
+    <select id="findAllConsume" resultType="java.util.Map">
+		SELECT
+			mld.MATERIAL_NO,
+			mld.MATERIAL_NAME,
+			DATE_FORMAT(wd.PLAN_START_TIME,'%Y-%m-%d') as PLAN_START_TIME,
+			sum(wd.ORDER_NUMBER * mld.MATERIAL_NUMBER) AS DEMAND_NUM
+		FROM
+			c_mes_material_list_detail_t mld
+			LEFT JOIN c_mes_material_list_t ml ON ml.LIST_NO = mld.MATERILA_LIST_ID
+			LEFT JOIN r_mes_workorder_detail_t wd ON wd.BOM_ID = ml.ID
+		WHERE
+			mld.MATERIAL_NO in (${materialCode})
+			AND wd.PLAN_START_TIME BETWEEN '${startDt} 00:00:00'
+			AND '${endDt} 23:59:59'
+			GROUP BY mld.MATERIAL_NO,
+			mld.MATERIAL_NAME,DATE_FORMAT(wd.PLAN_START_TIME,'%Y-%m-%d')
+		union all
+		SELECT
+			mld.MATERIAL_NO,
+			mld.MATERIAL_NAME,
+			DATE_FORMAT(wd.PLAN_START_TIME,'%Y-%m-%d') as PLAN_START_TIME,
+			sum(wd.ORDER_NUMBER * mld.MATERIAL_NUMBER) AS DEMAND_NUM
+		FROM
+			c_mes_material_list_detail_t mld
+			LEFT JOIN c_mes_material_list_t ml ON ml.LIST_NO = mld.MATERILA_LIST_ID
+			LEFT JOIN p_mes_workorder_detail_t wd ON wd.BOM_ID = ml.ID
+		WHERE
+			mld.MATERIAL_NO in (${materialCode})
+			AND wd.PLAN_START_TIME BETWEEN '${startDt} 00:00:00'
+			AND '${endDt} 23:59:59'
+			GROUP BY mld.MATERIAL_NO,
+			mld.MATERIAL_NAME,DATE_FORMAT(wd.PLAN_START_TIME,'%Y-%m-%d')
+	</select>
+
+    <!-- 获取采购列表 -->
+    <select id="findAllPurchase" resultType="java.util.Map">
+		SELECT
+			pd.MATERIAL_NO,
+			pd.MATERIAL_NAME,
+			DATE_FORMAT( p.ARRIVAL_TIME, '%Y-%m-%d' ) AS ARRIVAL_TIME,
+			sum( MATERIAL_NUM ) AS MATERIAL_NUM
+		FROM
+			c_mes_purchase_order_details_t pd
+			LEFT JOIN c_mes_purchase_order_t p ON p.ID = pd.PURCHASE_ORDER_ID
+		WHERE
+			p.ARRIVAL_TIME BETWEEN date_format(#{startDt},'%Y/%m/%d 00:00:00') AND date_format(#{endDt},'%Y/%m/%d 23:59:59')
+			and pd.MATERIAL_NO in (${materialCode})
+		GROUP BY
+			pd.MATERIAL_NO,
+			pd.MATERIAL_NAME,
+			DATE_FORMAT(p.ARRIVAL_TIME,'%Y-%m-%d')
+	</select>
+
+    <!-- 获取产品产量 -->
+    <select id="findAllYield" resultType="java.util.Map">
+		SELECT
+			sum( wd.ORDER_NUMBER ) AS ORDER_NUMBER,
+			DATE_FORMAT(wd.PLAN_START_TIME,'%Y-%m-%d') AS PLAN_START_TIME,
+			p.MATERIAL_CODE as MATERIAL_NO
+		FROM
+			r_mes_workorder_detail_t wd
+			LEFT JOIN c_mes_production_t p ON p.ID = wd.PRODUCT_ID
+		WHERE
+			wd.PLAN_START_TIME BETWEEN date_format(#{startDt},'%Y/%m/%d 00:00:00') AND date_format(#{endDt},'%Y/%m/%d 23:59:59')
+			and p.MATERIAL_CODE in (${materialCode})
+		GROUP BY
+			p.MATERIAL_CODE,
+			DATE_FORMAT(wd.PLAN_START_TIME,'%Y-%m-%d')
+		union all
+		SELECT
+			sum( wd.ORDER_NUMBER ) AS ORDER_NUMBER,
+			DATE_FORMAT(wd.PLAN_START_TIME,'%Y-%m-%d') AS PLAN_START_TIME,
+			p.MATERIAL_CODE as MATERIAL_NO
+		FROM
+			p_mes_workorder_detail_t wd
+			LEFT JOIN c_mes_production_t p ON p.ID = wd.PRODUCT_ID
+		WHERE
+			wd.PLAN_START_TIME BETWEEN date_format(#{startDt},'%Y/%m/%d 00:00:00') AND date_format(#{endDt},'%Y/%m/%d 23:59:59')
+			and p.MATERIAL_CODE in (${materialCode})
+		GROUP BY
+			p.MATERIAL_CODE,
+			DATE_FORMAT(wd.PLAN_START_TIME,'%Y-%m-%d')
+	</select>
+
+    <!-- 根据产品名称查产品型号 -->
+    <select id="findProductModelByName" resultType="java.util.Map">
+		select PRODUCTION_TYPE as PRODUCT_MODEL from C_MES_PRODUCTION_T where PRODUCTION_NAME=#{PRODUCT_NAME}
+	</select>
+
+
+    <select id="findListAll" resultType="java.util.Map">
+		select ID,CODE,CUSTOMER_NAME from c_mes_salesorder_t
+	</select>
+
+</mapper>

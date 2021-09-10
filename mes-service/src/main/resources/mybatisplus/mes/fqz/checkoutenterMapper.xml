@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.fqz.CheckoutEnterDAO">
+	<select id="findSN" resultType="Integer">
+		select count(*) from P_MES_TRACKING_T where 1=1
+		<if test="sn!=null and sn!=''">
+			and sn=#{sn}
+		</if>
+	</select>
+
+	<select id="findPro" resultType="CMesFindT">
+		select p.id as productionid,p.PRODUCTION_NAME as productionName,p.PRODUCTION_CODE as productionCode from P_MES_TRACKING_T t,C_MES_PRODUCTION_T p where t.production_id=p.id and sn=#{sn}
+	</select>
+
+	<select id="findCheckList" resultType="CMesCheckoutListT">
+		select l.*,m.method_name as methodName from P_MES_TRACKING_T t,C_MES_CHECKOUT_LIST_T l,C_MES_CHECKOUT_METHOD_T m
+		where t.production_id=l.production_id and m.method_no=l.method_id and sn=#{sn} order by l.order_number
+	</select>
+
+	<select id="findLeakage" resultType="com.skeqi.mes.pojo.PMesLeakageT">
+		select t.sn,t.LEAKAGE_NAME,t.LEAKAGE_PV,t.LEAKAGE_LV,t.st,t.WID  from P_MES_LEAKAGE_T t where sn=#{sn}
+	</select>
+
+	<select id="findBolt" resultType="PMesBoltT">
+		select t.sn,t.st,t.T,t.A,t.WID,t.BOLT_NAME from P_MES_BOLT_T t where sn=#{sn}
+	</select>
+
+	<select id="findEol" resultType="PMesEolT">
+		select * from p_mes_eol_t where sn=#{sn}
+	</select>
+
+	<select id="findKeypart" resultType="PMesKeypartT">
+		select t.sn,t.st,t.WID,t.KEYPART_NAME,t.KEYPART_NUM,t.SECOND_NUM from P_MES_KEYPART_T t where sn=#{sn}
+	</select>
+
+	<select id="findKeypartCount" resultType="Integer">
+		select count(*) from P_MES_KEYPART_T t where sn=#{sn} and t.keypart_num is null
+	</select>
+
+	<select id="findBoltCount" resultType="Integer">
+		select count(*) from P_MES_BOLT_T t where sn=#{sn} and T is null and A is null
+	</select>
+
+	<select id="findLeakageCount" resultType="Integer">
+		select count(*) from P_MES_LEAKAGE_T t where sn=#{sn} and t.leakage_pv is null and t.leakage_lv is null
+	</select>
+
+	<select id="findEolCount" resultType="Integer">
+		SELECT count(*)  FROM p_mes_eol_t where sn=#{sn} and  r='PASS'
+	</select>
+
+	<insert id="insertEnter">
+		insert into C_MES_CHECKOUT_ENTER_T(SN,PRODUCTION_ID,STATUS,ORDER_NUMBER,PROJECT_NAME,METHOD,QUAILTY)
+		values(#{sn},#{productionId},1,#{orderNumber},#{projectName},#{method},#{quailty})
+	</insert>
+
+	<select id="findByNo" resultType="CMesCheckoutListT">
+		select list.*,m.METHOD_NAME as methodName from C_MES_CHECKOUT_LIST_T list,C_MES_CHECKOUT_METHOD_T m
+			WHERE  list.METHOD_ID=m.id and list.order_number=#{no} and list.production_id=#{pid}
+	</select>
+
+	<select id="findPlan" resultType="PMesPlanPrintT">
+		select PLAN_ID as planId,WORK_ORDER_ID as workOrderId from P_MES_PLAN_PRINT_T WHERE sn=#{sn}
+	</select>
+
+	<insert id="inserWareHouse">
+		insert into C_MES_WAREHOUSE_LIST_T(DT,EMP,SN,PRODUCTION_ID,PLAN_ID,ORDER_ID,NOTE)
+		values(#{dt},#{emp},#{sn},#{productionId},#{planId},#{orderId},#{note})
+	</insert>
+
+	<select id="findHouseSN" resultType="integer">
+		select count(*) from C_MES_WAREHOUSE_LIST_T where sn=#{sn}
+	</select>
+</mapper>

@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.yp.oa.FormTemplateManagementDao">
+
+	<!-- 查询 -->
+	<select id="list" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			DATE_FORMAT( a.dt, '%Y-%m-%d %H:%i:%s' ) AS dt,
+			a.`name`,
+			a.dis,
+			a.typeId,
+			a.jurisdiction,
+			a.state,
+			b.`name` as typeName
+		FROM
+			c_oa_form_template_t a
+			LEFT JOIN c_oa_form_template_type_t b ON a.typeId = b.id
+		ORDER BY
+			a.id
+	</select>
+
+	<!-- 新增 -->
+	<insert id="add">
+		insert into c_oa_form_template_t(dt,code,`name`,dis,typeId,jurisdiction,state,process,detailed,tokenUrl,formType,jumpUrl,overtime,overtimeType)
+		value(now(),#{code},#{name},#{dis},#{typeId},'[]',"启用",#{process},#{detailed},#{tokenUrl},#{formType},#{jumpUrl},#{overtime},#{overtimeType})
+	</insert>
+
+	<!-- 更新 -->
+	<update id="update">
+		update c_oa_form_template_t
+		set
+			dt = now(),
+			code = #{code},
+			`name` = #{name},
+			dis = #{dis},
+			typeId = #{typeId},
+			process = #{process},
+			detailed = #{detailed},
+			tokenUrl = #{tokenUrl},
+			formType = #{formType},
+			jumpUrl = #{jumpUrl},
+			overtime = #{overtime},
+			overtimeType = #{overtimeType}
+		where id = #{id}
+	</update>
+
+	<!-- 删除 -->
+	<delete id="delete">
+		delete from c_oa_form_template_t
+		where id = #{id}
+	</delete>
+
+	<!-- 查询当前输入的名称是否存在 -->
+	<select id="queryWhetherTheCurrentEnteredNameExists" resultType="int">
+		select count(*) from c_oa_form_template_t
+		where `name` = #{name}
+		and typeId = #{typeId}
+		<if test="id != null and id != ''">
+			and id != #{id}
+		</if>
+	</select>
+
+	<!-- 通过表单模板id删除表单模板明细 -->
+	<delete id="deleteTemplateDetailed">
+		delete from c_oa_form_template_detailed_t
+		where formTemplateId = #{formTemplateId}
+	</delete>
+
+	<!-- 新增表单模板明细 -->
+	<insert id="addTemplateDetailed">
+		insert into c_oa_form_template_detailed_t(`key`,type,`check`,formTemplateId,`order`,parameter,width)
+		value(#{key},#{type},#{check},#{formTemplateId},#{order},#{parameter},#{width})
+	</insert>
+
+	<!-- 查询模板 -->
+	<select id="findTemplateById" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT * FROM `c_oa_form_template_t`
+		where id = #{id}
+	</select>
+
+	<!-- 通过表单模板id删除表单模板表格 -->
+	<delete id="deleteTemplateTable">
+		delete from c_oa_form_template_table_t
+		where formTemplateId = #{formTemplateId}
+		and `group` = #{group}
+	</delete>
+
+	<!-- 新增表单模板表格 -->
+	<insert id="addTemplateTable">
+		insert into c_oa_form_template_table_t(`key`,type,formTemplateId,`order`,`group`,groupName)
+		value(#{key},#{type},#{formTemplateId},#{order},#{group},#{groupName})
+	</insert>
+
+	<!-- 查询表单模板表格 -->
+	<select id="findFormTemplateTable" resultType="com.alibaba.fastjson.JSONObject">
+		select * from c_oa_form_template_table_t
+		where formTemplateId = #{formTemplateId}
+		and `group` = #{group}
+		ORDER BY `order`
+	</select>
+
+	<!-- 更新activiti的里流程name -->
+	<update id="updateActivitiName">
+		update act_re_procdef
+		set NAME_ = #{name}
+		where KEY_ = #{key}
+	</update>
+
+	<!-- 更新表单模板与流程关联表 name -->
+	<update id="updateActivitiFormTemplate">
+		update c_oa_activiti_form_template_t
+		set `name` = #{name}
+		where activitiKey = #{key}
+	</update>
+
+	<!-- 查询表单模板与流程关联表 -->
+	<select id="findActivitiFormTemplate" resultType="com.alibaba.fastjson.JSONObject">
+		select * from c_oa_activiti_form_template_t
+		where formTemplateId = #{formTemplateId}
+	</select>
+
+	<!--  删除表单模板与流程关联表 -->
+	<delete id="deleteActivitiFormTemplate">
+		delete from c_oa_activiti_form_template_t
+		where activitiKey = #{key}
+	</delete>
+
+	<!-- 更新申请单状态 -->
+	<update id="updateApprovalRecordState">
+		update c_oa_approval_record_t
+		set
+		state = '流程已被删除'
+		where (state = '待审核'
+		or state = '审核中')
+		and actKey = #{key}
+	</update>
+
+	<!-- 查询表单模板类型 -->
+	<select id="findFormTemplateType" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT * FROM `c_oa_form_template_type_t`
+		ORDER BY id
+	</select>
+
+	<!-- 通过名称查询菜单 -->
+	<select id="findMenuByName" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			id,
+			menu_grade as menuGrade,
+			superior_menu_id as superiorMenuId,
+			menu_name as menuName,
+			if_enable as ifEnable,
+			path,
+			icon,
+			`order`
+		FROM
+			`c_qh_menu`
+		WHERE menu_name = #{name}
+	</select>
+
+	<!-- 新增菜单 -->
+	<insert id="addMenu">
+		insert into c_qh_menu(menu_grade,superior_menu_id,menu_name,if_enable,path,icon,`order`)
+		value(#{menuGrade},#{superiorMenuId},#{menuName},#{ifEnable},#{path},#{icon},#{order})
+	</insert>
+
+	<!-- 更新菜单 -->
+	<update id="updateMenu">
+		update c_qh_menu
+		set
+		menu_name = #{name}
+		where menu_name = #{oldName}
+	</update>
+
+	<!-- 删除菜单 -->
+	<delete id="deleteMenu">
+		delete from c_qh_menu
+		where menu_name = #{name}
+	</delete>
+
+	<!-- 查询组 -->
+	<select id="findGroup" resultType="com.alibaba.fastjson.JSONObject">
+		select formTemplateId,`group`,`groupName` from c_oa_form_template_table_t
+		where `group` is not null
+		and formTemplateId = #{formTemplateId}
+		GROUP BY `group`
+	</select>
+
+	<!-- 删除组 -->
+	<delete id="deleteGroup">
+		delete from c_oa_form_template_table_t
+		where formTemplateId = #{formTemplateId}
+		and `group` = #{group}
+	</delete>
+
+	<!-- 修改状态 -->
+	<update id="updateState">
+		update c_oa_form_template_t
+		set
+		state = #{state}
+		where id = #{id}
+	</update>
+
+	<!-- 删除草稿 -->
+	<delete id="deleteDraft">
+		delete from c_oa_approval_record_draft_t
+		where formTemplateId = #{formTemplateId}
+	</delete>
+
+	<!-- 查询编号的数量 -->
+	<select id="findCodeConut" resultType="int">
+		select count(*) from c_oa_form_template_t
+		where code = #{code}
+		<if test="id != null and id != ''">
+		and id != #{id}
+		</if>
+	</select>
+
+</mapper>

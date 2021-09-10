@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wf.CMesAreaTMapper">
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, areaCode, areaName, `describe`, factoryCode
+  </sql>
+
+  <!--查询区域-->
+  <select id="findAreaAll" resultType="com.skeqi.mes.pojo.qh.CMesAreaT">
+    select
+      a.*,c.companyName as companyName ,f.factoryName as factoryName
+    from c_mes_area_t a,c_mes_company_t c,c_mes_factory_t f
+    where a.companyCode = c.companyCode and a.factoryCode = f.factoryCode
+    <if test="companyName != null and companyName != ''">
+      and companyName like concat('%',#{companyName},'%')
+    </if>
+    <if test="factoryName != null and factoryName != ''">
+      and factoryName like concat('%',#{factoryName},'%')
+    </if>
+    <if test="areaCode != null and areaCode != ''">
+      and areaCode like concat('%',#{areaCode},'%')
+    </if>
+    <if test="areaName != null and areaName != ''">
+      and areaName like concat('%',#{areaName},'%')
+    </if>
+  </select>
+  <!--按编号查询区域-->
+  <select id="selectAreaByCode" resultType="com.skeqi.mes.pojo.qh.CMesAreaT">
+    select
+      *
+    from c_mes_area_t
+    where areaCode = #{areaCode,jdbcType=VARCHAR}
+  </select>
+  <!--新增区域-->
+  <insert id="addArea">
+    insert into c_mes_area_t
+    <trim  prefix="(" suffix=")" suffixOverrides=",">
+      <if test="companyCode != null and companyCode != ''">
+        companyCode,
+      </if>
+      <if test="factoryCode != null and factoryCode != ''">
+        factoryCode,
+      </if>
+      <if test="areaCode != null and areaCode != ''">
+        areaCode,
+      </if>
+      <if test="areaName != null and areaName != ''">
+        areaName,
+      </if>
+      <if test="describe != null and describe != ''">
+        `describe`,
+      </if>
+      <if test="dateTime != null and dateTime != ''">
+        dateTime,
+      </if>
+      <if test="alterDt != null and alterDt != ''">
+        alterDt,
+      </if>
+    </trim>
+    <trim  prefix="value (" suffix=")" suffixOverrides=",">
+      <if test="companyCode != null and companyCode != ''">
+        #{companyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="factoryCode != null and factoryCode != ''">
+        #{factoryCode,jdbcType=VARCHAR},
+      </if>
+      <if test="areaCode != null and areaCode != ''">
+        #{areaCode,jdbcType=VARCHAR},
+      </if>
+      <if test="areaName != null and areaName != ''">
+        #{areaName,jdbcType=VARCHAR},
+      </if>
+      <if test="describe != null and describe != ''">
+        #{describe,jdbcType=VARCHAR},
+      </if>
+      <if test="dateTime != null and dateTime != ''">
+        #{dateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="alterDt != null and alterDt != ''">
+        #{alterDt,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <!--编辑区域-->
+  <update id="editArea">
+    update c_mes_area_t
+    <set>
+        `describe` = #{describe,jdbcType=VARCHAR},
+      <if test="areaName != null and areaName != ''">
+        areaName = #{areaName,jdbcType=VARCHAR},
+      </if>
+      <if test="dateTime != null and dateTime != ''">
+        dateTime = #{dateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="alterDt != null and alterDt != ''">
+        alterDt = #{alterDt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="companyCode != null and companyCode != ''">
+        companyCode = #{companyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="factoryCode != null and factoryCode != ''">
+        factoryCode = #{factoryCode,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <where>
+      <if test="id != null">
+        id = #{id,jdbcType=INTEGER}
+      </if>
+    </where>
+  </update>
+  <!--按id查询-->
+  <select id="selectAreaById" resultType="com.skeqi.mes.pojo.qh.CMesAreaT">
+    select
+    *
+    from c_mes_area_t
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <!--删除区域-->
+  <delete id="delAreaByIdAndCode">
+    delete from c_mes_area_t
+    <where>
+      <if test="id != null">
+        id = #{id,jdbcType=INTEGER}
+      </if>
+      <if test="factoryCode != null and factoryCode != ''">
+        and factoryCode = #{factoryCode,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </delete>
+
+  <!--按工厂编号查区域-->
+  <select id="selectAreaByFactoryCode" resultType="com.skeqi.mes.pojo.qh.CMesAreaT">
+    select
+    *
+    from c_mes_area_t
+    where factoryCode = #{factoryCode,jdbcType=VARCHAR}
+  </select>
+
+  <!--按id修改区域的公司-->
+  <update id="editAreaById">
+    update c_mes_area_t
+    <set>
+      <if test="afterCompanyCode != null and afterCompanyCode != ''">
+        companyCode = #{afterCompanyCode,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <where>
+      <if test="beforeCompanyCode != null and beforeCompanyCode != ''">
+        companyCode = #{beforeCompanyCode,jdbcType=VARCHAR}
+      </if>
+      <if test="areaIdList!=null and areaIdList.size()>0">
+        <foreach collection="areaIdList" item="id" open="and id in(" close=")" separator=",">
+          #{id,jdbcType=INTEGER}
+        </foreach>
+      </if>
+    </where>
+  </update>
+
+
+  <!--按公司编号删除区域-->
+  <delete id="delAreaByCompanyCode">
+    delete from c_mes_area_t
+    <where>
+      <if test="companyCode != null and companyCode != ''">
+         companyCode = #{companyCode,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </delete>
+
+  <!--按公司编号查询区域-->
+  <select id="selectAreaByCompanyCode" resultType="com.skeqi.mes.pojo.qh.CMesAreaT">
+    select
+    *
+    from c_mes_area_t
+    where
+    <if test="companyCode != null and companyCode != ''">
+    companyCode = #{companyCode,jdbcType=VARCHAR}
+    </if>
+  </select>
+</mapper>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wms.MaterialBarcodeRuleDao">
+
+	<select id="findMaterialBarcodeRuleList" resultType="com.skeqi.mes.pojo.wms.CWmsMaterialBarcodeRuleT">
+		SELECT
+			id,
+			rule,
+			`condition`,
+			modify_dt
+		FROM
+			c_wms_material_barcode_rule_t
+			where 1 = 1
+			<if test="id!=null and id!=''">
+				and id = #{id}
+			</if>
+			<if test="condition!=null and condition!=''">
+				and condition = #{condition}
+			</if>
+			<if test="rule!=null and rule!=''">
+				and rule = #{rule}
+			</if>
+		ORDER BY
+			id
+	</select>
+
+	<insert id="addMaterialBarcodeRule">
+		INSERT INTO c_wms_material_barcode_rule_t ( rule, `condition`, modify_dt )
+		VALUE
+		(#{rule},#{condition},now())
+	</insert>
+
+	<update id="updateMaterialBarcodeRule">
+		UPDATE c_wms_material_barcode_rule_t
+		set rule = #{rule},
+		`condition` = #{condition},
+		modify_dt = now()
+		where id = #{id}
+	</update>
+
+	<delete id="deleteMaterialBarcodeRule">
+		delete from c_wms_material_barcode_rule_t
+		where id = #{id}
+	</delete>
+
+	<select id="findMaterialRuleAttributeList" resultType="com.skeqi.mes.pojo.wms.CWmsMaterialRuleAttributeT">
+		select id,attribute_cn,`column` from c_wms_material_rule_attribute_t
+		ORDER BY id
+	</select>
+
+</mapper>

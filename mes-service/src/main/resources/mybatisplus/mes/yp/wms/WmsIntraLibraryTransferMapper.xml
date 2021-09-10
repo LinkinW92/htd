@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.yp.wms.WmsIntraLibraryTransferDao">
+
+	<!-- 查询 -->
+	<select id="list" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			a.listNo,
+			a.sourceFactoryId,
+			a.sourceLocationId,
+			a.receivingFactoryId,
+			a.receivingLocationId,
+			a.establishUserId,
+			DATE_FORMAT( a.establishDt, '%Y-%m-%d %H:%i:%s' ) AS establishDt,
+			a.receivingUserId,
+			DATE_FORMAT( a.receivingDt, '%Y-%m-%d %H:%i:%s' ) AS receivingDt,
+			a.`status`,
+			a.dis,
+			b.factoryName AS sourceFactoryName,
+			c.LOCATION_NAME AS sourceLocationName,
+			f.factoryName AS receivingFactoryName,
+			g.LOCATION_NAME AS receivingLocationName,
+			h.USER_NAME AS establishUserName,
+			h.`name` AS establishUserFullName,
+			i.USER_NAME AS receivingUserName,
+			i.`name` AS receivingUserFullName
+		FROM
+			c_qh_wms_intra_library_transfer_h_t a
+			LEFT JOIN c_mes_factory_t b ON a.sourceFactoryId = b.id
+			LEFT JOIN c_wms_location_t c ON a.sourceLocationId = c.id
+			LEFT JOIN c_mes_factory_t f ON a.receivingFactoryId = f.id
+			LEFT JOIN c_wms_location_t g ON a.receivingLocationId = g.id
+			LEFT JOIN c_mes_user_t h ON a.establishUserId = h.id
+			LEFT JOIN c_mes_user_t i ON a.receivingUserId = i.id
+		WHERE
+			a.viewMode = 1
+		<if test="listNo != null and listNo != ''">
+			and a.listNo like '%${listNo}%'
+		</if>
+		<if test="sourceFactoryId != null and sourceFactoryId != ''">
+			and a.sourceFactoryId = #{sourceFactoryId}
+		</if>
+		<if test="sourceLocationId != null and sourceLocationId != ''">
+			and a.sourceLocationId = #{sourceLocationId}
+		</if>
+		<if test="receivingFactoryId != null and receivingFactoryId != ''">
+			and a.receivingFactoryId = #{receivingFactoryId}
+		</if>
+		<if test="receivingLocationId != null and receivingLocationId != ''">
+			and a.receivingLocationId = #{receivingLocationId}
+		</if>
+		<if test="establishUser != null and establishUser != ''">
+			and h.user_name like '%${establishUser}%' or h.`name` like '%${establishUser}%'
+		</if>
+		<if test="receivingUser != null and receivingUser != ''">
+			and i.user_name like '%${receivingUser}%' or i.`name` like '%${receivingUser}%'
+		</if>
+		<if test="status != null and status != ''">
+			and a.status = #{status}
+		</if>
+		<if test="startReceivingDt != null and startReceivingDt != '' and endReceivingDt != null and endReceivingDt != ''">
+			and DATE_FORMAT(a.receivingDt,'%Y-%m-%d') between #{startReceivingDt} and #{endReceivingDt}
+		</if>
+		ORDER BY a.establishDt desc
+	</select>
+
+	<!-- 新增 -->
+	<insert id="add">
+		insert into c_qh_wms_intra_library_transfer_h_t
+		(
+			listNo,sourceFactoryId,sourceLocationId,receivingFactoryId,
+			receivingLocationId,establishUserId,establishDt,`status`,
+			dis,viewMode
+		)
+		value
+		(
+			#{listNo},#{sourceFactoryId},#{sourceLocationId},#{receivingFactoryId},
+			#{receivingLocationId},#{establishUserId},now(),#{status},
+			#{dis},#{viewMode}
+		)
+	</insert>
+
+	<!-- 更新 -->
+	<update id="update">
+		update c_qh_wms_intra_library_transfer_h_t
+		<trim prefix="set" suffixOverrides=",">
+			receivingFactoryId = #{receivingFactoryId},
+			receivingLocationId = #{receivingLocationId},
+			dis = #{dis},
+			<if test="sourceFactoryId != null and sourceFactoryId != ''">
+				sourceFactoryId = #{sourceFactoryId},
+			</if>
+			<if test="sourceLocationId != null and sourceLocationId != ''">
+				sourceLocationId = #{sourceLocationId},
+			</if>
+			<if test="receivingUserId != null and receivingUserId != ''">
+				receivingUserId = #{receivingUserId},
+			</if>
+			<if test="receivingDt != null and receivingDt != ''">
+				receivingDt = now(),
+			</if>
+			<if test="status != null and status != ''">
+				`status` = #{status},
+			</if>
+			<if test="viewMode != null">
+				viewMode = #{viewMode},
+			</if>
+		</trim>
+		where listNo = #{listNo}
+	</update>
+
+	<!-- 查询R -->
+	<select id="listR" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.*,
+			b.MATERIAL_NAME AS materialName,
+			b.id AS materialId 
+		FROM
+			c_qh_wms_intra_library_transfer_r_t a
+			JOIN c_mes_jl_material_t b ON a.materialNo = b.BOM_ID
+		WHERE 1 = 1
+		<if test="id != null and id != ''">
+			and a.id = #{id}
+		</if>
+		<if test="listNo != null and listNo != ''">
+			and a.listNo = #{listNo}
+		</if>
+		<if test="materialNo != null and materialNo != ''">
+			and a.materialNo = #{materialNo}
+		</if>
+	</select>
+
+	<!-- 新增R -->
+	<insert id="addR" useGeneratedKeys="true" keyProperty="id"  keyColumn="id">
+		insert into c_qh_wms_intra_library_transfer_r_t(listNo,materialNo,number,unit)
+		value(#{listNo},#{materialNo},#{number},#{unit})
+	</insert>
+
+	<!-- 更新R -->
+	<update id="updateR">
+		update c_qh_wms_intra_library_transfer_r_t
+		<trim prefix="set" suffixOverrides=",">
+			<if test="listNo != null and listNo != ''">
+				listNo = #{listNo},
+			</if>
+			<if test="materialNo != null and materialNo != ''">
+				materialNo = #{materialNo},
+			</if>
+			<if test="number != null">
+				number = #{number},
+			</if>
+			<if test="unit != null and unit != ''">
+				unit = #{unit},
+			</if>
+		</trim>
+		where id = #{id}
+	</update>
+
+	<!-- 删除R -->
+	<delete id="deleteR">
+		delete from c_qh_wms_intra_library_transfer_r_t
+		where id = #{id}
+	</delete>
+
+	<!-- 查询D -->
+	<select id="listD" resultType="com.alibaba.fastjson.JSONObject">
+		select * from c_qh_wms_intra_library_transfer_d_t
+		where 1 = 1
+		<if test="rId != null and rId != ''">
+			and rId = #{rId}
+		</if>
+		<if test="id != null and id != ''">
+			and id = #{id}
+		</if>
+	</select>
+
+	<!-- 新增D -->
+	<insert id="addD">
+		insert into c_qh_wms_intra_library_transfer_d_t(packingId,code,packingNumber,number,rId)
+		value(#{packingId},#{code},#{packingNumber},#{number},#{rId})
+	</insert>
+
+	<!-- 更新D -->
+	<update id="updateD">
+		update c_qh_wms_intra_library_transfer_d_t
+		set
+		packingNumber = #{packingNumber},
+		number = #{number}
+		where id = #{id}
+	</update>
+
+	<!-- 删除D -->
+	<delete id="deleteD">
+		delete from c_qh_wms_intra_library_transfer_d_t
+		where id = #{id}
+	</delete>
+
+	<!-- 通过行id删除D -->
+	<delete id="deleteDByRId">
+		delete from c_qh_wms_intra_library_transfer_d_t
+		where rId = #{rId}
+	</delete>
+
+	<!-- 查询需要过账的信息 -->
+	<select id="queryTheInformationToBePosted" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.*,
+			b.unit,
+			c.MATERIAL_NAME AS materialName,
+			c.BOM_ID AS materialNo,
+			c.id AS materialId 
+		FROM
+			c_qh_wms_intra_library_transfer_d_t a
+			JOIN c_qh_wms_intra_library_transfer_r_t b ON a.rId = b.id
+			JOIN c_mes_jl_material_t c ON b.materialNo = c.BOM_ID
+		WHERE
+			b.listNo = #{listNo}
+	</select>
+
+</mapper>

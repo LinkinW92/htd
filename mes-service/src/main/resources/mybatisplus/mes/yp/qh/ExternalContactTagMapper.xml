@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.yp.qh.ExternalContactTagDao">
+
+	<!-- 查询 -->
+	<select id="list" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			DATE_FORMAT( a.dt, '%Y-%m-%d %H:%i:%s' ) AS dt,
+			a.`name`,
+			a.typeId,
+			b.`name` as typeName
+		FROM
+			c_qh_external_contact_tag_t a
+			join c_qh_external_contact_tag_type_t b on a.typeId = b.id
+		where 1 = 1
+		<if test="typeId != null and typeId != ''">
+		and a.typeId = #{typeId}
+		</if>
+		ORDER BY dt DESC
+	</select>
+
+	<!-- 新增 -->
+	<insert id="add">
+		insert into c_qh_external_contact_tag_t(dt,`name`,typeId)
+		value(now(),#{name},#{typeId})
+	</insert>
+
+	<!-- 编辑 -->
+	<update id="update">
+		update c_qh_external_contact_tag_t
+		set
+		dt = now(),
+		name = #{name},
+		typeId = #{typeId}
+		where id = #{id}
+	</update>
+
+	<!-- 删除 -->
+	<delete id="delete">
+		delete from c_qh_external_contact_tag_t
+		where id = #{id}
+	</delete>
+
+	<!-- 通过名称查询存在的数量 -->
+	<select id="findTagCountByName" resultType="int">
+		select count(*) from c_qh_external_contact_tag_t
+		where name = #{name}
+		<if test="id != null and id != ''">
+		and id != #{id}
+		</if>
+	</select>
+
+	<!-- 查询标签类型 -->
+	<select id="findType" resultType="com.alibaba.fastjson.JSONObject">
+		select * from c_qh_external_contact_tag_type_t
+		ORDER BY id
+	</select>
+
+</mapper>

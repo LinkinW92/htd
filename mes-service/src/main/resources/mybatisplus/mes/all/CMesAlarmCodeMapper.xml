@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.all.CMesAlarmCodeTDAO">
+
+	<!-- 查询全部 -->
+	<select id="findAllAlarm" resultType="CMesAlarmCodeT">
+			SELECT ID,ALARM_CODE,ALARM_TEXT,ALARM_ENGLISH,ALARM_GRADE FROM C_MES_ALARM_CODE_T WHERE 1 = 1
+		<if test="alarmCode!=null and alarmCode!=''">
+			AND ALARM_CODE=#{alarmCode}
+		</if>
+		 ORDER BY ALARM_CODE
+	</select>
+
+	<!-- 根据id查询 -->
+	<select id="findAlarmByid" resultType="CMesAlarmCodeT">
+		select * from C_MES_ALARM_CODE_T where id=#{id}
+	</select>
+
+	<!-- 添加 -->
+	<insert id="addAlarm">
+		    	INSERT INTO C_MES_ALARM_CODE_T(DT,ALARM_CODE,ALARM_TEXT,ALARM_ENGLISH,ALARM_GRADE)
+		VALUES(now(),#{alarmCode},#{alarmText},#{alarmEnglish},#{alarmGrade})
+	</insert>
+
+	<!-- 修改 -->
+	<update id="updateAlarm">
+		UPDATE C_MES_ALARM_CODE_T SET ALARM_TEXT=#{alarmText},
+		ALARM_ENGLISH=#{alarmEnglish},ALARM_GRADE=#{alarmGrade},ALARM_CODE=#{alarmCode} WHERE ID=#{id}
+	</update>
+
+	<!-- 删除 -->
+	<delete id="delAlarm">
+		delete from C_MES_ALARM_CODE_T where id=#{id}
+	</delete>
+</mapper>
+
+

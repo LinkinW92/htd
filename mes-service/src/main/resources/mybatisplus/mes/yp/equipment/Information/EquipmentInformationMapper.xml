@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.yp.equipment.Information.EquipmentInformationDao">
+
+	<!-- 查询集合 -->
+	<select id="list" resultType="java.util.Map">
+		SELECT
+			a.id,
+			a.number,
+			a.`name`,
+			a.model,
+			a.brand,
+			a.type,
+			a.maintenancePeriod,
+			a.spotCheckCycle,
+			a.workState,
+			a.functionState,
+			a.plcAdd,
+			a.ipAdd,
+			a.`port`,
+			a.lineId,
+			a.stationIds,
+			a.`describe`,
+			DATE_FORMAT( a.lastMaintenanceDate, '%Y-%m-%d %H:%i:%s' ) AS lastMaintenanceDate,
+			DATE_FORMAT( a.nextMaintenanceDate, '%Y-%m-%d %H:%i:%s' ) AS nextMaintenanceDate,
+			DATE_FORMAT( a.lastSpotCheckDate, '%Y-%m-%d %H:%i:%s' ) AS lastSpotCheckDate,
+			DATE_FORMAT( a.nextSpotCheckDate, '%Y-%m-%d %H:%i:%s' ) AS nextSpotCheckDate,
+			DATE_FORMAT( a.lastRepairDate, '%Y-%m-%d %H:%i:%s' ) AS lastRepairDate,
+			b.`name` AS lineName,
+			(select GROUP_CONCAT(f.STATION_NAME) from c_qh_equipment_information_station e
+		JOIN c_mes_station_t f ON e.stationId = f.id where a.id = e.parentId) as stationName,
+		(select GROUP_CONCAT("&lt;span style='color:DeepSkyBlue'>",columnName,"&lt;/span>",":",`value`) from c_qh_equipment_information_custom_columns eicc where eicc.parentId = a.id) as customColumns
+		FROM
+			c_qh_equipment_information a
+			JOIN c_mes_line_t b ON a.lineId = b.id
+		<where>
+			<if test="number != null and number != ''">
+				a.number like '%${number}%'
+			</if>
+			<if test="name != null and name != ''">
+				and a.`name` like '%${name}%'
+			</if>
+			<if test="model != null and model != ''">
+				and a.model like '%${model}%'
+			</if>
+			<if test="workState != null and workState != ''">
+				and a.workState = #{workState}
+			</if>
+			<if test="functionState != null and functionState != ''">
+				and a.functionState = #{functionState}
+			</if>
+			<if test="ipAdd != null and ipAdd != ''">
+				and a.ipAdd like '%${ipAdd}%'
+			</if>
+			<if test="lineId != null and lineId != ''">
+				and a.lineId = #{lineId}
+			</if>
+		</where>
+		GROUP BY a.id
+		ORDER BY id
+	</select>
+
+	<!-- 校验编号 -->
+	<select id="checkNumber" resultType="int">
+		select count(*) from c_qh_equipment_information
+		where number = #{number}
+		<if test="id != null and id != ''">
+			and id != #{id}
+		</if>
+	</select>
+
+	<!-- 新增 -->
+	<insert id="add" useGeneratedKeys="true" keyProperty="id"  keyColumn="id">
+<!-- 		INSERT INTO c_qh_equipment_information(number,`name`,model,type,workState,functionState,plcAdd,ipAdd,`port`,lineId,stationId) -->
+<!-- 		value(#{number},#{name},#{model},#{type},#{workState},#{functionState},#{plcAdd},#{ipAdd},#{port},#{lineId},#{stationId}) -->
+
+		INSERT INTO c_qh_equipment_information(number,`name`,model,brand,type,maintenancePeriod,spotCheckCycle,plcAdd,ipAdd,`port`,lineId,stationIds,`describe`,nextMaintenanceDate,nextSpotCheckDate)
+		value(#{number},#{name},#{model},#{brand},#{type},#{maintenancePeriod},#{spotCheckCycle},#{plcAdd},#{ipAdd},#{port},#{lineId},#{stationIds},#{describe},#{nextMaintenanceDate},#{nextSpotCheckDate})
+	</insert>
+
+	<!-- 更新 -->
+	<update id="update">
+		update c_qh_equipment_information
+		set number = #{number},
+		`name` = #{name},
+		model = #{model},
+		brand = #{brand},
+		type = #{type},
+		maintenancePeriod = #{maintenancePeriod},
+		spotCheckCycle = #{spotCheckCycle},
+<!-- 		workState = #{workState}, -->
+<!-- 		functionState = #{functionState}, -->
+		plcAdd = #{plcAdd},
+		ipAdd = #{ipAdd},
+		`port` = #{port},
+		lineId = #{lineId},
+		stationIds = #{stationIds},
+		`describe` = #{describe},
+		nextMaintenanceDate = (
+			DATE_SUB(now(),INTERVAL -${maintenancePeriod} day)
+		),
+		nextSpotCheckDate = (
+			DATE_SUB(now(),INTERVAL -${spotCheckCycle} day)
+		)
+		where id = #{id}
+	</update>
+
+	<!-- 删除 -->
+	<delete id="delete">
+		DELETE from c_qh_equipment_information
+		where id = #{id}
+	</delete>
+
+	<!-- 新增设备工位信息 -->
+	<insert id="addEquipmentInformationStation">
+		INSERT INTO c_qh_equipment_information_station(stationId,parentId)
+		${sql}
+	</insert>
+
+	<!-- 删除设备工位信息 -->
+	<delete id="deleteEquipmentInformationStation">
+		delete from c_qh_equipment_information_station
+		where parentId = #{parentId}
+	</delete>
+
+	<!-- 查询产线 -->
+	<select id="lineList" resultType="com.alibaba.fastjson.JSONObject">
+		select id,`name` from c_mes_line_t
+		ORDER BY id
+	</select>
+
+	<!-- 通过产线id查询工位 -->
+	<select id="stationListByLineId" resultType="com.alibaba.fastjson.JSONObject">
+		select id,STATION_NAME as `name` from c_mes_station_t
+		where line_id = #{lineId}
+		ORDER BY id
+	</select>
+
+
+	<!-- ====================以下是自定义属性====================-->
+	<!-- 查询自定义列集合 -->
+	<select id="customColumnsList" resultType="com.alibaba.fastjson.JSONObject">
+		select * from c_qh_equipment_information_custom_columns
+		where parentId = #{parentId}
+		ORDER BY id
+	</select>
+
+	<!-- 校验自定义列 列名 -->
+	<select id="checkcustomColumnsColumnName" resultType="int">
+		select count(*) from c_qh_equipment_information_custom_columns
+		where columnName = #{columnName}
+		and parentId = #{parentId}
+		<if test="id != null and id != ''">
+			and id != #{id}
+		</if>
+	</select>
+
+	<!-- 新增自定义列 -->
+	<insert id="customColumnsAdd">
+		INSERT INTO c_qh_equipment_information_custom_columns(parentId,columnName,`value`,`explain`)
+		value(#{parentId},#{columnName},#{value},#{explain})
+	</insert>
+
+	<!-- 更新自定义列 -->
+	<update id="customColumnsUpdate">
+		update c_qh_equipment_information_custom_columns
+		set columnName = #{columnName},
+		`value` = #{value},
+		`explain` = #{explain}
+		where id = #{id}
+	</update>
+
+	<!-- 删除自定义列 -->
+	<delete id="customColumnsDelete">
+		DELETE FROM c_qh_equipment_information_custom_columns
+		where id = #{id}
+	</delete>
+
+	<!-- ====================以下是详情====================-->
+	<!-- 通过id查询对象 -->
+	<select id="objectById" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			a.number,
+			a.`name`,
+			a.model,
+			a.brand,
+			a.type,
+			a.maintenancePeriod,
+			a.workState,
+			a.functionState,
+			a.plcAdd,
+			a.ipAdd,
+			a.`port`,
+			a.lineId,
+			a.stationIds,
+			a.`describe`,
+			DATE_FORMAT(a.lastMaintenanceDate, '%Y-%m-%d %H:%i:%s') as lastMaintenanceDate,
+			a.nextMaintenanceDate,
+			DATE_FORMAT(a.lastRepairDate, '%Y-%m-%d %H:%i:%s') as lastRepairDate,
+			b.`name` AS lineName,(
+			SELECT
+				GROUP_CONCAT( f.STATION_NAME )
+			FROM
+				c_qh_equipment_information_station e
+				JOIN c_mes_station_t f ON e.stationId = f.id
+			WHERE
+				a.id = e.parentId
+			) AS stationName
+		FROM
+			c_qh_equipment_information a
+			JOIN c_mes_line_t b ON a.lineId = b.id
+		where a.id = #{id}
+	</select>
+	<!-- 通过编号查询对象 -->
+	<select id="objectByNumber" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			a.number,
+			a.`name`,
+			a.model,
+			a.brand,
+			a.type,
+			a.maintenancePeriod,
+			a.workState,
+			a.functionState,
+			a.plcAdd,
+			a.ipAdd,
+			a.`port`,
+			a.lineId,
+			a.stationIds,
+			a.`describe`,
+			DATE_FORMAT(a.lastMaintenanceDate, '%Y-%m-%d %H:%i:%s') as lastMaintenanceDate,
+			a.nextMaintenanceDate,
+			DATE_FORMAT(a.lastRepairDate, '%Y-%m-%d %H:%i:%s') as lastRepairDate,
+			b.`name` AS lineName,(
+			SELECT
+				GROUP_CONCAT( f.STATION_NAME )
+			FROM
+				c_qh_equipment_information_station e
+				JOIN c_mes_station_t f ON e.stationId = f.id
+			WHERE
+				a.id = e.parentId
+			) AS stationName
+		FROM
+			c_qh_equipment_information a
+			JOIN c_mes_line_t b ON a.lineId = b.id
+		where a.number = #{number}
+	</select>
+
+	<!-- ==============一下是事件============= -->
+	<!-- 新增事件 -->
+	<insert id="addEvent">
+		INSERT INTO c_qh_equipment_information_event(dt,parentId,`event`)
+		value(now(),#{parentId},#{event})
+	</insert>
+
+</mapper>
+
+

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.alarm.CAlarmTimingUgradeDao">
+
+	<!-- 查询升级记录 -->
+	<select id="findProblemUpgradeLogs"
+		resultType="com.skeqi.mes.pojo.alarm.CAlarmProblemUpgradeLogs">
+		select
+		id,fault_id,before_Upgrade_level_Id,after_Upgrade_level_Id,max(dt)
+		as dt from c_alarm_problem_upgrade_logs
+		where fault_id = #{faultId}
+	</select>
+
+	<!-- 查询升级 -->
+	<select id="findProblemUpgrade" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+		a.id,
+		a.problem_level_id as problemLevelId,
+		a.upgrade_problem_level_id as upgradeProblemLevelId,
+		a.trigger_time as triggerTime,
+		a.loss_Type_Id as lossTypeId,
+		b.`explain` as qLevel,
+		c.`explain` as hLevel
+		FROM
+		c_alarm_problem_upgrade a
+		join c_alarm_problem_level b on a.problem_level_id = b.id
+		join c_alarm_problem_level c on a.upgrade_problem_level_id = c.id
+	</select>
+
+	<!-- 查询当前故障 -->
+	<select id="findAndonFault" resultType="com.skeqi.mes.pojo.project.CMesAndonFault">
+		select fault.id,fault.LINE_NAME,fault.STATION_NAME,fault.LOSS_TYPE,fault.ESTABLISH_DT,fault.RESPONSE_DT,fault.fault_level_id,type.LOSS_NAME
+		from c_mes_andon_fault_t fault
+		join c_mes_loss_type_t type on fault.LOSS_TYPE = type.id
+		where STATUS != 2
+	</select>
+
+	<!-- 新增升级记录 -->
+	<insert id="addProblemUpgradeLogs">
+		INSERT INTO
+		c_alarm_problem_upgrade_logs(fault_id,before_Upgrade_level_Id,after_Upgrade_level_Id,dt)
+		value(#{faultId},#{beforeUpgradelevelId},#{afterUpgradelevelId},now())
+	</insert>
+
+	<!-- 升级 -->
+	<update id="upgrade">
+		update c_mes_andon_fault_t
+		set fault_level_id = #{levelId}
+		where id = #{id}
+	</update>
+
+	<resultMap type="com.alibaba.fastjson.JSONObject"
+		id="jsonEmailMap">
+		<result column="sender_email" property="senderEmail" />
+		<result column="the_server" property="theServer" />
+		<result column="authorization_code"
+			property="authorizationCode" />
+		<result column="notification_channels_content"
+			property="notificationChannelsContent" />
+		<result column="LOSS_NAME" property="lossName" />
+		<result column="notification_channels" property="notificationChannels" />
+		<result column="notification_channels_type_name" property="notificationChannelsTypeName" />
+	</resultMap>
+	<!-- 查询需要发送的邮件 -->
+	<select id="findNnotificationMethod" resultMap="jsonEmailMap">
+		SELECT
+			b.sender_email,
+			b.the_server,
+			b.authorization_code,
+			c.notification_channels_content,
+			c.notification_channels,
+			d.LOSS_NAME,
+			e.notification_channels_type_name
+		FROM
+			c_alarm_notification_method a
+			JOIN c_alarm_email_config b ON a.service_Id = b.id
+			JOIN c_alarm_notification_channels c ON a.notification_channels_id = c.id
+			JOIN c_mes_loss_type_t d ON a.loss_Type_Id = d.id
+			JOIN c_alarm_notification_channels_type e ON c.notification_channels_type_id = e.id
+		where loss_Type_Id = #{lossTypeId}
+		and a.problem_Level_Id = #{problemLevelId}
+		and a.problem_State = #{problemState}
+	</select>
+
+	<!-- 新增通知日志 -->
+	<insert id="addNoticeLogs">
+		INSERT INTO
+		c_alarm_notice_logs(fault_id,lossType,dt,sendOut,receive,channels,channelsType)
+		value(#{faultId},#{lossType},now(),#{sendOut},#{receive},#{channels},#{channelsType})
+	</insert>
+
+</mapper>
+
+

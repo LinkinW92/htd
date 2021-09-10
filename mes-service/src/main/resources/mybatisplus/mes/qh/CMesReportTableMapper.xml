@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.qh.CMesReportTableDAO">
+
+	<!-- 查询报表表名 -->
+	<select id="findAllReport" resultType="com.skeqi.mes.pojo.CMesTableReportT">
+		select * from
+		c_mes_table_report_t
+		<where>
+			<if test="tableReportId != null">
+				ID = #{tableReportId}
+			</if>
+		</where>
+	</select>
+
+	<!-- 根据id查询此表的列 -->
+	<select id="findColumnById" resultType="com.skeqi.mes.pojo.CMesReportColumn">
+		select * from C_MES_TABLE_COLUMNS_REPORT_T
+		<where>
+			<if test="tableReportId != null">
+				and TABLE_REPORT_ID= #{tableReportId}
+			</if>
+			and SHOW_FLAG = 1
+		</where>
+	</select>
+
+	<!-- 修改此表需要展示哪些列 -->
+	<update id="updateStatus">
+		update C_MES_TABLE_COLUMNS_REPORT_T set SHOW_FLAG=#{showFlag}
+		<where>
+			<choose>
+				<when
+					test="tableReportId != null and tableColumnsName != null and tableColumnsName != ''">
+					and TABLE_REPORT_ID=#{tableReportId}
+					and
+					TABLE_COLUMNS_NAME=#{tableColumnsName}
+				</when>
+				<otherwise>and 1=2</otherwise>
+			</choose>
+		</where>
+	</update>
+
+	<!-- 查询报表内容 -->
+	<select id="findDataReport" resultType="java.util.Map">
+		select * from ${tableName}
+		<where>
+			<if test="startTime != null and startTime != ''">
+				and DT <![CDATA[ >= ]]>
+				#{startTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				and DT <![CDATA[ <= ]]>
+				#{endTime}
+			</if>
+			<if test="sn != null and sn != ''">
+				and SN like concat('%', #{sn}, '%')
+			</if>
+		</where>
+		order by DT desc
+		<if test="pageStart != null and pageSize != null">
+			limit #{pageStart},#{pageSize}
+		</if>
+	</select>
+
+	<!-- 查询报表内容 -->
+	<select id="getTableNameById" resultType="java.lang.String">
+		select TABLE_NAME from
+		c_mes_table_report_t where ID=#{tableReportId}
+	</select>
+</mapper>
+
+

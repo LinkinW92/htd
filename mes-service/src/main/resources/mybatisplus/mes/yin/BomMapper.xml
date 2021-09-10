@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.yin.BomDao">
+	<select id="bomList" resultType="CMesBomT">
+		SELECT bom.*,production.PRODUCTION_NAME FROM C_MES_BOM_T bom,C_MES_PRODUCTION_T production WHERE production.id=bom.production_id
+		<if test="id!=null">
+			and bom.id = #{id}
+		</if>
+		<if test="bomName!=null">
+			and bom.bom_name = #{bomName}
+		</if>
+	</select>
+	<insert id="addBom" keyProperty="id" useGeneratedKeys="false">
+		INSERT INTO C_MES_BOM_T(PRODUCTION_ID,BOM_NAME,DIS) VALUES(#{productionId},#{bomName},#{dis})
+	</insert>
+	<delete id="delBom">
+		DELETE FROM C_MES_BOM_T WHERE ID = #{id}
+	</delete>
+	<update id="editBom">
+		UPDATE C_MES_BOM_T SET PRODUCTION_ID = #{productionId},BOM_NAME = #{bomName},DIS = #{dis} WHERE ID = #{id}
+	</update>
+	<select id="materialMsgList" resultType="CMesMaterialMsgT">
+		SELECT materialMsg.*,station.STATION_NAME  FROM C_MES_MATERIAL_MSG_T materialMsg,C_MES_STATION_T station where station.id=materialMsg.st
+		<if test="station!=null and station!=''">
+			AND station.STATION_NAME = #{station}
+		</if>
+		<if test="id!=null">
+			AND materialMsg.ID = #{id}
+		</if>
+		<if test="materialName!=null">
+			and materialMsg.MATERIAL_NAME=#{materialName}
+		</if>
+	</select>
+	<insert id="addMaterialMsg" keyProperty="id" useGeneratedKeys="false">
+		INSERT INTO C_MES_MATERIAL_MSG_T(MATERIAL_NAME,ST,MATERIAL_TYPE,MATERIAL_VR,MATERIAL_COME_TYPE,MATERIAL_SUPPLIER,DIS,UPLOAD_CODE)
+		VALUES(#{materialName},#{st},#{materialType},#{materialVr},#{materialComeType},#{materialSupplier},#{dis},#{uploadCode})
+	</insert>
+
+	<delete id="delMaterialMsg">
+		DELETE FROM C_MES_MATERIAL_MSG_T WHERE ID = #{id}
+	</delete>
+
+	<update id="editMaterialMsg">
+		UPDATE C_MES_MATERIAL_MSG_T SET MATERIAL_NAME = #{materialName},ST = #{st},MATERIAL_TYPE = #{materialType},MATERIAL_VR = #{materialVr},
+		MATERIAL_COME_TYPE = #{materialComeType},MATERIAL_SUPPLIER = #{materialSupplier},DIS = #{dis},UPLOAD_CODE = #{uploadCode} WHERE ID = #{id}
+	</update>
+
+	<select id="boltList" resultType="CMesBoltInfomationT">
+		SELECT bolt.*,station.STATION_NAME FROM C_MES_BOLT_INFOMATION_T bolt,C_MES_STATION_T station WHERE bolt.ST = station.ID
+		<if test="id!=null">
+			AND bolt.ID=#{id}
+		</if>
+		<if test="st!=null and st!=''">
+			AND station.STATION_NAME = #{st}
+		</if>
+	</select>
+
+	<insert id="addBolt" keyProperty="id" useGeneratedKeys="false">
+		INSERT INTO C_MES_BOLT_INFOMATION_T(BOLT_NAME,ST,A_LIMIT,T_LIMIT,UPLOAD_CODE,PROGRAM_NO,BOLT_NO,DIS)
+		VALUES(#{boltName},#{st},#{aLimit},#{tLimit},#{uploadCode},#{programNo},#{boltNo},#{dis})
+	</insert>
+	<delete id="delBolt">
+		DELETE FROM C_MES_BOLT_INFOMATION_T WHERE ID = #{id}
+	</delete>
+
+	<update id="editBolt">
+		UPDATE C_MES_BOLT_INFOMATION_T SET BOLT_NAME = #{boltName},ST = #{st},A_LIMIT = #{aLimit},T_LIMIT = #{tLimit},
+		UPLOAD_CODE = #{uploadCode},PROGRAM_NO = #{programNo},BOLT_NO = #{boltNo},DIS = #{dis} WHERE ID = #{id}
+	</update>
+
+	<select id="leakageList" resultType="CMesLeakageInfoT">
+		SELECT leakage.*,station.STATION_NAME FROM C_MES_LEAKAGE_INFO_T leakage,C_MES_STATION_T station where leakage.st=station.id
+		<if test="station!=null and station!=''">
+			AND station.STATION_NAME = #{station}
+		</if>
+		<if test="id!=null">
+			AND leakage.ID = #{id}
+		</if>
+		<if test="leakageName!=null">
+			AND leakage.LEAKAGE_NAME = #{leakageName}
+		</if>
+	</select>
+
+	<insert id="addAirtightness" keyProperty="id" useGeneratedKeys="false">
+		INSERT INTO C_MES_LEAKAGE_INFO_T(ST,LEAKAGE_NAME,PV_LIMIT,LV_LIMIT,DIS,UPLOAD_CODE)
+		VALUES(#{st},#{leakageName},#{pvLimit},#{lvLimit},#{dis},#{uploadCode})
+	</insert>
+
+	<update id="editAirtightness">
+		UPDATE C_MES_LEAKAGE_INFO_T SET ST = #{st},LEAKAGE_NAME = #{leakageName},PV_LIMIT = #{pvLimit},LV_LIMIT = #{lvLimit},
+		DIS = #{dis},UPLOAD_CODE = #{uploadCode} WHERE ID = #{id}
+	</update>
+
+	<delete id="delAirtightness">
+		DELETE FROM C_MES_LEAKAGE_INFO_T WHERE ID = #{id}
+	</delete>
+
+	<select id="otherDataList" resultType="CMesOtherDataT">
+		SELECT otherData.*,station.STATION_NAME FROM C_MES_OTHER_DATA_T otherData,C_MES_STATION_T station where otherData.st=station.id
+		<if test="st!=null and st!=''">
+			AND station.STATION_NAME = #{st}
+		</if>
+		<if test="id!=null">
+			AND otherData.ID = #{id}
+		</if>
+		<if test="otherName!=null">
+			AND otherData.OTHER_NAME = #{otherName}
+		</if>
+	</select>
+	<select id="countOtherByName" resultType="int">
+		SELECT COUNT(*) FROM C_MES_OTHER_DATA_T WHERE OTHER_NAME = #{otherName} AND ST = #{st}
+	</select>
+	<insert id="addOtherData" keyProperty="id" useGeneratedKeys="false">
+		insert into C_MES_OTHER_DATA_T(OTHER_NAME,ST,UPLOAD_CODE,DIS)
+		values(#{otherName},#{st},#{uploadCode},#{dis})
+	</insert>
+
+	<delete id="delOtherData">
+		DELETE FROM C_MES_OTHER_DATA_T WHERE ID =#{id}
+	</delete>
+	<delete id="delBomDetails">
+		DELETE FROM C_MES_BOM_DETAIL_T WHERE ID =#{id}
+	</delete>
+
+	<update id="editOtherData">
+		UPDATE C_MES_OTHER_DATA_T SET OTHER_NAME = #{otherName},ST=#{st},UPLOAD_CODE = #{uploadCode},DIS = #{dis}
+		WHERE ID = #{id}
+	</update>
+
+	<select id="bomDetailList" resultType="CMesBomDetailT">
+		SELECT bomDetail.*,bom.BOM_NAME,line.name as lineName,station.station_name,material.material_name
+		FROM C_MES_BOM_T bom,C_MES_BOM_DETAIL_T bomDetail,C_MES_LINE_T line,C_MES_STATION_T station,C_MES_MATERIAL_T material
+		WHERE bom.ID = bomdetail.BOM_ID AND bomDetail.Line_Id = line.id AND bomDetail.Station_Id = station.id AND bomDetail.DATA_ID = material.ID
+		<if test="bomName!=null and bomName != ''">
+			AND bom.bomName = #{bomName}
+		</if>
+		<if test="id!=null">
+			AND bomDetail.ID = #{id}
+		</if>
+		<if test="bomId!=null and bomId!=''">
+			AND bomDetail.BOM_ID = #{bomId}
+		</if>
+		ORDER BY bomDetail.ID
+	</select>
+
+	<insert id="addBomDetails" keyProperty="id" useGeneratedKeys="false">
+		insert into C_MES_BOM_DETAIL_T(BOM_ID,DATA_TYPE,DATA_ID,RECIVE_NUMBER,TRACE_FLAG,LINE_ID,STATION_ID)
+		values(#{bomId},#{dataType},#{dataId},#{reciveNumber},#{traceFlag},#{lineId},#{stationId})
+	</insert>
+
+	<update id="editBomDetails">
+		UPDATE C_MES_BOM_DETAIL_T SET BOM_ID = #{bomId},DATA_TYPE = #{dataType},DATA_ID = #{dataId},RECIVE_NUMBER = #{reciveNumber},
+		TRACE_FLAG = #{traceFlag},LINE_ID = #{lineId},STATION_ID = #{stationId} WHERE ID = #{id}
+	</update>
+
+	<select id="countBolt" resultType="int">
+		select count(*) from C_MES_BOLT_INFOMATION_T where 1 = 1
+		<if test="boltName!=null and boltNo!=null">
+			AND BOLT_NAME = #{boltName} or BOLT_NO = #{boltNo}
+		</if>
+	</select>
+	<select id="countBoltByNo" resultType="int">
+		select count(*) from C_MES_BOLT_INFOMATION_T where 1 = 1 AND ST = #{st}
+		<if test="boltNo!=null">
+			AND BOLT_NO = #{boltNo}
+		</if>
+	</select>
+	<select id="countBoltByName" resultType="int">
+		select count(*) from C_MES_BOLT_INFOMATION_T where 1 = 1 AND ST = #{st}
+		<if test="boltName!=null">
+			AND BOLT_NAME = #{boltName}
+		</if>
+	</select>
+	<select id="countBomDetailsByBomId" resultType="int">
+		SELECT COUNT(*) FROM C_MES_BOM_DETAIL_T WHERE BOM_ID = #{bomId}
+	</select>
+	<select id="countBomByName" resultType="int">
+		SELECT COUNT(*) FROM C_MES_BOM_T WHERE BOM_NAME = #{bomName}
+	</select>
+
+	<select id="findLine" resultType ="CMesLineT">
+		select * from c_mes_line_t
+	</select>
+
+	<select id="findStation" resultType="CMesStationT">
+		select * from c_mes_station_t
+	</select>
+</mapper>

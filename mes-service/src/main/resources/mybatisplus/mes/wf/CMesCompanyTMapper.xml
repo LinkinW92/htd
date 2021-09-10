@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wf.CMesCompanyTMapper">
+
+
+
+  <select id="findCompanyAll" resultType="com.skeqi.mes.pojo.qh.CMesCompanyT">
+    select
+    `id`,`companyCode`,`companyName`,`describe`,`companyAddress`,`dateTime`,`alterDt`
+    from c_mes_company_t
+    where 1=1
+    <if test="companyCode!=null and companyCode!=''">
+      and companyCode like concat('%',#{companyCode},'%')
+    </if>
+    <if test="companyName!=null and companyName!=''">
+      and companyName like concat('%',#{companyName},'%')
+    </if>
+  </select>
+
+  <!--添加公司-->
+  <insert id="addCompany">
+    insert into c_mes_company_t
+    <trim  prefix="(" suffix=")" suffixOverrides=",">
+      <if test="companyCode != null and companyCode != ''">
+        companyCode,
+      </if>
+      <if test="companyName != null and companyName != ''">
+        companyName,
+      </if>
+      <if test="describe != null and describe != ''">
+        `describe`,
+      </if>
+      <if test="companyAddress != null and companyAddress != ''">
+        companyAddress,
+      </if>
+      <if test="dateTime != null and dateTime != ''">
+        dateTime,
+      </if>
+      <if test="alterDt != null and alterDt != ''">
+        alterDt
+      </if>
+    </trim>
+    <trim  prefix="value (" suffix=")" suffixOverrides=",">
+      <if test="companyCode != null and companyCode != ''">
+        #{companyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="companyName != null and companyName != ''">
+        #{companyName,jdbcType=VARCHAR},
+      </if>
+      <if test="describe != null and describe != ''">
+        #{describe,jdbcType=VARCHAR},
+      </if>
+      <if test="companyAddress != null and companyAddress != ''">
+        #{companyAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="dateTime != null and dateTime != ''">
+        #{dateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="alterDt != null and alterDt != ''">
+        #{alterDt,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+  <!--按公司编号查询公司是否存在-->
+  <select id="selectCompanyByCode" resultType="com.skeqi.mes.pojo.qh.CMesCompanyT">
+    select
+    *
+    from c_mes_company_t
+    <where>
+      companyCode = #{companyCode,jdbcType=VARCHAR}
+    </where>
+  </select>
+
+  <!--编辑公司-->
+  <update id="editCompany">
+    update c_mes_company_t
+    <set>
+        `describe`=#{describe,jdbcType=VARCHAR},
+      <if test="companyName != null and companyName != ''">
+        companyName=#{companyName,jdbcType=VARCHAR},
+      </if>
+      <if test="companyAddress != null and companyAddress != ''">
+        companyAddress=#{companyAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="dateTime != null and dateTime != ''">
+        dateTime=#{dateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="alterDt != null and alterDt != ''">
+        alterDt=#{alterDt,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <where>
+      <if test="id != null">
+        id = #{id,jdbcType=INTEGER}
+      </if>
+    </where>
+  </update>
+
+  <delete id="delCompanyByIdAndCode">
+    delete from c_mes_company_t
+    <where>
+      <if test="id != null">
+        id = #{id,jdbcType=INTEGER}
+      </if>
+      <if test="companyCode != null and companyCode != ''">
+        and companyCode = #{companyCode,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </delete>
+</mapper>

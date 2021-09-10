@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.dzb.report.PassRateStatisticDao">
+
+    <!-- 查询全部产线 -->
+    <select id="listLine" resultType="java.util.Map">
+        select id,name from c_mes_line_t
+    </select>
+
+    <select id="okNgOutputByDateAndLineId" resultType="java.util.Map">
+        select
+        (select count(sn) from p_mes_tracking_t where `STATUS` = 'OK'
+        <if test="lineId != null">
+            and LINE_ID=#{lineId}
+        </if>
+        and to_days(OFFLINE_DT)=to_days(#{date})) okSn,
+        (select count(sn) from p_mes_tracking_t where `STATUS` = 'NG'
+        <if test="lineId != null">
+            and LINE_ID=#{lineId}
+        </if>
+        and to_days(OFFLINE_DT)=to_days(#{date})) ngSn
+    </select>
+    <select id="okNgRange" resultType="java.util.Map">
+        select `STATUS`,to_days(OFFLINE_DT) days,count(sn) snCount
+        FROM p_mes_tracking_t
+      <![CDATA[
+        WHERE LINE_ID=#{lineId} and OFFLINE_DT>=#{start} and OFFLINE_DT<#{end}
+      ]]>
+        group by `STATUS`,days
+    </select>
+
+</mapper>
+
+

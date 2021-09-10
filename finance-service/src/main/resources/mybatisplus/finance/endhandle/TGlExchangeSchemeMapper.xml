@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.endhandle.TGlExchangeSchemeMapper">
+
+    <resultMap type="com.skeqi.finance.domain.endhandle.TGlExchangeScheme" id="TGlExchangeSchemeResult">
+        <result property="fId" column="f_id"/>
+        <result property="fNumber" column="f_number"/>
+        <result property="fName" column="f_name"/>
+        <result property="fAccountBookId" column="f_account_book_id"/>
+        <result property="fGenerateType" column="f_generate_type"/>
+        <result property="fOperatorId" column="f_operator_id"/>
+        <result property="fFrequency" column="f_frequency"/>
+        <result property="fGenerateDay" column="f_generate_day"/>
+        <result property="fGenerateHour" column="f_generate_hour"/>
+        <result property="fGenerateMinute" column="f_generate_minute"/>
+        <result property="fLastExecuteTime" column="f_last_execute_time"/>
+        <result property="fDocumentStatus" column="f_document_status"/>
+        <result property="fForbidStatus" column="f_forbid_status"/>
+        <result property="fForbiderId" column="f_forbider_id"/>
+        <result property="fForbidDate" column="f_forbid_date"/>
+        <result property="fCreatorId" column="f_creator_id"/>
+        <result property="fCreatorDate" column="f_creator_date"/>
+        <result property="fModifierId" column="f_modifier_id"/>
+        <result property="fModifyDate" column="f_modify_date"/>
+        <result property="fVchgroupId" column="f_vchgroup_id"/>
+        <result property="fVoucherDateType" column="f_voucher_date_type"/>
+        <result property="fExchangeType" column="f_exchange_type"/>
+        <result property="fVchProcessType" column="f_vch_process_type"/>
+        <result property="fResultVchProcessType" column="f_result_vch_process_type"/>
+        <result property="fAcctChoseType" column="f_acct_chose_type"/>
+        <result property="fTransferType" column="f_transfer_type"/>
+        <result property="fExacCount" column="f_exac_count"/>
+        <result property="fDc" column="f_dc"/>
+        <result property="fExchangeAcctDc" column="f_exchange_acct_dc"/>
+        <result property="fAllocateDateType" column="f_allocate_date_type"/>
+        <result property="fPl" column="f_pl"/>
+        <result property="fIssetFlexItem" column="f_isset_flex_item"/>
+        <result property="fIsdraftVoucher" column="f_isdraft_voucher"/>
+        <result property="fDescription" column="f_description"/>
+        <result property="fExplanation" column="f_explanation"/>
+    </resultMap>
+
+
+    <select id="queryById" resultType="com.skeqi.finance.pojo.vo.endhandle.TGlExchangeSchemeVo">
+        SELECT s.*,b.f_book_name,b.f_number as f_book_number,b.f_currency_id as f_base_currency_id,
+         g.f_voucher_words,o.name as org_name,o.id as org_id,
+         a.f_number as acct_number,a.f_name as acct_name,
+         rt.f_name as rate_name,rt.f_number as rate_number,rt.f_rate_type_id as rate_id
+         from t_gl_exchange_scheme s
+            LEFT JOIN t_bd_account_book b ON b.f_book_id=s.f_account_book_id
+            LEFT JOIN t_bd_voucher_group g ON g.f_vchgroup_id = s.f_vchgroup_id
+            LEFT JOIN sys_organization o ON o.id = b.f_account_orgid
+            LEFT JOIN t_bd_account a ON a.f_acct_id = s.f_exac_count
+            LEFT JOIN t_bd_rate_type rt ON rt.f_rate_type_id = s.f_exchange_type
+            where s.f_id=#{id}
+    </select>
+
+    <select id="queryPageList" resultType="com.skeqi.finance.pojo.vo.endhandle.TGlExchangeSchemeVo">
+         SELECT s.*,b.f_book_name,b.f_number as f_book_number from t_gl_exchange_scheme s
+            LEFT JOIN t_bd_account_book b ON b.f_book_id=s.f_account_book_id
+        <where>
+          <if test="bo.fAccountBookId!=null">
+              b.f_book_id=#{bo.fAccountBookId}
+          </if>
+            <if test="bo.fIsadjustVoucher!=null and bo.fIsadjustVoucher !=''">
+                and s.f_isadjust_voucher = #{bo.fIsadjustVoucher,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>

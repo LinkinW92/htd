@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.zch.ModuleServerDao">
+	<select id="findDataConfList" resultType="java.util.Map">
+		select * from c_mod_data_collect_conf_t
+		where lineName = #{lineName} and stationName = #{stationName} and productionName = #{productionName}
+	</select>
+
+	<insert id="addDataConf">
+		insert into c_mod_data_collect_conf_t(DT, lineName, stationName, productionName, keyName, PLCAddress, unit, keyCode, device, upperLimit, lowerLimit, `describe`, defaultValue)
+		values(now(), #{lineName}, #{stationName}, #{productionName}, #{keyName}, #{PLCAddress}, #{unit}, #{keyCode}, #{device}, #{upperLimit}, #{lowerLimit}, #{describe}, #{defaultValue})
+	</insert>
+
+	<update id="editDataConf">
+		update c_mod_data_collect_conf_t
+		set keyName = #{keyName}, PLCAddress = #{PLCAddress}, unit = #{unit}, keyCode = #{keyCode}, device = #{device}, upperLimit = #{upperLimit}, lowerLimit = #{lowerLimit}, `describe` = #{describe}, defaultValue = #{defaultValue}
+		where ID = #{ID}
+	</update>
+
+	<delete id="deleteDataConf">
+		delete from c_mod_data_collect_conf_t where ID=#{ID}
+	</delete>
+
+	<select id="findMesInterfaceTypeList" resultType="java.util.Map">
+		select * from c_mod_interface_type_t
+		where lineName=#{lineName}
+		and stationName=#{stationName}
+	</select>
+
+	<select id="findMesInterfaceParaList" resultType="java.util.Map">
+		select * from c_mod_interface_conf_t where typeId=#{typeId}
+	</select>
+
+	<insert id="addMesInterfacePara">
+		insert into c_mod_interface_conf_t (DT, `key`, `value`, typeId) values(now(), #{key}, #{value}, #{typeId})
+	</insert>
+
+	<update id="editMesInterfacePara">
+		update c_mod_interface_conf_t set `key`=#{key},`value`=#{value} where ID=#{ID}
+	</update>
+
+	<delete id="deleteMesInterfacePara">
+		delete from c_mod_interface_conf_t where ID=#{ID}
+	</delete>
+
+	<select id="findDataCollectList" resultType="java.util.Map">
+		select t.DT as onlineTime,t.OFFLINE_DT as offLineTime,p.PRODUCTION_NAME as productName,l.`NAME` as lineName, t.SN as sn
+		from p_mes_tracking_t t
+		left join c_mes_production_t p on p.ID=t.PRODUCTION_ID
+		left join c_mes_line_t l on l.ID=t.LINE_ID
+		where 1=1
+		<if test="lineName != null and lineName != ''">
+			and l.`NAME` = #{lineName}
+		</if>
+		<if test="productName != null and productName != ''">
+			and p.PRODUCTION_NAME = #{productName}
+		</if>
+		<if test="sn != null and sn != ''">
+			and t.SN like concat('%' , #{sn} , '%')
+		</if>
+		<if test="beginTime != null and beginTime != ''">
+			and t.DT <![CDATA[ >= ]]> DATE_FORMAT(#{beginTime}, '%Y-%m-%d 00:00:00')
+		</if>
+		<if test="endTime != null and endTime != ''">
+			and t.DT <![CDATA[ <= ]]> DATE_FORMAT(#{endTime}, '%Y-%m-%d 23:59:59')
+		</if>
+		order by t.DT desc
+	</select>
+
+	<select id="findDataCollectParaList" resultType="java.util.Map">
+		select c.stationName,cd.keyName,cd.value
+		from r_mod_data_collect_detail_t cd
+		left join r_mod_data_collect_t c on c.ID=cd.collectId
+		where c.lineName=#{lineName}
+		and c.productionName=#{productName}
+		and c.SN=#{sn}
+		and c.valid = 1
+	</select>
+
+	<select id="findStationList" resultType="java.util.Map">
+		select stationName from r_mod_data_collect_t c
+		where c.lineName=#{lineName}
+		and c.productionName=#{productName}
+		and c.SN=#{sn}
+		and c.valid = 1
+		group by stationName
+	</select>
+
+	<select id="exportDataCollectParaList" resultType="java.util.Map">
+		SELECT c.lineName,c.productionName,c.stationName,c.SN,cd.keyName,cd.`value`,cc.unit
+		FROM r_mod_data_collect_detail_t cd
+		left join r_mod_data_collect_t c on c.ID=cd.collectId
+		left join c_mod_data_collect_conf_t cc
+		on cc.lineName=c.lineName and cc.stationName=c.stationName and cc.productionName=c.productionName and cc.keyName=cd.keyName
+		left join p_mes_tracking_t t on t.SN=c.SN
+		where t.ID is not null
+		and c.valid=1
+		and c.lineName=#{lineName}
+		and c.productionName=#{productName}
+		<if test="sn != null and sn != ''">
+			and c.SN like concat('%' , #{sn} , '%')
+		</if>
+		<if test="beginTime != null and beginTime != ''">
+			and t.DT <![CDATA[ >= ]]> DATE_FORMAT(#{beginTime}, '%Y-%m-%d 00:00:00')
+		</if>
+		<if test="endTime != null and endTime != ''">
+			and t.DT <![CDATA[ <= ]]> DATE_FORMAT(#{endTime}, '%Y-%m-%d 23:59:59')
+		</if>
+		ORDER BY t.DT desc
+	</select>
+</mapper>

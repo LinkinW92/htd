@@ -1,0 +1,534 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.skeqi.mes.mapper.yin.PlanDao">
+
+	<select id="findRecipe" resultType="CMesRecipeT">
+		select DISTINCT r.id,r.recipe_name as recipeName from C_MES_PRODUCTION_RECIPE_T t,C_MES_RECIPE_T r WHERE t.recipe_id=r.id
+		<if test="id!=null and id!='' and id!=0">
+			and t.production_id=#{id}
+		</if>
+	</select>
+	<!-- ========================================计划管理========================================== -->
+	<!-- 工单列表 -->
+	<select id="planList" resultType="PMesPlanT">
+		select
+		plan.ID,
+		plan.PLAN_SERIALNO,
+		plan.PLAN_NAME,
+		plan.DT,
+		line.NAME,
+		production.PRODUCTION_TYPE,
+		plan.PLAN_NUMBER,
+		plan.COMPLETE_NUMBER,
+		plan.PLAN_LEVEL,
+		plan.OPREATION_USER,
+		plan.ONLINE_NUMBER,
+		plan.COMPLETE_FLAG,
+		plan.CREATE_BARCODE_FLAG
+		FROM P_MES_PLAN_T plan,C_MES_LINE_T
+		line,C_MES_PRODUCTION_T production
+		WHERE plan.PRODUCTION_ID=production.ID
+		AND plan.LINE_ID=line.ID
+
+		<if test="id !=null and id!=''">
+			and plan.id = #{id}
+		</if>
+		<if test="planSerialno !=null and planSerialno!=''">
+			and plan.PLAN_SERIALNO = #{planSerialno}
+		</if>
+		<if test="date1!=null">
+		  <![CDATA[ and plan.DT > #{date1}]]>
+		</if>
+		<if test="date2!=null">
+		  <![CDATA[ and plan.DT < #{date2}]]>
+		</if>
+		<if test="line!=null and line!=''">
+		  <![CDATA[ and plan.LINE_ID = #{line}]]>
+		</if>
+		<if test="productionType!=null and productionType!=''">
+		  <![CDATA[ and plan.PRODUCTION_ID = #{productionType}]]>
+		</if>
+		<if test="opreationUser!=null and opreationUser!=''">
+		  <![CDATA[ and plan.OPREATION_USER like '%${opreationUser}%' ]]>
+		</if>
+		<if test="flag == 0">
+			and plan.COMPLETE_FLAG = '0'
+		</if>
+		<if test="flag == 1">
+			and plan.COMPLETE_FLAG = '1'
+		</if>
+		<if test="flag == 2">
+			and plan.COMPLETE_FLAG = '2'
+		</if>
+		<if test="flag == 3">
+			and plan.COMPLETE_FLAG = '3'
+		</if>
+		<if test="flag == 4">
+			and plan.COMPLETE_FLAG = '4'
+		</if>
+	</select>
+	<select id="workorderDetailList" resultType="RMesWorkorderDetailT">
+		SELECT workorderDetail.*,shiftsTeam.NAME AS teamName,line.ID as
+		lineId,line.name AS
+		lineName,production.production_name
+		FROM R_MES_WORKORDER_DETAIL_T workorderDetail,
+		C_MES_LINE_T line,
+		C_MES_SHIFTS_TEAM_T shiftsTeam,
+		C_MES_PRODUCTION_T production,
+		R_MES_PLAN_T plan
+		WHERE workorderDetail.LINE_ID = line.ID
+		AND workorderDetail.TEAM_ID = shiftsTeam.ID
+		AND workorderDetail.PLAN_ID = plan.ID
+		AND plan.production_id = production.ID
+		<if test="planId!=null">
+			AND workorderDetail.plan_id = #{planId}
+		</if>
+		<if test="id!=null">
+			AND workorderDetail.ID = #{id}
+		</if>
+		<if test="status!=null">
+			AND workorderDetail.STATUS = #{status}
+		</if>
+		ORDER BY workorderDetail.LEVEL_NO
+	</select>
+	<select id="getMaxLevelNoByPlanId" resultType="int">
+		SELECT MAX(LEVEL_NO) FROM R_MES_WORKORDER_DETAIL_T WHERE 1 = 1
+		<if test="planId!=null">
+			AND PLAN_ID = #{planId}
+		</if>
+		<if test="lineId!=null">
+			AND LINE_ID = #{lineId}
+		</if>
+	</select>
+	<update id="editPlanDetail">
+		update R_MES_WORKORDER_DETAIL_T set
+		production_id = #{productionId},order_number=#{orderNumber},
+		line_id=#{lineId},team_id=#{teamId},
+		level_no=#{levelNo},status=#{status},alter_dt=NOW() where id = #{id}
+	</update>
+	<update id="editOtherPlanDetailLevelNo">
+		UPDATE R_MES_WORKORDER_DETAIL_T SET LEVEL_NO =
+		LEVEL_NO-1 WHERE LINE_ID = #{lineId} AND
+		LEVEL_NO>#{levelNo}
+	</update>
+	<update id="editLevelNo">
+		<if test="flag==0">
+			<![CDATA[
+			UPDATE R_MES_WORKORDER_DETAIL_T SET LEVEL_NO = LEVEL_NO+1 WHERE LEVEL_NO>=#{nLevelNo}
+			AND LEVEL_NO<#{oLevelNo} AND LINE_ID = #{lineId}
+			]]>
+		</if>
+		<if test="flag==1">
+			<![CDATA[
+			UPDATE R_MES_WORKORDER_DETAIL_T SET LEVEL_NO = LEVEL_NO-1 WHERE LEVEL_NO>#{oLevelNo}
+			AND LEVEL_NO<=#{nLevelNo} AND LEVEL_NO>1 AND LINE_ID = #{lineId}
+			]]>
+		</if>
+		<if test="flag==2">
+			SELECT ID FROM R_MES_WORKORDER_DETAIL_T
+		</if>
+		<if test="flag==3">
+			<![CDATA[
+			UPDATE R_MES_WORKORDER_DETAIL_T SET LEVEL_NO = LEVEL_NO-1 WHERE LEVEL_NO>=#{oLevelNo}
+			AND LEVEL_NO>1 AND LINE_ID = #{lineId}
+			]]>
+		</if>
+	</update>
+	<insert id="addPlanDetail" keyProperty="id" useGeneratedKeys="false">
+		INSERT INTO R_MES_WORKORDER_DETAIL_T (DT,PRODUCTION_ID,ORDER_NUMBER,ONLINE_NUMBER,OFFLINE_NUMBER,DEFFECT_NUMBER,LINE_ID,TEAM_ID,LEVEL_NO,
+		STATUS,ALTER_DT,PLAN_ID,CREATE_BARCODE_FLAG,PRINTE_NUMBER)
+		VALUES(NOW(),#{productionId},
+		#{orderNumber},0,0,0,#{lineId},
+		#{teamId},#{levelNo},#{status},NOW(),#{planId},'0',0)
+	</insert>
+	<delete id="delPlanDetail">
+		DELETE FROM R_MES_WORKORDER_DETAIL_T
+		<if test="planDetailId!=null">
+			WHERE ID = #{planDetailId}
+		</if>
+		<if test="planId!=null">
+			WHERE PLAN_ID = #{planId}
+		</if>
+
+	</delete>
+	<!-- 计划管理列表 -->
+	<select id="rplanList" resultType="RMesPlanT">
+		SELECT
+		PLAN.ID,
+		PLAN.PLAN_SERIALNO,
+		PLAN.PLAN_NAME,
+		PLAN.DT,
+		PRODUCTION.PRODUCTION_TYPE,
+		PLAN.PRODUCTION_ID,
+		PLAN.PLAN_NUMBER,
+		PLAN.COMPLETE_NUMBER,
+		PLAN.PLAN_LEVEL,
+		PLAN.LINE_ID,
+		plan.OPREATION_USER,
+		PLAN.COMPLETE_FLAG ,
+		PLAN.ONLINE_NUMBER,
+		plan.CREATE_BARCODE_FLAG
+		FROM R_MES_PLAN_T PLAN,C_MES_PRODUCTION_T PRODUCTION WHERE
+		PLAN.PRODUCTION_ID=PRODUCTION.ID
+		AND PLAN.COMPLETE_FLAG != '4'
+		AND PLAN.COMPLETE_FLAG != '3'
+		<if test="id !=null">
+			and plan.id = #{id}
+		</if>
+		<if test="planSerialno !=null">
+			and plan.PLAN_SERIALNO = #{planSerialno}
+		</if>
+		<if test="productionType!=null and productionType!=''">
+		  <![CDATA[ and plan.PRODUCTION_ID = #{productionType}]]>
+		</if>
+		<if test="opreationUser!=null and opreationUser!=''">
+		  <![CDATA[ and plan.OPREATION_USER like CONCAT(CONCAT('%',#{opreationUser}),'%') ]]>
+		</if>
+		<if test="flag ==1">
+			and plan.COMPLETE_FLAG = '1'
+		</if>
+		ORDER BY PLAN_LEVEL
+	</select>
+	<select id="getPlanById" resultType="RMesPlanT">
+		SELECT * FROM
+		R_MES_PLAN_T WHERE PLAN_SERIALNO = #{planSerialno}
+	</select>
+	<insert id="addBarCodeToPPlanPrint" keyProperty="id"
+		useGeneratedKeys="false">
+		insert into P_MES_PLAN_PRINT_T(DT,SN,PLAN_ID,LINE_ID,PRODUCTION_ID,
+		SERIAL_NO,PRINT_FLAG,WORK_ORDER_ID,R_MES_PLAN_PRINT_ID)
+		values(#{dt},#{sn},#{planId},#{lineId},#{productionId},
+		#{serialNo},#{printFlag},'')
+	</insert>
+	<delete id="delBarCode">
+		delete FROM R_MES_PLAN_PRINT_T where 1=1
+		<if test="planId!=null">
+			AND PLAN_ID =#{planId}
+		</if>
+		<if test="planDetailId!=null">
+			AND WORK_ORDER_ID = #{planDetailId}
+		</if>
+	</delete>
+
+	<!-- 产线列表 -->
+	<select id="lineList" resultType="CMesLineT">
+		SELECT * FROM
+		C_MES_LINE_T
+	</select>
+
+	<!-- 商品列表 -->
+	<select id="productionList" resultType="CMesProductionT">
+		SELECT * FROM
+		C_MES_PRODUCTION_T
+	</select>
+	<select id="productionLists" resultType="CMesProductionT">
+		SELECT * FROM
+		C_MES_PRODUCTION_T where id = #{id}
+	</select>
+	<select id="getProductionByType" resultType="CMesProductionT">
+		SELECT * FROM
+		C_MES_PRODUCTION_T WHERE PRODUCTION_TYPE=#{productionType}
+	</select>
+
+	<select id="getMaxLevel" resultType="int">
+		SELECT MAX(PLAN_LEVEL) FROM
+		R_MES_PLAN_T
+	</select>
+
+	<select id="getPlanByLevel" resultType="RMesPlanT">
+		SELECT
+		PLAN.ID,
+		PLAN.PLAN_SERIALNO,
+		PLAN.PLAN_NAME,
+		PLAN.DT,
+		PRODUCTION.PRODUCTION_TYPE,
+		PLAN.PLAN_NUMBER,
+		PLAN.COMPLETE_NUMBER,
+		PLAN.PLAN_LEVEL,
+		PLAN.COMPLETE_FLAG
+		FROM R_MES_PLAN_T PLAN,C_MES_PRODUCTION_T PRODUCTION WHERE
+		PLAN.PRODUCTION_ID=PRODUCTION.ID
+		AND PLAN.COMPLETE_FLAG != '4'
+		AND PLAN.COMPLETE_FLAG != '3'
+		AND PLAN_LEVEL = #{LEVEL}
+	</select>
+
+	<insert id="addPlan" keyProperty="id" useGeneratedKeys="false">
+		INSERT INTO R_MES_PLAN_T(DT,PLAN_NAME,PRODUCTION_ID,PLAN_NUMBER,COMPLETE_NUMBER,REMAIND_NUMBER,
+		OK_NUMBER,NG_NUMBER,LINE_ID,PLAN_LEVEL,COMPLETE_FLAG,OPREATION_USER,CREATE_BARCODE_FLAG,PLAN_SERIALNO,ONLINE_NUMBER)
+		values(NOW(),#{planName},#{productionType},#{planNumber},0,#{planNumber},0,0,#{lineId},#{level},0,#{operationUser},0,#{planSerialno},0)
+	</insert>
+
+	<insert id="addPlanForEver" keyProperty="id" useGeneratedKeys="false">
+		<![CDATA[
+		INSERT INTO P_MES_PLAN_T(DT,PLAN_NAME,PRODUCTION_ID,
+		PLAN_NUMBER,COMPLETE_NUMBER,REMAIND_NUMBER,
+		OK_NUMBER,NG_NUMBER,LINE_ID,PLAN_LEVEL,COMPLETE_FLAG,
+		OPREATION_USER,CREATE_BARCODE_FLAG,OVER_DT,
+		PLAN_SERIALNO,ONLINE_NUMBER) values(
+		#{dt},
+		#{planName},
+		#{productionId,jdbcType=INTEGER},
+		#{planNumber,jdbcType=INTEGER},
+		#{completeNumber,jdbcType=INTEGER},
+		#{remaindNumber,jdbcType=INTEGER},
+		#{okNumber,jdbcType=INTEGER},
+		#{ngNumber,jdbcType=INTEGER},
+		#{lineId,jdbcType=INTEGER},
+		#{planLevel,jdbcType=INTEGER},
+		#{completeFlag,jdbcType=VARCHAR},
+		#{opreationUser,jdbcType=VARCHAR},
+		#{createBarcodeFlag,jdbcType=VARCHAR},
+		NOW(),
+		#{planSerialno,jdbcType=VARCHAR},
+		#{onlineNumber,jdbcType=INTEGER}
+		)]]>
+	</insert>
+	<update id="updateLevelByPlanId">
+		UPDATE R_MES_PLAN_T SET PLAN_LEVEL = #{levels}
+		WHERE PLAN_SERIALNO = #{planSerialno}
+	</update>
+
+	<update id="updateAllLevelByPlanId">
+		<![CDATA[ UPDATE R_MES_PLAN_T SET PLAN_LEVEL = PLAN_LEVEL-1 WHERE PLAN_LEVEL> #{levels}]]>
+	</update>
+
+	<update id="updateFlagByPlanId">
+		UPDATE R_MES_PLAN_T SET COMPLETE_FLAG =
+		#{flag} WHERE PLAN_SERIALNO = #{planId}
+	</update>
+
+	<update id="updateBarCodeFlagByPlanId">
+		UPDATE R_MES_PLAN_T SET CREATE_BARCODE_FLAG =
+		#{flag} WHERE ID = #{planId}
+	</update>
+	<update id="updateBarCodeFlagByWorkOrderId">
+		UPDATE R_MES_WORKORDER_DETAIL_T SET
+		CREATE_BARCODE_FLAG = ${flag} WHERE ID = ${planId}
+	</update>
+
+	<update id="deletePlanByPlanId">
+		DELETE FROM R_MES_PLAN_T WHERE PLAN_SERIALNO =
+		#{planSerialno}
+	</update>
+	<insert id="addbarCode" keyProperty="id" useGeneratedKeys="false">
+		<![CDATA[INSERT INTO R_MES_PLAN_PRINT_T(DT,SN,PLAN_ID,LINE_ID,PRODUCTION_ID,SERIAL_NO,PRINT_FLAG,WORK_ORDER_ID)
+		VALUES(#{dt},#{barCode,jdbcType=VARCHAR},#{planId,jdbcType=INTEGER},#{lineId,jdbcType=INTEGER},#{productionId,jdbcType=INTEGER},#{serialNo,jdbcType=INTEGER},'0',#{workOrderId})  ]]>
+	</insert>
+	<select id="getPlanPrintBySn" resultType="RMesPlanPrintT">
+		SELECT * FROM
+		R_MES_PLAN_PRINT_T WHERE SN = #{sn}
+	</select>
+	<select id="findWorkOrderByProductionId" resultType="RMesWorkorderDetailT">
+		SELECT * FROM R_MES_WORKORDER_DETAIL_T WHERE PRODUCTION_ID = #{productionId}
+	</select>
+	<select id="getPlanPrintById" resultType="RMesPlanPrintT">
+		SELECT * FROM
+		R_MES_PLAN_PRINT_T WHERE WORK_ORDER_ID = #{wordOrderId} ORDER
+		BY SN
+	</select>
+	<select id="getMaxPlanPrintById" resultType="RMesPlanPrintT">
+	<![CDATA[
+			SELECT * FROM R_MES_PLAN_PRINT_T  WHERE 1=1]]>
+		<if test="planId!=null"> AND PLAN_ID = #{planId}</if>
+		<if test="productionId!=null"> AND PRODUCTION_ID = #{productionId}</if>
+		<if test="dt!=null"> AND DT=#{dt}</if>
+		AND LINE_ID = #{lineId}
+	<![CDATA[ORDER BY SN DESC limit 0,1]]>
+	</select>
+	<select id="findPlanByPlanSerialno" resultType="RMesPlanT">
+		select * from
+		R_MES_PLAN_T where PLAN_SERIALNO = #{serialno}
+	</select>
+	<select id="findPlanByPlanName" resultType="RMesPlanT">
+		select * from
+		R_MES_PLAN_T where PLAN_NAME = #{planName}
+	</select>
+
+	<!-- ========================================配方配置========================================== -->
+
+	<select id="getRecipeDatil" resultType="CMesRecipeDatilT">
+		SELECT DISTINCT rd.*,r.recipe_name,recipeType.TYPE_NAME AS recipeTypeName
+   	 	FROM C_MES_RECIPE_DATIL_T rd
+			JOIN C_MES_RECIPE_T r on rd.recipe_id = r.id
+			join C_MES_PRODUCTION_RECIPE_T productionRecipe on r.id = productionRecipe.RECIPE_ID
+			join C_MES_RECIPE_TYPE_T recipeType on recipeType.TYPE_NO=rd.STEP_CATEGORY
+		<if test="id!=null and id!=''">
+			and rd.id = #{id}
+		</if>
+		<if test="recipeId!=null">
+			and rd.recipe_Id = #{recipeId}
+		</if>
+		<if test="productionId!=null">
+			and productionRecipe.PRODUCTION_ID = #{productionId}
+		</if>
+		<if test="stationId!=null">
+			and productionRecipe.station_Id = #{stationId}
+		</if>
+		order by rd.STEPNO
+	</select>
+
+	<delete id="deleteBomDetail">
+		DELETE FROM C_MES_RECIPE_DATIL_T WHERE ID = #{id}
+	</delete>
+
+	<select id="recipeList" resultType="CMesRecipeT">
+		SELECT * FROM
+		C_MES_RECIPE_T
+	</select>
+
+	<select id="stationList" resultType="CMesStationT">
+		SELECT * FROM
+		C_MES_STATION_T ORDER BY STATION_NAME
+	</select>
+
+	<select id="findMaxStepNoByRecipeId" resultType="int">
+		SELECT
+		MAX(STEPNO) FROM C_MES_RECIPE_DATIL_T WHERE RECIPE_ID =
+		#{recipeId}
+	</select>
+	<select id="getRecipeDatilByStepNo" resultType="CMesRecipeDatilT">
+		select * from
+		C_MES_RECIPE_DATIL_T where RECIPE_ID = #{recipeId} and STEPNO =
+		#{setpNo}
+	</select>
+
+	<insert id="addRecipeDetail" keyProperty="rid">
+		<if
+			test="stepCategory ==1 or stepCategory ==2 or stepCategory ==4 or stepCategory ==5 or stepCategory ==6">
+			insert into C_MES_RECIPE_DATIL_T
+			(STEPNO,STEP_CATEGORY,MATERIAL_NAME,NUMBERS,FEACODE,MATERIALPN,BOLTEQS,UPLOAD_CODE,RECIPE_ID,CHEKORNO,REVIEWORNO,EXACTORNO,PICTURN_PATH)
+			values
+			(#{maxStepNo},#{stepCategory},#{materialName,jdbcType=VARCHAR},#{number},#{feaCode},#{materialPN},
+			#{boltEQS},#{uploadCode},#{recipeId,jdbcType=INTEGER},#{chekorno},#{revieworNo},#{exactorNo},#{pictures})
+		</if>
+		<if
+			test="stepCategory ==3 or stepCategory ==16">
+			insert into C_MES_RECIPE_DATIL_T
+			(STEPNO,STEP_CATEGORY,MATERIAL_NAME,NUMBERS,FEACODE,MATERIALPN,BOLTEQS,UPLOAD_CODE,RECIPE_ID,CHEKORNO,REVIEWORNO,EXACTORNO,PICTURN_PATH)
+			values
+			(#{maxStepNo},#{stepCategory},#{materialId6,jdbcType=VARCHAR},#{number6},#{feaCode6},#{materialPN6},
+			#{boltEQS6},#{uploadCode6},#{recipeId,jdbcType=INTEGER},#{chekorno6},#{revieworNo6},#{exactorNo6},#{pictures})
+		</if>
+		<if test="stepCategory ==7">
+			insert into C_MES_RECIPE_DATIL_T
+			(STEPNO,STEP_CATEGORY,MATERIAL_NAME,NUMBERS,GUN_NO,PROGRAM_NO,SLEEVE_NO,BOLTEQS,UPLOAD_CODE,A_LIMIT,T_LIMIT,RECIPE_ID,PICTURN_PATH,REWORKTIMES)
+			values
+			(#{maxStepNo},#{stepCategory},#{materialName2,jdbcType=VARCHAR},#{number2},#{gunNo2},#{programNo2},#{sleeveNo2},#{boltEQS2},#{uploadCode2},#{aLimit},#{tLimit},#{recipeId,jdbcType=INTEGER},#{pictures},#{reworktimes})
+		</if>
+		<if
+			test="stepCategory ==8 or stepCategory ==9 or stepCategory ==13 or stepCategory ==15">
+			insert into C_MES_RECIPE_DATIL_T
+			(STEPNO,STEP_CATEGORY,MATERIAL_NAME,NUMBERS,BOLTEQS,UPLOAD_CODE,RECIPE_ID,PICTURN_PATH,PROGRAM_NO)
+			values
+			(#{maxStepNo},#{stepCategory},#{materialName3,jdbcType=VARCHAR},#{number3},#{boltEQS3},#{uploadCode3},#{recipeId,jdbcType=INTEGER},#{pictures},#{programNo3})
+		</if>
+		<if test="stepCategory ==10 or stepCategory ==11 or stepCategory ==12">
+			insert into C_MES_RECIPE_DATIL_T
+			(STEPNO,STEP_CATEGORY,MATERIAL_NAME,BOLTEQS,RECIPE_ID,PICTURN_PATH)
+			values
+			(#{maxStepNo},#{stepCategory},#{materialName4,jdbcType=VARCHAR},#{boltEQS4},#{recipeId,jdbcType=INTEGER},#{pictures})
+		</if>
+		<if test="stepCategory ==14">
+			insert into C_MES_RECIPE_DATIL_T
+			(STEPNO,STEP_CATEGORY,MATERIAL_NAME,RECIPE_ID,PICTURN_PATH) values
+			(#{maxStepNo},#{stepCategory},#{materialName5,jdbcType=VARCHAR},#{recipeId,jdbcType=INTEGER},#{pictures})
+		</if>
+		<if test="stepCategory ==17">
+			insert into C_MES_RECIPE_DATIL_T
+			(STEPNO,STEP_CATEGORY,MATERIAL_NAME,RECIPE_ID,NUMBERS,FEACODE,CHEKORNO) values
+			(#{maxStepNo},#{stepCategory},#{materialName7,jdbcType=VARCHAR},#{recipeId,jdbcType=INTEGER},#{number7},#{feaCode7},#{chekorno7})
+		</if>
+	</insert>
+	<update id="editRecipeDetail">
+		<if test="flag ==2">
+			update C_MES_RECIPE_DATIL_T set STEPNO =
+			#{setpNos2},MATERIAL_NAME = #{materialNames2},
+			NUMBERS =
+			#{numbers2},FEACODE = #{feaCodes2},MATERIALPN =
+			#{materialPNs2},BOLTEQS = #{boltEQSs2},
+			UPLOAD_CODE =
+			#{uploadCodes2},CHEKORNO=#{chekorno},REVIEWORNO =
+			#{revieworNo},EXACTORNO = #{exactorNo}
+			<if test="pictures!=null">
+				,PICTURN_PATH=#{pictures}
+			</if>
+			where id = #{id2}
+		</if>
+		<if test="flag ==3">
+			update C_MES_RECIPE_DATIL_T set STEPNO = #{setpNos3},
+			 NUMBERS = #{numbers3},GUN_NO = #{gunNos3},PROGRAM_NO = #{programNos3},
+			 SLEEVE_NO = #{sleeveNos3},BOLTEQS = #{boltEQSs3},MATERIAL_NAME=#{materialNames3},
+			UPLOAD_CODE = #{uploadCodes3},A_LIMIT=#{aLimit},T_LIMIT=#{tLimit},REWORKTIMES=#{reworktimes}
+			<if test="pictures!=null">
+				,PICTURN_PATH=#{pictures}
+			</if>
+			where id = #{id3}
+		</if>
+		<if test="flag ==4">
+			update C_MES_RECIPE_DATIL_T set STEPNO =
+			#{setpNos4},MATERIAL_NAME = #{materialNames4},NUMBERS =
+			#{numbers4},BOLTEQS = #{boltEQSs4},UPLOAD_CODE = #{uploadCodes4},PROGRAM_NO = #{programNo4}
+			<if test="pictures!=null">
+				,PICTURN_PATH=#{pictures}
+			</if>
+			where id = #{id4}
+		</if>
+		<if test="flag ==5">
+			update C_MES_RECIPE_DATIL_T set STEPNO =
+			#{setpNos5},MATERIAL_NAME = #{materialNames5},
+			BOLTEQS = #{boltEQSs5}
+			<if test="pictures!=null">
+				,PICTURN_PATH=#{pictures}
+			</if>
+			where id = #{id5}
+		</if>
+		<if test="flag ==6">
+			update C_MES_RECIPE_DATIL_T set STEPNO =
+			#{setpNos6},MATERIAL_NAME = #{materialNames6}
+			<if test="pictures!=null">
+				,PICTURN_PATH=#{pictures}
+			</if>
+			where id = #{id6}
+		</if>
+		<if test="flag ==7">
+			update C_MES_RECIPE_DATIL_T set STEPNO =
+			#{setpNos7},MATERIAL_NAME = #{materialId7},
+			NUMBERS =
+			#{numbers7},FEACODE = #{feaCodes7},MATERIALPN =
+			#{materialPNs7},BOLTEQS = #{boltEQSs7},
+			UPLOAD_CODE =
+			#{uploadCodes7},CHEKORNO=#{chekorno7},REVIEWORNO =
+			#{revieworNo7},EXACTORNO = #{exactorNo7}
+			<if test="pictures!=null">
+				,PICTURN_PATH=#{pictures}
+			</if>
+			where id = #{id7}
+		</if>
+	</update>
+
+	<update id="updateStepNoOrderBy">
+		<![CDATA[update C_MES_RECIPE_DATIL_T set STEPNO = STEPNO-1 where RECIPE_ID = #{recipeId} and #{setpNo,jdbcType=INTEGER} <= STEPNO]]>
+		<if test="setpNo2!=null">
+		<![CDATA[ and STEPNO <= #{setpNo2,jdbcType=INTEGER}]]>
+		</if>
+	</update>
+	<update id="updateStepNoOrderBy2">
+		<![CDATA[update C_MES_RECIPE_DATIL_T set STEPNO = STEPNO+1 where RECIPE_ID = #{recipeId} and #{setpNo,jdbcType=INTEGER} <= STEPNO and STEPNO <= #{setpNo2,jdbcType=INTEGER}]]>
+	</update>
+	<select id="recipeTypeList" resultType="CMesRecipeTypeT">
+		SELECT * FROM
+		C_MES_RECIPE_TYPE_T ORDER by id
+	</select>
+	<select id="getMaxSerialNo" resultType="int">
+		SELECT MAX(SERIAL_NO) FROM R_MES_PLAN_PRINT_T where line_id = #{lineId}
+	</select>
+	<select id="pMesPlanPrintList" resultType="PMesPlanPrintT">
+		SELECT ID FROM
+		P_MES_PLAN_PRINT_T WHERE PLAN_ID = #{planId} and SN = #{sn}
+	</select>
+
+
+</mapper>

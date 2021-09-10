@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.zch.EventDao">
+
+	<!-- 事件列表 -->
+	<select id="findList" resultType="java.util.Map">
+		select * from c_mes_event_t
+		where 1=1
+		<if test="OBJECT_TYPE!=null and OBJECT_TYPE!=''">
+			and OBJECT_TYPE like concat('%', #{OBJECT_TYPE}, '%')
+		</if>
+		<if test="OBJECT_ID!=null and OBJECT_ID!=''">
+			and OBJECT_ID like concat('%', #{OBJECT_ID}, '%')
+		</if>
+		order by DT desc
+	</select>
+
+	<!-- 事件列表 -->
+	<select id="findEventIds" resultType="java.util.Map">
+		select ID from c_mes_event_t
+		where 1=1
+		<if test="OBJECT_TYPE!=null and OBJECT_TYPE!=''">
+			and OBJECT_TYPE like concat('%', #{OBJECT_TYPE}, '%')
+		</if>
+		<if test="OBJECT_ID!=null and OBJECT_ID!=''">
+			and OBJECT_ID like concat('%', #{OBJECT_ID}, '%')
+		</if>
+		order by ID desc
+	</select>
+
+	<select id="findEventById" resultType="java.util.Map">
+		select *
+		from c_mes_event_t
+		where 1=1
+		<if test="objectList!=null and objectList.size()>0">
+			<foreach collection="objectList" item="objectId" separator="," open="and id in(" close=")">
+				#{objectId,jdbcType=VARCHAR}
+			</foreach>
+		</if>
+		order by DT desc
+	</select>
+
+	<!-- 需要给DT加上索引: create index DT_INDEX on c_mes_event_t (DT) -->
+	<select id="findList_COUNT"  resultType="Long">
+		select count(DT) from c_mes_event_t
+		where 1=1
+		<if test="OBJECT_TYPE!=null and OBJECT_TYPE!=''">
+			and OBJECT_TYPE like concat('%', #{OBJECT_TYPE}, '%')
+		</if>
+		<if test="OBJECT_ID!=null and OBJECT_ID!=''">
+			and OBJECT_ID like concat('%', #{OBJECT_ID}, '%')
+		</if>
+	</select>
+
+	<!-- 事件列表 -->
+	<select id="findOrderEventByOrderId" resultType="java.util.Map">
+		select * from c_mes_event_t
+		where 1=1
+		<if test="OBJECT_TYPE!=null and OBJECT_TYPE!=''">
+			and OBJECT_TYPE = #{OBJECT_TYPE}
+		</if>
+		<if test="OBJECT_ID!=null and OBJECT_ID!=''">
+			and OBJECT_ID = #{OBJECT_ID}
+		</if>
+		<if test="PARAMETER4 !=null and PARAMETER4 != ''">
+			and PARAMETER4  is not null
+		</if>
+		order by DT desc
+	</select>
+
+	<!-- 添加事件 -->
+	<insert id="addEvent" keyProperty="id"
+		useGeneratedKeys="false">
+		INSERT INTO c_mes_event_t
+		(DT,OBJECT_TYPE,OBJECT_ID,EVENT,PARAMETER1,PARAMETER2,PARAMETER3,OPERATOR,EVENT_DIS,OBJECT_TYPE2,PARAMETER4,PARAMETER5)
+		VALUES
+		(NOW(),#{OBJECT_TYPE},#{OBJECT_ID},#{EVENT},#{PARAMETER1},#{PARAMETER2},#{PARAMETER3},#{OPERATOR},#{EVENT_DIS},#{OBJECT_TYPE2},#{PARAMETER4},#{PARAMETER5})
+	</insert>
+
+	<select id="findMaterialEventList" resultType="java.util.Map">
+		select e.* from c_mes_event_t as e
+		<where>
+			<if test="objectType!=null and objectType!=''">
+				and e.OBJECT_TYPE =  #{objectType}
+			</if>
+			<if test="objectId!=null and objectId!=''">
+				and e.OBJECT_ID = #{objectId}
+			</if>
+			<if test="event!=null and event!=''">
+				and e.EVENT = #{event}
+			</if>
+		</where>
+		order by DT desc
+	</select>
+
+	<select id="findMaterialEventListLike" resultType="java.util.Map">
+		select e.* from c_mes_event_t as e
+		<where>
+			<if test="objectType!=null and objectType!=''">
+				and e.OBJECT_TYPE =  #{objectType}
+			</if>
+			<if test="objectId!=null and objectId!=''">
+				and e.OBJECT_ID like concat('%',#{objectId},'%')
+			</if>
+			<if test="event!=null and event!=''">
+				and e.EVENT like concat('%',#{event},'%')
+			</if>
+		</where>
+		order by DT desc
+	</select>
+
+	<!-- 获取产线外部id -->
+	<select id="getLineCode" resultType="java.util.Map">
+		select code from c_mes_line_t
+		where 1=1
+		<if test="lineId!=null and lineId!=''">
+			and id =  #{lineId}
+		</if>
+		<if test="NAME!=null and NAME!=''">
+			and NAME =  #{NAME}
+		</if>
+		limit 1
+	</select>
+	<select id="findWorkOrderByobjectId" resultType="java.util.Map">
+		select
+		ID,
+		DT,
+		OBJECT_TYPE,
+		OBJECT_ID,
+		EVENT,
+		PARAMETER1,
+		PARAMETER2,
+		PARAMETER3,
+		OPERATOR,
+		EVENT_DIS,
+		OBJECT_TYPE2,
+		PARAMETER4,
+		PARAMETER5
+		from c_mes_event_t
+		where 1=1
+		<if test="objectList!=null and objectList.size()>0">
+			<foreach collection="objectList" item="objectId" separator="," open="and OBJECT_ID in(" close=")">
+				#{objectId,jdbcType=VARCHAR}
+			</foreach>
+		</if>
+		order by DT desc
+	</select>
+
+	<select id="findWorkOrderByWorkOrderId" resultType="java.util.Map" parameterType="int">
+		select
+		ID,
+		DT,
+		OBJECT_TYPE,
+		OBJECT_ID,
+		EVENT,
+		PARAMETER1,
+		PARAMETER2,
+		PARAMETER3,
+		OPERATOR,
+		EVENT_DIS,
+		OBJECT_TYPE2,
+		PARAMETER4,
+		PARAMETER5
+		from c_mes_event_t a where OBJECT_ID in
+			( select distinct t.SN from (
+				select distinct SN from p_mes_tracking_t WHERE WORK_ORDER_ID = #{WORK_ORDER_ID}
+				union all
+				select distinct SN from r_mes_tracking_t WHERE WORK_ORDER_ID = #{WORK_ORDER_ID}
+			) t)
+			order by DT desc
+	</select>
+
+	<!-- 获取螺栓物料id -->
+	<select id="getMaterialId" resultType="java.util.Map">
+		select * from r_mes_bolt_t where id = ( select min(id) from r_mes_bolt_t where Y = 0 AND sn=#{snBarcode} AND st=#{stationName})
+	</select>
+
+	<!-- 获取物料id -->
+	<select id="getKeyPartMaterialId" resultType="java.util.Map">
+		select * FROM R_MES_KEYPART_T  WHERE ID = ( SELECT MAX(ID) FROM R_MES_KEYPART_T WHERE SN = #{sn} AND ST = #{station} AND KEYPART_NAME = #{materialName})
+	</select>
+
+	<select id="findEventTimeShaft" resultType="java.util.Map">
+		select * from c_mes_event_t
+		where 1=1
+		<if test="OBJECT_TYPE!=null and OBJECT_TYPE!=''">
+			and OBJECT_TYPE = #{OBJECT_TYPE}
+		</if>
+		<if test="OBJECT_ID!=null and OBJECT_ID!=''">
+			and OBJECT_ID = #{OBJECT_ID}
+		</if>
+		<if test="EVENT !=null and EVENT != ''">
+			and EVENT = #{EVENT}
+		</if>
+	</select>
+
+	<select id="findMaterialEventLately" resultType="java.util.Map">
+		select * from c_mes_event_t
+		where OBJECT_TYPE in ('物料','成品', '采购')
+		ORDER BY DT desc limit 10
+	</select>
+
+	<!--入库统计（七天）-->
+	<select id="findWarehousingLately" resultType="java.util.Map">
+		select t.date,ifnull(SUM(MATERIAL_NUM),0) as MATERIAL_NUM from
+		(SELECT DATE_FORMAT(po.ARRIVAL_TIME,'%Y-%m-%d') as date, pod.MATERIAL_NUM
+		FROM c_mes_purchase_order_details_t pod LEFT JOIN c_mes_purchase_order_t po ON po.ID = pod.PURCHASE_ORDER_ID
+		WHERE po.ARRIVAL_TIME between DATE_FORMAT(date_sub(NOW(),interval 6 day),'%Y-%m-%d 00:00:00') and DATE_FORMAT(NOW(),'%Y-%m-%d 23:59:59')) t
+		GROUP BY t.date
+	</select>
+
+	<!--生产产品统计（七天）-->
+	<select id="findYieldLately" resultType="java.util.Map">
+		select t.date,ifnull(SUM(t.NUM),0) as MATERIAL_NUM from
+		(select DATE_FORMAT(PLAN_START_TIME,'%Y-%m-%d') as date,COMPLETE_NUMBER as NUM
+		from r_mes_workorder_detail_t
+		where PLAN_START_TIME between DATE_FORMAT(date_sub(NOW(),interval 6 day),'%Y-%m-%d 00:00:00') and DATE_FORMAT(NOW(),'%Y-%m-%d 23:59:59')
+		union all
+		select DATE_FORMAT(PLAN_START_TIME,'%Y-%m-%d') as date,COMPLETE_NUMBER as NUM
+		from p_mes_workorder_detail_t
+		where PLAN_START_TIME between DATE_FORMAT(date_sub(NOW(),interval 6 day),'%Y-%m-%d 00:00:00') and DATE_FORMAT(NOW(),'%Y-%m-%d 23:59:59')) t
+		GROUP BY t.date
+	</select>
+
+	<!--原料消耗统计（七天）-->
+	<select id="findConsumeMaterial" resultType="java.util.Map">
+		select
+			date,
+			ifnull(sum(numbers),0) as MATERIAL_NUM
+		from
+			(
+				select
+					DATE_FORMAT(dt,'%Y-%m-%d') as date, count(1) as numbers
+				FROM
+					c_mes_event_t
+				where
+					event in("拧紧螺栓","装配物料")
+		 		and
+ 					object_id = '原料'
+				and
+					dt between DATE_FORMAT(date_sub(NOW(),interval 6 day),'%Y-%m-%d 00:00:00') and DATE_FORMAT(NOW(),'%Y-%m-%d 23:59:59')
+				GROUP BY dt
+			) t
+		GROUP BY t.date
+	</select>
+
+</mapper>

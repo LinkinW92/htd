@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.endhandle.TGlPlschemeEntryMapper">
+
+    <resultMap type="com.skeqi.finance.domain.endhandle.TGlPlschemeEntry" id="TGlPlschemeEntryResult">
+        <result property="fEntryId" column="f_entry_id"/>
+        <result property="fId" column="f_id"/>
+        <result property="fAcctId" column="f_acct_id"/>
+        <result property="fPlacctId" column="f_placct_id"/>
+        <result property="fIsSelected" column="f_is_selected"/>
+        <result property="fSeq" column="f_seq"/>
+    </resultMap>
+
+
+    <select id="queryByEntryId" resultType="com.skeqi.finance.pojo.vo.endhandle.TGlPlschemeEntryVo">
+        select p.*,	a.f_name AS acct_name,
+	a.f_number AS acct_number  from t_gl_plscheme_entry p
+        LEFT JOIN t_bd_account a ON a.f_acct_id = p.f_acct_id
+        where  f_id=#{entryId}
+    </select>
+</mapper>

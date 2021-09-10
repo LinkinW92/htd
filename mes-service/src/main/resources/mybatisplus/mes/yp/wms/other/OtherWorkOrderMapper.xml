@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.yp.wms.other.OtherWorkOrderDao">
+
+	<!-- 查询工单 -->
+	<select id="findWorkOrder" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.*,
+			b.`name` as lineName,
+			c.PRODUCTION_NAME as productionName
+		FROM
+			r_mes_workorder_detail_t a
+			join c_mes_line_t b on a.LINE_ID = b.id
+			join c_mes_production_t c on a.PRODUCT_ID = c.id
+		WHERE
+			1 = 1
+		<if test="workOrderNo != null and workOrderNo != ''">
+		and a.WORKORDER_ID like '%${workOrderNo}%'
+		</if>
+		LIMIT 0,10
+	</select>
+
+</mapper>

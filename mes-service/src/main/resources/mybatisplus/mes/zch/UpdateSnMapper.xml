@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.zch.UpdateSnDao">
+
+	<select id="getTrackingR" resultType="java.util.Map">
+		select * from r_mes_tracking_t where SN=#{SN} order by ID desc limit 1
+	</select>
+
+	<select id="getSerialMax" resultType="java.lang.Integer">
+		SELECT MAX(SERIAL_NO) as serialMax FROM C_MES_PRODUCTION_WAY_T WHERE ROUTING_ID = #{routingId}
+	</select>
+
+	<update id="updateTrackingStation">
+		update r_mes_tracking_t set ST=#{stationName},GEARBOXSN=#{stationIndex} where SN=#{SN}
+	</update>
+
+	<insert id="insertStationPass" keyProperty="id"
+		useGeneratedKeys="false">
+		insert into p_mes_station_pass_t(dt,sn,st,status,pass_flag,line_id) values(now(),#{SN},#{stationName},'OK',2,#{lineId})
+	</insert>
+
+	<delete id="deleteStep">
+		delete from r_mes_step_t where st=#{stationName} and sn=#{SN} and line_name=#{lineName}
+	</delete>
+
+	<update id="updateSerialFlag">
+		update r_mes_station_serial_flag_t set FLAG=1 where SN=#{SN} and ST=#{stationId}
+	</update>
+
+	<select id="findBoltList" resultType="com.skeqi.mes.pojo.zch.MesBoltT">
+		select * from r_mes_bolt_t where SN=#{SN}
+	</select>
+
+	<select id="findKeypartList" resultType="com.skeqi.mes.pojo.zch.MesKeypartT">
+		select * from r_mes_keypart_t where SN=#{SN}
+	</select>
+
+	<select id="findLeakageList" resultType="com.skeqi.mes.pojo.zch.MesLeakageT">
+		select * from r_mes_leakage_t where SN=#{SN}
+	</select>
+
+	<insert id="insertBoltBatch" parameterType="java.util.List" >
+		INSERT INTO p_mes_bolt_t(DT, TRANSFER, BOLT_MODE, SN, ST, T, A, P, C,
+		R, EQS, T_LIMIT, A_LIMIT, WID, TID, BOLT_NUM, BOLT_NAME, REWORK_FLAG, REWORK_ST,
+		GUN_NO, REASONS, Y, MATERIAL_INSTANCE_ID,step)
+		VALUES
+		<foreach collection='list' item='item' index='index'  separator=','>
+			(#{item.DT}, #{item.TRANSFER}, #{item.boltMode}, #{item.SN}, #{item.ST}, #{item.T}, #{item.A}, #{item.P}, #{item.C},
+			#{item.R}, #{item.EQS}, #{item.tLimit}, #{item.aLimit}, #{item.WID}, #{item.TID}, #{item.boltNum}, #{item.boltName}, #{item.reworkFlag}, #{item.reworkSt},
+			#{item.gunNo}, #{item.REASONS}, #{item.Y}, #{item.materialInstanceId},#{item.step})
+		</foreach>
+	</insert>
+
+	<insert id="insertKeypartBatch" parameterType="java.util.List" >
+		INSERT INTO p_mes_keypart_t(DT, TRANSFER, KEYPART_MODE, ST, SN, WID, TID, SECOND_NUM, KEYPART_ID,
+		KEYPART_NAME, KEYPART_PN, KEYPART_NUM, KEYPART_MODULE, KEYPART_REWORK_FG,
+		KEYPART_REWORK_ST, MATERIAL_ID, MATERIAL_NUMBER, REASONS, MATERIAL_INSTANCE_ID,step)
+		VALUES
+		<foreach collection='list' item='item' index='index' separator=',' >
+			(#{item.DT}, #{item.TRANSFER}, #{item.keypartMode}, #{item.ST}, #{item.SN}, #{item.WID}, #{item.TID}, #{item.secondNum}, #{item.keypartId},
+			#{item.keypartName}, #{item.keypartPn}, #{item.keypartNum}, #{item.keypartModule}, #{item.keypartReworkFg},
+			#{item.keypartReworkSt}, #{item.materialId}, #{item.materialNumber}, #{item.REASONS}, #{item.materialInstanceId},#{item.step})
+		</foreach>
+	</insert>
+
+	<insert id="insertLeakageBatch" parameterType="java.util.List" >
+		INSERT INTO p_mes_leakage_t(DT, ST, SN, LEAKAGE_NAME, LEAKAGE_PV, LEAKAGE_LV, LEAKAGE_R, WID, TRANSFER,
+		LEAKAGE_MODE, REWORK_FLAG, REASON,step)
+		VALUES
+		<foreach collection='list' item='item' index='index' separator=',' >
+			(#{item.DT}, #{item.ST}, #{item.SN}, #{item.leakageName}, #{item.leakagePv}, #{item.leakageLv}, #{item.leakageR}, #{item.WID}, #{item.TRANSFER},
+			#{item.leakageMode}, #{item.reworkFlag}, #{item.REASON},#{item.step})
+		</foreach>
+	</insert>
+
+	<delete id="deleteBolt">
+		delete from r_mes_bolt_t where SN=#{SN}
+	</delete>
+
+	<delete id="deleteKeypart">
+		delete from r_mes_keypart_t where SN=#{SN}
+	</delete>
+
+	<delete id="deleteLeakage">
+		delete from r_mes_leakage_t where SN=#{SN}
+	</delete>
+
+	<update id="updateOfflineNumber">
+		update r_mes_workorder_detail_t set OFFLINE_NUMBER=OFFLINE_NUMBER + 1, COMPLETE_NUMBER=COMPLETE_NUMBER + 1, OK_NUMBER = OK_NUMBER + 1 where ID=#{workorderId}
+	</update>
+
+	<select id="findPrintList" resultType="com.skeqi.mes.pojo.zch.MesPrintT">
+		select * from r_mes_plan_print_t where WORK_ORDER_ID=#{workorderId}
+	</select>
+
+	<insert id="insertPrintBatch" parameterType="java.util.List" >
+		INSERT INTO p_mes_plan_print_t(DT, SN, PLAN_ID, LINE_ID, PRODUCTION_ID, SERIAL_NO, PRINT_FLAG, WORK_ORDER_ID, R_MES_PLAN_PRINT_ID)
+		VALUES
+		<foreach collection='list' item='item' index='index' separator=',' >
+			(#{item.DT}, #{item.SN}, #{item.planId}, #{item.lineId}, #{item.productionId}, #{item.serialNo}, #{item.printFlag}, #{item.workOrderId}, #{item.ID})
+		</foreach>
+	</insert>
+
+	<delete id="deletePrint">
+		delete from r_mes_plan_print_t where WORK_ORDER_ID=#{workorderId}
+	</delete>
+
+	<insert id="insertWorkorder" keyProperty="id"
+		useGeneratedKeys="false">
+		insert into p_mes_workorder_detail_t
+		(DT, WORKORDER_ID, ORDER_NUMBER, ONLINE_NUMBER, OFFLINE_NUMBER, DEFFECT_NUMBER, LINE_ID, TEAM_ID, LEVEL_NO,
+		STATUS, ALTER_DT, PLAN_ID, CREATE_BARCODE_FLAG, PRINTE_NUMBER, SFC_CODE, LINE_CODE, SFC_TYPE, OLD_SFC_CODE, OLD_SN_CODE,
+		R_MES_WORKORDER_DETAIL_ID, COMPLETE_NUMBER, PLAN_START_TIME, PLAN_END_TIME, ACTUAL_START_TIME, ACTUAL_END_TIME, ROUTING_ID, BARCODE_RULE_ID, BOM_ID, PRODUCT_ID,
+		TOTAL_RECIPE_ID, OK_NUMBER, ORDER_ID, ORDERRECORD_ID)
+		values(#{DT},#{WORKORDER_ID},#{ORDER_NUMBER},#{ONLINE_NUMBER},#{OFFLINE_NUMBER},#{DEFFECT_NUMBER},#{LINE_ID},#{TEAM_ID},#{LEVEL_NO},
+		3,#{ALTER_DT},#{PLAN_ID},#{CREATE_BARCODE_FLAG},#{PRINTE_NUMBER},#{SFC_CODE},#{LINE_CODE},#{SFC_TYPE},#{OLD_SFC_CODE},#{OLD_SN_CODE},
+		#{ID},#{COMPLETE_NUMBER},#{PLAN_START_TIME},#{PLAN_END_TIME},#{ACTUAL_START_TIME},#{ACTUAL_END_TIME},#{ROUTING_ID},#{BARCODE_RULE_ID},#{BOM_ID},#{PRODUCT_ID},
+		#{TOTAL_RECIPE_ID},#{OK_NUMBER},#{ORDER_ID},#{ORDERRECORD_ID})
+	</insert>
+
+	<delete id="deleteWorkorder">
+		delete from r_mes_workorder_detail_t where ID=#{workorderId}
+	</delete>
+
+	<insert id="insertTracking" keyProperty="id"
+		useGeneratedKeys="false">
+		insert into p_mes_tracking_t
+		(DT, ST, BST, SN, ENGINESN, GEARBOXSN, TYPENAME, TRAYNUM, PRODUCTNUM, STATUS,
+		DIS, PLAN_ID, OFFLINE_DT, REWORK_FLAG, PRODUCTION_ID, LINE_ID, WORK_ORDER_ID)
+		values(#{DT},#{ST},#{BST},#{SN},#{ENGINESN},#{GEARBOXSN},#{TYPENAME},#{TRAYNUM},#{PRODUCTNUM},#{STATUS},
+		#{DIS},#{PLAN_ID},now(),#{REWORK_FLAG},#{PRODUCTION_ID},#{LINE_ID},#{WORK_ORDER_ID})
+	</insert>
+
+	<delete id="deleteTracking">
+		delete from r_mes_tracking_t where SN=#{SN}
+	</delete>
+
+	<select id="findSerialFlagList" resultType="java.util.Map">
+		select * from r_mes_station_serial_flag_t where SN=#{SN}
+	</select>
+
+	<insert id="insertSerialFlagBatch" parameterType="java.util.List" >
+		INSERT INTO p_mes_station_serial_flag_t(ID, SN, DT, ST, SERIAL, FLAG)
+		VALUES
+		<foreach collection='list' item='item' index='index' separator=',' >
+			(#{item.ID}, #{item.SN}, #{item.DT}, #{item.ST}, #{item.SERIAL}, #{item.FLAG})
+		</foreach>
+	</insert>
+
+	<delete id="deleteSerialFlag">
+		delete from r_mes_station_serial_flag_t where SN=#{SN}
+	</delete>
+
+	<select id="getProductByID" resultType="java.util.Map">
+		select * from c_mes_production_t where ID=#{productionId}
+	</select>
+
+	<insert id="insertMaterialInstance">
+		insert into c_mes_material_instance_t (MATERIAL_CODE, MATERIAL_SN, MATERIAL_NAME, MATERIAL_TYPE, MATERIAL_NUMBER, DT, ALTER_DT, WORKORDER_ID, NUMBER_REMAINING)
+		values(#{MATERIAL_CODE}, #{SN}, #{MATERIAL_NAME}, 6, 1, NOW(), NOW(), #{WORKORDER_ID}, 0)
+	</insert>
+
+</mapper>

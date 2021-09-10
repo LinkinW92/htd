@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.yp.equipment.maintaindata.MaintainDataDao">
+
+	<!-- 查询 -->
+	<select id="list" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			id,
+			DATE_FORMAT( dt, '%Y-%m-%d %H:%i:%s' ) AS dt,
+			equipmentName,
+			lineName,
+			checkPerson,
+			remarks,
+			state
+		FROM
+			c_qh_equipment_maintain_data_t
+			where 1=1
+			<if test="equipmentName != null and equipmentName != ''">
+				and equipmentName like '%${equipmentName}%'
+			</if>
+			<if test="lineName != null and lineName != ''">
+				and lineName like '%${lineName}%'
+			</if>
+			<if test="checkPerson != null and checkPerson != ''">
+				and checkPerson like '%${checkPerson}%'
+			</if>
+			<if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+				and dt between #{startTime} and #{endTime}
+			</if>
+			ORDER BY dt
+	</select>
+
+	<!-- 新增 -->
+	<insert id="add" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO c_qh_equipment_maintain_data_t(dt,equipmentName,lineName,checkPerson,remarks,state)
+		value(#{dt},#{equipmentName},#{lineName},#{checkPerson},#{remarks},0)
+	</insert>
+
+	<!-- 通过设备id查询出需要点检的点检项 -->
+	<select id="itemList" resultType="com.alibaba.fastjson.JSONObject">
+		select b.item,b.`explain` from c_qh_equipment_maintain_edition_t a
+		join c_qh_equipment_maintain_items_t b on a.id = b.editionId
+		where a.equipmentId = #{equipmentId}
+		and a.state = 1
+	</select>
+
+	<!-- 新增点检记录详情 -->
+	<insert id="addCheckDataDetailed">
+		INSERT INTO c_qh_equipment_maintain_data_detailed_t(item,`explain`,checkDataId)
+		${sql}
+	</insert>
+
+	<!-- 更新 -->
+	<update id="update">
+		update c_qh_equipment_maintain_data_t
+		set
+		dt = #{dt},
+		checkPerson = #{checkPerson},
+		remarks = #{remarks}
+		where id = #{id}
+	</update>
+
+	<resultMap type="com.alibaba.fastjson.JSONObject" id="lineMap">
+		<result column="lineId" property="lineId" />
+		<result column="lineName" property="lineName" />
+		<!-- collection：一对多 property：实体类里的 ofType：实体类 -->
+		<collection property="equipment" javaType="list" ofType="com.alibaba.fastjson.JSONObject">
+			<result column="equipmentId" property="equipmentId" />
+			<result column="equipmentName" property="equipmentName" />
+		</collection>
+	</resultMap>
+	<!-- 查询所有产线跟设备 -->
+	<select id="lineAndEquipment" resultMap="lineMap">
+		SELECT
+			a.id AS
+			lineId,
+			a.`NAME` AS lineName,
+			b.id AS equipmentId,
+			b.`name` AS
+			equipmentName
+		FROM c_mes_line_t a
+		JOIN c_qh_equipment_information b ON a.id = b.lineId
+		ORDER BY a.id
+	</select>
+
+	<!-- 提交 -->
+	<update id="sub">
+		update c_qh_equipment_maintain_data_t
+		set
+		state = 1
+		where id = #{id}
+	</update>
+
+</mapper>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wms.homepage.HomepageDAO">
+
+
+	<!-- 出库量查询 -->
+	<select id="outboundQuantityQuery" resultType="java.lang.Integer">
+		select IFNULL((sum(MATERIAL_NUMBER)*-1),0)  from C_WMS_STORAGE_LIST_DETAIL_T  st
+		where st.MATERIAL_NUMBER &lt; 0
+		and st.DT Between #{ks} and now()
+	</select>
+
+	<!-- 入库量查询 -->
+	<select id="inputVolumeQuery" resultType="java.lang.Integer">
+<!-- 	select -->
+<!-- 		sum(MATERIAL_NUMBER)*-1 from C_WMS_STORAGE_LIST_DETAIL_T st -->
+<!-- 		where LIST_NO = ( -->
+<!-- 		select sp.LIST_NO from C_WMS_APPROVAL_T sp -->
+<!-- 		join C_WMS_PROCESS_APPROVAL_T lc on sp.PROCESS_ID = lc.id -->
+<!-- 		where lc.TYPE_ID = 1 or lc.TYPE_ID = 3OVAL_T lc on sp.PROCESS_ID = lc.id -->
+<!-- 		where lc.TYPE_ID = 1 or lc.TYPE_ID = 3 -->
+<!-- 		) -->
+<!-- 		and st.MATERIAL_NUMBER &lt; 0 -->
+		select IFNULL(sum(MATERIAL_NUMBER),0) from C_WMS_STORAGE_LIST_DETAIL_T  st
+		where st.MATERIAL_NUMBER &gt; 0
+		and st.DT Between #{ks} and now()
+	</select>
+
+	<!-- 库存余量查询 -->
+	<select id="inventoryMarginQuery" resultType="java.lang.Integer">
+		select IFNULL((sum(kc.MATERIAL_NUMBER)),0) from C_WMS_MATERIAL_NUMBER_T kc
+	</select>
+
+	<!-- 通知消息查询 -->
+	<select id="messageNumberQuery" resultType="java.lang.Integer">
+
+	</select>
+
+	<!-- 曲线图入库查询 -->
+	<select id="rkfind" resultType="CWmsStorageListDetailT">
+	select date_format(td.tdate,'%m-%d') as qxtrkdate,(sum(if(MATERIAL_NUMBER>0,MATERIAL_NUMBER,0))) as materialNumber from C_WMS_STORAGE_LIST_DETAIL_T tt
+	right join (select DATE_SUB(now(), INTERVAL n.i DAY) as tdate from num n) td
+	on date_format(tt.dt,'%m-%d')=date_format(td.tdate,'%m-%d')
+	group by td.tdate
+	</select>
+
+	<!-- 曲线图出库查询 -->
+	<select id="ckfind" resultType="CWmsStorageListDetailT">
+	select date_format(td.tdate,'%m-%d') as qxtrkdate,(sum(if(MATERIAL_NUMBER&lt;0,MATERIAL_NUMBER,0))*-1) as materialNumber from C_WMS_STORAGE_LIST_DETAIL_T tt
+	right join (select DATE_SUB(now(), INTERVAL n.i DAY) as tdate from num n) td
+	on date_format(tt.dt,'%m-%d')=date_format(td.tdate,'%m-%d')
+	group by td.tdate
+	</select>
+
+	<resultMap type="CWmsLocationT" id="cWmsLocationTMap">
+		<result column="LOCATION_NAME" property="locationName"/>
+		<collection property="cWmsMaterialNumberTList" ofType="CWmsMaterialNumberT">
+			<result column="MATERIAL_NAME" property="materialName"/>
+			<result column="MATERIAL_NUMBER" property="materialNumber"/>
+		</collection>
+	</resultMap>
+
+	<!-- 库位查询 -->
+	<select id="cWmsLocationTQuery" resultMap="cWmsLocationTMap">
+<!-- 		select kw.LOCATION_NAME ,wl.MATERIAL_NAME,wl.MATERIAL_NUMBER from C_WMS_LOCATION_T kw -->
+<!-- 		left join C_WMS_MATERIAL_NUMBER_T wl -->
+<!-- 		on kw.LOCATION_NO = wl.LOCATION_ID -->
+<!-- 		ORDER BY kw.LOCATION_NAME -->
+select kw.LOCATION_NAME ,wl.MATERIAL_NAME,wl.MATERIAL_NUMBER from C_WMS_LOCATION_T kw
+		left join C_WMS_MATERIAL_NUMBER_T wl
+		on kw.id = wl.LOCATION_ID
+		ORDER BY kw.LOCATION_NAME
+	</select>
+
+</mapper>

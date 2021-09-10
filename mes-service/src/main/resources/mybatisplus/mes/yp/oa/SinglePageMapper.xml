@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.yp.oa.SinglePageDao">
+
+	<!-- 查询 -->
+	<select id="query" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			*
+		FROM
+			c_oa_approval_record_t
+		WHERE
+			listNo = #{listNo}
+	</select>
+
+	<!-- 查询明细 -->
+	<select id="queryDetails" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.*
+		FROM
+			c_oa_approval_record_detailed_t a
+			JOIN c_oa_approval_record_t b ON a.approvalRecordId = b.id
+		WHERE
+			b.listNo = #{listNo}
+	</select>
+
+	<!-- 查询审批备注 -->
+	<select id="findApprovalRecordNote" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			DATE_FORMAT( a.dt, '%Y-%m-%d %H:%i:%s' ) AS dt,
+			a.dis,
+			a.approvalRecordId,
+			a.state,
+			b.USER_NAME AS userName
+		FROM
+			c_oa_approval_record_note_t a
+			LEFT JOIN c_mes_user_t b ON a.userId = b.id
+			LEFT JOIN c_oa_approval_record_t c ON a.approvalRecordId = c.id
+		WHERE
+			c.listNo = #{listNo}
+	</select>
+
+	<!-- 查询审批记录表表格 -->
+	<select id="findApprovalRecordTable" resultType="com.alibaba.fastjson.JSONObject">
+		select a.* from c_oa_approval_record_table_t a
+		join c_oa_approval_record_t b on a.approvalRecordId = b.id
+		where b.listNo = #{listNo}
+	</select>
+
+</mapper>

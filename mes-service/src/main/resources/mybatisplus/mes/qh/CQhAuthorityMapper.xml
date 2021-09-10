@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.qh.CQhAuthorityDao">
+
+	<!-- 按角色id和路径查询是否有权限 -->
+	<select id="queryPermissionByRoleIdAndPath"
+		resultType="java.lang.Integer">
+		select count(*) from c_qh_role role
+		join c_qh_role_menu
+		roleMenu on role.id = roleMenu.role_id
+		join c_qh_authority_interface
+		authorityInterface on roleMenu.operation_type =
+		authorityInterface.operation_type
+		where authorityInterface.path =
+		#{path}
+		and role.id = #{roleId}
+	</select>
+
+	<!-- 通过token查询角色 -->
+	<select id="queryRoleByToken"
+		resultType="com.skeqi.mes.pojo.qh.CQhRoleT">
+		select role.* from c_mes_user_t `user`
+		join c_qh_role role
+		on `user`.ROLE_ID = role.id
+		where `user`.viewMode = 1
+		and `user`.token = #{token}
+	</select>
+
+	<resultMap type="com.alibaba.fastjson.JSONObject" id="authorityInterfaceMap">
+		<result column="path1" property="path" />
+		<association property="meta" javaType="com.alibaba.fastjson.JSONObject">
+			<result column="menuName1" property="title" />
+			<result column="icon1" property="icon" />
+		</association>
+		<collection property="children" javaType="list" ofType="com.alibaba.fastjson.JSONObject">
+			<result column="path2" property="path" />
+				<association property="meta" javaType="com.alibaba.fastjson.JSONObject">
+				<result column="menuName2" property="title" />
+				<result column="icon2" property="icon" />
+			</association>
+			<collection property="children" javaType="list" ofType="com.alibaba.fastjson.JSONObject">
+				<result column="path3" property="path" />
+				<association property="meta" javaType="com.alibaba.fastjson.JSONObject">
+					<result column="menuName3" property="title" />
+					<result column="icon3" property="icon" />
+				</association>
+			</collection>
+		</collection>
+	</resultMap>
+	<!-- 通过角色id查询角色权限 -->
+	<select id="findAuthorityInterfaceByRoleId" resultMap="authorityInterfaceMap">
+		SELECT
+			menu1.menu_name as menuName1,
+			menu1.path as path1,
+			menu1.icon as icon1,
+			menu2.menu_name as menuName2,
+			menu2.path as path2,
+			menu2.icon as icon2,
+			menu3.menu_name as menuName3,
+			menu3.path as path3,
+			menu3.icon as icon3
+		FROM
+			c_qh_menu menu1
+			LEFT JOIN c_qh_menu menu2 ON menu1.id = menu2.superior_menu_id
+			LEFT JOIN c_qh_menu menu3 ON menu2.id = menu3.superior_menu_id
+		WHERE
+			menu1.menu_grade = 1
+			and menu1.if_enable = 'true'
+			and (menu2.menu_name is null or menu2.if_enable = 'true')
+			and (menu3.menu_name is null or menu3.if_enable = 'true')
+			<if test="roleId != 1">
+				AND (
+					menu1.id IN (
+						SELECT menu_id FROM c_qh_role_menu
+						WHERE role_id = #{roleId}
+						GROUP BY menu_id
+					)
+					or
+					menu2.id IN (
+						SELECT menu_id FROM c_qh_role_menu
+						WHERE role_id = #{roleId}
+						GROUP BY menu_id
+					)
+					or
+					menu3.id IN (
+						SELECT menu_id FROM c_qh_role_menu
+						WHERE role_id = #{roleId}
+						GROUP BY menu_id
+					)
+				)
+			</if>
+			ORDER BY menu1.`order`+0,menu2.`order`+0,menu3.`order`+0
+	</select>
+
+	<!-- 通过等级查询菜单 -->
+	<select id="findMenuByGrade" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			id,
+			menu_grade AS menuGrade,
+			superior_menu_id AS superiorMenuId,
+			menu_name AS menuName,
+			path,
+			icon,
+			`order`
+		FROM
+			c_qh_menu
+		WHERE
+			menu_grade = #{grade}
+			AND if_enable = "true"
+		ORDER BY
+			`order`
+	</select>
+
+</mapper>

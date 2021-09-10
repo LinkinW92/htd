@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.rework.ReworkDao">
+
+    <!-- 转移物料 -->
+    <insert id="moveKeypart">
+        insert into
+        p_mes_keypart_t(DT,TRANSFER,KEYPART_MODE,ST,SN,WID,TID,SECOND_NUM,KEYPART_ID,KEYPART_NAME,KEYPART_PN,KEYPART_NUM,KEYPART_MODULE,KEYPART_REWORK_FG,KEYPART_REWORK_ST,MATERIAL_ID,MATERIAL_NUMBER,REASONS,MATERIAL_INSTANCE_ID)
+        select
+        DT,TRANSFER,KEYPART_MODE,ST,SN,WID,TID,SECOND_NUM,KEYPART_ID,KEYPART_NAME,KEYPART_PN,KEYPART_NUM,KEYPART_MODULE,1,KEYPART_REWORK_ST,MATERIAL_ID,MATERIAL_NUMBER,REASONS,MATERIAL_INSTANCE_ID
+        from r_mes_keypart_t where 1=1
+        <if test="sn!=null and sn!='' ">
+            and sn=#{sn}
+        </if>
+        <if test="st!=null and st!='' ">
+            and st=#{st}
+        </if>
+        <if test="step!=null and step!='' ">
+            and step=#{step}
+        </if>
+    </insert>
+
+    <!-- 转移物料（不回收物料） -->
+    <insert id="moveKeypartLi">
+        insert into
+        p_mes_keypart_t(DT,TRANSFER,KEYPART_MODE,ST,SN,WID,TID,SECOND_NUM,KEYPART_ID,KEYPART_NAME,KEYPART_PN,KEYPART_NUM,KEYPART_MODULE,KEYPART_REWORK_FG,KEYPART_REWORK_ST,MATERIAL_ID,MATERIAL_NUMBER,REASONS,MATERIAL_INSTANCE_ID)
+        select
+        DT,TRANSFER,KEYPART_MODE,ST,SN,WID,TID,SECOND_NUM,KEYPART_ID,KEYPART_NAME,KEYPART_PN,KEYPART_NUM,KEYPART_MODULE,0,KEYPART_REWORK_ST,MATERIAL_ID,MATERIAL_NUMBER,REASONS,MATERIAL_INSTANCE_ID
+        from r_mes_keypart_t where 1=1
+        <if test="sn!=null and sn!='' ">
+            and sn=#{sn}
+        </if>
+        <if test="st!=null and st!='' ">
+            and st=#{st}
+        </if>
+        <if test="step!=null and step!='' ">
+            and step=#{step}
+        </if>
+    </insert>
+
+    <!-- 替换物料 -->
+    <update id="replaceKeypart">
+        update r_mes_keypart_t set KEYPART_NUM=#{barcode} where sn=#{sn} and st=#{st} and step=#{step}
+    </update>
+
+    <!-- 拆解物料 -->
+    <update id="dismanKeypart">
+        update r_mes_keypart_t set KEYPART_NUM=null,WID=null where sn=#{sn} and st=#{st} and step=#{step}
+    </update>
+
+    <!-- 转移螺栓 -->
+    <insert id="moveBolt">
+        insert into
+        p_mes_bolt_t(A,A_LIMIT,BOLT_MODE,BOLT_NAME,BOLT_NUM,C,DT,EQS,GUN_NO,MATERIAL_INSTANCE_ID,P,R,REASONS,REWORK_FLAG,REWORK_ST,SN,ST,step,T,T_LIMIT,TID,TRANSFER,WID,Y)
+        select
+        A,A_LIMIT,BOLT_MODE,BOLT_NAME,BOLT_NUM,C,DT,EQS,GUN_NO,MATERIAL_INSTANCE_ID,P,R,REASONS,1,REWORK_ST,SN,ST,step,T,T_LIMIT,TID,TRANSFER,WID,Y
+        from r_mes_bolt_t where 1=1
+        <if test="sn!=null and sn!='' ">
+            and sn=#{sn}
+        </if>
+        <if test="st!=null and st!='' ">
+            and st=#{st}
+        </if>
+        <if test="step!=null and step!='' ">
+            and step=#{step}
+        </if>
+    </insert>
+
+    <!-- 拆解螺栓 -->
+    <update id="dismanBolt">
+        update r_mes_bolt_t set A=null,T=null,R=null,WID=null,Y=0 where sn=#{sn} and st=#{st} and step=#{step} and
+        R='OK'
+    </update>
+
+    <!-- 转移气密 -->
+    <insert id="moveLeakage">
+        insert into
+        p_mes_leakage_t(DT,LEAKAGE_LV,LEAKAGE_MODE,LEAKAGE_NAME,LEAKAGE_PV,LEAKAGE_R,REASON,REWORK_FLAG,SN,ST,step,TRANSFER,WID)
+        select DT,LEAKAGE_LV,LEAKAGE_MODE,LEAKAGE_NAME,LEAKAGE_PV,LEAKAGE_R,REASON,1,SN,ST,step,TRANSFER,WID
+        from r_mes_leakage_t where 1=1
+        <if test="sn!=null and sn!='' ">
+            and sn=#{sn}
+        </if>
+        <if test="st!=null and st!='' ">
+            and st=#{st}
+        </if>
+        <if test="step!=null and step!='' ">
+            and step=#{step}
+        </if>
+    </insert>
+
+    <!-- 拆解气密 -->
+    <update id="dismanLeakage">
+        update r_mes_leakage_t set LEAKAGE_PV=null,LEAKAGE_LV=null,LEAKAGE_R=null,WID=null where sn=#{sn} and st=#{st}
+        and step=#{step} and LEAKAGE_R='OK'
+    </update>
+
+    <!-- 判废接口 -->
+    <update id="Annulment">
+        update r_mes_tracking_t set STATUS='NG',reason=#{reason},REWORK_FLAG='1' where sn=#{sn}
+    </update>
+
+    <!-- 查询总成是否判废 -->
+    <select id="findisNg" resultType="java.util.Map">
+        select reason reason,PRODUCTION_ID pid from r_mes_tracking_t where STATUS='NG' and sn=#{sn}
+    </select>
+
+    <!-- 查询此总成需要做的工位 -->
+    <select id="findStBySn" resultType="java.util.Map">
+        SELECT ser.st id,sta.STATION_NAME name
+        FROM r_mes_station_serial_flag_t ser,c_mes_station_t sta
+        where ser.ST=sta.id and ser.SN=#{sn}
+    </select>
+
+    <!-- 恢复OK状态 -->
+    <update id="updateOK">
+        update r_mes_tracking_t set status='Ok',REWORK_FLAG='1' where sn=#{sn}
+    </update>
+
+    <!-- 转移track -->
+    <insert id="moveTrack">
+        insert into
+        p_mes_tracking_t(DT,ST,BST,SN,ENGINESN,GEARBOXSN,TYPENAME,TRAYNUM,PRODUCTNUM,STATUS,DIS,PLAN_ID,REWORK_FLAG,PRODUCTION_ID,LINE_ID,WORK_ORDER_ID,reason)
+        select
+        DT,ST,BST,SN,2,GEARBOXSN,TYPENAME,TRAYNUM,PRODUCTNUM,'NG',DIS,PLAN_ID,REWORK_FLAG,PRODUCTION_ID,LINE_ID,WORK_ORDER_ID,#{reason}
+        from r_mes_tracking_t where sn=#{sn}
+    </insert>
+
+    <!-- 转移过站表 -->
+    <insert id="moveStation">
+        insert into p_mes_station_serial_flag_t(SN,DT,ST,SERIAL,FLAG)
+        select SN,DT,ST,SERIAL,FLAG from r_mes_station_serial_flag_t
+        where sn=#{sn}
+    </insert>
+
+    <!-- 删除此总成的信息 -->
+    <delete id="delDataBySN">
+        delete from r_mes_keypart_t where sn=#{sn};
+        delete from r_mes_leakage_t where sn=#{sn};
+        delete from r_mes_tracking_t where sn=#{sn};
+        delete from r_mes_bolt_t where sn=#{sn};
+        delete from r_mes_station_serial_flag_t where sn=#{sn};
+    </delete>
+
+    <!-- 查询是否符合判废条件 -->
+    <select id="findIsScrap" resultType="integer">
+        select count(id) from r_mes_tracking_t where sn=#{sn}
+    </select>
+
+    <!-- 查询总成是否下线 -->
+    <select id="findRoute" resultType="integer">
+        select count(id) from p_mes_tracking_t where sn=#{sn}
+    </select>
+
+    <!-- 查询产品 -->
+    <select id="findP" resultType="java.util.Map">
+	   		select id,PRODUCTION_NAME productionName from c_mes_production_t
+	   </select>
+
+    <!-- 查询产线 -->
+    <select id="findL" resultType="java.util.Map">
+	   		select id,name from c_mes_line_t
+	   </select>
+
+    <!-- 查询总配方 -->
+    <select id="findTotalRecipe" resultType="java.util.Map">
+        select id,TOTAL_RECIPE_NAME recipeName from c_mes_total_recipe_t where LINE_ID=#{lineId} and
+        PRODUCTION_ID=#{proId}
+    </select>
+
+    <!-- 查询工艺路线 -->
+    <select id="findProRoute" resultType="java.util.Map">
+        select id,name from c_mes_routing_t where LINE_ID=#{lineId} and PRODUCTION_ID=#{proId}
+    </select>
+
+    <!-- 添加返修工单 -->
+    <insert id="addReworkWork">
+        insert into
+        r_mes_workorder_detail_t(dt,WORKORDER_ID,ORDER_NUMBER,LINE_ID,LEVEL_NO,STATUS,CREATE_BARCODE_FLAG,PRINTE_NUMBER,SFC_TYPE,ROUTING_ID,PRODUCT_ID,TOTAL_RECIPE_ID)
+        values(now(),#{sim},1,#{lineId},1,1,1,1,1,#{routeId},#{proId},#{recipeId})
+    </insert>
+
+    <!-- 查询最大的工单id -->
+    <select id="findMaxWid" resultType="integer">
+	    	select max(id) from r_mes_workorder_detail_t
+	    </select>
+
+    <!-- 添加打印表  -->
+    <insert id="addPlanPrint">
+        insert into r_mes_plan_print_t(dt,sn,line_id,production_id,serial_no,print_flag,WORK_ORDER_ID)
+        values(now(),#{sn},#{lineId},#{proId},1,1,#{wid})
+    </insert>
+
+    <!-- 添加总成运行表 -->
+    <insert id="addRTrack">
+        insert into r_mes_tracking_t(dt,sn,enginesn,status,rework_flag,production_id,line_id,work_order_id)
+        values(now(),#{sn},'0','OK','1',#{proId},#{lineId},#{wid})
+    </insert>
+
+    <!-- 修改物料返修状态 -->
+    <update id="updateKeypartFlag">
+        update p_mes_keypart_t set KEYPART_REWORK_FG=1 where sn=#{sn}
+    </update>
+
+    <!-- 删除P表 -->
+    <delete id="deletePtrack">
+        delete from p_mes_tracking_t where sn=#{sn}
+    </delete>
+
+    <!-- 查询最大的工单id -->
+    <select id="findIdAndWorkOrderId" resultType="java.util.Map">
+        select ID id,WORKORDER_ID workOrderId from r_mes_workorder_detail_t
+        where 1=1
+        <if test="id!=null and id!=0">
+            and ID=#{id}
+        </if>
+        <if test="workOrderId!=null and workOrderId!=''">
+            and WORKORDER_ID=#{workOrderId}
+        </if>
+    </select>
+
+</mapper>

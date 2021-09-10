@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.alarm.CAlarmProblemUpgradeDao">
+
+	<resultMap type="com.skeqi.mes.pojo.alarm.CAlarmProblemUpgrade" id="problemUpgradeMap">
+		<id column="id" property="id" />
+		<result column="problem_level_id" property="problemLevelId" />
+		<result column="upgrade_problem_level_id" property="upgradeProblemLevelId" />
+		<result column="trigger_time" property="triggerTime" />
+		<result column="loss_Type_Id" property="lossTypeId" />
+		<association property="lossType" javaType="com.skeqi.mes.pojo.project.CMesLossTypeT">
+			<result column="loss_Name" property="lossName" />
+		</association>
+		<association property="qLevel" javaType="com.skeqi.mes.pojo.alarm.CAlarmProblemLevel">
+			<result column="qLevel" property="level" />
+		</association>
+		<association property="hLevel" javaType="com.skeqi.mes.pojo.alarm.CAlarmProblemLevel">
+			<result column="hLevel" property="level" />
+		</association>
+	</resultMap>
+
+	<!-- 查询问题升级集合  -->
+	<select id="findProblemUpgradeList" resultMap="problemUpgradeMap">
+		SELECT
+			a.id,
+			a.problem_level_id,
+			a.upgrade_problem_level_id,
+			a.trigger_time,
+			a.Loss_Type_Id,
+			b.LOSS_NAME,
+			c.`level` qLevel,
+			d.`level` hLevel
+		FROM
+			c_alarm_problem_upgrade a
+			JOIN c_mes_loss_type_t b ON a.Loss_Type_Id = b.id
+			JOIN c_alarm_problem_level c ON a.problem_level_id = c.id
+			JOIN c_alarm_problem_level d ON a.upgrade_problem_level_id = d.id
+		ORDER BY
+			a.id
+	</select>
+
+	<!-- 新增问题升级集合 -->
+	<insert id="addProblemUpgrade">
+		INSERT INTO c_alarm_problem_upgrade(
+			problem_level_id,
+			upgrade_problem_level_id,
+			trigger_time,
+			Loss_Type_Id )
+		value(#{problemLevelId},#{upgradeProblemLevelId},#{triggerTime},#{lossTypeId})
+	</insert>
+
+	<!-- 更新新增问题升级集合 -->
+	<update id="updateProblemUpgrade">
+		update c_alarm_problem_upgrade
+		set
+		problem_level_id = #{problemLevelId},
+		upgrade_problem_level_id = #{upgradeProblemLevelId},
+		trigger_time = #{triggerTime},
+		Loss_Type_Id =  #{lossTypeId}
+		where id = #{id}
+	</update>
+
+	<!-- 删除新增问题升级集合 -->
+	<delete id="deleteProblemUpgrade">
+		delete from c_alarm_problem_upgrade
+		where id = #{id}
+	</delete>
+
+	<!-- 查询所有 等级 -->
+	<select id="findProblemLevelAll" resultType="com.skeqi.mes.pojo.alarm.CAlarmProblemLevel">
+		select id,`level`,`explain` from c_alarm_problem_level
+		ORDER BY id
+	</select>
+
+	<!-- 查询所有损失类型 -->
+	<select id="findLossTypeAll" resultType="com.skeqi.mes.pojo.project.CMesLossTypeT">
+		select id,LOSS_NAME from c_mes_loss_type_t
+		ORDER BY id
+	</select>
+
+	<!-- 各种条件查询问题升级 -->
+	<select id="findProblemUpgrade" resultType="java.lang.Integer">
+		select count(id) from c_alarm_problem_upgrade
+		<where>
+			<if test="id != null and id != ''">
+				id != #{id}
+			</if>
+			<if test="problemLevelId != null and problemLevelId != ''">
+				and problem_level_id = #{problemLevelId}
+			</if>
+<!-- 			<if test="upgradeProblemLevelId != null and upgradeProblemLevelId != ''"> -->
+<!-- 				and upgrade_problem_level_id = #{upgradeProblemLevelId} -->
+<!-- 			</if> -->
+			<if test="lossTypeId != null and lossTypeId != ''">
+				and loss_Type_Id = #{lossTypeId}
+			</if>
+		</where>
+	</select>
+
+</mapper>

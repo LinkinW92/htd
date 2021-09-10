@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.skeqi.mes.mapper.alarm.CAlarmNotificationChannelsDao">
+
+	<!-- 通过用户名称查询用户 -->
+	<select id="findUserByName"
+		resultType="com.skeqi.mes.pojo.CMesUserT">
+		select
+		id,USER_NAME,`STATUS`,DEPARTMENT,`SECURITY`,USER_POWER,ROLE_ID,USER_NUMBER,LOGINSTATUS
+		from c_mes_user_t
+		where viewMode = 1
+		and USER_NAME = #{userName}
+	</select>
+
+	<!-- 查询通知渠道类型 -->
+	<select id="findNotificationChannelsTypeList"
+		resultType="com.skeqi.mes.pojo.alarm.CAlarmNotificationChannelsType">
+		select id,notification_channels_type_name,note from
+		c_alarm_notification_channels_type
+		<where>
+			<if test="id != null and id != ''">
+				id != #{id}
+			</if>
+		</where>
+		ORDER BY id
+	</select>
+
+	<resultMap
+		type="com.skeqi.mes.pojo.alarm.CAlarmNotificationChannels"
+		id="notificationChannelsMap">
+		<id column="id" property="id" />
+		<result column="user_id" property="userId" />
+		<result column="notification_channels_type_id"
+			property="notificationChannelsTypeId" />
+		<result column="notification_channels"
+			property="notificationChannels" />
+		<result column="notification_channels_content"
+			property="notificationChannelsContent" />
+		<result column="dt" property="dt" />
+		<association property="notificationChannelsType"
+			javaType="com.skeqi.mes.pojo.alarm.CAlarmNotificationChannelsType">
+			<result column="notification_channels_type_name"
+				property="notificationChannelsTypeName" />
+		</association>
+	</resultMap>
+
+	<!-- 查询通知渠道 -->
+	<select id="findNotificationChannelsList"
+		resultMap="notificationChannelsMap">
+		SELECT
+		a.id,
+		a.user_id,
+		a.notification_channels_type_id,
+		a.notification_channels,
+		a.notification_channels_content,
+		a.dt,
+		type.notification_channels_type_name
+		FROM
+		c_alarm_notification_channels
+		a
+		JOIN c_alarm_notification_channels_type type on
+		a.notification_channels_type_id = type.id
+		where a.view_mode = 1
+<!-- 		and a.user_id = #{userId} -->
+		<!-- and a.notification_channels like '%${notificationChannels}%' -->
+		ORDER BY a.id
+	</select>
+
+	<!-- 查询通知渠道是否重名 -->
+	<select id="findNotificationChannels"
+		resultType="java.lang.Integer">
+		SELECT count(id) FROM c_alarm_notification_channels
+		where
+		view_mode = 1
+<!-- 		and user_id = #{userId} -->
+		and notification_channels =
+		#{notificationChannels}
+	</select>
+
+	<!-- 新增通知渠道 -->
+	<insert id="addNotificationChannels">
+		INSERT INTO
+		c_alarm_notification_channels(user_id,notification_channels_type_id,notification_channels,notification_channels_content,dt,view_mode)
+		value(#{userId},#{notificationChannelsTypeId},#{notificationChannels},#{notificationChannelsContent},now(),1)
+	</insert>
+
+	<!-- 更新通知渠道 -->
+	<update id="updateNotificationChannels">
+		update c_alarm_notification_channels
+		set
+		notification_channels_type_id = #{notificationChannelsTypeId},
+		notification_channels = #{notificationChannels},
+		notification_channels_content = #{notificationChannelsContent},
+		dt =
+		now()
+		where id = #{id}
+	</update>
+
+	<!-- 删除通知渠道 -->
+	<delete id="deleteNotificationChannels">
+		delete from c_alarm_notification_channels
+		where id =
+		#{id}
+	</delete>
+
+</mapper>

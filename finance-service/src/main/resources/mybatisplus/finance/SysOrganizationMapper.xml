@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.SysOrganizationMapper">
+
+    <resultMap type="com.skeqi.finance.domain.SysOrganization" id="SysOrganizationResult">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="orgCode" column="org_code"/>
+        <result property="cmpType" column="cmp_type"/>
+        <result property="address" column="address"/>
+        <result property="description" column="description"/>
+        <result property="leader" column="leader"/>
+        <result property="phone" column="phone"/>
+        <result property="postCode" column="post_code"/>
+        <result property="orgType" column="org_type"/>
+        <result property="legalParentId" column="legal_parent_id"/>
+        <result property="legalParentName" column="legal_parent_name"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="status" column="status"/>
+        <result property="createUser" column="create_user"/>
+        <result property="updateUser" column="update_user"/>
+    </resultMap>
+
+
+</mapper>

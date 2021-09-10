@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.all.CMesSystemDao">
+	<!-- 查询全部 -->
+	<select id="findByAll" resultType="com.skeqi.mes.pojo.CMesSystem">
+		select * from c_mes_system  where 1=1
+		<if test="name!=null and name!='' ">
+		     and name=#{name}
+		</if>
+	</select>
+
+	<!-- 修改 -->
+	<update id="updateSystem" >
+	UPDATE c_mes_system
+	SET parameter = #{parameter}
+	WHERE
+	id = #{id}
+	</update>
+
+</mapper>

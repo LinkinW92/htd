@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.fqz.JlMaterialDAO">
+
+	<!-- 查询列表 -->
+	<select id="findAll" resultType="CMesJlMaterialT">
+		select t.*,m.MATERIAL_TYPE as typeName
+		from C_MES_JL_MATERIAL_T t,c_mes_material_type_t m where 1=1 and t.MATERIAL_TYPE=m.id
+		<if test="materialName!=null and materialName!=''">
+			and t.MATERIAL_NAME like '%${materialName}%'
+		</if>
+		<if test="bomId!=null and bomId!=''">
+			and t.BOM_ID=#{bomId}
+		</if>
+		<if test="materialType!=null and materialType!='' ">
+			and m.id = #{materialType}
+		</if>
+		order by t.id
+	</select>
+
+	<!-- 添加 -->
+	<insert id="insertJlMaterial">
+		insert into C_MES_JL_MATERIAL_T(
+		BOM_ID,MATERIAL_NAME,DESCRIPTION,SPECIFICATIONS,
+		MATERIAL_GROUP,MATERIAL_TYPE,STOCK_UNIT,INVENTORY_MODEL_GROUP,
+		INVENTORY_DIMENSION_GROUP,`RELEASE`,INSPECTION,FICTITIOUS,
+		SALES_UNIT,SECRECY,PURCHASING_UNIT,PRODUCTION_TEAM,
+		MININUMBER_OF_PACKAGES,TERM_OF_VALIDITY,TYPENUM,VOLTAGE,
+		PART_COUNTS,CELL_CAPACITY,SCAN,CELL_SPECIFICATION,
+		MATERIAL_LENGTH,MATERIAL_WIDTH,MATERIAL_HIGHT,MATERIAL_VOLUME,MATERIAL_WEIGHT,
+		MATERIAL_LTMATERIAL_INCOM_TYPE,MATERIAL_LOW_LIMITMATERIAL,MATERIAL_BATCH,
+		DAYS_OF_FAILURE)
+		values(
+		#{bomId},#{materialName},#{description},#{specifications},
+		#{materialGroup},#{materialType},#{stockUnit},#{inventoryModelGroup},
+		#{inventoryDimensionGroup},#{release},#{inspection},#{fictitious},
+		#{salesUnit},#{secrecy},#{purchasingUnit},#{productionTeam},
+		#{mininumberOfPackages},#{termOfValidity},#{typenum},#{voltage},
+		#{partCounts},#{cellCapacity},#{scan},#{cellSpecification},
+		#{materialLength},#{materialWidth},#{materialHight},#{materialVolume},#{materialWeight},
+		#{materialLt},#{materialIncomType},#{materialLowLimitmaterial},#{materialBatch},#{daysOfFailure})
+	</insert>
+
+	<!-- 删除 -->
+	<delete id="delJlMaterial">
+		delete from C_MES_JL_MATERIAL_T where id=#{id}
+	</delete>
+
+	<!-- findByid -->
+	<select id="findByid" resultType="CMesJlMaterialT">
+		select  ID,BOM_ID,MATERIAL_NAME,DESCRIPTION,SPECIFICATIONS,MATERIAL_GROUP,MATERIAL_TYPE,STOCK_UNIT,INVENTORY_MODEL_GROUP,INVENTORY_DIMENSION_GROUP,`RELEASE`,INSPECTION,FICTITIOUS,SALES_UNIT,SECRECY,PURCHASING_UNIT,PRODUCTION_TEAM,MININUMBER_OF_PACKAGES,TERM_OF_VALIDITY,TYPENUM,VOLTAGE,PART_COUNTS,CELL_CAPACITY,SCAN,CELL_SPECIFICATION
+		from C_MES_JL_MATERIAL_T where id=#{id}
+	</select>
+
+	<update id="editJlMaterial">
+		update C_MES_JL_MATERIAL_T set BOM_ID=#{bomId},
+											  MATERIAL_NAME=#{materialName},
+											  DESCRIPTION=#{description},
+											  SPECIFICATIONS=#{specifications},
+											  MATERIAL_GROUP=#{materialGroup},
+											  MATERIAL_TYPE=#{materialType},
+											  STOCK_UNIT=#{stockUnit},
+											  INVENTORY_MODEL_GROUP=#{inventoryModelGroup},
+											  INVENTORY_DIMENSION_GROUP=#{inventoryDimensionGroup},
+											  `RELEASE`=#{release},
+											  INSPECTION=#{inspection},
+											  FICTITIOUS=#{fictitious},
+											  SALES_UNIT=#{salesUnit},
+											  SECRECY=#{secrecy},
+											  PURCHASING_UNIT=#{purchasingUnit},
+											  PRODUCTION_TEAM=#{productionTeam},
+											  MININUMBER_OF_PACKAGES=#{mininumberOfPackages},
+											  TERM_OF_VALIDITY=#{termOfValidity},
+											  TYPENUM=#{typenum},
+											  VOLTAGE=#{voltage},
+											  PART_COUNTS=#{partCounts},
+											  CELL_CAPACITY=#{cellCapacity},
+											  SCAN=#{scan},
+											  CELL_SPECIFICATION=#{cellSpecification},
+											  MATERIAL_LENGTH=#{materialLength},
+											  MATERIAL_WIDTH=#{materialWidth},
+											  MATERIAL_HIGHT=#{materialHight},
+											  MATERIAL_VOLUME=#{materialVolume},
+											  MATERIAL_WEIGHT=#{materialWeight},
+											  MATERIAL_LT=#{materialLt},
+											  MATERIAL_INCOM_TYPE=#{materialIncomType},
+											  MATERIAL_LOW_LIMITMATERIAL=#{materialLowLimitmaterial},
+											  MATERIAL_BATCH=#{materialBatch},
+											  DAYS_OF_FAILURE=#{daysOfFailure}
+									where id=#{id}
+	</update>
+
+	<select id="findBomId" resultType="String">
+		select BOM_ID as bomId from C_MES_JL_MATERIAL_T where MATERIAL_NAME=#{name}
+	</select>
+</mapper>
+
+

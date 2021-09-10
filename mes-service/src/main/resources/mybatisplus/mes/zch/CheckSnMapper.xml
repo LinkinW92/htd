@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.zch.CheckSnDao">
+
+	<select id="getStationByName" resultType="java.util.Map">
+		select * from C_MES_STATION_T where STATION_NAME=#{station}
+		<if test="lineId != null and lineId !=''">
+			and LINE_ID = #{lineId}
+		</if>
+		limit 1
+	</select>
+
+	<select id="getLineByName" resultType="java.util.Map">
+		select * from C_MES_LINE_T
+		where NAME=#{line} limit 1
+	</select>
+
+	<select id="getPrintBySN" resultType="java.util.Map">
+		select * from
+		r_mes_plan_print_t where SN=#{SN} and LINE_ID=#{lineId}
+	</select>
+
+	<select id="findProductionOffline" resultType="java.util.Map">
+		select
+		ID,PRODUCTION_VR from c_mes_production_t where PRODUCTION_STE = 1
+	</select>
+
+	<select id="getDefaultRouting" resultType="java.util.Map">
+		select * from
+		c_mes_routing_t where default_route = 1 and
+		PRODUCTION_ID=#{productionId} and LINE_ID=#{lineId} limit 1
+	</select>
+
+	<select id="getDefaultTotalRecipe" resultType="java.util.Map">
+		select * from
+		c_mes_total_recipe_t where STATUS = 1 and
+		PRODUCTION_ID=#{productionId} and LINE_ID=#{lineId} limit 1
+	</select>
+
+	<select id="getWorkorderById" resultType="java.util.Map">
+		select * from
+		r_mes_workorder_detail_t where ID = #{workorderId} and STATUS = 1
+	</select>
+
+	<select id="getSerialMin" resultType="java.lang.Integer">
+		SELECT MIN(SERIAL_NO) as
+		serialMin FROM C_MES_PRODUCTION_WAY_T WHERE ROUTING_ID = #{routingId}
+	</select>
+
+	<select id="getSerialNoByStation" resultType="java.lang.Integer">
+		select SERIAL_NO
+		from C_MES_PRODUCTION_WAY_T where ROUTING_ID = #{routingId} and ST_ID
+		= #{stationId} limit 1
+	</select>
+
+	<select id="getTrackingCountP" resultType="java.lang.Integer">
+		select count(*) from
+		p_mes_tracking_t where SN=#{SN}
+		and LINE_ID=#{lineId}
+	</select>
+
+	<select id="getTrackingCountR" resultType="java.lang.Integer">
+		select count(*) from
+		r_mes_tracking_t where SN=#{SN}
+		and LINE_ID=#{lineId}
+	</select>
+
+	<select id="getFlagCount" resultType="java.lang.Integer">
+		select count(*) from
+		r_mes_station_serial_flag_t where SN=#{SN} and SERIAL=#{serialMin} and
+		FLAG=1
+	</select>
+
+	<select id="getSerialFlagCount" resultType="java.lang.Integer">
+		select count(*) from
+		r_mes_station_serial_flag_t where SN=#{SN}
+	</select>
+
+	<select id="queryStationWayList" resultType="java.util.Map">
+		select *,#{SN} as SN
+		from c_mes_production_way_t where ROUTING_ID=#{routingId}
+	</select>
+
+	<insert id="insertStationDerialFlag" parameterType="java.util.List">
+		insert into r_mes_station_serial_flag_t (SN, DT, ST, SERIAL)
+		values
+		<foreach collection='list' item='item' index='index'
+			separator=','>
+			(#{item.SN}, now(), #{item.ST_ID}, #{item.SERIAL_NO})
+		</foreach>
+	</insert>
+
+	<insert id="insertTracking" keyProperty="id" useGeneratedKeys="false">
+		INSERT INTO
+		R_MES_TRACKING_T(DT,ST,SN,ENGINESN,GEARBOXSN,STATUS,REWORK_FLAG,PRODUCTION_ID,LINE_ID,WORK_ORDER_ID, UDT, STATE, PLAN_NUM, IN_PROCESS_NUM, COMPLETE_NUM, SCRAP_NUM, TOTAL_RECIPE_ID)
+		VALUES(now(),#{station},#{snBarcode},'0',#{tempStationIndex},'OK','0',#{tempTrackingProductionId},#{tempStationLineId},#{tempWorkOrderId}, now(), 2, 1, 0, 0, 0, #{totalRecipeId})
+	</insert>
+
+	<insert id="insertStationPass" keyProperty="id"
+		useGeneratedKeys="false">
+		INSERT INTO
+		P_MES_STATION_PASS_T(DT,SN,ST,STATUS,PASS_FLAG,LINE_ID)VALUES(now(),#{snBarcode},#{tempStationName},'OK',1,#{tempStationLineId})
+	</insert>
+
+	<update id="updateOnlineNumber">
+		update r_mes_workorder_detail_t set ONLINE_NUMBER =
+		ONLINE_NUMBER + 1 where ID = #{workorderId}
+	</update>
+
+	<select id="getSerialTotalCount" resultType="java.lang.Integer">
+		select count(*) from
+		r_mes_station_serial_flag_t where SN = #{SN} and SERIAL =
+		#{serialNo}-1
+	</select>
+
+	<select id="getSerialCompleteCount" resultType="java.lang.Integer">
+		select count(*)
+		from r_mes_station_serial_flag_t where SN = #{SN} and SERIAL =
+		#{serialNo}-1 and FLAG = 1
+	</select>
+
+	<select id="findOfflineStationName" resultType="java.lang.String">
+		select
+		s.STATION_NAME from c_mes_production_way_t w left join c_mes_station_t
+		s on s.ID=w.ST_ID where ROUTING_ID=#{routingId} and
+		s.STATION_AUTOORNOT=1 and 0=1
+	</select>
+
+	<select id="findBoltCount" resultType="java.lang.Integer">
+		select count(*) from
+		r_mes_bolt_t where SN = #{SN} and ST = #{stationName}
+	</select>
+
+	<select id="findKeypartCount" resultType="java.lang.Integer">
+		select count(*) from
+		r_mes_keypart_t where SN = #{SN} and ST = #{stationName}
+	</select>
+
+	<select id="findWeightCount" resultType="java.lang.Integer">
+		select count(*) from
+		p_mes_weigh_t where SN = #{SN} and ST = #{stationName}
+	</select>
+
+	<select id="findleakageCount" resultType="java.lang.Integer">
+		select count(*) from
+		r_mes_leakage_t where SN = #{SN} and ST = #{stationName}
+	</select>
+
+	<select id="findRecipeDetails" resultType="java.util.Map">
+		select * from
+		c_mes_recipe_datil_t where RECIPE_ID = (select ID from c_mes_recipe_t
+		where TOTAL_ID=#{totalRecipeId} and STATION_ID=#{stationId})
+	</select>
+
+	<select id="getUnUsedMaterial" resultType="java.lang.Integer">
+		select ID from
+		c_mes_material_instance_t where MATERIAL_NAME=#{MATERIAL_NAME} and
+		WEAR_STATE = 0 limit 1
+	</select>
+
+	<update id="updateStateByID">
+		update c_mes_material_instance_t set
+		WEAR_STATE=1,ALTER_DT=NOW() where ID=#{ID}
+	</update>
+
+	<insert id="insertBoltData" parameterType="java.util.List">
+		INSERT INTO
+		r_mes_bolt_t(dt,transfer,bolt_mode,sn,st,t_limit,a_limit,bolt_name,bolt_num,rework_flag,MATERIAL_INSTANCE_ID,step)
+		VALUES
+		<foreach collection='list' item='item' index='index'
+			separator=','>
+			(now(),0,0,#{item.snIni},#{item.tempStationName},#{item.cRecipesTLimit},#{item.cRecipesALimit},#{item.tempParamartersName},#{item.whileTemp},'0',#{item.MATERIAL_INSTANCE_ID},#{item.step})
+		</foreach>
+	</insert>
+
+	<insert id="insertMaterial" keyProperty="id" useGeneratedKeys="false">
+		insert into r_mes_keypart_t
+		(dt,transfer,keypart_mode,st,sn,keypart_name,keypart_pn,keypart_rework_fg,second_num,keypart_rework_st,step)
+		values(now(),0,0,#{tempStationName},#{snIni},#{cRecipesMaterialName},#{cRecipesMaterialpn},'0',null,null,#{step})
+	</insert>
+
+	<insert id="insertUserInput" keyProperty="id" useGeneratedKeys="false">
+		insert into r_mes_keypart_t
+		(dt,transfer,keypart_mode,st,sn,keypart_name,keypart_pn,keypart_rework_fg,keypart_rework_st)
+		values(now(),0,0,#{tempStationName},#{snIni},#{cRecipesMaterialName},#{cRecipesMaterialpn},'0',null)
+	</insert>
+
+	<insert id="insertLeakage" keyProperty="id" useGeneratedKeys="false">
+		insert into
+		r_mes_leakage_t(dt,st,sn,leakage_name,transfer,leakage_mode,rework_flag,sn)
+		values(now(),#{tempStationName},#{snIni},#{cRecipesMaterialName},1,0,'0',#{sn})
+	</insert>
+
+	<insert id="insertWeight" keyProperty="id" useGeneratedKeys="false">
+		insert into p_mes_weigh_t(dt,st,sn,transfer)
+		values(now(),#{tempStationName},#{snIni},0)
+	</insert>
+
+	<insert id="insertSecondary" keyProperty="id" useGeneratedKeys="false">
+		insert into r_mes_keypart_t
+		(dt,transfer,keypart_mode,st,sn,keypart_name,keypart_pn,keypart_rework_fg,second_num,keypart_rework_st,MATERIAL_INSTANCE_ID)
+		values(now(),0,0,#{tempStationName},#{snIni},#{cRecipesMaterialName},#{cRecipesMaterialpn},'0',null,null,#{MATERIAL_INSTANCE_ID})
+	</insert>
+
+	<select id="findStepListOffline" resultType="java.util.Map">
+		SELECT
+			c.STATION_ID AS stationId,
+			e.STATION_NAME AS stationName,
+			STEPNO AS stepNo,
+			d.STEP_CATEGORY AS stepCategory,
+			d.MATERIAL_NAME AS materialName,
+			(
+			CASE
+
+					WHEN d.NUMBERS > 0 THEN
+					d.NUMBERS - (
+					SELECT
+						ifnull( sum( substring( BOLT_NAME, char_length( d.MATERIAL_NAME )+ 2, char_length( BOLT_NAME ))), 0 )
+					FROM
+						r_mes_bolt_t
+					WHERE
+						id = ( SELECT max( id ) FROM r_mes_bolt_t WHERE sn = f.sn AND r = 'OK' )
+					)
+				END
+				) AS numbers,
+				d.MATERIALPN AS materialPn,
+				d.T_LIMIT AS tLimit,
+				d.A_LIMIT AS aLimit,
+				d.PROGRAM_NO AS programNo,
+				f.sn AS sn,
+				g.STEP_NO AS nowStepNo,
+				g.emp AS emp,
+				i.TYPE_NAME AS typeName,
+				o.`name` AS lineName,
+				b.id
+			FROM
+				c_mes_production_t a
+				JOIN c_mes_total_recipe_t b ON a.id = b.PRODUCTION_ID
+				JOIN c_mes_recipe_t c ON b.id = c.TOTAL_ID
+				JOIN c_mes_recipe_datil_t d ON c.id = d.RECIPE_ID
+				JOIN c_mes_station_t e ON c.STATION_ID = e.id
+				JOIN ( SELECT sn, st, min( serial ) FROM r_mes_station_serial_flag_t WHERE flag = 0 GROUP BY sn ) f ON e.id = f.ST
+				JOIN r_mes_step_t g ON f.sn = g.sn and g.ST = e.STATION_NAME
+				JOIN c_mes_routing_t z ON z.PRODUCTION_ID = a.id
+				JOIN c_mes_production_way_t h ON ( z.id = h.ROUTING_ID AND e.id = h.ST_ID )
+				JOIN c_mes_recipe_type_t i ON d.STEP_CATEGORY = i.id
+				JOIN c_mes_line_t o ON e.LINE_ID = o.id
+			WHERE
+				b.`STATUS` = 1
+				AND z.default_route = 1
+		AND a.id = #{productionId}
+		AND e.STATION_NAME = #{stationName}
+		AND f.sn = #{SN}
+	</select>
+
+	<select id="findStepListOnline" resultType="java.util.Map">
+		SELECT
+			c.STATION_ID AS stationId,
+			e.STATION_NAME AS stationName,
+			STEPNO AS stepNo,
+			d.STEP_CATEGORY AS stepCategory,
+			d.MATERIAL_NAME AS materialName,
+			(
+			CASE
+
+					WHEN d.NUMBERS > 0 THEN
+					d.NUMBERS - (
+					SELECT
+						ifnull( sum( substring( BOLT_NAME, char_length( d.MATERIAL_NAME )+ 2, char_length( BOLT_NAME ))), 0 )
+					FROM
+						r_mes_bolt_t
+					WHERE
+						id = ( SELECT max( id ) FROM r_mes_bolt_t WHERE sn = f.sn AND r = 'OK' )
+					)
+				END
+				) AS numbers,
+				d.MATERIALPN AS materialPn,
+				d.T_LIMIT AS tLimit,
+				d.A_LIMIT AS aLimit,
+				d.PROGRAM_NO AS programNo,
+				f.sn,
+				g.STEP_NO AS nowStepNo,
+				i.TYPE_NAME AS typeName,
+				g.emp,
+				o.`name` AS lineName
+			FROM
+				r_mes_workorder_detail_t a
+				JOIN c_mes_total_recipe_t b ON a.TOTAL_RECIPE_ID = b.id
+				JOIN c_mes_recipe_t c ON b.id = c.TOTAL_ID
+				JOIN c_mes_recipe_datil_t d ON c.id = d.RECIPE_ID
+				LEFT JOIN c_mes_station_t e ON c.STATION_ID = e.id
+				LEFT JOIN (SELECT sn, st, min( serial ) FROM r_mes_station_serial_flag_t WHERE flag = 0 GROUP BY sn) f ON e.id = f.ST
+				LEFT JOIN r_mes_step_t g ON f.sn = g.sn and g.ST = e.STATION_NAME
+				JOIN c_mes_production_way_t h ON ( h.ROUTING_ID = a.ROUTING_ID AND h.ST_ID = e.id )
+				JOIN c_mes_recipe_type_t i ON d.STEP_CATEGORY = i.id
+				JOIN c_mes_line_t o ON e.LINE_ID = o.id
+			WHERE
+				a.id = #{productionId}
+
+				AND f.sn = #{sn}
+
+				AND e.STATION_NAME = #{stationName}
+
+			ORDER BY
+				h.SERIAL_NO,
+				c.STATION_ID,
+			STEPNO,
+			d.STEP_CATEGORY
+	</select>
+
+	<select id="getStep" resultType="java.util.Map">
+		select * from r_mes_step_t where SN = #{SN} and ST = #{stationName} and LINE_NAME = #{lineName}
+	</select>
+
+	<insert id="insertStep">
+		insert into r_mes_step_t(DT, ST, SN, STEP_NO, LINE_NAME)
+		values(now(), #{stationName}, #{SN}, 1, #{lineName})
+	</insert>
+
+	<update id="updateStep">
+		update r_mes_step_t set STEP_NO = #{stepNo} where SN = #{SN} and ST = #{stationName} and LINE_NAME = #{lineName}
+	</update>
+
+	<update id="updateStepEmp">
+		update r_mes_step_t set STEP_NO = #{stepNo}, EMP = #{emp} where SN = #{SN} and ST = #{stationName} and LINE_NAME = #{lineName}
+	</update>
+</mapper>

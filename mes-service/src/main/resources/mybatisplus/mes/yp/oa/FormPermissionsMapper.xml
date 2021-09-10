@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.yp.oa.FormPermissionsDao">
+
+	<!-- 查询公司 -->
+	<select id="findCompany" resultType="com.alibaba.fastjson.JSONObject">
+		select id,companyName as `name` from c_mes_company_t
+		ORDER BY id
+	</select>
+
+	<!-- 查询角色 -->
+	<select id="findRole" resultType="com.alibaba.fastjson.JSONObject">
+		select role_id as id,role_name as `name` from sys_role
+		ORDER BY role_id
+	</select>
+
+	<!-- 查询部门 -->
+	<select id="findDepartment" resultType="com.alibaba.fastjson.JSONObject">
+		select id,DM_NAME as `name` from c_wms_department_t
+		<if test="companyId != null and companyId != ''">
+		where companyId = #{companyId}
+		and superiorId = 0
+		</if>
+		<if test="departmentId != null and departmentId != ''">
+		where superiorId = #{departmentId}
+		</if>
+		ORDER BY id
+	</select>
+
+	<!-- 查询用户 -->
+	<select id="findUser" resultType="com.alibaba.fastjson.JSONObject">
+		select id,USER_NAME as `name`,`name` as fullName from c_mes_user_t
+		where viewMode = 1
+		and DEPARTMENT = #{departmentId}
+		ORDER BY id
+	</select>
+
+	<!-- 提交修改 -->
+	<update id="submitUpdate">
+		update c_oa_form_template_t
+		set
+		jurisdiction = #{selectData}
+		where id = #{id}
+	</update>
+
+</mapper>

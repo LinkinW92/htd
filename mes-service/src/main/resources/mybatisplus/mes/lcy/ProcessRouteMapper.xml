@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.skeqi.mes.mapper.lcy.ProcessRouteDao">
+
+
+    <select id="getLineList" resultType="CMesLineT">
+		SELECT ID,NAME FROM C_MES_LINE_T
+	</select>
+
+    <select id="getRoutingByLineID" resultType="CMesRoutingT">
+        SELECT ID,NAME FROM C_MES_routing_t
+        WHERE VIEW_STATE = 0
+        AND LINE_ID = #{lineID}
+        and production_id = #{productionId}
+    </select>
+
+    <select id="getRoutingByLineIDAndName" resultType="CMesRoutingT">
+        SELECT ID id,NAME name FROM C_MES_routing_t
+        WHERE 1=1
+        <if test="id!=null and id!=0">
+            and ID = #{id}
+        </if>
+        <if test="name!=null and name!=''">
+            and NAME = #{name}
+        </if>
+
+    </select>
+
+    <select id="queryProcessRouteRoutingNumber" resultType="int">
+        SELECT COUNT(ID) FROM C_MES_ROUTING_T
+        WHERE LINE_ID = #{lineID}
+        AND ID = #{routingID}
+        AND production_id = #{productionId}
+        AND VIEW_STATE = 0
+    </select>
+
+
+    <select id="queryProcessRouteWayNumber" resultType="int">
+        SELECT COUNT(ID) FROM C_MES_PRODUCTION_WAY_T
+        WHERE ROUTING_ID = #{routingID}
+    </select>
+
+
+    <select id="queryProcessRouteWayData" resultType="CMesRoutingT">
+        SELECT ROUTE,default_route FROM C_MES_ROUTING_T
+        WHERE LINE_ID = #{lineID}
+        AND ID = #{routingID}
+        AND VIEW_STATE = 0
+    </select>
+
+    <select id="queryStationList" resultType="CMesStationT">
+        SELECT ID,STATION_INDEX,STATION_NAME FROM C_MES_STATION_T
+        WHERE LINE_ID = #{lineID}
+    </select>
+
+
+    <insert id="saveProcessRouting">
+        INSERT INTO C_MES_ROUTING_T(LINE_ID,NAME,ROUTE,VIEW_STATE,production_id,default_route)
+        VALUES(#{lineID},#{routingName},#{processRouteData},0,#{productionId},#{defaultRoute})
+    </insert>
+
+    <insert id="saveProcessWay">
+        INSERT INTO C_MES_PRODUCTION_WAY_T (DT,ROUTING_ID,ST_ID,SERIAL_NO)
+        VALUES(now(),#{routingID},#{stationID},#{serialNo})
+
+    </insert>
+
+
+    <delete id="deleteProcessRouting">
+        DELETE FROM C_MES_ROUTING_T
+        WHERE LINE_ID = #{lineID}
+        AND ID = #{routingID}
+    </delete>
+
+    <delete id="deleteProcessWay">
+        DELETE FROM C_MES_PRODUCTION_WAY_T
+        WHERE ROUTING_ID = #{routingID}
+    </delete>
+
+
+    <select id="queryProcessRoutingID" resultType="int">
+        select ID FROM C_MES_ROUTING_T
+        WHERE LINE_ID = #{lineID}
+        AND NAME = #{routingName}
+        AND VIEW_STATE = 0
+        AND production_id = #{productionId}
+
+    </select>
+
+    <update id="updateProcessRouteRoutingData">
+        update C_MES_ROUTING_T set ROUTE = #{processRouteData}
+        where ID = #{routingID}
+    </update>
+
+
+    <update id="removeProcessRouting">
+        update C_MES_ROUTING_T set VIEW_STATE = '1'
+        where ID = #{routingID}
+        AND LINE_ID = #{lineID}
+    </update>
+
+
+    <select id="getProductionByLineId" resultType="CMesProductionT">
+		SELECT p.id,p.PRODUCTION_NAME
+		FROM c_mes_production_t p
+	</select>
+
+
+    <update id="cleanAllDefaultProcess">
+
+        update C_MES_ROUTING_T set default_route = '0'
+        where LINE_ID = #{lineID}
+        and PRODUCTION_ID = #{productionId}
+    </update>
+
+    <update id="updateDefaultProcess">
+
+        update C_MES_ROUTING_T set default_route = '1'
+        where id = #{routingId}
+    </update>
+
+    <!-- 新增工艺路线 -->
+    <insert id="addRouting">
+        insert into c_mes_routing_t (PRODUCTION_ID, LINE_ID, NAME, lineList, nodeList, DT, ALTER_DT, default_route)
+        values (#{PRODUCTION_ID}, #{LINE_ID}, #{NAME}, #{lineList}, #{nodeList}, now(), now(), #{defaultRoute})
+        <selectKey resultType="int" order="AFTER" keyProperty="ID">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+
+    <!-- 修改工艺路线 -->
+    <update id="updateRouting">
+        UPDATE c_mes_routing_t SET
+        ALTER_DT=NOW()
+        <if test="PRODUCTION_ID!=null and PRODUCTION_ID!=''">
+            ,PRODUCTION_ID=#{PRODUCTION_ID}
+        </if>
+        <if test="LINE_ID!=null and LINE_ID!=''">
+            ,LINE_ID=#{LINE_ID}
+        </if>
+        <if test="NAME!=null and NAME!=''">
+            ,NAME=#{NAME}
+        </if>
+        <if test="lineList!=null and lineList!=''">
+            ,lineList=#{lineList}
+        </if>
+        <if test="nodeList!=null and nodeList!=''">
+            ,nodeList=#{nodeList}
+        </if>
+        <if test="defaultRoute!=null and defaultRoute!=''">
+            ,default_route=#{defaultRoute}
+        </if>
+        WHERE ID=#{ID}
+    </update>
+
+    <select id="findRoutingList" resultType="java.util.Map">
+        select * from c_mes_routing_t where 1=1
+        <if test="PRODUCTION_ID!=null and PRODUCTION_ID!=''">
+            and PRODUCTION_ID=#{PRODUCTION_ID}
+        </if>
+        <if test="LINE_ID!=null and LINE_ID!=''">
+            and LINE_ID=#{LINE_ID}
+        </if>
+    </select>
+
+    <!-- 判断是否重名 -->
+    <select id="getRoutingCountByName" resultType="java.lang.Integer">
+        select count(*) from c_mes_routing_t where 1=1
+        and PRODUCTION_ID=#{PRODUCTION_ID}
+        and LINE_ID=#{LINE_ID}
+        and NAME=#{NAME}
+    </select>
+
+    <!-- 新增工艺路线步序表 -->
+    <insert id="addProductionWay">
+        insert into c_mes_production_way_t (DT, ST_ID, ROUTING_ID, SERIAL_NO) values
+        <foreach collection="list" item="item" index="index" separator=",">
+            <if test="item.step != null and item.step != ''">
+                (now(), #{item.stationId}, #{item.ID}, #{item.step})
+            </if>
+        </foreach>
+    </insert>
+
+    <delete id="deleteRouting">
+        DELETE FROM C_MES_ROUTING_T
+        WHERE ID = #{ID}
+    </delete>
+
+    <delete id="deleteWay">
+        DELETE FROM C_MES_PRODUCTION_WAY_T
+        WHERE ROUTING_ID = #{ID}
+    </delete>
+
+    <select id="getRouting" resultType="java.util.Map">
+        select * from c_mes_routing_t where ID=#{ID}
+    </select>
+
+    <select id="findDefaultRouting" resultType="integer">
+        select ifnull(max(id),0) from c_mes_routing_t where PRODUCTION_ID=#{PRODUCTION_ID} and LINE_ID=#{LINE_ID} and
+        default_route=1
+    </select>
+</mapper>

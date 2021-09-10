@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.yp.equipment.Information.EquipmentInformationMaintainDao">
+
+	<!-- 新增 -->
+	<insert id="add" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO c_qh_equipment_maintain_data_t(dt,equipmentName,lineName,state)
+		value(now(),#{equipmentName},#{lineName},0)
+	</insert>
+
+	<!-- 通过设备id查询出需要点检的点检项 -->
+	<select id="itemList" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			b.item,
+			b.`explain`
+		FROM
+			c_qh_equipment_maintain_edition_t a
+			JOIN c_qh_equipment_maintain_items_t b ON a.id = b.editionId
+		where a.equipmentId = #{equipmentId}
+		and a.state = 1
+	</select>
+
+	<!-- 新增点检记录详情 -->
+	<insert id="addCheckDataDetailed">
+		INSERT INTO c_qh_equipment_maintain_data_detailed_t(item,`explain`,checkDataId)
+		${sql}
+	</insert>
+
+	<!-- 更新设备表点检时间  -->
+	<update id="updateSpotCheckDate">
+		update c_qh_equipment_information
+		set
+		lastMaintenanceDate = now(),
+		nextMaintenanceDate = (
+			DATE_SUB(now(),INTERVAL -${maintenancePeriod} day)
+		)
+		where id = #{equipmentId}
+	</update>
+
+</mapper>

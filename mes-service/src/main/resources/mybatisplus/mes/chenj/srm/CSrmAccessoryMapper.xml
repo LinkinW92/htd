@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.chenj.srm.CSrmAccessoryMapper">
+  <resultMap id="BaseResultMap" type="com.skeqi.mes.pojo.chenj.srm.CSrmAccessory">
+    <!--@mbg.generated-->
+    <!--@Table c_srm_accessory-->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="the_attachment_describe" jdbcType="VARCHAR" property="theAttachmentDescribe" />
+    <result column="attachment_uploading" jdbcType="VARCHAR" property="attachmentUploading" />
+    <result column="is_delete" jdbcType="BIT" property="isDelete" />
+    <result column="supplier_code" jdbcType="VARCHAR" property="supplierCode" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, the_attachment_describe, attachment_uploading, is_delete, supplier_code, create_time,
+    update_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select
+    <include refid="Base_Column_List" />
+    from c_srm_accessory
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmAccessory" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into c_srm_accessory
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="theAttachmentDescribe != null">
+        the_attachment_describe,
+      </if>
+      <if test="attachmentUploading != null">
+        attachment_uploading,
+      </if>
+      <if test="isDelete != null">
+        is_delete,
+      </if>
+      <if test="supplierCode != null">
+        supplier_code,
+      </if>
+      <if test="companyCode != null">
+        company_code,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="theAttachmentDescribe != null">
+        #{theAttachmentDescribe,jdbcType=VARCHAR},
+      </if>
+      <if test="attachmentUploading != null">
+        #{attachmentUploading,jdbcType=VARCHAR},
+      </if>
+      <if test="isDelete != null">
+        #{isDelete,jdbcType=BIT},
+      </if>
+      <if test="supplierCode != null">
+        #{supplierCode,jdbcType=VARCHAR},
+      </if>
+      <if test="companyCode != null">
+        #{companyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmAccessory">
+    <!--@mbg.generated-->
+    update c_srm_accessory
+    <set>
+      <if test="theAttachmentDescribe != null">
+        the_attachment_describe = #{theAttachmentDescribe,jdbcType=VARCHAR},
+      </if>
+      <if test="attachmentUploading != null">
+        attachment_uploading = #{attachmentUploading,jdbcType=VARCHAR},
+      </if>
+      <if test="isDelete != null">
+        is_delete = #{isDelete,jdbcType=BIT},
+      </if>
+      <if test="supplierCode != null">
+        supplier_code = #{supplierCode,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateBatchSelective" parameterType="java.util.List">
+    <!--@mbg.generated-->
+    update c_srm_accessory
+    <trim prefix="set" suffixOverrides=",">
+      <trim prefix="the_attachment_describe = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.theAttachmentDescribe != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.theAttachmentDescribe,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="attachment_uploading = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.attachmentUploading != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.attachmentUploading,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="is_delete = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.isDelete != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.isDelete,jdbcType=BIT}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="supplier_code = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.supplierCode != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.supplierCode,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="create_time = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.createTime != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.createTime,jdbcType=TIMESTAMP}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="update_time = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.updateTime != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.updateTime,jdbcType=TIMESTAMP}
+          </if>
+        </foreach>
+      </trim>
+    </trim>
+    where id in
+    <foreach close=")" collection="list" item="item" open="(" separator=", ">
+      #{item.id,jdbcType=INTEGER}
+    </foreach>
+  </update>
+  <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into c_srm_accessory
+    (the_attachment_describe, attachment_uploading, is_delete, supplier_code, create_time,
+      update_time)
+    values
+    <foreach collection="list" item="item" separator=",">
+      (#{item.theAttachmentDescribe,jdbcType=VARCHAR}, #{item.attachmentUploading,jdbcType=VARCHAR},
+        #{item.isDelete,jdbcType=BIT}, #{item.supplierCode,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP},
+        #{item.updateTime,jdbcType=TIMESTAMP})
+    </foreach>
+  </insert>
+
+
+  <!--查询供应商代码是否存在-->
+  <select id="selectSupplierCode" parameterType="java.lang.String" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    SELECT
+    <include refid="Base_Column_List"/>
+    FROM
+    c_srm_accessory
+    where supplier_code=#{supplierCode,jdbcType=VARCHAR}
+  </select>
+
+</mapper>

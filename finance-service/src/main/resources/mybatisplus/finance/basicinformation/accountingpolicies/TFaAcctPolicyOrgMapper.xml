@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.finance.mapper.basicinformation.accountingpolicies.TFaAcctPolicyOrgMapper">
+
+    <resultMap type="com.skeqi.finance.domain.basicinformation.accountingpolicies.TFaAcctPolicyOrg" id="TFaAcctPolicyOrgResult">
+        <result property="fEntryId" column="f_entry_id"/>
+        <result property="fAcctpolicyId" column="f_acctpolicy_id"/>
+        <result property="fSeq" column="f_seq"/>
+        <result property="fIsdefault" column="f_isdefault"/>
+        <result property="fAcctsystemId" column="f_acctsystem_id"/>
+        <result property="fAcctOrgid" column="f_acct_orgid"/>
+        <result property="fAcctBook" column="f_acct_book"/>
+        <result property="fIsaudit" column="f_isaudit"/>
+    </resultMap>
+    <insert id="insertByAddBoList">
+        insert into
+        <trim prefix="t_fa_acct_policy_org(" suffix=")" suffixOverrides=",">
+            f_acctpolicy_id,
+            f_isdefault,
+            f_acctsystem_id,
+            f_acct_orgid
+        </trim>
+        <foreach collection="list" item="item" open="VALUES" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                #{item.fAcctpolicyId,jdbcType=INTEGER},
+                #{item.fIsaudit,jdbcType=VARCHAR},
+                #{item.fAcctsystemId,jdbcType=INTEGER},
+                #{item.fAcctOrgid,jdbcType=INTEGER},
+            </trim>
+        </foreach>
+    </insert>
+
+
+</mapper>

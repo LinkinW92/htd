@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.skeqi.mes.mapper.yin.ReportDao">
+
+	<!-- 查询充放电 -->
+	<select id="findAllDischargeT" resultType="PMesDischargeT">
+		select * from p_mes_discharge_t where sn=#{sn}
+	</select>
+
+	<!-- 查询eol数据 -->
+	<select id="findAllEol" resultType="PMesEolT">
+		select ID,DT,ST,TT,SN,T1,T2,T3,T4,T5,T6,R from P_MES_EOL_T  where sn=#{sn}
+	</select>
+
+	<select id="getSn" resultType="java.lang.String">
+		select sn from R_MES_KEYPART_T where id =( select max(id) from R_MES_KEYPART_T t where KEYPART_NUM = #{materialName})
+	</select>
+
+	<select id="getPSn" resultType="java.lang.String">
+		select sn from P_MES_KEYPART_T where id =( select max(id) from P_MES_KEYPART_T t where KEYPART_NUM = #{materialName})
+	</select>
+
+
+	<select id="ptrackingList" resultType="PTrackingT">
+		SELECT * FROM P_MES_TRACKING_T  WHERE SN = #{sn}
+	</select>
+
+	<select id="rtrackingList" resultType="rTrackingT">
+		SELECT t.*,p.PRODUCTION_NAME as productionName FROM R_MES_TRACKING_T t,c_mes_production_t P WHERE t.PLAN_ID=p.id and  SN = #{sn}
+	</select>
+	<select id="boltList" resultType="PMesBoltT">
+		select * from P_MES_BOLT_T where 1=1
+		<if test="status==0">
+			AND BOLT_MODE = 0
+		</if>
+		<if test="sn!=null">
+			and SN = #{sn}
+		</if>
+		ORDER BY ST,DT
+	</select>
+
+	<select id="rboltList" resultType="RMesBolt">
+		select * from R_MES_BOLT_T where 1=1
+		<if test="sn!=null">
+			and SN = #{sn}
+		</if>
+		ORDER BY ST,DT
+	</select>
+
+	<select id="rkeypartList" resultType="RMesKeypart">
+		select * from R_MES_KEYPART_T where 1=1
+		<if test="sn!=null">
+			and SN = #{sn} or KEYPART_NUM=#{sn}
+		</if>
+		ORDER BY ST,DT
+	</select>
+
+	<select id="rleakageList" resultType="RMesLeakage">
+		select * from R_MES_LEAKAGE_T where 1=1
+		<if test="sn!=null">
+			and SN = #{sn}
+		</if>
+		ORDER BY ST,DT
+	</select>
+	<select id="recipeDatilLists" resultType="CMesRecipeDatilT">
+	select recipeDatil.STEP_CATEGORY,
+	recipeType.TYPE_NAME AS recipeTypeName,
+	recipeDatil.MATERIAL_NAME,
+	recipeDatil.NUMBERS,
+	recipeDatil.GUN_NO,
+	recipeDatil.PROGRAM_NO,
+	recipeDatil.MATERIALPN,
+	recipeDatil.SLEEVE_NO,
+	recipeDatil.STEPNO,
+	recipeDatil.UPLOAD_CODE,
+	recipeDatil.FEACODE,
+	recipeDatil.BOLTEQS,
+	station.STATION_NAME,
+	production.production_name,
+	production.production_vr
+	from C_MES_RECIPE_T recipe,
+	C_MES_RECIPE_DATIL_T recipeDatil,
+	C_MES_PRODUCTION_T production,
+	C_MES_STATION_T station,
+	C_MES_PRODUCTION_RECIPE_T productionRecipe,
+	C_MES_RECIPE_TYPE_T recipeType
+	where recipe.id=recipeDatil.Recipe_Id
+	and productionRecipe.Production_Id=production.id
+	and productionRecipe.Recipe_Id=recipe.id
+	and productionRecipe.Station_Id=station.id
+	and recipeDatil.Step_Category=recipeType.id
+	<if test="productionVr!=null and productionVr!=''">
+		AND PRODUCTION.PRODUCTION_VR = #{productionVr}
+	</if>
+    	ORDER BY recipeDatil.ID ASC
+	</select>
+	<select id="keypartList" resultType="PMesKeypartT">
+		select * from P_MES_KEYPART_T where 1=1
+		<if test="status==0">
+			AND KEYPART_MODE = 0
+		</if>
+		<if test="sn!=null">
+			and SN = #{sn} or KEYPART_NUM=#{sn}
+		</if>
+		ORDER BY ST,DT
+	</select>
+	<select id="leakageList" resultType="PMesLeakageT">
+		select * from P_MES_LEAKAGE_T where 1=1
+		<if test="status==0">
+			AND LEAKAGE_MODE = 0
+		</if>
+		<if test="sn!=null">
+			and SN = #{sn}
+		</if>
+		ORDER BY ST,DT
+	</select>
+
+
+	<select id="getProductionVr" resultType="CMesProductionT">
+		SELECT id,PRODUCTION_VR FROM C_MES_PRODUCTION_T
+	</select>
+	<select id="getRecipeTypeNameByStepCategory" resultType="CMesRecipeTypeT">
+		SELECT * FROM C_MES_RECIPE_TYPE_T WHERE TYPE_NAME = #{typeName}
+	</select>
+	<insert id="saveRecipeDatil" keyProperty="id" useGeneratedKeys="false">
+		INSERT INTO C_MES_RECIPE_DATIL_T(STEP_CATEGORY,MATERIAL_NAME,GUN_NO,PROGRAM_NO,
+		PHOTO_NO,SLEEVE_NO,REWORKTIMES,FEACODE,CHEKORNO,REVIEWORNO,EXACTORNO,MATERIALPN,BOLTEQS,
+		A_LIMIT,T_LIMIT,RECIPE_ID,UPLOAD_CODE,STEPNO,NUMBERS)
+		VALUES(#{stepCategory},#{materialName},#{gunNo},#{programNo},
+		0,#{sleeveNo},0,#{feacode},0,0,0,#{materialpn},#{bolteqs},0,0,#{recipeId},
+		#{uploadCode},#{stepno},#{numbers})
+	</insert>
+
+	<select id="getRecipeIdByName" resultType="CMesRecipeT">
+		SELECT ID FROM C_MES_RECIPE_T WHERE RECIPE_NAME = #{recipeName}
+	</select>
+
+	<select id="getStationByName" resultType="CMesStationT">
+		SELECT * FROM C_MES_STATION_T WHERE STATION_NAME = #{stationName}
+	</select>
+	<select id="getProductionByName" resultType="CMesProductionT">
+		SELECT * FROM C_MES_PRODUCTION_T WHERE PRODUCTION_NAME = #{productionName}
+	</select>
+	<select id="getProductionByPackPn" resultType="CMesProductionT">
+		SELECT * FROM C_MES_PRODUCTION_T WHERE PRODUCTION_VR = #{productionVr}
+	</select>
+	<select id="countStation" resultType="int">
+		SELECT COUNT(STATION_NAME) FROM C_MES_STATION_T WHERE STATION_NAME = #{stationName}
+	</select>
+	<select id="countPackPn" resultType="int">
+		SELECT COUNT(PRODUCTION_VR) FROM C_MES_PRODUCTION_T WHERE PRODUCTION_VR = #{packPn}
+	</select>
+	<select id="countProductionName" resultType="int">
+		SELECT COUNT(PRODUCTION_NAME) FROM C_MES_PRODUCTION_T WHERE PRODUCTION_NAME = #{productionName}
+	</select>
+	<insert id="saveProductionRecipe" keyProperty="id" useGeneratedKeys="false">
+		insert into C_MES_PRODUCTION_RECIPE_T(PRODUCTION_ID,RECIPE_ID,STATION_ID)
+		values(#{productionId},#{recipeId},#{stationId})
+	</insert>
+	<select id="productionRecipe" resultType="CMesProductionRecipeT">
+		SELECT * FROM C_MES_PRODUCTION_RECIPE_T WHERE PRODUCTION_ID = #{productionId} AND STATION_ID = #{stationId}
+	</select>
+
+	<!-- 	<select id="findProductionIdByName" resultType="CMesProductionT">
+		SELECT ID FROM C_MES_PRODUCTION_T WHERE PRODUCTION_NAME = #{productionName}
+	</select>
+	<select id="findStationIdByName" resultType="CMesStationT">
+		SELECT ID FROM C_MES_STATION_T WHERE STATION_NAME = #{stationName}
+	</select> -->
+	<insert id="createRecipe" keyProperty="id" useGeneratedKeys="false">
+        INSERT INTO C_MES_RECIPE_T(RECIPE_NAME,RECIPE_DISCRIPTION)
+		values(#{id},#{recipeName},#{recipeDis})
+	</insert>
+	<delete id="removeRecipeDatilByRecipeId">
+		DELETE FROM C_MES_RECIPE_DATIL_T WHERE RECIPE_ID = #{recipeId}
+	</delete>
+	<insert id="createProduction" keyProperty="id" useGeneratedKeys="false">
+		INSERT INTO C_MES_PRODUCTION_T(PRODUCTION_NAME,PRODUCTION_TYPE,PRODUCTION_TRADEMARK,PRODUCTION_SERIES,PRODUCTION_VR,PRODUCTION_DISCRIPTION,STATION_NAME,PRODUCTION_ET,PRODUCTION_GT,PRODUCTION_STE,PRODUCTION_PRINT_ID,PRODUCTION_SYSTEM_ID,PRODUCTION_GROUP_ID,GROUP_NUMBER,PRODUCTION_CODE,PATH)
+		values(#{id},#{productionName},#{productionType},0,0,#{productionVr},
+		0,#{stationName},0,0,0)
+	</insert>
+
+	<select id="uploadDataList" resultType="RUploadDataT">
+		SELECT * FROM R_UPLOAD_DATA_T
+	</select>
+
+	<select id="boltListR" resultType="RMesBolt">
+		select * from R_MES_BOLT_T where 1=1
+		<if test="status==0">
+			AND BOLT_MODE = 0
+		</if>
+		<if test="sn!=null">
+			and SN = #{sn}
+		</if>
+		ORDER BY ST,DT
+	</select>
+	<select id="keypartListR" resultType="RMesKeypart">
+		select * from R_MES_KEYPART_T where 1=1
+		<if test="status==0">
+			AND KEYPART_MODE = 0
+		</if>
+		<if test="sn!=null">
+			and SN = #{sn}
+		</if>
+		ORDER BY ST,DT
+	</select>
+	<select id="leakageListR" resultType="RMesLeakage">
+		select * from R_MES_LEAKAGE_T where 1=1
+		<if test="status==0">
+			AND LEAKAGE_MODE = 0
+		</if>
+		<if test="sn!=null">
+			and SN = #{sn}
+		</if>
+		ORDER BY ST,DT
+	</select>
+
+
+	<select id="rAsmElectricDetectionList" resultType="RAsmElectricDetection">
+		select * from R_ASM_ElectricDetection_T where 1=1
+		<if test="sn!=null">
+			and SN = #{sn}
+		</if>
+		ORDER BY DT
+	</select>
+
+
+	<select id="pChargedischargeList" resultType="PChargedischarge">
+		select * from p_chargedischarge_t where 1=1
+		<if test="sn!=null">
+			and SN = #{sn}
+		</if>
+		ORDER BY DT
+	</select>
+
+	<select id="rAsmEolList" resultType="RAsmEol">
+		select * from R_ASM_EOL_T where 1=1
+		<if test="sn!=null">
+			and SN = #{sn}
+		</if>
+		ORDER BY DT
+	</select>
+	<select id="getXXT" resultType="CMesXXT">
+		SELECT * FROM C_MES_SN_XXT_T WHERE 1 = 1
+		<if test="sn!=null">
+			AND XXT = #{sn}
+		</if>
+	</select>
+
+	<select id="findAllWeight" resultType="com.skeqi.mes.pojo.PMesWeightT">
+		select * from p_mes_weigh_t where 1=1
+		<if test="sn!=null and sn!='' ">
+			and sn=#{sn}
+		</if>
+	</select>
+
+	<select id="findAllStationPass" resultType="com.skeqi.mes.pojo.PMesStationPassT">
+		select * from p_mes_station_pass_t where 1=1
+		<if test="sn!=null and sn!='' ">
+			and sn=#{sn}
+		</if>
+	</select>
+</mapper>

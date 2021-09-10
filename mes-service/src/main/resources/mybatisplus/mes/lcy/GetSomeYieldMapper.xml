@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.lcy.GetSomeYieldMapper">
+		<!--得到每月的产品条数  -->
+	<select id="getMonthYeild" resultType="int">
+	<![CDATA[
+	select count(sn) from(
+		select count(*),tt.sn
+		from P_MES_TRACKING_T tt
+		where 1=1
+		and line_id = #{lineId}
+        and  tt.dt>=#{getStartYearAndMonth}
+        and  tt.dt<#{getEndYearAndMonth}
+		]]>
+		<if test="getValue!=null and getValue!='' and getValue==1">
+        	and tt.enginesn =2
+        </if>
+		<if test="getValue!=null and getValue!='' and getValue==2">
+        	and  status = 'OK'
+        </if>
+		<if test="getValue!=null and getValue!='' and getValue==3">
+        	and  status ='NG'
+        </if>
+        group by sn
+        )a
+
+	</select>
+
+	<select id="getMonthLeakage" resultType="int">
+		<![CDATA[
+		select count(sn) from(
+		select count(*),tt.sn
+		from P_MES_LEAKAGE_T tt
+		where 1=1
+        and  tt.dt>=#{getStartYearAndMonth}
+        and  tt.dt<#{getEndYearAndMonth}
+		]]>
+		<if test="getValue!=null and getValue!='' and getValue==1">
+        	and  tt.leakage_r = 'OK'
+        </if>
+		<if test="getValue!=null and getValue!='' and getValue==2">
+        	and  tt.leakage_r ='NG'
+        </if>
+		 group by sn
+        )a
+
+	</select>
+
+
+		<!--得到每月的产品条数  -->
+	<select id="getEveryDayYeild" resultType="int">
+	select count(sn) from(
+		select count(*),tt.sn
+		from P_MES_TRACKING_T tt
+		where 1=1
+		and line_id = #{lineId}
+        and  tt.dt>=#{getStartTime}
+     <![CDATA[   and  DATE_FORMAT(tt.dt,'%Y-%m-%d %H:%m:%s')< DATE_FORMAT(#{getEndTime},'%Y-%m-%d %H:%m:%s')]]>
+        <if test="getValue!=null and getValue!='' and getValue==1">
+        	and tt.enginesn =2
+        </if>
+        group by sn
+        )a
+	</select>
+
+	<!-- between and 获取数量 -->
+	<select id="getHourQualified" resultType="int">
+	select count(sn) from(
+		select count(*),tt.sn
+		from P_MES_TRACKING_T tt
+		where 1=1
+		and line_id=#{lineId}
+        and  tt.dt between #{getStartDate}
+        and  #{getEndDate}
+         <if test="getValue!=null and getValue!='' and getValue==1">
+        	and tt.enginesn =2
+        </if>
+        <if test="getValue!=null and getValue!='' and getValue==2">
+        	and tt.status ='OK'
+        </if>
+        group by sn
+        )a
+	</select>
+
+
+	<!-- between and 获取下线数量 -->
+	<select id="getHourQualified2" resultType="int">
+	select count(sn) from(
+		select count(*),tt.sn
+		from P_MES_TRACKING_T tt
+		where 1=1
+		and line_id = #{lineId}
+        and  tt.offline_dt between #{getStartDate}
+        and  #{getEndDate}
+         <if test="getValue!=null and getValue!='' and getValue==1">
+        	and tt.enginesn =2
+        </if>
+        <if test="getValue!=null and getValue!='' and getValue==2">
+        	and tt.status ='OK'
+        </if>
+        group by sn
+        )a
+	</select>
+
+	<!-- 获取产品列表 -->
+	<select id="getPMesTrackingTList" resultType="int">
+	<!-- enginesn =0的时候 为一次合格产品 -->
+
+
+	<!-- SELECT count(rn) FROM
+	( SELECT  a.*,ROWNUM RN
+	FROM (SELECT count(sn) FROM P_MES_TRACKING_T  where
+	dt between #{getStartDate}
+	and #{getEndDate}
+	and enginesn =0
+	and line_id = #{lineId}
+	group by sn ) a
+	<![CDATA[ WHERE ROWNUM <=#{queryNumber}) ]]>
+	WHERE RN >0 -->
+
+
+	select count(*) from (
+	SELECT count(a.id) c FROM P_MES_TRACKING_T a
+	where
+	a.dt between #{getStartDate}
+	and #{getEndDate}
+	and a.enginesn =0
+	and a.line_id = #{lineId}
+	group by a.sn ) b
+	</select>
+
+
+	<!--  -->
+	<select id="getProductST" resultType="string">
+	select tt.station_name
+	from C_MES_STATION_T tt
+	where line_id =#{getLine}
+	</select>
+
+	<select id="someBoltProduct" resultType="double">
+		select (case  when a.c1 = 0 then 0 else ((b.c2/a.c1)*100) end) from
+    (select count(*) c1 from P_MES_BOLT_T tt
+    where 1=1
+    and tt.st=#{st}
+    and tt.dt between #{getStartDate}
+    and #{getEndDate})a
+    ,(select count(*) c2 from P_MES_BOLT_T ttt
+    where 1=1
+    and ttt.st=#{st}
+    and ttt.dt between #{getStartDate}
+    and #{getEndDate}
+    and ttt.r='OK'
+    )b
+	</select>
+
+	<select id="getStList" resultType="string">
+		select st from P_MES_STATION_EQ_STATUS_T a
+		group by st
+	</select>
+
+
+	<select id="getStationTimeStatistics"   resultType="PMesStationPassEqStatusT">
+		select id,dt,st,eq_name,eq_status_type
+    	from (select a.id,a.dt,a.st,a.eq_name,a.eq_status_type
+    	from P_MES_STATION_EQ_STATUS_T a
+    	left join C_MES_STATION_T b
+    	on a.st = b.station_name
+    	and a.line_id =b.line_id
+    	where 1=1
+    	and a.st = #{stName}
+		and a.line_id =#{pageValue})
+		where 1=1
+		and st is not null
+		<if test="getStartTime!=null and getStartTime!=''">
+		and dt between #{getStartTime}
+    				and #{getEndTime}
+		</if>
+		order by id
+	</select>
+
+
+	<select id="getSomeDate" resultType="int">
+		TIMESTAMPDIFF(SECOND,b.dt,DATE_FORMAT(a.dt, '%Y-%m-%d %H:%i:%S'))
+      (select id,dt from  P_MES_STATION_EQ_STATUS_T where id =#{nextId}) a,
+      (select id,dt from  P_MES_STATION_EQ_STATUS_T where id =#{nowId}) b
+	</select>
+	<select id="addSomeDate" resultType="int">
+		SELECT TIMESTAMPDIFF(SECOND,#{date},DATE_FORMAT(#{dt}, '%Y-%m-%d %H:%i:%S'))
+	</select>
+
+
+	<select id="getLine" resultType="CMesLineT">
+		select tt.id,tt.name,tt.dsc from C_MES_LINE_T tt
+	</select>
+
+	<select id="getTime" resultType = "int">
+		    select TIMESTAMPDIFF(SECOND,min(dt),DATE_FORMAT(max(dt), '%Y-%m-%d %H:%i:%S')) from P_MES_TRACKING_T tt
+    		where 1=1
+    		and  tt.dt between #{getStartDate}
+		    and  #{getEndDate}
+		    and line_id =#{lineId}
+	</select>
+
+	<select id="getShiftsTeamList" resultType="CMesShiftsTeamT">
+		select * from C_MES_SHIFTS_TEAM_T tt
+		where 1=1
+		and line_id =#{lineId}
+
+	</select>
+
+</mapper>

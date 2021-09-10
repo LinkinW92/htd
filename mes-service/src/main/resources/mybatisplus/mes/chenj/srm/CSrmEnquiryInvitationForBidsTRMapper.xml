@@ -1,0 +1,743 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.chenj.srm.CSrmEnquiryInvitationForBidsTRMapper">
+    <resultMap id="BaseResultMap" type="com.skeqi.mes.pojo.chenj.srm.CSrmEnquiryInvitationForBidsTR">
+        <!--@mbg.generated-->
+        <!--@Table c_srm_enquiry_invitation_for_bids_t_r-->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="rfq_or_tender_form_code" jdbcType="VARCHAR" property="rfqOrTenderFormCode"/>
+        <result column="line_number" jdbcType="VARCHAR" property="lineNumber"/>
+        <result column="company_code" jdbcType="VARCHAR" property="companyCode"/>
+        <result column="inventory_organization" jdbcType="VARCHAR" property="inventoryOrganization"/>
+        <result column="material_code" jdbcType="VARCHAR" property="materialCode"/>
+        <result column="material_name" jdbcType="VARCHAR" property="materialName"/>
+        <result column="quantity_required" jdbcType="VARCHAR" property="quantityRequired"/>
+        <result column="unit" jdbcType="VARCHAR" property="unit"/>
+        <result column="unit_price" jdbcType="VARCHAR" property="unitPrice"/>
+        <result column="demanded_date" jdbcType="DATE" property="demandedDate"/>
+        <result column="drawing_figure_no" jdbcType="VARCHAR" property="drawingFigureNo"/>
+        <result column="purchase_request" jdbcType="VARCHAR" property="purchaseRequest"/>
+        <result column="accessory" jdbcType="VARCHAR" property="accessory"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="enquiry_id" jdbcType="INTEGER" property="enquiryId"/>
+        <result column="is_delete" jdbcType="BIT" property="isDelete"/>
+        <result column="business_entity" jdbcType="VARCHAR" property="businessEntity"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        id, rfq_or_tender_form_code, line_number, company_code, inventory_organization, material_code,
+        material_name, quantity_required, unit, unit_price, demanded_date, drawing_figure_no,
+        purchase_request, accessory, create_time, update_time, enquiry_id, is_delete, business_entity
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        select
+        <include refid="Base_Column_List"/>
+        from c_srm_enquiry_invitation_for_bids_t_r
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <select id="selectFinallyData" resultType="com.skeqi.mes.pojo.chenj.srm.CSrmEnquiryInvitationForBidsTR">
+        SELECT line_number
+        FROM c_srm_enquiry_invitation_for_bids_t_r
+        where rfq_or_tender_form_code=#{rfqOrTenderFormCode,jdbcType=VARCHAR}
+        ORDER BY id DESC
+        LIMIT 1
+    </select>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id"
+            parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmEnquiryInvitationForBidsTR" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_enquiry_invitation_for_bids_t_r
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="rfqOrTenderFormCode != null">
+                rfq_or_tender_form_code,
+            </if>
+            <if test="lineNumber != null">
+                line_number,
+            </if>
+            <if test="companyCode != null">
+                company_code,
+            </if>
+            <if test="inventoryOrganization != null">
+                inventory_organization,
+            </if>
+            <if test="materialCode != null">
+                material_code,
+            </if>
+            <if test="materialName != null">
+                material_name,
+            </if>
+            <if test="quantityRequired != null">
+                quantity_required,
+            </if>
+            <if test="unit != null">
+                unit,
+            </if>
+            <if test="unitPrice != null">
+                unit_price,
+            </if>
+            <if test="demandedDate != null">
+                demanded_date,
+            </if>
+            <if test="drawingFigureNo != null">
+                drawing_figure_no,
+            </if>
+            <if test="purchaseRequest != null">
+                purchase_request,
+            </if>
+            <if test="accessory != null">
+                accessory,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="enquiryId != null">
+                enquiry_id,
+            </if>
+            <if test="isDelete != null">
+                is_delete,
+            </if>
+            <if test="businessEntity != null">
+                business_entity,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="rfqOrTenderFormCode != null">
+                #{rfqOrTenderFormCode,jdbcType=VARCHAR},
+            </if>
+            <if test="lineNumber != null">
+                #{lineNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="companyCode != null">
+                #{companyCode,jdbcType=VARCHAR},
+            </if>
+            <if test="inventoryOrganization != null">
+                #{inventoryOrganization,jdbcType=VARCHAR},
+            </if>
+            <if test="materialCode != null">
+                #{materialCode,jdbcType=VARCHAR},
+            </if>
+            <if test="materialName != null">
+                #{materialName,jdbcType=VARCHAR},
+            </if>
+            <if test="quantityRequired != null">
+                #{quantityRequired,jdbcType=VARCHAR},
+            </if>
+            <if test="unit != null">
+                #{unit,jdbcType=VARCHAR},
+            </if>
+            <if test="unitPrice != null">
+                #{unitPrice,jdbcType=VARCHAR},
+            </if>
+            <if test="demandedDate != null">
+                #{demandedDate,jdbcType=DATE},
+            </if>
+            <if test="drawingFigureNo != null">
+                #{drawingFigureNo,jdbcType=VARCHAR},
+            </if>
+            <if test="purchaseRequest != null">
+                #{purchaseRequest,jdbcType=VARCHAR},
+            </if>
+            <if test="accessory != null">
+                #{accessory,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="enquiryId != null">
+                #{enquiryId,jdbcType=INTEGER},
+            </if>
+            <if test="isDelete != null">
+                #{isDelete,jdbcType=BIT},
+            </if>
+            <if test="businessEntity != null">
+                #{businessEntity,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmEnquiryInvitationForBidsTR">
+        <!--@mbg.generated-->
+        update c_srm_enquiry_invitation_for_bids_t_r
+        <set>
+            <if test="rfqOrTenderFormCode != null">
+                rfq_or_tender_form_code = #{rfqOrTenderFormCode,jdbcType=VARCHAR},
+            </if>
+            <if test="lineNumber != null">
+                line_number = #{lineNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="companyCode != null">
+                company_code = #{companyCode,jdbcType=VARCHAR},
+            </if>
+            <if test="inventoryOrganization != null">
+                inventory_organization = #{inventoryOrganization,jdbcType=VARCHAR},
+            </if>
+            <if test="materialCode != null">
+                material_code = #{materialCode,jdbcType=VARCHAR},
+            </if>
+            <if test="materialName != null">
+                material_name = #{materialName,jdbcType=VARCHAR},
+            </if>
+            <if test="quantityRequired != null">
+                quantity_required = #{quantityRequired,jdbcType=VARCHAR},
+            </if>
+            <if test="unit != null">
+                unit = #{unit,jdbcType=VARCHAR},
+            </if>
+            <if test="unitPrice != null">
+                unit_price = #{unitPrice,jdbcType=VARCHAR},
+            </if>
+            <if test="demandedDate != null">
+                demanded_date = #{demandedDate,jdbcType=DATE},
+            </if>
+            <if test="drawingFigureNo != null">
+                drawing_figure_no = #{drawingFigureNo,jdbcType=VARCHAR},
+            </if>
+            <if test="purchaseRequest != null">
+                purchase_request = #{purchaseRequest,jdbcType=VARCHAR},
+            </if>
+            <if test="accessory != null">
+                accessory = #{accessory,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="enquiryId != null">
+                enquiry_id = #{enquiryId,jdbcType=INTEGER},
+            </if>
+            <if test="isDelete != null">
+                is_delete = #{isDelete,jdbcType=BIT},
+            </if>
+            <if test="businessEntity != null">
+                business_entity = #{businessEntity,jdbcType=VARCHAR},
+            </if>
+        </set>
+        <where>
+            <if test="rfqOrTenderFormCode != null and rfqOrTenderFormCode != ''">
+                rfq_or_tender_form_code=#{rfqOrTenderFormCode,jdbcType=VARCHAR}
+            </if>
+            <if test="id != null">
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+        </where>
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmEnquiryInvitationForBidsTR">
+        <!--@mbg.generated-->
+        update c_srm_enquiry_invitation_for_bids_t_r
+        set rfq_or_tender_form_code = #{rfqOrTenderFormCode,jdbcType=VARCHAR},
+        line_number = #{lineNumber,jdbcType=VARCHAR},
+        company_code = #{companyCode,jdbcType=VARCHAR},
+        inventory_organization = #{inventoryOrganization,jdbcType=VARCHAR},
+        material_code = #{materialCode,jdbcType=VARCHAR},
+        material_name = #{materialName,jdbcType=VARCHAR},
+        quantity_required = #{quantityRequired,jdbcType=VARCHAR},
+        unit = #{unit,jdbcType=VARCHAR},
+        demanded_date = #{demandedDate,jdbcType=TIMESTAMP},
+        drawing_figure_no = #{drawingFigureNo,jdbcType=VARCHAR},
+        purchase_request = #{purchaseRequest,jdbcType=VARCHAR},
+        accessory = #{accessory,jdbcType=VARCHAR},
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+        update_time = #{updateTime,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateBatch" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update c_srm_enquiry_invitation_for_bids_t_r
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="rfq_or_tender_form_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.rfqOrTenderFormCode,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="line_number = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.lineNumber,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="company_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.companyCode,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="inventory_organization = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.inventoryOrganization,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="material_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.materialCode,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="material_name = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.materialName,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="quantity_required = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.quantityRequired,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="unit = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.unit,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="demanded_date = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.demandedDate,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="drawing_figure_no = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.drawingFigureNo,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="purchase_request = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.purchaseRequest,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="accessory = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.accessory,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.createTime,jdbcType=TIMESTAMP}
+                </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.updateTime,jdbcType=TIMESTAMP}
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    <update id="updateBatchSelective" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update c_srm_enquiry_invitation_for_bids_t_r
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="rfq_or_tender_form_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.rfqOrTenderFormCode != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.rfqOrTenderFormCode,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="line_number = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.lineNumber != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.lineNumber,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="company_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.companyCode != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.companyCode,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="inventory_organization = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.inventoryOrganization != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.inventoryOrganization,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="material_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.materialCode != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.materialCode,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="material_name = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.materialName != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.materialName,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="quantity_required = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.quantityRequired != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.quantityRequired,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="unit = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.unit != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.unit,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="unit_price = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.unitPrice != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.unitPrice,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="demanded_date = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.demandedDate != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.demandedDate,jdbcType=DATE}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="drawing_figure_no = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.drawingFigureNo != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.drawingFigureNo,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="purchase_request = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.purchaseRequest != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.purchaseRequest,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="accessory = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.accessory != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.accessory,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.createTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.createTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.updateTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.updateTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="enquiry_id = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.enquiryId != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.enquiryId,jdbcType=INTEGER}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="is_delete = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.isDelete != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.isDelete,jdbcType=BIT}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="business_entity = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.businessEntity != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.businessEntity,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_enquiry_invitation_for_bids_t_r
+        (rfq_or_tender_form_code, line_number, company_code, inventory_organization, material_code,
+        material_name, quantity_required, unit, unit_price, demanded_date, drawing_figure_no,
+        purchase_request, accessory, create_time, update_time, enquiry_id, is_delete, business_entity
+        )
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.rfqOrTenderFormCode,jdbcType=VARCHAR}, #{item.lineNumber,jdbcType=VARCHAR},
+            #{item.companyCode,jdbcType=VARCHAR}, #{item.inventoryOrganization,jdbcType=VARCHAR},
+            #{item.materialCode,jdbcType=VARCHAR}, #{item.materialName,jdbcType=VARCHAR},
+            #{item.quantityRequired,jdbcType=VARCHAR},
+            #{item.unit,jdbcType=VARCHAR}, #{item.unitPrice,jdbcType=VARCHAR}, #{item.demandedDate,jdbcType=DATE},
+            #{item.drawingFigureNo,jdbcType=VARCHAR}, #{item.purchaseRequest,jdbcType=VARCHAR},
+            #{item.accessory,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP},
+            #{item.updateTime,jdbcType=TIMESTAMP},
+            #{item.enquiryId,jdbcType=INTEGER}, #{item.isDelete,jdbcType=BIT}, #{item.businessEntity,jdbcType=VARCHAR}
+            )
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateSelective" keyColumn="id" keyProperty="id"
+            parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmEnquiryInvitationForBidsTR" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_enquiry_invitation_for_bids_t_r
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="rfqOrTenderFormCode != null">
+                rfq_or_tender_form_code,
+            </if>
+            <if test="lineNumber != null">
+                line_number,
+            </if>
+            <if test="companyCode != null">
+                company_code,
+            </if>
+            <if test="inventoryOrganization != null">
+                inventory_organization,
+            </if>
+            <if test="materialCode != null">
+                material_code,
+            </if>
+            <if test="materialName != null">
+                material_name,
+            </if>
+            <if test="quantityRequired != null">
+                quantity_required,
+            </if>
+            <if test="unit != null">
+                unit,
+            </if>
+            <if test="unitPrice != null">
+                unit_price,
+            </if>
+            <if test="demandedDate != null">
+                demanded_date,
+            </if>
+            <if test="drawingFigureNo != null">
+                drawing_figure_no,
+            </if>
+            <if test="purchaseRequest != null">
+                purchase_request,
+            </if>
+            <if test="accessory != null">
+                accessory,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="enquiryId != null">
+                enquiry_id,
+            </if>
+            <if test="isDelete != null">
+                is_delete,
+            </if>
+            <if test="businessEntity != null">
+                business_entity,
+            </if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="rfqOrTenderFormCode != null">
+                #{rfqOrTenderFormCode,jdbcType=VARCHAR},
+            </if>
+            <if test="lineNumber != null">
+                #{lineNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="companyCode != null">
+                #{companyCode,jdbcType=VARCHAR},
+            </if>
+            <if test="inventoryOrganization != null">
+                #{inventoryOrganization,jdbcType=VARCHAR},
+            </if>
+            <if test="materialCode != null">
+                #{materialCode,jdbcType=VARCHAR},
+            </if>
+            <if test="materialName != null">
+                #{materialName,jdbcType=VARCHAR},
+            </if>
+            <if test="quantityRequired != null">
+                #{quantityRequired,jdbcType=VARCHAR},
+            </if>
+            <if test="unit != null">
+                #{unit,jdbcType=VARCHAR},
+            </if>
+            <if test="unitPrice != null">
+                #{unitPrice,jdbcType=VARCHAR},
+            </if>
+            <if test="demandedDate != null">
+                #{demandedDate,jdbcType=DATE},
+            </if>
+            <if test="drawingFigureNo != null">
+                #{drawingFigureNo,jdbcType=VARCHAR},
+            </if>
+            <if test="purchaseRequest != null">
+                #{purchaseRequest,jdbcType=VARCHAR},
+            </if>
+            <if test="accessory != null">
+                #{accessory,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="enquiryId != null">
+                #{enquiryId,jdbcType=INTEGER},
+            </if>
+            <if test="isDelete != null">
+                #{isDelete,jdbcType=BIT},
+            </if>
+            <if test="businessEntity != null">
+                #{businessEntity,jdbcType=VARCHAR},
+            </if>
+        </trim>
+        on duplicate key update
+        <trim suffixOverrides=",">
+            <if test="id != null">
+                id = #{id,jdbcType=INTEGER},
+            </if>
+            <if test="rfqOrTenderFormCode != null">
+                rfq_or_tender_form_code = #{rfqOrTenderFormCode,jdbcType=VARCHAR},
+            </if>
+            <if test="lineNumber != null">
+                line_number = #{lineNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="companyCode != null">
+                company_code = #{companyCode,jdbcType=VARCHAR},
+            </if>
+            <if test="inventoryOrganization != null">
+                inventory_organization = #{inventoryOrganization,jdbcType=VARCHAR},
+            </if>
+            <if test="materialCode != null">
+                material_code = #{materialCode,jdbcType=VARCHAR},
+            </if>
+            <if test="materialName != null">
+                material_name = #{materialName,jdbcType=VARCHAR},
+            </if>
+            <if test="quantityRequired != null">
+                quantity_required = #{quantityRequired,jdbcType=VARCHAR},
+            </if>
+            <if test="unit != null">
+                unit = #{unit,jdbcType=VARCHAR},
+            </if>
+            <if test="unitPrice != null">
+                unit_price = #{unitPrice,jdbcType=VARCHAR},
+            </if>
+            <if test="demandedDate != null">
+                demanded_date = #{demandedDate,jdbcType=DATE},
+            </if>
+            <if test="drawingFigureNo != null">
+                drawing_figure_no = #{drawingFigureNo,jdbcType=VARCHAR},
+            </if>
+            <if test="purchaseRequest != null">
+                purchase_request = #{purchaseRequest,jdbcType=VARCHAR},
+            </if>
+            <if test="accessory != null">
+                accessory = #{accessory,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="enquiryId != null">
+                enquiry_id = #{enquiryId,jdbcType=INTEGER},
+            </if>
+            <if test="isDelete != null">
+                is_delete = #{isDelete,jdbcType=BIT},
+            </if>
+            <if test="businessEntity != null">
+                business_entity = #{businessEntity,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <!--供应商已报价单号查询-->
+    <select id="selectByPrimaryList" resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CSrmEnquiryInvitationForBidsTRRsp">
+        select r.rfq_or_tender_form_code,
+        r.line_number,
+        r.company_code supplierCode,
+        s.name supplierName,
+        r.inventory_organization,
+        r.material_code,
+        r.material_name,
+        r.quantity_required,
+        r.unit,
+        r.unit_price,
+        r.demanded_date demandedDate,
+        r.drawing_figure_no,
+        r.purchase_request,
+        r.accessory,
+        r.create_time,
+        r.update_time,
+        sr.minimum_order minimumOrder,
+        sr.minimum_packing_quantity minimumPackingQuantity,
+        sr.estimated_time_of_delivery estimatedTimeOfDelivery,
+        sr.offer_period_of_validity offerPeriodOfValidity
+        from c_srm_enquiry_invitation_for_bids_t_r r
+        left join c_srm_supplier s on r.company_code = s.supplier_code
+        right join c_srm_enquiry_for_bids_t_supplier sr ON sr.rfq_or_tender_form_code=r.rfq_or_tender_form_code
+        <where>
+            <if test="rfqOrTenderFormCode != null and rfqOrTenderFormCode != ''">
+                r.rfq_or_tender_form_code like concat('%',#{rfqOrTenderFormCode,jdbcType=VARCHAR},'%')
+            </if>
+            and r.is_delete=0
+        </where>
+        order by r.create_time desc
+    </select>
+    <!--供应商未报价单号查询-->
+    <select id="selectByPrimaryListNoOffer" resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CSrmEnquiryInvitationForBidsTRRsp">
+        select r.rfq_or_tender_form_code,
+        r.line_number,
+        r.company_code supplierCode,
+        s.name supplierName,
+        r.inventory_organization,
+        r.material_code,
+        r.material_name,
+        r.quantity_required,
+        r.unit,
+        r.unit_price,
+        r.demanded_date demandedDate,
+        r.drawing_figure_no,
+        r.purchase_request,
+        r.accessory,
+        r.create_time,
+        r.update_time
+        from c_srm_enquiry_invitation_for_bids_t_r r
+        left join c_srm_supplier s on r.company_code = s.supplier_code
+        <where>
+            <if test="rfqOrTenderFormCode != null and rfqOrTenderFormCode != ''">
+                r.rfq_or_tender_form_code like concat('%',#{rfqOrTenderFormCode,jdbcType=VARCHAR},'%')
+            </if>
+            and r.is_delete=0
+        </where>
+        order by r.create_time desc
+    </select>
+
+
+
+
+
+    <delete id="delData">
+        DELETE FROM c_srm_enquiry_invitation_for_bids_t_r WHERE rfq_or_tender_form_code =
+        #{rfqOrTenderFormCode,jdbcType=VARCHAR}
+    </delete>
+</mapper>

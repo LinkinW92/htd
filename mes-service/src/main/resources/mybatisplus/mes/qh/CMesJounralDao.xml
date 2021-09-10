@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.skeqi.mes.mapper.qh.CMesJounralDao">
+    <cache eviction="LRU" flushInterval="100000" readOnly="true" size="1024"/>
+    <insert id="addJounral">
+        insert into c_mes_jounral_t(dt,user_name,content) values (now(),#{name},#{desc})
+    </insert>
+    <select id="findAllJounral" resultType="com.skeqi.mes.pojo.api.CMesWebApiLogs" useCache="true">
+        select API_NAME,CALL_TIME,PARAMETER,RETURN_RESULT,RETURN_TIME,sn
+        from c_mes_web_api_logs where 1=1
+        <if test="sn!=null and sn!='' ">
+            and sn=#{sn}
+        </if>
+        <if test="types!=null and types!='' ">
+            and API_NAME=#{types}
+        </if>
+    </select>
+
+
+</mapper>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wms.WmsWarehouseDao">
+
+	<resultMap type="com.skeqi.mes.pojo.wms.WarehouseT" id="warehouseMap">
+		<result column="ID" property="id"/>
+		<result column="NAME" property="name"/>
+		<result column="MANAGER" property="manager"/>
+		<result column="OPERATIONS" property="operations"/>
+		<result column="MANAGER_TELE" property="managerTele"/>
+		<result column="ADDRESS" property="address"/>
+		<result column="NOTE" property="note"/>
+		<result column="DEFAULT_M" property="defaultM"/>
+		<result column="MODIFY_TIME" property="modifyTime"/>
+		<result column="VIEW_MODE" property="viewMode"/>
+		<association  property="managerUser" javaType="com.skeqi.mes.pojo.CMesUserT">
+			<result column="managerUser" property="userName" />
+			<result column="managerUserId" property="id" />
+		</association>
+		<association  property="operationsUser" javaType="com.skeqi.mes.pojo.CMesUserT">
+			<result column="operationsUser" property="userName" />
+			<result column="operationsUserId" property="id" />
+		</association>
+	</resultMap>
+
+	<select id="findWarehouseList" resultMap="warehouseMap">
+		SELECT
+			warehouse.*,
+			managerUser.id as managerUserId,
+			managerUser.USER_NAME AS managerUser,
+			operationsUser.id as operationsUserId,
+			operationsUser.USER_NAME AS operationsUser
+		FROM
+			c_wms_warehouse_t warehouse
+			LEFT JOIN c_mes_user_t managerUser ON managerUser.ID = warehouse.MANAGER
+			LEFT JOIN c_mes_user_t operationsUser ON operationsUser.ID = warehouse.OPERATIONS
+		WHERE
+			warehouse.VIEW_MODE = 1
+		ORDER BY
+			warehouse.ID
+	</select>
+
+	<select id="findWarehouseCount" resultType="int">
+		select count(*) from c_wms_warehouse_t
+		where `name` = #{warehouseName}
+		and VIEW_MODE = 1
+		and id != #{id}
+	</select>
+
+	<insert id="addWarehouse">
+		insert into c_wms_warehouse_t(NAME,MANAGER,OPERATIONS,MANAGER_TELE,ADDRESS,NOTE,DEFAULT_M,MODIFY_TIME)
+		values(#{name},#{manager},#{operations},#{managerTele},#{address},#{note},#{defaultM},now())
+	</insert>
+
+	<delete id="deleteWarehouse">
+		delete from c_wms_warehouse_t
+		where id = #{warehouseId}
+	</delete>
+
+	<update id="updateWarehouse">
+		update c_wms_warehouse_t
+		<trim prefix="set" suffixOverrides=",">
+			<if test="name != null">`NAME` = #{name},</if>
+			<if test="manager != null">MANAGER = #{manager},</if>
+			<if test="operations != null">OPERATIONS = #{operations},</if>
+			<if test="managerTele != null">MANAGER_TELE = #{managerTele},</if>
+			<if test="address != null">ADDRESS = #{address},</if>
+			<if test="note != null">NOTE = #{note},</if>
+			<if test="defaultM != null">DEFAULT_M = #{defaultM},</if>
+			<if test="viewMode != null">VIEW_MODE = #{viewMode},</if>MODIFY_TIME = now()
+		</trim>
+		where ID = #{id}
+	</update>
+
+	<select id="findUserAll" resultType="com.alibaba.fastjson.JSONObject">
+		select id,USER_NAME as userName from c_mes_user_t
+		where viewMode = 1
+		ORDER BY id
+	</select>
+
+</mapper>

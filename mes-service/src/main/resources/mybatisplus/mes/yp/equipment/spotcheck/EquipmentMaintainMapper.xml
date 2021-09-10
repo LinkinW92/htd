@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.yp.equipment.spotcheck.EquipmentMaintainDao">
+
+	<!-- 查询保养记录集合 -->
+	<select id="list" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			a.id,
+			a.equipmentId,
+			DATE_FORMAT( a.dt, '%Y-%m-%d %H:%i:%s' ) AS dt,
+			a.personLiable,
+			a.maintainer,
+			a.note,
+			b.`name` AS equipmentName,
+			c.id AS lineId,
+			c.`name` AS lineName
+		FROM
+			c_qh_equipment_maintain_t a
+			JOIN c_qh_equipment_information b ON a.equipmentId = b.id
+			JOIN c_mes_line_t c ON b.lineId = c.id
+	</select>
+
+	<!-- 新增保养记录 -->
+	<insert id="add">
+		INSERT INTO c_qh_equipment_maintain_t(equipmentId,dt,personLiable,maintainer,note)
+		value(#{equipmentId},#{dt},#{personLiable},#{maintainer},#{note})
+	</insert>
+
+	<!-- 更新保养记录 -->
+	<update id="update">
+		update c_qh_equipment_maintain_t
+		set
+		dt = #{dt},
+		personLiable = #{personLiable},
+		maintainer = #{maintainer},
+		note = #{note}
+		where id = #{id}
+	</update>
+
+	<resultMap type="com.alibaba.fastjson.JSONObject"
+		id="lineMap">
+		<result column="lineId" property="id" />
+		<result column="lineName" property="name" />
+		<!-- collection：一对多 property：实体类里的 ofType：实体类 -->
+		<collection property="equipment" javaType="list"
+			ofType="com.alibaba.fastjson.JSONObject">
+			<result column="equipmentId" property="id" />
+			<result column="equipmentName" property="name" />
+		</collection>
+	</resultMap>
+	<!-- 查询所有产线及设备 -->
+	<select id="findLineAndEquipment" resultMap="lineMap">
+		SELECT
+		a.id AS
+		lineId,
+		a.`NAME` AS lineName,
+		b.id AS equipmentId,
+		b.`name` AS
+		equipmentName
+		FROM
+		c_mes_line_t a
+		JOIN c_qh_equipment_information b ON
+		a.id = b.lineId
+		ORDER BY
+		a.id
+	</select>
+
+</mapper>

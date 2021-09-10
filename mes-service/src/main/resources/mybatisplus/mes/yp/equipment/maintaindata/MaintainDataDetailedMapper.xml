@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.yp.equipment.maintaindata.MaintainDataDetailedDao">
+
+	<!-- 查询点检记录详情 -->
+	<select id="list" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			id,
+			DATE_FORMAT( dt, '%Y-%m-%d %H:%i:%s' ) AS dt,
+			item,
+			`explain`,
+			result,
+			remarks
+		FROM
+			c_qh_equipment_maintain_data_detailed_t
+		WHERE
+			checkDataId = #{checkDataId}
+			ORDER BY id
+	</select>
+
+	<!-- 更新点检记录详情 -->
+	<update id="update">
+		update c_qh_equipment_maintain_data_detailed_t
+		set
+		dt = now(),
+		result = #{result},
+		remarks = #{remarks}
+		where id = #{id}
+	</update>
+
+</mapper>

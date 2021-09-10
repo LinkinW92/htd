@@ -1,0 +1,440 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.wms.MaterialNumberDao">
+
+	<select id="exportExcel" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			NUMBER.MATERIAL_NUMBER as materialNumber,
+			NUMBER.MATERIAL_NO as materialNo,
+			NUMBER.MATERIAL_NAME as materialName,
+			date_format(NUMBER.dt,'%Y-%m-%d %H:%i:%s') as dt,
+			NUMBER.tray,
+			PROJECT.PROJECT_NAME  as projectName,
+			WAREHOUSE.`NAME` AS warehouseName,
+			AREA.AREA_NAME as areaName,
+			reservoir.RA_NAME as raName,
+			LOCATION.LOCATION_NAME as locationName
+		FROM
+			c_wms_material_number_t NUMBER
+			JOIN c_mes_jl_material_t MATERIAL ON NUMBER.MATERIAL_ID = MATERIAL.ID
+			JOIN c_wms_project_t PROJECT ON NUMBER.PROJECT_ID = PROJECT.ID
+			JOIN c_wms_warehouse_t WAREHOUSE ON NUMBER.WAREHOUSE_ID = WAREHOUSE.ID
+			JOIN c_wms_area_t AREA ON NUMBER.AREA_ID = AREA.ID
+			JOIN c_wms_reservoir_area_t reservoir ON NUMBER.RESERVOIR_AREA_ID = reservoir.ID
+			JOIN c_wms_location_t LOCATION ON NUMBER.LOCATION_ID = LOCATION.ID
+		WHERE
+			1 = 1
+		<if test="id != null and id != ''">
+			AND NUMBER.ID = #{id}
+		</if>
+		<if test="materialNumberId != null and materialNumberId != ''">
+			AND NUMBER.ID = #{materialNumberId}
+		</if>
+		<if test="materialNo != null and materialNo != ''">
+			AND NUMBER.MATERIAL_NO = #{materialNo}
+		</if>
+		<if test="materialName != null and materialName != ''">
+			AND NUMBER.MATERIAL_NAME like '%${materialName}%'
+		</if>
+		<if test="materialNumber != null and materialNumber != ''">
+			AND NUMBER.MATERIAL_NUMBER = #{materialNumber}
+		</if>
+		<if test="projectId != null and projectId != ''">
+			AND NUMBER.PROJECT_ID = #{projectId}
+		</if>
+		<if test="materialId != null and materialId != ''">
+			AND NUMBER.MATERIAL_ID = #{materialId}
+		</if>
+		<if test="wareHouseId != null and wareHouseId != ''">
+			AND NUMBER.WAREHOUSE_ID = #{wareHouseId}
+		</if>
+		<if test="areaId != null and areaId != ''">
+			AND NUMBER.AREA_ID = #{areaId}
+		</if>
+		<if test="locationId != null and locationId != ''">
+			AND NUMBER.LOCATION_ID = #{locationId}
+		</if>
+		<if test="reservoirareaId != null and reservoirareaId != ''">
+			AND NUMBER.RESERVOIR_AREA_ID = #{reservoirareaId}
+		</if>
+		<if test="lmminentRelease != null and lmminentRelease != ''">
+			AND NUMBER.LMMINENT_RELEASE = #{lmminentRelease}
+		</if>
+		<if
+			test="ksDate != null and ksDate != '' and jsDate != null and jsDate != ''">
+			AND DATE_FORMAT(NUMBER.DT,'%Y-%m-%d') BETWEEN #{ksDate} AND #{jsDate}
+		</if>
+		<if test="freezingNumber != null and freezingNumber != ''">
+			AND NUMBER.FREEZING_NUMBER = #{freezingNumber}
+		</if>
+		<if test="reservedNumber != null and reservedNumber != ''">
+			AND NUMBER.RESERVED_NUMBER = #{reservedNumber}
+		</if>
+		<if test="tray != null and tray != ''">
+			AND NUMBER.TRAY like '%${tray}%'
+		</if>
+		ORDER BY NUMBER.dt DESC
+	</select>
+
+	<resultMap type="com.skeqi.mes.pojo.wms.CWmsMaterialNumberT" id="numberMap">
+		<result column="ID" property="id" />
+		<result column="MATERIAL_NO" property="materialNo" />
+		<result column="sum" property="materialNumber" />
+		<result column="PROJECT_ID" property="projectId" />
+		<result column="MATERIAL_ID" property="materialId" />
+		<result column="WAREHOUSE_ID" property="wareHouseId" />
+		<result column="AREA_ID" property="areaId" />
+		<result column="LOCATION_ID" property="locationId" />
+		<result column="RESERVOIR_AREA_ID" property="reservoirareaId" />
+		<result column="LMMINENT_RELEASE" property="lmminentRelease" />
+		<result column="DT" property="dt" />
+		<result column="FREEZING_NUMBER" property="freezingNumber" />
+		<result column="RESERVED_NUMBER" property="reservedNumber" />
+		<result column="TRAY" property="tray" />
+		<association property="material" javaType="com.skeqi.mes.pojo.CMesJlMaterialT">
+			<result column="materialName" property="materialName" />
+		</association>
+		<association property="project" javaType="com.skeqi.mes.pojo.wms.CWmsProject">
+			<result column="PROJECT_NAME" property="projectName" />
+		</association>
+		<association property="materialUnit"
+			javaType="com.skeqi.mes.pojo.wms.CWmsMaterialUnitT">
+			<result column="UNIT_NAME" property="unitName" />
+		</association>
+		<association property="materialType"
+			javaType="com.skeqi.mes.pojo.wms.CWmsMaterialTypeT">
+			<result column="MT_NAME" property="mtName" />
+		</association>
+		<association property="warehouse" javaType="com.skeqi.mes.pojo.wms.WarehouseT">
+			<result column="WAREHOUSE_NAME" property="name" />
+		</association>
+		<association property="area" javaType="com.skeqi.mes.pojo.wms.CWmsAreaT">
+			<result column="AREA_NAME" property="areaName" />
+		</association>
+		<association property="reservoirArea"
+			javaType="com.skeqi.mes.pojo.wms.CWmsReservoirAreaT">
+			<result column="RA_NAME" property="raName" />
+		</association>
+		<association property="location" javaType="com.skeqi.mes.pojo.wms.CWmsLocationT">
+			<result column="LOCATION_NAME" property="locationName" />
+		</association>
+	</resultMap>
+
+	<select id="findMaterialNumberList" resultMap="numberMap">
+		select
+		NUMBER.MATERIAL_NUMBER as sum,NUMBER.*,PROJECT.PROJECT_NAME,WAREHOUSE.`NAME`
+		AS
+		WAREHOUSE_NAME,AREA.AREA_NAME,reservoir.RA_NAME,LOCATION.LOCATION_NAME,MATERIAL.MATERIAL_NAME as materialName
+		from c_wms_material_number_t NUMBER
+		JOIN c_mes_jl_material_t MATERIAL
+		ON NUMBER.MATERIAL_ID = MATERIAL.ID
+		JOIN c_wms_project_t PROJECT ON
+		NUMBER.PROJECT_ID = PROJECT.ID
+		JOIN c_wms_warehouse_t WAREHOUSE ON
+		NUMBER.WAREHOUSE_ID = WAREHOUSE.ID
+		JOIN c_wms_area_t AREA ON
+		NUMBER.AREA_ID = AREA.ID
+		JOIN c_wms_reservoir_area_t reservoir ON
+		NUMBER.RESERVOIR_AREA_ID = reservoir.ID
+		JOIN c_wms_location_t LOCATION
+		ON NUMBER.LOCATION_ID = LOCATION.ID
+		where 1 = 1
+		<if test="id != null and id != ''">
+			AND NUMBER.ID = #{id}
+		</if>
+		<if test="materialNumberId != null and materialNumberId != ''">
+			AND NUMBER.ID = #{materialNumberId}
+		</if>
+		<if test="materialNo != null and materialNo != ''">
+			AND NUMBER.MATERIAL_NO = #{materialNo}
+		</if>
+		<if test="materialName != null and materialName != ''">
+			AND MATERIAL.MATERIAL_NAME like '%${materialName}%'
+		</if>
+		<if test="materialNumber != null and materialNumber != ''">
+			AND NUMBER.MATERIAL_NUMBER = #{materialNumber}
+		</if>
+		<if test="projectId != null and projectId != ''">
+			AND NUMBER.PROJECT_ID = #{projectId}
+		</if>
+		<if test="materialId != null and materialId != ''">
+			AND NUMBER.MATERIAL_ID = #{materialId}
+		</if>
+		<if test="wareHouseId != null and wareHouseId != ''">
+			AND NUMBER.WAREHOUSE_ID = #{wareHouseId}
+		</if>
+		<if test="areaId != null and areaId != ''">
+			AND NUMBER.AREA_ID = #{areaId}
+		</if>
+		<if test="locationId != null and locationId != ''">
+			AND NUMBER.LOCATION_ID = #{locationId}
+		</if>
+		<if test="reservoirareaId != null and reservoirareaId != ''">
+			AND NUMBER.RESERVOIR_AREA_ID = #{reservoirareaId}
+		</if>
+		<if test="lmminentRelease != null and lmminentRelease != ''">
+			AND NUMBER.LMMINENT_RELEASE = #{lmminentRelease}
+		</if>
+		<if
+			test="ksDate != null and ksDate != '' and jsDate != null and jsDate != ''">
+			AND DATE_FORMAT(NUMBER.DT,'%Y-%m-%d') BETWEEN #{ksDate} AND #{jsDate}
+		</if>
+		<if test="freezingNumber != null and freezingNumber != ''">
+			AND NUMBER.FREEZING_NUMBER = #{freezingNumber}
+		</if>
+		<if test="reservedNumber != null and reservedNumber != ''">
+			AND NUMBER.RESERVED_NUMBER = #{reservedNumber}
+		</if>
+		<if test="tray != null and tray != ''">
+			AND NUMBER.TRAY like '%${tray}%'
+		</if>
+		ORDER BY NUMBER.dt DESC
+	</select>
+
+	<select id="findLocationCount" resultType="java.lang.Integer">
+		select
+		ifnull(count(*),0) from c_wms_material_number_t
+		where LOCATION_ID =
+		#{locationId}
+	</select>
+
+	<insert id="addMaterialNumber">
+		insert into c_wms_material_number_t(
+		MATERIAL_NO,MATERIAL_NAME,MATERIAL_NUMBER,PROJECT_ID,
+		MATERIAL_ID,WAREHOUSE_ID,AREA_ID,LOCATION_ID,
+		RESERVOIR_AREA_ID,LMMINENT_RELEASE,DT,FREEZING_NUMBER,
+		RESERVED_NUMBER,TRAY)
+		values(
+		#{materialNo},#{materialName},#{materialNumber},#{projectId},
+		#{materialId},#{wareHouseId},#{areaId},#{locationId},
+		#{reservoirareaId},#{lmminentRelease},now(),#{freezingNumber},
+		#{reservedNumber},#{tray})
+	</insert>
+
+	<delete id="deleteMaterialNumber">
+		delete from c_wms_material_number_t
+		where id = #{id}
+	</delete>
+
+	<update id="updateMaterialNumber">
+		update c_wms_material_number_t
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="materialNo != null">MATERIAL_NO = #{materialNo},</if>
+			<if test="materialName != null">MATERIAL_NAME = #{materialName},</if>
+			<if test="materialNumber != null">MATERIAL_NUMBER = #{materialNumber},</if>
+			<if test="projectId != null">PROJECT_ID = #{projectId},</if>
+			<if test="materialId != null">MATERIAL_ID = #{materialId},</if>
+			<if test="wareHouseId != null">WAREHOUSE_ID = #{wareHouseId},</if>
+			<if test="areaId != null">AREA_ID = #{areaId},</if>
+			<if test="locationId != null">LOCATION_ID = #{locationId},</if>
+			<if test="reservoirareaId != null">RESERVOIR_AREA_ID = #{reservoirareaId},</if>
+			<if test="lmminentRelease != null">LMMINENT_RELEASE = #{lmminentRelease},</if>
+			<if test="freezingNumber != null">FREEZING_NUMBER = #{freezingNumber},</if>
+			<if test="reservedNumber != null">RESERVED_NUMBER = #{reservedNumber},</if>
+			<if test="tray != null">TRAY = #{tray}</if>
+		</trim>
+		where ID = #{id}
+	</update>
+
+	<update id="updateLmminentRelease">
+		update c_wms_material_number_t
+		<if test="str == 1">set LMMINENT_RELEASE =
+			LMMINENT_RELEASE-#{dx.lmminentRelease}
+			where LMMINENT_RELEASE > 0
+		</if>
+		<if test="str == 2">set LMMINENT_RELEASE =
+			LMMINENT_RELEASE+#{dx.lmminentRelease}
+			where 1 = 1
+		</if>
+		and MATERIAL_ID = #{dx.materialId}
+		and PROJECT_ID = #{dx.projectId}
+		and LOCATION_ID = #{dx.locationId}
+	</update>
+
+	<select id="findTotal" resultType="java.lang.Integer">
+		select
+		ifnull(sum(MATERIAL_NUMBER-LMMINENT_RELEASE-FREEZING_NUMBER-RESERVED_NUMBER),0)
+		from c_wms_material_number_t
+		where PROJECT_ID = #{projectId}
+		and
+		MATERIAL_ID = #{materialId}
+		and WAREHOUSE_ID = #{warehouseId}
+	</select>
+
+	<select id="findMaterialNumber" resultType="com.skeqi.mes.pojo.wms.CWmsMaterialNumberT">
+		<!-- 0:先进先出、1：后进先出、2：量多先出、3：到期先出 -->
+		<if test="strategy==0 or strategy==1 or strategy==2">
+			select * from c_wms_material_number_t
+			where MATERIAL_ID =
+			#{materialId}
+			and PROJECT_ID = #{projectId}
+			and WAREHOUSE_ID =
+			#{warehouseId}
+			and
+			(MATERIAL_NUMBER-LMMINENT_RELEASE-FREEZING_NUMBER-RESERVED_NUMBER)>0
+			<if test="strategy==0">
+				ORDER BY DT
+			</if>
+			<if test="strategy==1">
+				ORDER BY DT desc
+			</if>
+			<if test="strategy==2">
+				ORDER BY
+				(MATERIAL_NUMBER-LMMINENT_RELEASE-FREEZING_NUMBER-RESERVED_NUMBER)
+				desc
+			</if>
+		</if>
+		<if test="strategy==3">
+			select number.* from c_wms_material_number_t number
+			join
+			c_wms_material_t material on number.MATERIAL_ID = material.id
+			where
+			number.MATERIAL_ID = #{materialId}
+			and number.PROJECT_ID =
+			#{projectId}
+			and number.WAREHOUSE_ID = #{warehouseId}
+			and
+			(MATERIAL_NUMBER-LMMINENT_RELEASE-FREEZING_NUMBER-RESERVED_NUMBER)>0
+			ORDER BY timestampdiff(SECOND,DATE_SUB(NOW(),INTERVAL
+			material.DAYS_OF_FAILURE DAY),number.dt)
+		</if>
+	</select>
+
+	<update id="updateLocationStateAndTray">
+		update c_wms_location_t
+		set LOCATION_STATUS = 0,
+		tray = null
+		where id = #{locationId}
+	</update>
+
+	<select id="findProjectAll" resultType="com.skeqi.mes.pojo.wms.CWmsProject">
+		select id,PROJECT_NAME
+		from c_wms_project_t
+		where VIEW_MODE = 1
+		and PROJECT_NAME like '%${projectName}%'
+		ORDER BY ID
+		limit 0,100
+	</select>
+
+	<select id="findMaterialAll" resultType="com.alibaba.fastjson.JSONObject">
+		select id,MATERIAL_NAME as materialName
+		from c_mes_jl_material_t
+		where VIEW_MODE = 1
+		and MATERIAL_NAME like '%${materialName}%'
+		ORDER BY ID
+		limit 0,100
+	</select>
+
+	<select id="findLocationAll" resultType="com.skeqi.mes.pojo.wms.CWmsLocationT">
+		select id,LOCATION_NAME
+		from c_wms_location_t
+		where VIEW_MODE = 1
+		ORDER BY ID
+	</select>
+
+	<select id="findBarCode" resultType="java.util.Map">
+		select id,bar_code as barCode from c_wms_material_number_t
+		where PROJECT_ID = #{projectId}
+		and MATERIAL_ID = #{materialId}
+		and LOCATION_ID = #{locationId}
+	</select>
+
+	<select id="findBarCodeCount" resultType="java.lang.Integer">
+		select count(id) from c_wms_all_material_barcode
+		where bar_code = #{barCode}
+	</select>
+
+	<update id="updateAllMaterialBarCode">
+		update c_wms_all_material_barcode
+		set bar_code = #{presentBarCode}
+		where id = #{id}
+	</update>
+
+	<update id="updateStorageDetailBarCode">
+		update p_wms_storage_detail_t
+		set bar_code = #{presentBarCode}
+		where bar_code = #{sourceBarCode}
+	</update>
+
+	<update id="updateMaterialNumberBarCode">
+		update c_wms_material_number_t
+		set bar_code = #{presentBarCode}
+		where id = #{id}
+	</update>
+
+	<!-- 新增临时库存表记录 -->
+	<insert id="addRStock">
+		insert into r_wms_storage_detail_t(dt,MATERIAL_ID,MATERIAL_NUMBER,AREA_ID,RESERVOIR_AREA_ID,LOCATION_ID,LIST_NO,PROJECT_ID,TRAY,WAREHOUSE_ID,YN_SHIFT,ISSUE_OR_RECEIPT,materialNumberId)
+		value(now(),#{materialId},#{materialNumber},#{areaId},#{rAreaId},#{locationId},#{listNo},#{projectId},#{tray},#{warehouseId},#{ynShift},#{issueOrReceipt},#{materialNumberId})
+	</insert>
+
+	<!-- 新增审批表记录 -->
+	<insert id="addApproval">
+		insert into c_wms_approval_t(LIST_NO,DT,PROCESS_ID,USER_ID,STATE)
+		value(#{listNo},now(),#{processId},#{userId},#{state})
+	</insert>
+
+	<!-- 更新库存数量 -->
+	<update id="updateStockNumber">
+		update c_wms_material_number_t
+		set LMMINENT_RELEASE = LMMINENT_RELEASE + #{number}
+		where id = #{id}
+	</update>
+
+	<!-- 新增出库队列 -->
+	<insert id="addOutTaskqueue">
+		insert into r_wms_out_taskqueue_t(DT,LIST_NO,TRAY,FLAG,LOCATION_ID)
+		${sql}
+	</insert>
+
+	<!-- 通过库位id查询库位 -->
+	<select id="findLocationById" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			tray,
+			LOCATION_TYPE AS locationType,
+			LOCATION_STATUS AS locationStatus
+		FROM
+			c_wms_location_t
+		where VIEW_MODE = 1
+		and id = #{id}
+	</select>
+
+	<!-- 新增入库队列 -->
+	<insert id="addInTaskqueue">
+		insert into r_wms_in_taskqueue_t(DT,LIST_NO,TRAY,FLAG,LOCATION_ID)
+		value(now(),#{listNo},#{tray},0,#{locationId})
+	</insert>
+
+	<!-- 通过id查询库位 -->
+	<select id="findStockById" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			id,
+			MATERIAL_NO as materialNo,
+			MATERIAL_NAME as materialName,
+			MATERIAL_NUMBER as materialNumber,
+			PROJECT_ID as projectId,
+			MATERIAL_ID as materialId,
+			WAREHOUSE_ID as warehouseId,
+			AREA_ID as areaId,
+			LOCATION_ID as locationId,
+			RESERVOIR_AREA_ID as rAreaId,
+			LMMINENT_RELEASE as lmminentRelease,
+			dt,
+			FREEZING_NUMBER as freezingNumber,
+			RESERVED_NUMBER as reservedNumber,
+			tray,
+			MATERIAL_CODE as materialCode,
+			bar_code as barCode
+		FROM
+			c_wms_material_number_t
+		where id = #{id}
+	</select>
+
+	<!-- 新增转移表 -->
+	<insert id="addStockTransfer">
+		insert into c_wms_stock_transfer(dt,listNo,userId,state)
+		value(now(),#{listNo},#{userId},#{state})
+	</insert>
+
+
+</mapper>

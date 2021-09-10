@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.skeqi.mes.mapper.yin.DeviceDao">
+	<select id="deviceList" resultType="com.skeqi.mes.pojo.CMesDeviceT">
+		SELECT DEVICE.*,._NAME,DEVICETYPE.TYPE_NAME AS
+		deviceTypeName,LINE.NAME AS deviceLineName FROM
+		C_MES_DEVICE_T DEVICE,
+		C_MES__T ,
+		C_MES_DEVICE_TYPE_T DEVICETYPE,
+		C_MES_LINE_T LINE
+		WHERE
+		DEVICE.DEVICE_=.ID
+		AND DEVICETYPE.ID=DEVICE.DEVICE_TYPE
+		AND LINE.ID = DEVICE_LINE
+		<if test="deviceType!=null">
+			AND DEVICE.DEVICE_TYPE = #{deviceType}
+		</if>
+		<if test="!=null">
+			AND DEVICE.DEVICE_ = #{}
+		</if>
+		<if test="id!=null">
+			AND DEVICE.ID = #{id}
+		</if>
+		<if test="deviceName!=null">
+			AND DEVICE.DEVICE_NAME = #{deviceName}
+		</if>
+		ORDER BY DEVICE.ID
+	</select>
+
+	<select id="deviceTypeList" resultType="com.skeqi.mes.pojo.CMesDeviceTypeT">
+		SELECT * FROM
+		C_MES_DEVICE_TYPE_T
+	</select>
+	<insert id="addDevice" keyProperty="id" useGeneratedKeys="false">
+		INSERT INTO C_MES_DEVICE_T(DEVICE_NAME,DEVICE_TYPE,DEVICE_IP,DEVICE_CID,DEVICE_PORT,DEVICE_COM,DEVICE_LINE,DEVICE_STATION,DEVICE_NUMBER,DEVICE_LIFE)
+		values(#{deviceName},#{deviceType},#{deviceIp},#{deviceCid},#{devicePort},#{deviceCom},#{deviceLine},#{device})
+	</insert>
+	<update id="editDevice">
+		UPDATE C_MES_DEVICE_T SET DEVICE_NAME =
+		#{deviceName},DEVICE_TYPE = #{deviceType},DEVICE_IP =
+		#{deviceIp},DEVICE_CID = #{deviceCid},
+		DEVICE_PORT =
+		#{devicePort},DEVICE_COM = #{deviceCom},DEVICE_LINE =
+		#{deviceLine},DEVICE_ = #{device}
+		WHERE ID = #{id}
+	</update>
+	<delete id="delDevice">
+		DELETE FROM C_MES_DEVICE_T WHERE ID = #{id}
+	</delete>
+	<select id="listLabelManager" resultType="CMesLabelManagerT">
+		SELECT labelManager.*,line.NAME AS lineName ,labelType.NAME AS
+		labelTypeName
+		FROM C_MES_LABEL_MANAGER_T
+		labelManager,C_MES_LINE_T line,C_MES_LABEL_TYPE
+		labelType
+		WHERE labelManager.LINE_ID = line.ID AND
+		labelManager.LABEL_TYPE_ID=labelType.ID
+		<if test="id!=null">
+			AND labelManager.ID=#{id}
+		</if>
+		<if test="labelNumber!=null or labelName!=null">
+			AND (labelManager.LABEL_NUMBER = #{labelNumber} OR
+			labelManager.LABEL_NAME = #{labelName})
+		</if>
+		ORDER BY labelManager.LABEL_NUMBER
+	</select>
+	<insert id="addLabelManager" keyProperty="id" useGeneratedKeys="false">
+		INSERT INTO C_MES_LABEL_MANAGER_T(LABEL_NUMBER,LABEL_NAME,LABEL_RULES,LINE_ID,DIS,LABEL_DATE,LABEL_TYPE_ID)
+		VALUES (#{labelNumber},#{labelName},#{labelRules},#{lineId},#{dis},NOW(),#{labelTypeId})
+	</insert>
+	<update id="editLabelManager">
+		UPDATE C_MES_LABEL_MANAGER_T SET
+		LABEL_NUMBER=#{labelNumber},LABEL_NAME=#{labelName},
+		LABEL_RULES=#{labelRules},LINE_ID=#{lineId},DIS=#{dis},LABEL_DATE=NOW(),LABEL_TYPE_ID=#{labelTypeId}
+		WHERE ID =#{id}
+	</update>
+	<delete id="removeLabelManager">
+		DELETE FROM C_MES_LABEL_MANAGER_T WHERE ID = #{id}
+	</delete>
+	<select id="ruleTypeManagerList" resultType="CMesLabelType">
+		SELECT * FROM C_MES_LABEL_TYPE WHERE 1 = 1
+		<if test="id!=null">
+			AND ID=#{id}
+		</if>
+		<if test="name!=null and name!=''">
+			AND NAME = #{name}
+		</if>
+	</select>
+	<insert id="addRuleTypeManager" keyProperty="id"
+		useGeneratedKeys="false">
+		INSERT INTO C_MES_LABEL_TYPE (DT,NAME,LABEL_VR,LABEL_DIS)
+		VALUES(NOW(),#{name},#{labelVr},#{labelDis})
+	</insert>
+	<update id="editRuleTypeManager">
+		UPDATE C_MES_LABEL_TYPE SET
+		DT=NOW(),NAME=#{name},LABEL_VR=#{labelVr},LABEL_DIS=#{labelDis}
+		WHERE ID = #{id}
+	</update>
+	<delete id="removeRuleTypeManager">
+		DELETE from C_MES_LABEL_TYPE WHERE ID = #{id}
+	</delete>
+	<select id="countMaterialByPrintLable" resultType="int">
+		SELECT
+		COUNT(*) FROM C_MES_MATERIAL_T WHERE PRINT_LABLE = #{id}
+	</select>
+	<select id="countProductionByPrintLable" resultType="int">
+		SELECT
+		COUNT(*) FROM C_MES_PRODUCTION_T WHERE PRODUCTION_PRINT_ID =
+		#{id}
+	</select>
+	<select id="countLabelByLabelType" resultType="int">
+		SELECT COUNT(*)
+		FROM C_MES_LABEL_MANAGER_T WHERE LABEL_TYPE_ID = #{id}
+	</select>
+	<select id="countLabelByNameAndNumber" resultType="int">
+		SELECT
+		COUNT(*) FROM C_MES_LABEL_MANAGER_T WHERE LABEL_NUMBER =
+		#{labelNumber} or
+		LABEL_NAME = #{labelName}
+	</select>
+	<select id="countDeviceByName" resultType="int">
+		SELECT COUNT(*) FROM
+		C_MES_DEVICE_T WHERE DEVICE_NAME = #{deviceName}
+	</select>
+	<select id="countRuleTypeByName" resultType="int">
+		SELECT COUNT(*) FROM
+		C_MES_LABEL_TYPE WHERE NAME = #{name}
+	</select>
+</mapper>

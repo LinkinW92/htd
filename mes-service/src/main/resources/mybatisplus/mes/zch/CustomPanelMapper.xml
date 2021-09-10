@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.zch.CustomPanelDao">
+	<select id="snDetailedList" resultType="java.util.Map">
+		select t.*,p.MATERIAL_CODE,p.PRODUCTION_NAME,wd.WORKORDER_ID from r_mes_tracking_t t
+		left join c_mes_production_t p on p.ID = t.PRODUCTION_ID
+		left join r_mes_workorder_detail_t wd on wd.ID = WORK_ORDER_ID
+		where t.ST=#{station} and t.LINE_ID = #{lineId}
+	</select>
+
+	<select id="findLoadingMaterialList" resultType="java.util.Map">
+		select * from c_mes_loading_material_t where lineId = #{lineId} and stationId = #{stationId} and workorderId = #{workorderId} and remainQuantity > 0
+	</select>
+
+	<select id="getLoadingMaterial" resultType="java.util.Map">
+		select * from c_mes_loading_material_t where batchCode = #{batchCode}
+	</select>
+
+	<insert id="insertLoadingMaterial">
+		insert into c_mes_loading_material_t(lineId, stationId, workorderId, materialNo, batchCode, quantity, remainQuantity)
+		values(#{lineId}, #{stationId}, #{workorderId}, #{materialNo}, #{batchCode}, #{quantity}, #{quantity})
+	</insert>
+
+	<select id="findRecipeMaterialList" resultType="java.util.Map">
+		select rd.MATERIALPN as materialNo, jm.MATERIAL_NAME as materialName,
+		lm.batchCode, lm.remainQuantity from c_mes_recipe_datil_t rd
+		left join c_mes_recipe_t r on r.ID = rd.RECIPE_ID
+		left join c_mes_jl_material_t jm on jm.BOM_ID = rd.MATERIALPN
+		left join c_mes_loading_material_t lm on lm.stationId = r.STATION_ID and lm.workorderId = #{workorderId}
+		and lm.materialNo = rd.MATERIALPN and remainQuantity > 0
+		where r.TOTAL_ID = (select TOTAL_RECIPE_ID from r_mes_workorder_detail_t where ID = #{workorderId})
+		and r.STATION_ID = #{stationId} and rd.STEP_CATEGORY in (3, 4)
+	</select>
+
+	<select id="getLoadingMap" resultType="java.util.Map">
+		select * from c_mes_loading_material_t where workorderId = #{workorderId} and lineId = #{lineId} and stationId = #{stationId} and materialNo = #{materialNo} order by ID desc limit 1
+	</select>
+
+	<select id="findNcCodeConfigList" resultType="java.util.Map">
+		select code from c_mes_nc_code_config_t where 1=1
+		<if test="code != null and code!=''">
+			and code like concat('%', #{code}, '%')
+		</if>
+	</select>
+
+	<select id="findNcCodeRecordList" resultType="java.util.Map">
+		select nc_code, staff, DATE_FORMAT(cdt,'%Y-%m-%d %H:%i:%S') as operationTime, status
+		from c_mes_nc_code_record_t where 1=1
+		<if test="sn != null and sn!=''">
+			and sn = #{sn}
+		</if>
+	</select>
+
+	<insert id="addNcCodeRecord">
+		insert into c_mes_nc_code_record_t (cdt, udt, sn, nc_code, staff, `status`, `number`)
+		values(now(), now(), #{sn}, #{nc_code}, #{emp}, 0, #{number})
+	</insert>
+
+	<select id="getTrumpetByStation" resultType="java.util.Map">
+		select s.trumpet, s.loopSum from c_mes_station_t s
+		left join c_mes_line_t l on l.ID = s.LINE_ID
+		where l.NAME = #{line}
+		and s.STATION_NAME = #{station}
+		limit 1
+	</select>
+
+	<select id="getLoadingCode" resultType="java.lang.String">
+		select lm.batchCode from c_mes_loading_material_t lm
+		join c_mes_recipe_datil_t rd on rd.MATERIALPN = lm.materialNo
+		left join c_mes_recipe_t r on r.ID = rd.RECIPE_ID
+		where lineId = #{lineId} and stationId = #{stationId}
+		and rd.STEPNO = #{step}
+		and r.TOTAL_ID = (select TOTAL_RECIPE_ID from r_mes_tracking_t where SN = #{sn})
+		and lm.remainQuantity > 0
+		order by lm.ID desc limit 1
+	</select>
+
+	<select id="findDataCollectionRecordList" resultType="java.util.Map">
+		select * from c_mes_data_collection_record_detail_t crd
+		left join c_mes_data_collection_record_t cr on cr.number = crd.record_number
+		where cr.sn = #{sn} and process = #{stationId}
+	</select>
+
+	<select id="findDataCollectionParams" resultType="java.util.Map">
+		select `number`,`name` from c_mes_data_collection_params_t where group_number = #{groupNumber}
+	</select>
+
+	<insert id="addDataCollectionRecord">
+		insert into c_mes_data_collection_record_t(`number`, grou_number, staff, process, sn, cdt, udt)
+		value(#{number}, #{groupNumber}, #{emp}, #{stationId}, #{sn}, now(), now())
+	</insert>
+
+	<insert id="addDataCollectionRecordDetail">
+		insert into c_mes_data_collection_record_detail_t(record_number, params_number, params_name, value, cdt, udt, upper_limit, lower_limit)
+		value(#{record_number}, #{number}, #{name}, #{value}, now(), now(), #{upper_limit}, #{lower_limit})
+	</insert>
+
+	<select id="findDataCollectionParamsAll" resultType="java.util.Map">
+		select * from c_mes_data_collection_params_t where group_number = #{groupNumber}
+	</select>
+</mapper>

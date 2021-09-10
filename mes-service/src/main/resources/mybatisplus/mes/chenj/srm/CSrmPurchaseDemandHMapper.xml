@@ -1,0 +1,715 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.chenj.srm.CSrmPurchaseDemandHMapper">
+    <resultMap id="BaseResultMap" type="com.skeqi.mes.pojo.chenj.srm.CSrmPurchaseDemandH">
+        <!--@mbg.generated-->
+        <!--@Table c_srm_purchase_demand_h-->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="request_code" jdbcType="VARCHAR" property="requestCode"/>
+        <result column="status" jdbcType="VARCHAR" property="status"/>
+        <result column="proposer" jdbcType="VARCHAR" property="proposer"/>
+        <result column="application_date" jdbcType="TIMESTAMP" property="applicationDate"/>
+        <result column="project_code" jdbcType="VARCHAR" property="projectCode"/>
+        <result column="project_name" jdbcType="VARCHAR" property="projectName"/>
+        <result column="apply_for_department" jdbcType="VARCHAR" property="applyForDepartment"/>
+        <result column="buyer" jdbcType="VARCHAR" property="buyer"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        id, request_code, `status`, proposer, application_date, project_code, project_name,
+        apply_for_department, buyer, create_time, update_time
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmPurchaseDemandH"
+            resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        select
+        <include refid="Base_Column_List"/>
+        from c_srm_purchase_demand_h
+        <where>
+            <if test="requestCode != null and requestCode != ''">
+                request_code= #{requestCode,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null and status != ''">
+                and status=#{status,jdbcType=VARCHAR}
+            </if>
+            <if test="id != null">
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+        </where>
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        <!--@mbg.generated-->
+        delete from c_srm_purchase_demand_h
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <delete id="delKThreeData">
+        delete from c_srm_purchase_demand_h where request_code in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.requestCode,jdbcType=VARCHAR}
+        </foreach>
+        and is_delete=0
+    </delete>
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmPurchaseDemandH"
+            useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_purchase_demand_h (request_code, `status`, proposer,
+        application_date, project_code, project_name,
+        apply_for_department, buyer, create_time,
+        update_time)
+        values (#{requestCode,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, #{proposer,jdbcType=VARCHAR},
+        #{applicationDate,jdbcType=TIMESTAMP}, #{projectCode,jdbcType=VARCHAR}, #{projectName,jdbcType=VARCHAR},
+        #{applyForDepartment,jdbcType=VARCHAR}, #{buyer,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
+        #{updateTime,jdbcType=TIMESTAMP})
+    </insert>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id"
+            parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmPurchaseDemandH" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_purchase_demand_h
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="requestCode != null">
+                request_code,
+            </if>
+            <if test="status != null">
+                `status`,
+            </if>
+            <if test="proposer != null">
+                proposer,
+            </if>
+            <if test="applicationDate != null">
+                application_date,
+            </if>
+            <if test="projectCode != null">
+                project_code,
+            </if>
+            <if test="projectName != null">
+                project_name,
+            </if>
+            <if test="applyForDepartment != null">
+                apply_for_department,
+            </if>
+            <if test="buyer != null">
+                buyer,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="businessType != null">
+                business_type,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="requestCode != null">
+                #{requestCode,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="proposer != null">
+                #{proposer,jdbcType=VARCHAR},
+            </if>
+            <if test="applicationDate != null">
+                #{applicationDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="projectCode != null">
+                #{projectCode,jdbcType=VARCHAR},
+            </if>
+            <if test="projectName != null">
+                #{projectName,jdbcType=VARCHAR},
+            </if>
+            <if test="applyForDepartment != null">
+                #{applyForDepartment,jdbcType=VARCHAR},
+            </if>
+            <if test="buyer != null">
+                #{buyer,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                now(),
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="businessType != null">
+                #{businessType,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmPurchaseDemandH">
+        <!--@mbg.generated-->
+        update c_srm_purchase_demand_h
+        <set>
+            <if test="requestCode != null">
+                request_code = #{requestCode,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                `status` = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="proposer != null">
+                proposer = #{proposer,jdbcType=VARCHAR},
+            </if>
+            <if test="applicationDate != null">
+                application_date = #{applicationDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="projectCode != null">
+                project_code = #{projectCode,jdbcType=VARCHAR},
+            </if>
+            <if test="projectName != null">
+                project_name = #{projectName,jdbcType=VARCHAR},
+            </if>
+            <if test="applyForDepartment != null">
+                apply_for_department = #{applyForDepartment,jdbcType=VARCHAR},
+            </if>
+            <if test="buyer != null">
+                buyer = #{buyer,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="businessType != null">
+                business_type = #{businessType,jdbcType=VARCHAR},
+            </if>
+            <if test="isDelete != null">
+                is_delete=#{isDelete,jdbcType=BOOLEAN},
+            </if>
+        </set>
+        <where>
+            <if test="requestCode != null and requestCode != ''">
+                request_code=#{requestCode,jdbcType=VARCHAR}
+            </if>
+            <if test="id != null">
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+        </where>
+
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmPurchaseDemandH">
+        <!--@mbg.generated-->
+        update c_srm_purchase_demand_h
+        set request_code = #{requestCode,jdbcType=VARCHAR},
+        `status` = #{status,jdbcType=VARCHAR},
+        proposer = #{proposer,jdbcType=VARCHAR},
+        application_date = #{applicationDate,jdbcType=TIMESTAMP},
+        project_code = #{projectCode,jdbcType=VARCHAR},
+        project_name = #{projectName,jdbcType=VARCHAR},
+        apply_for_department = #{applyForDepartment,jdbcType=VARCHAR},
+        buyer = #{buyer,jdbcType=VARCHAR},
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+        update_time = #{updateTime,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateBatch" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update c_srm_purchase_demand_h
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="request_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.requestCode,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="`status` = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.status,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="proposer = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.proposer,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="application_date = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.applicationDate,jdbcType=TIMESTAMP}
+                </foreach>
+            </trim>
+            <trim prefix="project_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.projectCode,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="project_name = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.projectName,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="apply_for_department = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.applyForDepartment,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="buyer = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.buyer,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.createTime,jdbcType=TIMESTAMP}
+                </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.updateTime,jdbcType=TIMESTAMP}
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    <update id="updateBatchSelective" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update c_srm_purchase_demand_h
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="request_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.requestCode != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.requestCode,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="`status` = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.status != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.status,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="proposer = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.proposer != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.proposer,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="application_date = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.applicationDate != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.applicationDate,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="project_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.projectCode != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.projectCode,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="project_name = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.projectName != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.projectName,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="apply_for_department = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.applyForDepartment != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.applyForDepartment,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="buyer = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.buyer != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.buyer,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.createTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.createTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.updateTime != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.updateTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+
+
+    <update id="updateBatchSelectiveKThree" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update c_srm_purchase_demand_h
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="proposer = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.proposer != null">
+                        when request_code = #{item.requestCode,jdbcType=VARCHAR} then #{item.proposer,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="application_date = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.applicationDate != null">
+                        when request_code = #{item.requestCode,jdbcType=VARCHAR} then
+                        #{item.applicationDate,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="business_type = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.businessType != null">
+                        when request_code = #{item.requestCode,jdbcType=VARCHAR} then
+                        #{item.businessType,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="audit_data = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.auditData != null">
+                        when request_code = #{item.requestCode,jdbcType=VARCHAR} then
+                        #{item.auditData,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where request_code in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.requestCode,jdbcType=VARCHAR}
+        </foreach>
+    </update>
+    <update id="allocationPurchaseDemand">
+        update c_srm_purchase_demand_h
+        set buyer=#{buyer,jdbcType=VARCHAR},status='4'
+        where request_code in
+        <foreach close=")" collection="requestCodeList" item="item" open="(" separator=", ">
+            #{item,jdbcType=VARCHAR}
+        </foreach>
+        and is_delete=0
+    </update>
+    <update id="updateBatchCSrmPurchaseDemandRSAll">
+        <!--@mbg.generated-->
+        update c_srm_purchase_demand_h
+        set status='8'
+        where request_code in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item,jdbcType=VARCHAR}
+        </foreach>
+        and is_delete=0
+    </update>
+    <update id="updateBatchCSrmPurchaseDemandRSPortion">
+        <!--@mbg.generated-->
+        update c_srm_purchase_demand_h
+        set status='7'
+        where request_code in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item,jdbcType=VARCHAR}
+        </foreach>
+        and is_delete=0
+    </update>
+
+    <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_purchase_demand_h
+        (request_code, `status`, proposer, application_date, project_code, project_name,
+        apply_for_department, buyer, create_time, update_time)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.requestCode,jdbcType=VARCHAR}, #{item.status,jdbcType=VARCHAR}, #{item.proposer,jdbcType=VARCHAR},
+            #{item.applicationDate,jdbcType=TIMESTAMP}, #{item.projectCode,jdbcType=VARCHAR},
+            #{item.projectName,jdbcType=VARCHAR}, #{item.applyForDepartment,jdbcType=VARCHAR},
+            #{item.buyer,jdbcType=VARCHAR}, now(), #{item.updateTime,jdbcType=TIMESTAMP}
+            )
+        </foreach>
+    </insert>
+    <insert id="batchInsertKThree" parameterType="map">
+        <!--@mbg.generated-->
+        insert into c_srm_purchase_demand_h
+        (request_code, proposer, application_date,
+        create_time,buyer_type,status,is_delete,business_type,audit_data,prepared_by)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.requestCode,jdbcType=VARCHAR},#{item.proposer,jdbcType=VARCHAR},
+            #{item.applicationDate,jdbcType=TIMESTAMP},now(),'2',#{item.status,jdbcType=VARCHAR},0,#{item.businessType,jdbcType=VARCHAR},#{item.auditData,jdbcType=VARCHAR},#{item.preparedBy,jdbcType=VARCHAR}
+            )
+        </foreach>
+    </insert>
+    <insert id="insertOrUpdate" keyColumn="id" keyProperty="id"
+            parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmPurchaseDemandH"
+            useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_purchase_demand_h
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            request_code,
+            `status`,
+            proposer,
+            application_date,
+            project_code,
+            project_name,
+            apply_for_department,
+            buyer,
+            create_time,
+            update_time,
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            #{requestCode,jdbcType=VARCHAR},
+            #{status,jdbcType=VARCHAR},
+            #{proposer,jdbcType=VARCHAR},
+            #{applicationDate,jdbcType=TIMESTAMP},
+            #{projectCode,jdbcType=VARCHAR},
+            #{projectName,jdbcType=VARCHAR},
+            #{applyForDepartment,jdbcType=VARCHAR},
+            #{buyer,jdbcType=VARCHAR},
+            #{createTime,jdbcType=TIMESTAMP},
+            #{updateTime,jdbcType=TIMESTAMP},
+        </trim>
+        on duplicate key update
+        <trim suffixOverrides=",">
+            <if test="id != null">
+                id = #{id,jdbcType=INTEGER},
+            </if>
+            request_code = #{requestCode,jdbcType=VARCHAR},
+            `status` = #{status,jdbcType=VARCHAR},
+            proposer = #{proposer,jdbcType=VARCHAR},
+            application_date = #{applicationDate,jdbcType=TIMESTAMP},
+            project_code = #{projectCode,jdbcType=VARCHAR},
+            project_name = #{projectName,jdbcType=VARCHAR},
+            apply_for_department = #{applyForDepartment,jdbcType=VARCHAR},
+            buyer = #{buyer,jdbcType=VARCHAR},
+            create_time = #{createTime,jdbcType=TIMESTAMP},
+            update_time = #{updateTime,jdbcType=TIMESTAMP},
+        </trim>
+    </insert>
+    <insert id="insertOrUpdateSelective" keyColumn="id" keyProperty="id"
+            parameterType="com.skeqi.mes.pojo.chenj.srm.CSrmPurchaseDemandH" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into c_srm_purchase_demand_h
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="requestCode != null">
+                request_code,
+            </if>
+            <if test="status != null">
+                `status`,
+            </if>
+            <if test="proposer != null">
+                proposer,
+            </if>
+            <if test="applicationDate != null">
+                application_date,
+            </if>
+            <if test="projectCode != null">
+                project_code,
+            </if>
+            <if test="projectName != null">
+                project_name,
+            </if>
+            <if test="applyForDepartment != null">
+                apply_for_department,
+            </if>
+            <if test="buyer != null">
+                buyer,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="requestCode != null">
+                #{requestCode,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="proposer != null">
+                #{proposer,jdbcType=VARCHAR},
+            </if>
+            <if test="applicationDate != null">
+                #{applicationDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="projectCode != null">
+                #{projectCode,jdbcType=VARCHAR},
+            </if>
+            <if test="projectName != null">
+                #{projectName,jdbcType=VARCHAR},
+            </if>
+            <if test="applyForDepartment != null">
+                #{applyForDepartment,jdbcType=VARCHAR},
+            </if>
+            <if test="buyer != null">
+                #{buyer,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+        on duplicate key update
+        <trim suffixOverrides=",">
+            <if test="id != null">
+                id = #{id,jdbcType=INTEGER},
+            </if>
+            <if test="requestCode != null">
+                request_code = #{requestCode,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                `status` = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="proposer != null">
+                proposer = #{proposer,jdbcType=VARCHAR},
+            </if>
+            <if test="applicationDate != null">
+                application_date = #{applicationDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="projectCode != null">
+                project_code = #{projectCode,jdbcType=VARCHAR},
+            </if>
+            <if test="projectName != null">
+                project_name = #{projectName,jdbcType=VARCHAR},
+            </if>
+            <if test="applyForDepartment != null">
+                apply_for_department = #{applyForDepartment,jdbcType=VARCHAR},
+            </if>
+            <if test="buyer != null">
+                buyer = #{buyer,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <!--获取最后一条数据-->
+    <select id="selectFinallyData" resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        SELECT
+        request_code
+        FROM
+        c_srm_purchase_demand_h
+        where request_code like concat('PR2','%')
+        ORDER BY
+        id DESC
+        LIMIT 1
+    </select>
+    <select id="findPurchaseDemandH" resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CSrmPurchaseDemandHRsp">
+        SELECT h.request_code,
+        h.status,
+        h.proposer,
+        h.application_date,
+        h.project_code,
+        h.project_name,
+        h.apply_for_department,
+        c.DM_NAME applyForDepartmentName,
+        h.buyer,
+        h.proposer,
+        t.name buyerName,
+        h.business_type,
+        h.delivery_date,
+        h.buyer_type,
+        h.update_time,
+        h.prepared_by
+        FROM c_srm_purchase_demand_h h
+        left join c_mes_user_t t ON t.ID=h.buyer
+        left join c_wms_department_t c ON h.apply_for_department=c.DM_NUMBER
+        <where>
+            <if test="requestCode != null and requestCode != ''">
+                h.request_code like concat('%',#{requestCode,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="status != null and status != ''">
+                and h.status=#{status,jdbcType=VARCHAR}
+            </if>
+            <if test="buyer != null and buyer != ''">
+                and t.name like concat('%',#{buyer,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="preparedBy != null and preparedBy != ''">
+                and h.prepared_by like concat('%',#{preparedBy,jdbcType=VARCHAR},'%')
+            </if>
+            and h.is_delete=0
+        </where>
+        order by h.application_date desc
+    </select>
+    <select id="findPurchaseDemandR" resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CSrmPurchaseDemandRRsp">
+        SELECT request_code,
+        row_project_number,
+        material_code,
+        material_name,
+        count,
+        unit,
+        required_date,
+        place_of_receipt,
+        specification,
+        project,
+        remark,
+        station,
+        delivery_date,
+        create_time,
+        update_time
+        FROM c_srm_purchase_demand_r
+        <where>
+            <if test="requestCode != null and requestCode != ''">
+                request_code like concat('%',#{requestCode,jdbcType=VARCHAR},'%')
+            </if>
+            and is_delete=0
+        </where>
+        order by create_time desc
+    </select>
+    <select id="findPurchaseDemandHRList" resultType="com.skeqi.mes.pojo.chenj.srm.rsp.CSrmPurchaseDemandHRListRsp">
+        SELECT
+        h.request_code purchaseRequest,
+        h.`status`,
+        h.proposer,
+        h.application_date,
+        h.project_code,
+        h.project_name,
+        h.apply_for_department,
+        h.buyer,
+        (select `name` from c_mes_user_t where ID=h.buyer) buyerName,
+        r.row_project_number,
+        r.material_code,
+        r.material_name,
+        r.`count`,
+        r.unit,
+        r.required_date,
+        r.place_of_receipt,
+        h.buyer_type
+        FROM
+        c_srm_purchase_demand_h h
+        LEFT JOIN c_srm_purchase_demand_r r ON h.request_code = r.request_code
+        WHERE
+        r.request_code in
+        <foreach close=")" collection="reqList" item="item" open="(" separator=", ">
+            #{item,jdbcType=VARCHAR}
+        </foreach>
+        and h.is_delete=0
+    </select>
+
+</mapper>

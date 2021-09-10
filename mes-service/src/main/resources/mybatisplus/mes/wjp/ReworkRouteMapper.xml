@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.wjp.ReworkRouteDao">
+
+	<!-- 返修路线查询 -->
+	<select id="findReworkRoute" resultType="RTrackingT" parameterType="Map">
+		SELECT ID,DT,ST,BST,SN,ENGINESN,GEARBOXSN,TYPENAME,TRAYNUM,PRODUCTNUM,STATUS,DIS,PLAN_ID,REWORK_FLAG,PRODUCTION_ID,LINE_ID FROM R_MES_TRACKING_T WHERE SN=#{SN} AND STATUS='NG'
+	</select>
+
+	<!-- 原因列表 -->
+	<select id="findReason" resultType="RTrackingT">
+		SELECT ID,DT,ST,BST,SN,ENGINESN,GEARBOXSN,TYPENAME,TRAYNUM,PRODUCTNUM,STATUS,DIS,PLAN_ID,REWORK_FLAG,PRODUCTION_ID,LINE_ID FROM R_MES_TRACKING_T
+	</select>
+
+	<!-- 详细原因修改 -->
+	<update id="updReworkRoute" parameterType="Map">
+		UPDATE R_MES_TRACKING_T SET DIS=#{dis},ENGINESN=#{engineSN} WHERE ID=#{id}
+	</update>
+
+	<!-- 表信息的移动 -->
+	<insert id="insPtrakingT" parameterType="Map" useGeneratedKeys="false">
+		INSERT INTO P_MES_TRACKING_T(ID,DT,ST,BST,SN,ENGINESN,GEARBOXSN,TYPENAME,TRAYNUM,PRODUCTNUM,STATUS,DIS,PLAN_ID,OFFLINE_DT,REWORK_FLAG)
+		SELECT ID,DT,ST,BST,SN,ENGINESN,GEARBOXSN,TYPENAME,TRAYNUM,PRODUCTNUM,STATUS,DIS,PLAN_ID,NOW(),REWORK_FLAG FROM R_MES_TRACKING_T T WHERE t.ID=#{id}
+	</insert>
+
+	<!-- 删除信息 -->
+	<delete id="delReworkRoute" parameterType="Map">
+		DELETE FROM R_MES_REWORK_WAY_T WHERE SN=#{sn}
+	</delete>
+
+	<!-- 工位路径列表 -->
+	<select id="findStationName" resultType="CMesStationT">
+		SELECT * FROM C_MES_STATION_T
+	</select>
+
+	<!-- 判断工位是否存在 -->
+	<select id="findstation" resultType="int">
+		SELECT COUNT(1) FROM R_MES_REWORK_WAY_T R,C_MES_STATION_T S WHERE R.ST_ID=S.ID
+	</select>
+
+	<!-- 工位移动 -->
+	<update id="updateReworkWayT" parameterType="Map">
+		UPDATE R_MES_REWORK_WAY_T SET SERIAL_NO=#{sertalNo} WHERE ST_NAME=#{stName}
+	</update>
+
+	<!-- 根据工位名称查出ID -->
+	<select id="findStationId" resultType="int" parameterType="Map">
+		SELECT ID FROM C_MES_STATION_T WHERE STATION_NAME=#{stName}
+	</select>
+
+	<!-- 工位的添加 -->
+	<insert id="insert" parameterType="ReworkWayT" keyProperty="id" useGeneratedKeys="false">
+		INSERT INTO R_MES_REWORK_WAY_T(DT,SN,ST_NAME,ST_ID,SERIAL_NO)
+		VALUES(#{dt},#{sn},#{stName},#{stId},#{sertalNo})
+	</insert>
+
+	<!-- 返工 -->
+	<update id="updRework" parameterType="Map">
+		UPDATE R_MES_TRACKING_T SET DIS=#{dis},ENGINESN=#{engineSN} WHERE ID=#{id}
+	</update>
+
+	<!-- 工位下表判断 -->
+	<select id="stationName" resultType="CMesStationT">
+		SELECT * FROM C_MES_STATION_T WHERE STATION_INDEX=0 AND STATION_NAME=#{stationName}
+	</select>
+
+	<!-- 查询一遍工位 -->
+	<select id="selectNo" parameterType="ReworkWayT" resultType="ReworkWayT">
+		SELECT * FROM R_MES_REWORK_WAY_T WHERE SERIAL_NO=#{sertalNo} AND ST_NAME=#{stName}
+	</select>
+
+	<!-- 删除已存在的第一位工位 -->
+	<delete id="deleteNo" parameterType="ReworkWayT">
+		DELETE FROM R_MES_REWORK_WAY_T WHERE SERIAL_NO=#{sertalNo} AND ST_NAME=#{stName}
+	</delete>
+	<select id="findReworkBySn" resultType="ReworkWayT">
+		SELECT * FROM R_MES_REWORK_WAY_T WHERE SN = #{SN} ORDER BY SERIAL_NO
+	</select>
+	<select id="listStationByLineId" resultType="CMesStationT">
+		SELECT * FROM C_MES_STATION_T WHERE LINE_ID=#{lineId} ORDER BY STATION_NAME
+	</select>
+
+	<select id="defectReason" resultType="PMesDefectReasonT">
+		SELECT * FROM P_MES_DEFECT_REASON_T WHERE SN = #{SN}
+	</select>
+	<insert id="adddefectReason" keyProperty="id" useGeneratedKeys="false">
+		INSERT INTO P_MES_DEFECT_REASON_T(SN,DT,DEFECT_TYPE,REASON_DETAIL,DUTY_ID,DEFECT_ID,RESION_ID,STATION_ID,STATION_NAME)
+		VALUES(#{SN},NOW(),#{defectType},#{reasonDetail})
+	</insert>
+
+	<delete id="delRTracking">
+		DELETE FROM R_MES_TRACKING_T WHERE SN = #{SN}
+	</delete>
+
+	<insert id="addPTracking" keyProperty="id" useGeneratedKeys="false">
+		INSERT INTO P_MES_TRACKING_T(DT,ST,BST,SN,ENGINESN,GEARBOXSN,TYPENAME,TRAYNUM,PRODUCTNUM,STATUS,DIS,PLAN_ID,OFFLINE_DT,REWORK_FLAG,PRODUCTION_ID,LINE_ID,WORK_ORDER_ID)
+		VALUES(#{dt},#{st},#{bst,jdbcType=VARCHAR},#{SN},#{engineSn},#{gearboxSn},#{typeName},#{trayNum},#{productNum},#{status},#{dis},#{planId},#{sysDate},0)
+	</insert>
+</mapper>

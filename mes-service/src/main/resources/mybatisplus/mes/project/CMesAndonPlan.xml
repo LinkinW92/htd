@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skeqi.mes.mapper.project.CMesAndonPlanDAO">
+
+	<insert id="addAndonImportPlan"  useGeneratedKeys="true"   keyProperty="id">
+	insert into r_mes_plan_t(DT,PLAN_NAME,PLAN_NUMBER,LINE_ID,PRODUCTION_ID,COMPLETE_NUMBER,COMPLETE_FLAG,PRODUCT_MARK)
+			value(#{dt},#{planName},#{planNumber},#{lineId},#{productionId},0,1,#{productMark})
+	</insert>
+
+	<resultMap type="com.alibaba.fastjson.JSONObject" id="jsonMap">
+		<result property="name" column="lineName" />
+			<result column="region" property="region" />
+		<collection property="station" javaType="list" ofType="com.alibaba.fastjson.JSONObject">
+			<result column="dt" property="dt" />
+			<result column="stIndex" property="stIndex" />
+			<result column="stationName" property="name" />
+			<result column="status" property="status" />
+			<result column="lossType" property="lossType" />
+			<result column="toolId" property="toolId" />
+		</collection>
+	</resultMap>
+
+	<select id="findStationStatus710" resultMap="jsonMap">
+		SELECT
+			line.NAME AS lineName,
+			station.STATION_NAME AS stationName,
+			ifnull( ifnull( fault.RESPONSE_DT, fault.ESTABLISH_DT ), '' ) AS dt,
+			station.STATION_INDEX AS stIndex,
+			ifnull( fault.`STATUS`, '' ) AS `status`,
+			ifnull( fault.LOSS_TYPE, '' ) AS lossType,
+			ifnull( fault.TOOL_ID, '' ) AS toolId,
+			line.REGION AS region
+		FROM
+			c_mes_station_t station
+			LEFT JOIN c_mes_line_t line ON line.id = station.LINE_ID
+			LEFT JOIN (select * from c_mes_andon_fault_t
+			where id in (
+				select max(id) from c_mes_andon_fault_t fault
+				GROUP BY fault.LINE_NAME,fault.STATION_NAME
+			)) fault ON fault.STATION_NAME = station.STATION_NAME
+			AND fault.LINE_NAME = line.`NAME`
+			WHERE line.NAME IS NOT NULL
+			<if test="lineName!=null and lineName!=''">
+			HAVING line.`NAME` = #{lineName}
+		</if>
+		GROUP BY
+			line.NAME,
+			line.REGION,
+			station.STATION_NAME
+		ORDER BY line.REGION
+
+	</select>
+
+</mapper>

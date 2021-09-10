@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skeqi.mes.mapper.yp.wms.other.OtherWmsMaterialDao">
+
+	<!-- 查询 -->
+	<select id="findFactoryMaterialByIdAndFactoryId" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			dt,
+			materialId,
+			factoryId,
+			STOCK_UNIT as stockUnit,
+			DELIVERY_STRATEGY as deliveryStrategy,
+			wQIS,
+			InspectionMethod
+		FROM
+			c_qh_factory_material_t
+		WHERE VIEW_MODE = 1
+		and id = #{id}
+		and factoryId = #{factoryId}
+	</select>
+	
+	<!-- 通过物料id查询物料 -->
+	<select id="findMaterialById" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			*
+		FROM
+			c_mes_jl_material_t
+		where id = #{id}
+	</select>
+	
+	<!-- 通过物料编号查询物料 -->
+	<select id="findMaterialByNo" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			*
+		FROM
+			c_mes_jl_material_t
+		where BOM_ID = #{materialNo}
+	</select>
+
+	<!-- 查询所有物料 -->
+	<select id="findMaterialAll" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT
+			id,
+			MATERIAL_NAME AS materialName,
+			BOM_ID AS materialNo,
+			STOCK_UNIT AS unit
+		FROM
+			c_mes_jl_material_t
+		ORDER BY
+			id
+	</select>
+
+</mapper>
